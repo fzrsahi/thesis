@@ -20,7 +20,7 @@ jobs:
         cache: 'npm'
 
     - name: Install Dependencies
-      run: npm install --legacy-peer-deps
+      run: npm ci
 
     - name: Run ESLint
       run: npm run lint
