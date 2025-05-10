@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint --max-warnings=0 --dir . --dir script",
     "format": "prettier --check --ignore-path .gitignore './**/*.{js,jsx,ts,tsx,json,css,scss,sass}'",
-    "fix": "pnpm run lint --fix && pnpm run format --write"
+    "fix": "pnpm run lint --fix && pnpm run format --write",
+    "generate:api-types": "npx openapi-typescript src/app/api-docs/openapi.json -o src/app/shared/types/api.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
@@ -26,6 +27,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.56.3",
+    "swagger-ui-react": "^5.21.0",
     "tailwind-merge": "^3.2.0",
     "zod": "^3.24.4"
   },
@@ -35,6 +37,7 @@
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/swagger-ui-react": "^5.18.0",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "eslint": "^8.57.1",
     "eslint-config-airbnb": "^19.0.4",
