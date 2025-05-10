@@ -10,7 +10,8 @@ const isDev = process.env.NEXT_PUBLIC_ENV_NAME === "development";
 
 const SwaggerUi = () => {
   if (!isDev) return <ErrorPage statusCode={404} />;
-  return <SwaggerUI url="api-docs/api" />;
+  const apiUrl = "/api-docs/api";
+  return <SwaggerUI url={apiUrl} />;
 };
 
 export default SwaggerUi;
