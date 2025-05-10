@@ -15,7 +15,7 @@ import Input from "@/components/ui/input";
 
 import useLogin from "./useLogin";
 
-export const LoginPage = () => {
+const LoginPage = () => {
   const { form, isLoading, showPassword, setShowPassword, onSubmit } = useLogin();
 
   return (
@@ -92,3 +92,5 @@ export const LoginPage = () => {
     </div>
   );
 };
+
+export default LoginPage;
