@@ -1,5 +1,3 @@
-const RecomendationPage = () => {
-  return <div>RecomendationPage</div>;
-};
+const RecomendationPage = () => <div>RecomendationPage</div>;
 
 export default RecomendationPage;

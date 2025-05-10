@@ -1,7 +1,8 @@
 "use client";
 
+import { Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
+
 import Button from "@/components/ui/button";
-import Input from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -10,24 +11,22 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Eye, EyeOff, LockKeyhole, Mail } from "lucide-react";
+import Input from "@/components/ui/input";
+
 import useLogin from "./useLogin";
 
-export default function LoginPage() {
-  const { form, isLoading, showPassword, setShowPassword, onSubmit } =
-    useLogin();
+export const LoginPage = () => {
+  const { form, isLoading, showPassword, setShowPassword, onSubmit } = useLogin();
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br bg-gray-100 dark:from-gray-900 dark:to-gray-800">
-      <div className="w-full max-w-md p-12 bg-white dark:bg-gray-950 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-800 backdrop-blur-sm">
-        <div className="flex flex-col items-center mb-8">
-          <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-4">
-            <LockKeyhole className="h-10 w-10 text-primary" />
+    <div className="flex min-h-screen items-center justify-center bg-gray-100 bg-gradient-to-br dark:from-gray-900 dark:to-gray-800">
+      <div className="w-full max-w-md rounded-3xl border border-gray-100 bg-white p-12 shadow-xl backdrop-blur-sm dark:border-gray-800 dark:bg-gray-950">
+        <div className="mb-8 flex flex-col items-center">
+          <div className="bg-primary/10 mb-4 flex h-20 w-20 items-center justify-center rounded-full">
+            <LockKeyhole className="text-primary h-10 w-10" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-            Selamat Datang
-          </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-2">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Selamat Datang</h1>
+          <p className="mt-2 text-gray-500 dark:text-gray-400">
             Masuk untuk melanjutkan perjalanan Anda
           </p>
         </div>
@@ -41,13 +40,9 @@ export default function LoginPage() {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                    <Mail className="absolute top-2.5 left-3 h-4 w-4 text-gray-400" />
                     <FormControl>
-                      <Input
-                        placeholder="you@example.com"
-                        className="pl-10"
-                        {...field}
-                      />
+                      <Input placeholder="you@example.com" className="pl-10" {...field} />
                     </FormControl>
                   </div>
                   <FormMessage />
@@ -62,25 +57,21 @@ export default function LoginPage() {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <div className="relative">
-                    <LockKeyhole className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                    <LockKeyhole className="absolute top-2.5 left-3 h-4 w-4 text-gray-400" />
                     <FormControl>
                       <Input
                         type={showPassword ? "text" : "password"}
                         placeholder="••••••••"
-                        className="pl-10 pr-10"
+                        className="pr-10 pl-10"
                         {...field}
                       />
                     </FormControl>
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600 focus:outline-none"
+                      className="absolute top-2.5 right-3 text-gray-400 hover:text-gray-600 focus:outline-none"
                     >
-                      {showPassword ? (
-                        <EyeOff className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                     </button>
                   </div>
                   <FormMessage />
@@ -90,7 +81,7 @@ export default function LoginPage() {
 
             <Button
               type="submit"
-              className="w-full py-6 text-base font-medium transition-all duration-300 hover:shadow-lg hover:bg-primary/90 cursor-pointer"
+              className="hover:bg-primary/90 w-full cursor-pointer py-6 text-base font-medium transition-all duration-300 hover:shadow-lg"
               disabled={isLoading}
             >
               {isLoading ? "Memuat..." : "Masuk"}
@@ -100,4 +91,4 @@ export default function LoginPage() {
       </div>
     </div>
   );
-}
+};

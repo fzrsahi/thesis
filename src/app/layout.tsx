@@ -11,14 +11,12 @@ export const metadata: Metadata = {
   description: "Your AI-powered assistant",
 };
 
-export default function RootLayout({
+export const RootLayout = ({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) {
-  return (
-    <html lang="en">
-      <body className={geist.className}>{children}</body>
-    </html>
-  );
-}
+}>) => (
+  <html lang="en">
+    <body className={geist.className}>{children}</body>
+  </html>
+);

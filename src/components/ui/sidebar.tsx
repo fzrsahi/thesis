@@ -1,7 +1,5 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import {
   Home,
   User,
@@ -12,9 +10,12 @@ import {
   LayoutDashboard,
   BookOpen,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
+
 import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 
 const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
@@ -23,7 +24,7 @@ const navItems = [
   { name: "Pengaturan", href: "/settings", icon: Settings },
 ];
 
-export default function Sidebar() {
+export const Sidebar = () => {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const isMobile = useIsMobile();
@@ -47,8 +48,9 @@ export default function Sidebar() {
     <>
       {isMobile && (
         <button
+          type="button"
           onClick={toggleMobileSidebar}
-          className="fixed top-4 left-4 z-50 bg-zinc-800 text-white p-3 rounded-md shadow-lg"
+          className="fixed top-4 left-4 z-50 rounded-full bg-black p-3 text-white shadow-lg transition-all duration-300 hover:shadow-white/10"
         >
           <Menu size={24} />
         </button>
@@ -56,50 +58,48 @@ export default function Sidebar() {
 
       <aside
         className={cn(
-          "h-screen bg-zinc-900 text-white flex flex-col border-r border-zinc-800 transition-all duration-300 ease-in-out shadow-xl",
-          collapsed ? "w-24" : "w-72",
+          "flex h-screen flex-col border-r border-zinc-800/50 bg-black text-white backdrop-blur-lg transition-all duration-300 ease-in-out",
+          collapsed ? "w-20" : "w-72",
           isMobile && "fixed z-40",
-          isMobile && !mobileOpen && "-translate-x-full"
+          isMobile && !mobileOpen && "-translate-x-full",
+          "shadow-[5px_0_30px_rgba(0,0,0,0.2)]"
         )}
       >
         <div
           className={cn(
-            "flex items-center border-b border-zinc-800 transition-all duration-300",
-            collapsed ? "justify-center p-5" : "p-7"
+            "flex items-center border-b border-zinc-800/50 transition-all duration-300",
+            collapsed ? "justify-center p-5" : "p-6"
           )}
         >
           {!collapsed ? (
             <div className="text-2xl font-bold tracking-wide">
-              <LayoutDashboard className="inline-block mr-2" size={24} /> Chill
+              <LayoutDashboard className="mr-2 inline-block text-white" size={24} /> Chill
               <span className="text-white">LLMs</span>
             </div>
           ) : (
             <div className="text-2xl font-bold tracking-wide">
-              <span className="text-primary">M</span>
+              <span className="text-white">C</span>
             </div>
           )}
 
           {!isMobile && (
             <button
+              type="button"
               onClick={toggleSidebar}
               className={cn(
-                "ml-auto text-zinc-400 hover:text-white transition-colors p-2 rounded-full hover:bg-zinc-800",
+                "ml-auto rounded-full p-2 text-zinc-400 backdrop-blur-sm transition-colors hover:bg-zinc-800/50 hover:text-white",
                 collapsed && "ml-0"
               )}
             >
-              {collapsed ? (
-                <ChevronRight size={22} />
-              ) : (
-                <ChevronLeft size={22} />
-              )}
+              {collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
             </button>
           )}
         </div>
 
         <nav
           className={cn(
-            "flex-1 p-5 space-y-3 overflow-y-auto",
-            collapsed && "p-3"
+            "scrollbar-thin scrollbar-thumb-zinc-700 scrollbar-track-transparent flex-1 space-y-2 overflow-y-auto p-4",
+            collapsed && "p-2"
           )}
         >
           {navItems.map((item) => {
@@ -110,50 +110,51 @@ export default function Sidebar() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-4 rounded-md transition-all duration-300 group relative overflow-hidden",
+                  "group relative flex items-center gap-3 overflow-hidden rounded-xl transition-all duration-300",
                   isActive
-                    ? "text-white font-semibold bg-zinc-800/50"
-                    : "text-zinc-400 hover:text-white hover:bg-zinc-800/30",
-                  collapsed ? "justify-center px-3 py-4" : "px-5 py-4"
+                    ? "bg-zinc-900 font-medium text-white"
+                    : "text-zinc-400 hover:bg-zinc-900/50 hover:text-white",
+                  collapsed ? "justify-center px-3 py-4" : "px-4 py-3"
                 )}
               >
                 {isActive && (
                   <div
                     className={cn(
-                      "absolute h-full w-1.5 bg-white left-0 animate-pulse",
-                      collapsed && "left-auto right-0"
+                      "absolute left-0 h-full w-1 bg-white",
+                      collapsed && "right-0 left-auto"
                     )}
                   />
                 )}
 
-                {isActive && (
-                  <div
-                    className={cn(
-                      "absolute inset-y-0 w-1.5 bg-white",
-                      collapsed ? "right-0" : "left-0",
-                      "before:absolute before:inset-0 before:bg-white before:animate-[pulse_2s_ease-in-out_infinite]"
-                    )}
-                  />
-                )}
-
-                <Icon
-                  size={26}
+                <div
                   className={cn(
-                    "transition-all duration-300 relative z-10",
-                    isActive
-                      ? "text-white scale-110"
-                      : "group-hover:scale-110 group-hover:text-white"
+                    "relative z-10 flex items-center justify-center",
+                    isActive ? "text-white" : "text-zinc-400 group-hover:text-white",
+                    "transition-all duration-300"
                   )}
-                />
+                >
+                  <Icon
+                    size={22}
+                    className={cn(
+                      "transition-all duration-300",
+                      isActive ? "scale-110" : "group-hover:scale-110"
+                    )}
+                  />
+                </div>
 
                 {!collapsed && (
-                  <span className="text-base font-medium relative z-10">
+                  <span
+                    className={cn(
+                      "relative z-10 text-base font-medium transition-all duration-300",
+                      isActive ? "text-white" : "text-zinc-400 group-hover:text-white"
+                    )}
+                  >
                     {item.name}
                   </span>
                 )}
 
                 {collapsed && (
-                  <span className="absolute left-full ml-2 px-3 py-1.5 bg-zinc-800/90 text-sm rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-50 backdrop-blur-sm shadow-lg border border-zinc-700/50">
+                  <span className="absolute left-full z-50 ml-2 rounded-lg border border-zinc-800/50 bg-black px-3 py-1.5 text-sm whitespace-nowrap opacity-0 shadow-lg backdrop-blur-sm transition-opacity group-hover:opacity-100">
                     {item.name}
                   </span>
                 )}
@@ -161,7 +162,23 @@ export default function Sidebar() {
             );
           })}
         </nav>
+        <div
+          className={cn(
+            "mt-auto border-t border-zinc-800/50 p-4",
+            collapsed ? "flex justify-center" : ""
+          )}
+        >
+          <div className={cn("text-center text-xs text-zinc-500", collapsed ? "hidden" : "block")}>
+            © 2025 ChillLLMs
+            <p className="mt-1">Version 1.0.0</p>
+          </div>
+          {collapsed && (
+            <div className="text-zinc-500">
+              <Settings size={18} />
+            </div>
+          )}
+        </div>
       </aside>
     </>
   );
-}
+};

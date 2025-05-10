@@ -1,8 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginPayload } from "./loginSchema";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { loginSchema } from "./loginSchema";
+
+import { LoginPayload, loginSchema } from "./loginSchema";
 
 const useLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -16,13 +16,12 @@ const useLogin = () => {
     },
   });
 
-  function onSubmit(values: LoginPayload) {
+  const onSubmit = (_values: LoginPayload) => {
     setIsLoading(true);
     setTimeout(() => {
-      console.log(values);
       setIsLoading(false);
     }, 1000);
-  }
+  };
 
   return { form, isLoading, setShowPassword, showPassword, onSubmit };
 };
