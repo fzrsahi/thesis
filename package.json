@@ -6,13 +6,18 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint --max-warnings=0 --dir . --dir script",
-    "format": "prettier --check --ignore-path .gitignore './**/*.{js,jsx,ts,tsx,json,css,scss,sass}'",
-    "fix": "pnpm run lint --fix && pnpm run format --write",
-    "generate:api-types": "npx openapi-typescript src/app/api-docs/openapi.json -o src/app/shared/types/api.ts"
+    "lint": "next lint --max-warnings=0 --dir src --fix",
+    "format": "prettier --check --ignore-path .gitignore './src/**/*.{js,jsx,ts,tsx,json,css,scss,sass}' --write",
+    "fix": "npm run lint && npm run format",
+    "generate:api-types": "npx openapi-typescript src/app/api-docs/openapi.json -o src/app/shared/types/api.ts",
+    "prisma:push": "npx prisma db push",
+    "generate:migration": "npx prisma migrate dev",
+    "create:admin": "tsx src/script/createAdmin.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
+    "@prisma/client": "^6.7.0",
+    "@prisma/extension-accelerate": "^1.3.0",
     "@radix-ui/react-avatar": "^1.1.9",
     "@radix-ui/react-dialog": "^1.1.13",
     "@radix-ui/react-dropdown-menu": "^2.1.14",
@@ -20,10 +25,12 @@
     "@radix-ui/react-separator": "^1.1.6",
     "@radix-ui/react-slot": "^1.2.2",
     "@radix-ui/react-tooltip": "^1.2.6",
+    "bcrypt": "^5.1.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.509.0",
     "next": "15.3.2",
+    "next-auth": "^4.24.11",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.56.3",
@@ -34,6 +41,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/bcrypt": "^5.0.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -52,7 +60,9 @@
     "eslint-plugin-storybook": "^0.11.6",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
+    "prisma": "^6.7.0",
     "tailwindcss": "^4",
+    "tsx": "^4.19.4",
     "tw-animate-css": "^1.2.9",
     "typescript": "^5.4.3"
   }

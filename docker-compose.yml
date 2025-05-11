@@ -1,0 +1,11 @@
+services:
+  db:
+    image: postgres:alpine
+    volumes:
+      - ./docker/db/data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: root
+      POSTGRES_USER: root
+      POSTGRES_DB: thesis
+    ports:
+      - "5432:5432"

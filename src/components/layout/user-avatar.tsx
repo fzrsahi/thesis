@@ -2,6 +2,7 @@
 
 import { LogOut, Settings, User } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { signOut } from "next-auth/react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -23,7 +24,6 @@ interface UserAvatarProps {
 
 export const UserAvatar = ({ user }: UserAvatarProps) => {
   const router = useRouter();
-
   const getInitials = () => {
     if (user?.name) {
       return user.name
@@ -66,7 +66,10 @@ export const UserAvatar = ({ user }: UserAvatarProps) => {
             <span>Settings</span>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem className="text-red-600">
+          <DropdownMenuItem
+            className="text-red-600"
+            onClick={() => signOut({ callbackUrl: "/auth/login" })}
+          >
             <LogOut className="mr-2 h-4 w-4" />
             <span>Log out</span>
           </DropdownMenuItem>
