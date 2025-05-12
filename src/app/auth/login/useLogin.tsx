@@ -27,25 +27,27 @@ const useLogin = () => {
         setIsLoading(true);
         setErrorMessage(null);
 
+        const callbackUrl = searchParams?.get("callbackUrl") || "/dashboard";
+
         const result = await signIn("credentials", {
           email: formData.email,
           password: formData.password,
           redirect: false,
+          callbackUrl,
         });
 
-        if (result?.status === 401) {
-          setErrorMessage("Email atau password salah");
+        if (!result?.ok) {
+          setErrorMessage(result?.error || "Email atau password salah");
           return;
         }
-
-        const callbackUrl = new URL(
-          searchParams?.get("callbackUrl") ?? "/dashboard",
-          process.env.NEXT_PUBLIC_BASE_URL
-        );
-
-        router.push(callbackUrl.toString());
+        if (result?.url) {
+          router.push(result.url);
+        } else {
+          router.push(callbackUrl);
+        }
         router.refresh();
       } catch (error) {
+        console.error("Login error:", error);
         setErrorMessage("Terjadi kesalahan. Silakan coba lagi.");
       } finally {
         setIsLoading(false);

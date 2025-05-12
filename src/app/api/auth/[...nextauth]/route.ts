@@ -33,10 +33,16 @@ const authOptions: NextAuthOptions = {
             email: result.data.email,
             password: result.data.password,
           });
+
+          if (!user) {
+            throw new Error("Email atau password salah");
+          }
+
           const role = await getUserRole(user.id);
 
           return { ...user, id: user.id.toString(), role } as User;
         } catch (error) {
+          console.error("Auth error:", error);
           throw new Error("Email atau password salah");
         }
       },
@@ -67,11 +73,27 @@ const authOptions: NextAuthOptions = {
         },
       };
     },
+    async redirect({ url, baseUrl }) {
+      if (url.startsWith("/")) {
+        return `${baseUrl}${url}`;
+      }
+
+      try {
+        const urlObj = new URL(url);
+        if (urlObj.origin === baseUrl) {
+          return url;
+        }
+        return `${baseUrl}/dashboard`;
+      } catch {
+        return `${baseUrl}/dashboard`;
+      }
+    },
   },
   pages: {
     signIn: "/auth/login",
     signOut: "/auth/logout",
   },
+  debug: process.env.NEXT_PUBLIC_ENV_NAME === "development",
 };
 
 const handler = NextAuth(authOptions);
