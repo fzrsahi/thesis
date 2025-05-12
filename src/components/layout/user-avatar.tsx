@@ -38,6 +38,11 @@ export const UserAvatar = ({ user }: UserAvatarProps) => {
     return "U";
   };
 
+  const handleSignOut = async () => {
+    await signOut();
+    router.push("/auth/login");
+  };
+
   return (
     <div className="fixed top-4 right-4">
       <DropdownMenu>
@@ -66,10 +71,7 @@ export const UserAvatar = ({ user }: UserAvatarProps) => {
             <span>Settings</span>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem
-            className="text-red-600"
-            onClick={() => signOut({ callbackUrl: "/auth/login" })}
-          >
+          <DropdownMenuItem className="text-red-600" onClick={handleSignOut}>
             <LogOut className="mr-2 h-4 w-4" />
             <span>Log out</span>
           </DropdownMenuItem>

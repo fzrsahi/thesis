@@ -1,6 +1,7 @@
 "use client";
 
 import { Eye, EyeOff, LockKeyhole } from "lucide-react";
+import { Suspense } from "react";
 
 import WordParticleAnimation from "@/components/animations/WordParticleAnimation";
 import Button from "@/components/ui/button";
@@ -17,7 +18,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 import useLogin from "./useLogin";
 
-const LoginPage = () => {
+const LoginForm = () => {
   const {
     form,
     isLoading,
@@ -84,7 +85,7 @@ const LoginPage = () => {
                           placeholder="you@example.com"
                           className={`w-full rounded-md border ${isMobile ? "border-zinc-600 bg-zinc-700" : "border-zinc-500 bg-black"} px-3 py-2 focus:border-gray-300 focus:ring-1 focus:ring-gray-300`}
                           {...field}
-                          onFocus={() => setErrorMessage(null)} // Clear error on focus
+                          onFocus={() => setErrorMessage(null)}
                         />
                       </FormControl>
                     </div>
@@ -106,7 +107,7 @@ const LoginPage = () => {
                           placeholder="••••••••"
                           className={`w-full rounded-md border ${isMobile ? "border-zinc-600 bg-zinc-700" : "border-zinc-500 bg-black"} px-3 py-2 focus:border-gray-300 focus:ring-1 focus:ring-gray-300`}
                           {...field}
-                          onFocus={() => setErrorMessage(null)} // Clear error on focus
+                          onFocus={() => setErrorMessage(null)}
                         />
                       </FormControl>
                       <button
@@ -144,5 +145,11 @@ const LoginPage = () => {
     </div>
   );
 };
+
+const LoginPage = () => (
+  <Suspense fallback={<div>Loading...</div>}>
+    <LoginForm />
+  </Suspense>
+);
 
 export default LoginPage;

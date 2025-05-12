@@ -1,28 +1,14 @@
 "use client";
 
-import {
-  Home,
-  User,
-  Settings,
-  ChevronLeft,
-  ChevronRight,
-  Menu,
-  LayoutDashboard,
-  BookOpen,
-} from "lucide-react";
+import { Settings, ChevronLeft, ChevronRight, Menu, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 
+import { routes } from "@/constants/auth-routes";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
-
-export const navItems = [
-  { name: "Dashboard", href: "/dashboard", icon: Home },
-  { name: "Mahasiswa", href: "/student", icon: User },
-  { name: "Rekomendasi", href: "/recomendation", icon: BookOpen },
-  { name: "Pengaturan", href: "/settings", icon: Settings },
-];
 
 export const Sidebar = () => {
   const pathname = usePathname();
@@ -30,11 +16,15 @@ export const Sidebar = () => {
   const isMobile = useIsMobile();
   const [mobileOpen, setMobileOpen] = useState(false);
 
+  const { data: session, status } = useSession();
+  const role = session?.user?.role || "user";
+
   useEffect(() => {
-    if (!isMobile) {
-      setMobileOpen(false);
-    }
+    if (!isMobile) setMobileOpen(false);
   }, [isMobile]);
+
+  const navItems = routes.filter((item) => item.roles.includes(role));
+  if (status === "loading") return null;
 
   const toggleSidebar = () => {
     setCollapsed(!collapsed);
