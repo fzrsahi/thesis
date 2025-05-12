@@ -19,7 +19,7 @@ export const validateCredentials = async (credentials: LoginPayload) => {
     throw new Error("Email atau password salah");
   }
 
-  const isPasswordValid = compareHash(credentials.password, user.password);
+  const isPasswordValid = await compareHash(credentials.password, user.password);
 
   if (!isPasswordValid) {
     throw new Error("Email atau password salah");

@@ -26,7 +26,7 @@ const authOptions: NextAuthOptions = {
           const result = loginSchema.safeParse(credentials);
 
           if (!result.success) {
-            throw new Error("Email atau password salah");
+            throw new Error("Bad Request");
           }
 
           const user = await validateCredentials({
