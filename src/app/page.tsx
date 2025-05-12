@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Montserrat, Orbitron } from "next/font/google";
+import { SessionProvider } from "next-auth/react";
 
 import { AnimatedBlobs } from "@/components/animations/AnimatedBlobs";
 import WordParticleAnimation from "@/components/animations/WordParticleAnimation";
@@ -18,7 +19,9 @@ const fadeUp = {
 
 const Home = () => (
   <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-black">
-    <Navbar />
+    <SessionProvider>
+      <Navbar />
+    </SessionProvider>
     <AnimatedBlobs />
     <section className="relative z-10 flex h-screen w-full flex-col items-center justify-center px-4 text-center">
       <motion.div
@@ -107,35 +110,108 @@ const Home = () => (
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
           viewport={{ once: true }}
-          className="mx-auto max-w-4xl rounded-xl border border-zinc-800/50 bg-zinc-900/70 p-8 backdrop-blur-md"
+          className="mx-auto max-w-4xl rounded-xl border border-zinc-800/50 bg-zinc-900/70 p-8 shadow-2xl shadow-zinc-900/50 backdrop-blur-md"
         >
           <div className={`${montserrat.className} grid gap-8 text-zinc-300 md:grid-cols-2`}>
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold text-white">Neural Networks</h3>
-              <p>
-                Our LLM uses deep neural networks with billions of parameters to understand the
-                nuances of competition requirements and match them with your skills and preferences.
-              </p>
+            <div className="space-y-6">
+              <div className="group rounded-lg border border-zinc-800 bg-black/40 p-6 transition-all duration-300 hover:border-zinc-700 hover:shadow-lg hover:shadow-zinc-800/20">
+                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-zinc-700 to-zinc-900 text-white shadow-md">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-white">Neural Networks</h3>
+                <p className="mt-2 text-zinc-400">
+                  Our LLM uses deep neural networks with billions of parameters to understand the
+                  nuances of competition requirements and match them with your skills and
+                  preferences.
+                </p>
+              </div>
 
-              <h3 className="text-xl font-bold text-white">Contextual Understanding</h3>
-              <p>
-                Through transformer architecture, our models process information contextually,
-                understanding the relationships between different competition aspects.
-              </p>
+              <div className="group rounded-lg border border-zinc-800 bg-black/40 p-6 transition-all duration-300 hover:border-zinc-700 hover:shadow-lg hover:shadow-zinc-800/20">
+                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-zinc-700 to-zinc-900 text-white shadow-md">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 10V3L4 14h7v7l9-11h-7z"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-white">Contextual Understanding</h3>
+                <p className="mt-2 text-zinc-400">
+                  Through transformer architecture, our models process information contextually,
+                  understanding the relationships between different competition aspects.
+                </p>
+              </div>
             </div>
 
-            <div className="space-y-4">
-              <h3 className="text-xl font-bold text-white">Vector Embeddings</h3>
-              <p>
-                We transform text into high-dimensional vector spaces, allowing our system to find
-                semantic similarities between your profile and competition descriptions.
-              </p>
+            <div className="space-y-6">
+              <div className="group rounded-lg border border-zinc-800 bg-black/40 p-6 transition-all duration-300 hover:border-zinc-700 hover:shadow-lg hover:shadow-zinc-800/20">
+                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-zinc-700 to-zinc-900 text-white shadow-md">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-white">Vector Embeddings</h3>
+                <p className="mt-2 text-zinc-400">
+                  We transform text into high-dimensional vector spaces, allowing our system to find
+                  semantic similarities between your profile and competition descriptions.
+                </p>
+              </div>
 
-              <h3 className="text-xl font-bold text-white">Continuous Learning</h3>
-              <p>
-                Our models continuously improve through feedback loops, learning from successful
-                matches to provide increasingly accurate recommendations over time.
-              </p>
+              <div className="group rounded-lg border border-zinc-800 bg-black/40 p-6 transition-all duration-300 hover:border-zinc-700 hover:shadow-lg hover:shadow-zinc-800/20">
+                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-zinc-700 to-zinc-900 text-white shadow-md">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-6 w-6"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-white">Continuous Learning</h3>
+                <p className="mt-2 text-zinc-400">
+                  Our models continuously improve through feedback loops, learning from successful
+                  matches to provide increasingly accurate recommendations over time.
+                </p>
+              </div>
             </div>
           </div>
         </motion.div>

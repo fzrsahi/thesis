@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 
-import { routes } from "@/constants/auth-routes";
+import { adminPaths, routes } from "@/constants/auth-routes";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
@@ -24,7 +24,26 @@ export const Sidebar = () => {
   }, [isMobile]);
 
   const navItems = routes.filter((item) => item.roles.includes(role));
-  if (status === "loading") return null;
+
+  if (status === "loading") {
+    return (
+      <aside className="flex h-screen w-72 flex-col border-r border-zinc-800/50 bg-black text-white shadow-[5px_0_30px_rgba(0,0,0,0.2)] backdrop-blur-lg transition-all duration-300 ease-in-out">
+        <div className="flex items-center border-b border-zinc-800/50 p-6">
+          <div className="text-2xl font-bold tracking-wide">
+            <span className="text-white">C</span>
+          </div>
+        </div>
+        <nav className="flex-1 space-y-2 overflow-y-auto p-4">
+          {adminPaths.map((key) => (
+            <div key={key} className="mb-2 h-10 w-full animate-pulse rounded-xl bg-zinc-800/60" />
+          ))}
+        </nav>
+        <div className="mt-auto border-t border-zinc-800/50 p-4">
+          <div className="h-6 w-24 animate-pulse rounded bg-zinc-800/60" />
+        </div>
+      </aside>
+    );
+  }
 
   const toggleSidebar = () => {
     setCollapsed(!collapsed);
