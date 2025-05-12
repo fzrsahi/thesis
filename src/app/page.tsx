@@ -1,55 +1,146 @@
-import Link from "next/link";
+"use client";
+
+import { motion } from "framer-motion";
+import { Montserrat, Orbitron } from "next/font/google";
+
+import { AnimatedBlobs } from "@/components/animations/AnimatedBlobs";
+import WordParticleAnimation from "@/components/animations/WordParticleAnimation";
+
+import Navbar from "../components/ui/Navbar";
+
+const montserrat = Montserrat({ subsets: ["latin"] });
+const orbitron = Orbitron({ subsets: ["latin"] });
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 40 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.8 } },
+};
 
 const Home = () => (
-  <main className="flex min-h-screen flex-col items-center justify-center p-24">
-    <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-      <p className="fixed top-0 left-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pt-8 pb-6 backdrop-blur-2xl lg:static lg:w-auto lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:dark:bg-zinc-800/30">
-        Get started by editing&nbsp;
-        <code className="font-mono font-bold">src/app/page.tsx</code>
-      </p>
-      <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white lg:static lg:h-auto lg:w-auto lg:bg-none dark:from-black dark:via-black">
-        <a
-          className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          By{" "}
-          <img
-            src="/vercel.svg"
-            alt="Vercel Logo"
-            className="dark:invert"
-            width={100}
-            height={24}
-          />
-        </a>
-      </div>
-    </div>
-
-    <div className="before:bg-gradient-radial after:bg-gradient-conic relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3 after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:lg:h-[360px] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40">
-      <img
-        className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-        src="/next.svg"
-        alt="Next.js Logo"
-        width={180}
-        height={37}
-      />
-    </div>
-
-    <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
-      <Link
-        href="/dashboard"
-        className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
+  <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-black">
+    <Navbar />
+    <AnimatedBlobs />
+    <section className="relative z-10 flex h-screen w-full flex-col items-center justify-center px-4 text-center">
+      <motion.div
+        variants={fadeUp}
+        initial="hidden"
+        animate="show"
+        className={`${orbitron.className} mb-2 text-sm font-bold tracking-[0.3em] text-zinc-400`}
       >
-        <h2 className="mb-3 text-2xl font-semibold">
-          Dashboard{" "}
-          <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-            -&gt;
-          </span>
-        </h2>
-        <p className="m-0 max-w-[30ch] text-sm opacity-50">Go to dashboard.</p>
-      </Link>
-    </div>
+        NEXT GENERATION
+      </motion.div>
+      <motion.h1
+        variants={fadeUp}
+        initial="hidden"
+        animate="show"
+        transition={{ delay: 0.2, duration: 1 }}
+        className={`${orbitron.className} text-5xl leading-tight font-extrabold text-white drop-shadow-xl md:text-7xl lg:text-8xl`}
+      >
+        The{" "}
+        <span className="animate-text bg-gradient-to-r from-zinc-400 via-white to-zinc-500 bg-clip-text text-transparent">
+          AI Competition Recommendation Tool
+        </span>
+      </motion.h1>
+      <motion.p
+        variants={fadeUp}
+        initial="hidden"
+        animate="show"
+        transition={{ delay: 0.4, duration: 1 }}
+        className={`${montserrat.className} mx-auto mt-8 max-w-2xl text-lg text-white/90 md:text-2xl`}
+      >
+        Designed to enhance your <span className="font-bold text-zinc-300">competitive edge</span>,
+        our application leverages <span className="italic">cutting-edge LLM technology</span> to
+        help you find the best competitions to participate in.
+      </motion.p>
+      <motion.div
+        variants={fadeUp}
+        initial="hidden"
+        animate="show"
+        transition={{ delay: 0.6, duration: 1 }}
+        className="mt-12 flex flex-col justify-center gap-5 sm:flex-row"
+      >
+        <button
+          type="button"
+          className="group flex items-center gap-3 rounded-lg border border-zinc-700 bg-zinc-900 px-8 py-4 text-lg font-bold text-white shadow-lg transition-all duration-300 hover:shadow-xl hover:shadow-zinc-800/30"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+            stroke="currentColor"
+            className="h-6 w-6 transition-transform duration-300 group-hover:-translate-y-1"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 3v12m0 0l-4-4m4 4l4-4m-4 4v6"
+            />
+          </svg>
+          GET STARTED
+        </button>
+        <button
+          type="button"
+          className="rounded-lg border border-zinc-800 bg-black/50 px-8 py-4 text-lg font-bold text-white backdrop-blur-sm transition-all duration-300 hover:border-zinc-700 hover:bg-zinc-900 hover:text-zinc-300 hover:shadow-lg hover:shadow-zinc-800/20"
+        >
+          ABOUT
+        </button>
+      </motion.div>
+    </section>
+
+    <section className="relative h-screen w-full">
+      <div className="absolute inset-0">
+        <WordParticleAnimation />
+      </div>
+      <div className="relative z-10 flex h-full w-full flex-col items-center justify-center px-6">
+        <motion.h2
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className={`${orbitron.className} mb-8 text-center text-4xl font-bold text-white md:text-5xl`}
+        >
+          How LLMs Power Our Recommendations
+        </motion.h2>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          viewport={{ once: true }}
+          className="mx-auto max-w-4xl rounded-xl border border-zinc-800/50 bg-zinc-900/70 p-8 backdrop-blur-md"
+        >
+          <div className={`${montserrat.className} grid gap-8 text-zinc-300 md:grid-cols-2`}>
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold text-white">Neural Networks</h3>
+              <p>
+                Our LLM uses deep neural networks with billions of parameters to understand the
+                nuances of competition requirements and match them with your skills and preferences.
+              </p>
+
+              <h3 className="text-xl font-bold text-white">Contextual Understanding</h3>
+              <p>
+                Through transformer architecture, our models process information contextually,
+                understanding the relationships between different competition aspects.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <h3 className="text-xl font-bold text-white">Vector Embeddings</h3>
+              <p>
+                We transform text into high-dimensional vector spaces, allowing our system to find
+                semantic similarities between your profile and competition descriptions.
+              </p>
+
+              <h3 className="text-xl font-bold text-white">Continuous Learning</h3>
+              <p>
+                Our models continuously improve through feedback loops, learning from successful
+                matches to provide increasingly accurate recommendations over time.
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    </section>
   </main>
 );
 

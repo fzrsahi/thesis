@@ -1,22 +1,21 @@
 "use client";
 
-import { Eye, EyeOff, LockKeyhole } from "lucide-react";
+import { motion } from "framer-motion";
+import { Eye, EyeOff } from "lucide-react";
+import Link from "next/link";
 import { Suspense } from "react";
 
-import WordParticleAnimation from "@/components/animations/WordParticleAnimation";
+import { AnimatedBlobs } from "@/components/animations/AnimatedBlobs";
 import Button from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import Input from "@/components/ui/input";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 import useLogin from "./useLogin";
+
+const fadeIn = {
+  hidden: { opacity: 0, y: 10 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+};
 
 const LoginForm = () => {
   const {
@@ -28,126 +27,156 @@ const LoginForm = () => {
     errorMessage,
     setErrorMessage,
   } = useLogin();
-  const isMobile = useIsMobile();
 
   return (
-    <div className="flex min-h-screen flex-col md:flex-row">
-      {!isMobile && (
-        <div className="relative flex w-1/2 flex-col justify-between overflow-hidden bg-zinc-900 p-6 text-white md:p-12">
-          <WordParticleAnimation />
-          <div className="relative z-10">
-            <div className="flex items-center gap-2">
-              <LockKeyhole className="h-5 w-5" />
-              <span className="font-semibold">Chill LLMs</span>
-            </div>
-          </div>
-          <div className="relative z-10 max-w-md">
-            <blockquote className="text-sm italic">
-              Lorem ipsum dolor, sit amet consectetur adipisicing elit. Et saepe provident odit, sit
-              reprehenderit quod sunt alias ducimus consequuntur accusamus officia accusantium quo?
-              Fugit, explicabo. Ducimus distinctio similique obcaecati dignissimos!
-            </blockquote>
-          </div>
-        </div>
-      )}
+    <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-black p-4">
+      <AnimatedBlobs />
 
-      <div
-        className={`relative flex ${isMobile ? "min-h-screen w-full" : "w-1/2"} flex-col justify-center ${isMobile ? "bg-zinc-900" : "bg-black"} p-6 text-white md:p-12`}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5 }}
+        className="absolute top-6 left-6 z-20"
       >
-        {isMobile && <WordParticleAnimation className="opacity-70" />}
-        {isMobile && (
-          <div className="relative z-10 mb-8">
-            <div className="flex items-center justify-center gap-2">
-              <LockKeyhole className="h-6 w-6" />
-              <span className="text-xl font-semibold">Chill LLMs</span>
-            </div>
+        <Link href="/">
+          <div className="group flex items-center gap-3 rounded-full border border-zinc-800/50 bg-zinc-900/70 p-3 backdrop-blur-md transition-all duration-300 hover:border-zinc-700 hover:bg-zinc-800/70">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="h-5 w-5 text-white transition-transform duration-300 group-hover:-translate-x-1"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+              />
+            </svg>
+            <span className="pr-1 text-sm font-medium text-white transition-opacity duration-300 group-hover:opacity-100">
+              Home
+            </span>
           </div>
-        )}
-        <div
-          className={`relative z-10 mx-auto flex w-full max-w-md flex-col items-center justify-center ${isMobile ? "rounded-lg bg-zinc-800/80 p-6 shadow-lg backdrop-blur-sm" : ""}`}
-        >
-          <h1 className="mb-2 text-center text-3xl font-bold">Masuk</h1>
-          <p className="mb-6 text-center text-sm text-gray-300">
-            Silahkan masukan akun anda yang terdaftar
+        </Link>
+      </motion.div>
+
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={fadeIn}
+        className="relative z-10 mx-auto w-full max-w-lg rounded-xl border border-zinc-800/50 bg-zinc-900/70 p-8 shadow-xl backdrop-blur-md"
+      >
+        <div className="mb-6 flex flex-col items-center justify-center">
+          <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-zinc-800">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM12 5C13.66 5 15 6.34 15 8C15 9.66 13.66 11 12 11C10.34 11 9 9.66 9 8C9 6.34 10.34 5 12 5ZM12 19.2C9.5 19.2 7.29 17.92 6 15.98C6.03 13.99 10 12.9 12 12.9C13.99 12.9 17.97 13.99 18 15.98C16.71 17.92 14.5 19.2 12 19.2Z"
+                fill="white"
+              />
+            </svg>
+          </div>
+          <h1 className="text-xl font-semibold text-white">Selamat datang di Chill LLMs</h1>
+          <p className="mt-1 text-center text-xs text-zinc-400">
+            Masuk dengan akun Anda untuk melanjutkan
           </p>
-
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="mt-4 w-full space-y-5">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm text-gray-100">Email</FormLabel>
-                    <div className="relative">
-                      <FormControl>
-                        <Input
-                          placeholder="you@example.com"
-                          className={`w-full rounded-md border ${isMobile ? "border-zinc-600 bg-zinc-700" : "border-zinc-500 bg-black"} px-3 py-2 focus:border-gray-300 focus:ring-1 focus:ring-gray-300`}
-                          {...field}
-                          onFocus={() => setErrorMessage(null)}
-                        />
-                      </FormControl>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-sm text-gray-100">Password</FormLabel>
-                    <div className="relative">
-                      <FormControl>
-                        <Input
-                          type={showPassword ? "text" : "password"}
-                          placeholder="••••••••"
-                          className={`w-full rounded-md border ${isMobile ? "border-zinc-600 bg-zinc-700" : "border-zinc-500 bg-black"} px-3 py-2 focus:border-gray-300 focus:ring-1 focus:ring-gray-300`}
-                          {...field}
-                          onFocus={() => setErrorMessage(null)}
-                        />
-                      </FormControl>
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute top-2.5 right-3 text-gray-400 hover:text-gray-200 focus:outline-none"
-                      >
-                        {showPassword ? (
-                          <EyeOff className="h-4 w-4" />
-                        ) : (
-                          <Eye className="h-4 w-4" />
-                        )}
-                      </button>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              {errorMessage && (
-                <div className="text-destructive text-sm font-medium">{errorMessage}</div>
-              )}
-
-              <Button
-                type="submit"
-                className={`mt-6 w-full cursor-pointer rounded-md ${isMobile ? "bg-white" : "bg-gray-100"} py-2.5 font-medium text-black hover:bg-gray-300`}
-                disabled={isLoading}
-              >
-                {isLoading ? "Memuat..." : "Masuk"}
-              </Button>
-            </form>
-          </Form>
         </div>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="relative">
+                    <FormControl>
+                      <Input
+                        placeholder="Email"
+                        className="h-12 w-full rounded-md border border-zinc-700 bg-zinc-800/50 px-3 py-2 text-sm text-white transition-colors duration-200 focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500"
+                        {...field}
+                        onFocus={() => setErrorMessage(null)}
+                      />
+                    </FormControl>
+                  </div>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="relative">
+                    <FormControl>
+                      <Input
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Kata Sandi"
+                        className="h-12 w-full rounded-md border border-zinc-700 bg-zinc-800/50 px-3 py-2 text-sm text-white transition-colors duration-200 focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500"
+                        {...field}
+                        onFocus={() => setErrorMessage(null)}
+                      />
+                    </FormControl>
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute top-2.5 right-3 text-zinc-400 transition-colors duration-200 hover:text-zinc-200 focus:outline-none"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                  <FormMessage className="text-xs" />
+                </FormItem>
+              )}
+            />
+
+            {errorMessage && (
+              <div className="rounded-md bg-red-500/10 p-2 text-xs font-medium text-red-500">
+                {errorMessage}
+              </div>
+            )}
+
+            <Button
+              type="submit"
+              className="mt-2 w-full cursor-pointer rounded-md bg-white py-2 text-sm font-medium text-black shadow-md transition-all duration-200 hover:bg-zinc-200 disabled:opacity-70"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <div className="h-3 w-3 animate-spin rounded-full border-2 border-zinc-800 border-t-transparent" />
+                  <span>Memuat...</span>
+                </div>
+              ) : (
+                "Masuk"
+              )}
+            </Button>
+          </form>
+        </Form>
+      </motion.div>
+
+      <div className="absolute right-0 bottom-4 left-0 z-10 text-center text-xs text-zinc-600">
+        © {new Date().getFullYear()} Chill LLMs.
       </div>
     </div>
   );
 };
 
 const LoginPage = () => (
-  <Suspense fallback={<div>Loading...</div>}>
+  <Suspense
+    fallback={
+      <div className="flex h-screen w-full items-center justify-center bg-black">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-white border-t-transparent" />
+      </div>
+    }
+  >
     <LoginForm />
   </Suspense>
 );
