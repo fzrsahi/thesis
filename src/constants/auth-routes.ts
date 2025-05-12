@@ -2,7 +2,7 @@ import { Home, User, BookOpen, Settings } from "lucide-react";
 
 export const routes = [
   { name: "Dashboard", href: "/dashboard", roles: ["advisor", "admin"], icon: Home },
-  { name: "Mahasiswa", href: "/student", roles: ["advisor"], icon: User },
+  { name: "Mahasiswa", href: "/student", roles: ["advisor", "admin"], icon: User },
   { name: "Rekomendasi", href: "/recomendation", roles: ["advisor", "admin"], icon: BookOpen },
   { name: "Pengaturan", href: "/settings", roles: ["admin"], icon: Settings },
 ];

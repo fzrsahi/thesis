@@ -38,8 +38,12 @@ const useLogin = () => {
           return;
         }
 
-        const callbackUrl = searchParams?.get("callbackUrl");
-        router.push(callbackUrl || "/dashboard");
+        const callbackUrl = new URL(
+          searchParams?.get("callbackUrl") ?? "/dashboard",
+          process.env.NEXT_PUBLIC_BASE_URL
+        );
+
+        router.push(callbackUrl.toString());
         router.refresh();
       } catch (error) {
         setErrorMessage("Terjadi kesalahan. Silakan coba lagi.");
