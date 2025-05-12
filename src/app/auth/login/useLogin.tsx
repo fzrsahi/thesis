@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -8,6 +8,7 @@ import { loginSchema, LoginPayload } from "@/app/shared/validations/schema/login
 
 const useLogin = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -37,7 +38,7 @@ const useLogin = () => {
           return;
         }
 
-        router.push("/dashboard");
+        router.push(searchParams.get("callbackUrl") || "/dashboard");
         router.refresh();
       } catch (error) {
         setErrorMessage("Terjadi kesalahan. Silakan coba lagi.");
@@ -45,7 +46,7 @@ const useLogin = () => {
         setIsLoading(false);
       }
     },
-    [router]
+    [router, searchParams]
   );
 
   return {

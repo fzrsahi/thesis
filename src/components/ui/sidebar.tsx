@@ -17,7 +17,7 @@ import { useState, useEffect } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
-const navItems = [
+export const navItems = [
   { name: "Dashboard", href: "/dashboard", icon: Home },
   { name: "Mahasiswa", href: "/student", icon: User },
   { name: "Rekomendasi", href: "/recomendation", icon: BookOpen },
