@@ -1,7 +1,7 @@
 import NextAuth, { NextAuthOptions, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-import { validateCredentials } from "@/app/server/auth/services/auth.service";
+import { getUserRole, validateCredentials } from "@/app/server/auth/services/auth.service";
 import { loginSchema } from "@/app/shared/validations/schema/loginSchema";
 
 const authOptions: NextAuthOptions = {
@@ -38,8 +38,7 @@ const authOptions: NextAuthOptions = {
             throw new Error("Email atau password salah");
           }
 
-          // const role = await getUserRole(user.id);
-          const role = "advisor";
+          const role = await getUserRole(user.id);
 
           return { ...user, id: user.id.toString(), role } as User;
         } catch (error) {
