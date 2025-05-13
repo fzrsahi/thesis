@@ -6,7 +6,9 @@ import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 
+import { Role } from "@/app/shared/const/role";
 import { adminPaths, routes } from "@/constants/auth-routes";
+import { Route } from "@/constants/auth-routes.type";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
@@ -23,7 +25,7 @@ export const Sidebar = () => {
     if (!isMobile) setMobileOpen(false);
   }, [isMobile]);
 
-  const navItems = routes.filter((item) => item.roles.includes(role));
+  const navItems = routes.filter((item: Route) => item.roles.includes(role as Role));
 
   if (status === "loading") {
     return (

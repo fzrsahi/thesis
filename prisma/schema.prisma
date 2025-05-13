@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,41 +7,159 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
+/// User & Roles
 model User {
-  id        Int   @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   email     String   @unique
   password  String
   name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  Admin Admin[]
-  Student Student[]
-  Advisor Advisor[]
+  Admin   Admin?
+  Student Student?
+  Advisor Advisor?
 }
 
 model Admin {
-  id        Int   @id @default(autoincrement())
-  userId    Int
-  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Student {
-  id        Int   @id @default(autoincrement())
-   userId    Int
-  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            Int      @id @default(autoincrement())
+  userId        Int      @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gpa           Float? // IPK mahasiswa
+  interests     Json? // Array minat, contoh: ["AI","Desain"]
+  transcriptUrl String? // URL transkrip nilai
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  achievements    Achievement[]
+  memberships     Membership[]
+  recommendations Recommendation[]
+  competitions    StudentCompetition[]
+  chatSessions    LLMChatSession[]
 }
 
 model Advisor {
-  id        Int   @id @default(autoincrement())
-   userId    Int
-  user      User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
+/// Student Data
+model Achievement {
+  id          Int      @id @default(autoincrement())
+  studentId   Int
+  title       String // Judul prestasi
+  description String? // Deskripsi detail
+  date        DateTime // Tanggal prestasi
+  createdAt   DateTime @default(now())
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+model Membership {
+  id               Int       @id @default(autoincrement())
+  studentId        Int
+  organizationName String // Nama organisasi
+  position         String? // Jabatan dalam organisasi
+  startDate        DateTime // Mulai keanggotaan
+  endDate          DateTime? // Selesai (opsional)
+  createdAt        DateTime  @default(now())
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+/// Competitions Catalog
+model Competition {
+  id           Int      @id @default(autoincrement())
+  title        String // Judul lomba
+  description  String // Deskripsi lomba
+  field        String // Bidang misal: "Teknologi", "Seni"
+  type         String // Jenis: "individu" / "tim"
+  minGPA       Float? // IPK minimal
+  requirements Json? // Kriteria khusus, contoh: {"language":"Python"}
+  startDate    DateTime // Tanggal mulai lomba
+  endDate      DateTime // Tanggal berakhir / deadline
+  createdAt    DateTime @default(now())
+
+  participants StudentCompetition[]
+}
+
+/// Matching Results
+model StudentCompetition {
+  id            Int     @id @default(autoincrement())
+  studentId     Int
+  competitionId Int
+  score         Float // 0.0–1.0: skor kecocokan AI
+  applied       Boolean @default(false) // Status pendaftaran
+  feedback      String? // Komentar / feedback user
+
+  student     Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  competition Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, competitionId])
+}
+
+/// Recommendation Logs
+model Recommendation {
+  id        Int      @id @default(autoincrement())
+  studentId Int
+  prompt    String // Prompt yang dikirim ke LLM
+  response  String // Output LLM
+  createdAt DateTime @default(now())
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+/// Chat Sessions & Messages
+model LLMChatSession {
+  id        Int      @id @default(autoincrement())
+  studentId Int
+  title     String? // Judul sesi opsional
+  createdAt DateTime @default(now())
+
+  student  Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  messages LLMChatMessage[]
+}
+
+model LLMChatMessage {
+  id        Int      @id @default(autoincrement())
+  sessionId Int
+  role      String // "user" atau "assistant"
+  content   String // Isi pesan
+  createdAt DateTime @default(now())
+
+  session LLMChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+/// Alumni Data for Model Training
+model AlumniExperience {
+  id           Int      @id @default(autoincrement())
+  name         String // Nama senior
+  gpa          Float // IPK mereka
+  interests    Json // Minat senior sebagai array JSON
+  achievements String? // Ringkasan prestasi
+  organization String? // Organisasi utama
+  competition  String // Nama lomba yang diikuti
+  result       String // Hasil lomba, contoh: "Juara 1"
+  year         Int // Tahun lomba
+  createdAt    DateTime @default(now())
+}
+
+/// Embeddings (Opsional: gunakan pgvector untuk kemudahan query vektor)
+model Embedding {
+  id        Int      @id @default(autoincrement())
+  model     String // e.g. "text-embedding-ada-002"
+  vector    Bytes // Simpan vektor (byte array)
+  metadata  Json? // { "type":"student", "id":1 } atau { "type":"competition", "id":5 }
+  createdAt DateTime @default(now())
+}

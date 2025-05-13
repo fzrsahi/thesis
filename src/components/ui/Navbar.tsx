@@ -11,9 +11,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
+import { Home } from "lucide-react";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+
+import { ROLES } from "@/app/shared/const/role";
 
 const Navbar = () => {
   const { data: session, status } = useSession();
@@ -126,14 +129,120 @@ const Navbar = () => {
           <div className="flex items-center gap-2">
             {session ? (
               <div className="flex items-center gap-2">
-                {session.user.role === "admin" && (
+                {session.user.role === ROLES.ADMIN && (
                   <>
                     <Link
-                      href="/chat"
+                      href="/dashboard"
+                      className="hidden items-center gap-2 px-4 py-2 text-sm font-medium text-white transition-all hover:text-zinc-300 md:flex"
+                    >
+                      <Home className="h-5 w-5" />
+                      <span>Dashboard</span>
+                    </Link>
+                    <div className="hidden md:block">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            type="button"
+                            className="flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900/60 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-zinc-800 hover:text-zinc-300"
+                          >
+                            <UserCircleIcon className="h-5 w-5" />
+                            <span>Profile</span>
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                          align="end"
+                          className="mt-3 w-64 border border-zinc-700 bg-black/90 shadow-lg"
+                        >
+                          <div className="border-b border-zinc-700 p-3">
+                            <p className="font-bold text-white">
+                              {session?.user?.name || "FAZRUL SAMI"}
+                            </p>
+                            <p className="text-xs text-zinc-400">
+                              {session?.user?.email || "fazrul_s1sisfo@mahasiswa.ung.ac.id"}
+                            </p>
+                          </div>
+                          <div className="p-2">
+                            <DropdownMenuItem
+                              onClick={handleAccountSettings}
+                              className="cursor-pointer px-3 py-2 text-white hover:bg-zinc-800"
+                            >
+                              <span>ACCOUNT SETTINGS</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator className="bg-zinc-700" />
+                            <DropdownMenuItem
+                              className="cursor-pointer px-3 py-2 text-white hover:bg-zinc-800"
+                              onClick={() => signOut()}
+                            >
+                              <span>LOG OUT</span>
+                              <span className="ml-auto text-xs">{"->"}</span>
+                            </DropdownMenuItem>
+                          </div>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </>
+                )}
+                {session.user.role === "advisor" && (
+                  <>
+                    <Link
+                      href="/dashboard"
+                      className="hidden items-center gap-2 px-4 py-2 text-sm font-medium text-white transition-all hover:text-zinc-300 md:flex"
+                    >
+                      <Home className="h-5 w-5" />
+                      <span>Dashboard</span>
+                    </Link>
+                    <div className="hidden md:block">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button
+                            type="button"
+                            className="flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900/60 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-zinc-800 hover:text-zinc-300"
+                          >
+                            <UserCircleIcon className="h-5 w-5" />
+                            <span>Profile</span>
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                          align="end"
+                          className="mt-3 w-64 border border-zinc-700 bg-black/90 shadow-lg"
+                        >
+                          <div className="border-b border-zinc-700 p-3">
+                            <p className="font-bold text-white">
+                              {session?.user?.name || "FAZRUL SAMI"}
+                            </p>
+                            <p className="text-xs text-zinc-400">
+                              {session?.user?.email || "fazrul_s1sisfo@mahasiswa.ung.ac.id"}
+                            </p>
+                          </div>
+                          <div className="p-2">
+                            <DropdownMenuItem
+                              onClick={handleAccountSettings}
+                              className="cursor-pointer px-3 py-2 text-white hover:bg-zinc-800"
+                            >
+                              <span>ACCOUNT SETTINGS</span>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator className="bg-zinc-700" />
+                            <DropdownMenuItem
+                              className="cursor-pointer px-3 py-2 text-white hover:bg-zinc-800"
+                              onClick={() => signOut()}
+                            >
+                              <span>LOG OUT</span>
+                              <span className="ml-auto text-xs">{"->"}</span>
+                            </DropdownMenuItem>
+                          </div>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </>
+                )}
+                {session.user.role === ROLES.STUDENT && (
+                  <>
+                    <Link
+                      href="/my-chat"
                       className="hidden items-center gap-2 px-4 py-2 text-sm font-medium text-white transition-all hover:text-zinc-300 md:flex"
                     >
                       <ChatBubbleLeftRightIcon className="h-5 w-5" />
-                      <span>Chat</span>
+                      <span>My Chat</span>
                     </Link>
                     <div className="hidden md:block">
                       <DropdownMenu>
@@ -247,15 +356,79 @@ const Navbar = () => {
               </li>
             </ul>
 
-            {session && session.user.role === "admin" && (
+            {session && session.user.role === ROLES.ADMIN && (
               <div className="mt-6 border-t border-zinc-800 pt-6">
                 <Link
-                  href="/chat"
+                  href="/dashboard"
+                  className="flex items-center gap-2 rounded-lg px-4 py-3 text-white transition-all hover:bg-zinc-800/50"
+                  onClick={toggleMobileMenu}
+                >
+                  <Home className="h-5 w-5" />
+                  <span>Dashboard</span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleAccountSettings();
+                    toggleMobileMenu();
+                  }}
+                  className="mt-2 flex w-full items-center gap-2 rounded-lg px-4 py-3 text-white transition-all hover:bg-zinc-800/50"
+                >
+                  <UserCircleIcon className="h-5 w-5" />
+                  <span>Account Settings</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => signOut()}
+                  className="mt-2 flex w-full items-center gap-2 rounded-lg px-4 py-3 text-red-500 transition-all hover:bg-zinc-800/50"
+                >
+                  <span>Log Out</span>
+                  <span className="ml-auto text-xs">{"->"}</span>
+                </button>
+              </div>
+            )}
+
+            {session && session.user.role === "advisor" && (
+              <div className="mt-6 border-t border-zinc-800 pt-6">
+                <Link
+                  href="/dashboard"
+                  className="flex items-center gap-2 rounded-lg px-4 py-3 text-white transition-all hover:bg-zinc-800/50"
+                  onClick={toggleMobileMenu}
+                >
+                  <Home className="h-5 w-5" />
+                  <span>Dashboard</span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => {
+                    handleAccountSettings();
+                    toggleMobileMenu();
+                  }}
+                  className="mt-2 flex w-full items-center gap-2 rounded-lg px-4 py-3 text-white transition-all hover:bg-zinc-800/50"
+                >
+                  <UserCircleIcon className="h-5 w-5" />
+                  <span>Account Settings</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => signOut()}
+                  className="mt-2 flex w-full items-center gap-2 rounded-lg px-4 py-3 text-red-500 transition-all hover:bg-zinc-800/50"
+                >
+                  <span>Log Out</span>
+                  <span className="ml-auto text-xs">{"->"}</span>
+                </button>
+              </div>
+            )}
+
+            {session && session.user.role === ROLES.STUDENT && (
+              <div className="mt-6 border-t border-zinc-800 pt-6">
+                <Link
+                  href="/my-chat"
                   className="flex items-center gap-2 rounded-lg px-4 py-3 text-white transition-all hover:bg-zinc-800/50"
                   onClick={toggleMobileMenu}
                 >
                   <ChatBubbleLeftRightIcon className="h-5 w-5" />
-                  <span>Chat</span>
+                  <span>My Chat</span>
                 </Link>
                 <button
                   type="button"
