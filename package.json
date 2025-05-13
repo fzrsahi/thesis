@@ -13,7 +13,7 @@
     "prisma:push": "npx prisma db push",
     "generate:migration": "npx prisma migrate dev",
     "create:admin": "tsx src/script/createAdmin.ts",
-    "postinstall": "npx prisma migrate deploy"
+    "postinstall": "npx prisma generate"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
