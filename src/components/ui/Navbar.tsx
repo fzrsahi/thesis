@@ -158,7 +158,6 @@ const Navbar = () => {
                             className="flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900/60 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-zinc-800 hover:text-zinc-300"
                           >
                             <UserCircleIcon className="h-5 w-5" />
-                            <span>Profile</span>
                           </button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
