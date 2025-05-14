@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 import { NextFetchEvent, NextMiddleware, NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
 
@@ -20,6 +22,7 @@ export const withAuth =
       }
 
       const userRole = token.role as Role;
+      console.log({ userRole });
 
       if (userRole === ROLES.STUDENT && pathName.startsWith("/dashboard")) {
         return NextResponse.redirect(new URL("/", req.url));

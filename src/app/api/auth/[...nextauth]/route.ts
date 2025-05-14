@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 import NextAuth, { NextAuthOptions, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
@@ -39,9 +41,17 @@ const authOptions: NextAuthOptions = {
           }
 
           const role = await getUserRole(user.id);
+          console.log({ role });
+
+          if (!role) {
+            throw new Error("Terjadi Kesalahan Server");
+          }
 
           return { ...user, id: user.id.toString(), role } as User;
         } catch (error) {
+          if (error instanceof Error) {
+            console.error("Auth error:", error);
+          }
           console.error("Auth error:", error);
           throw new Error("Email atau password salah");
         }
