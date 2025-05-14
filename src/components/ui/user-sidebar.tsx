@@ -1,10 +1,13 @@
 "use client";
 
-import { Settings, ChevronLeft, ChevronRight, Menu, MessageCircle, User } from "lucide-react";
+import { Settings, ChevronLeft, ChevronRight, Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 
+import { ROLES } from "@/app/shared/const/role";
+import { routes } from "@/constants/auth-routes";
+import { Route } from "@/constants/auth-routes.type";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
@@ -18,18 +21,13 @@ export const UserSidebar = () => {
     if (!isMobile) setMobileOpen(false);
   }, [isMobile]);
 
-  const navItems = [
-    {
-      name: "Profile",
-      href: "/user/profile",
-      icon: User,
-    },
-    {
-      name: "My Chat",
-      href: "/user/my-chat",
-      icon: MessageCircle,
-    },
-  ];
+  const navItems = routes
+    .filter((r: Route) => r.roles.includes(ROLES.STUDENT))
+    .map((item) => ({
+      name: item.name,
+      href: item.href,
+      icon: item.icon,
+    }));
 
   const toggleSidebar = () => {
     setCollapsed(!collapsed);
