@@ -13,6 +13,7 @@ import {
 } from "@radix-ui/react-dropdown-menu";
 import { Home } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
@@ -22,6 +23,7 @@ const Navbar = () => {
   const { data: session, status } = useSession();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -39,7 +41,6 @@ const Navbar = () => {
     };
   }, []);
 
-  // Fix: Arrow function should not return assignment.
   const handleAccountSettings = () => {
     window.location.href = "/profile";
   };
@@ -75,16 +76,20 @@ const Navbar = () => {
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <div className="flex items-center gap-3">
-            <div
-              className={`flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-zinc-600 to-zinc-800 text-xl font-bold text-white transition-all duration-300 ${
-                scrolled ? "shadow-lg shadow-zinc-500/30" : "shadow-md shadow-zinc-500/20"
-              }`}
-            >
-              C
-            </div>
-            <span className="bg-gradient-to-r from-white to-zinc-300 bg-clip-text text-xl font-bold tracking-wider text-transparent">
-              Chill LLMs
-            </span>
+            <Link href="/">
+              <div className="flex items-center gap-3">
+                <div
+                  className={`flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-zinc-600 to-zinc-800 text-xl font-bold text-white transition-all duration-300 ${
+                    scrolled ? "shadow-lg shadow-zinc-500/30" : "shadow-md shadow-zinc-500/20"
+                  }`}
+                >
+                  C
+                </div>
+                <span className="bg-gradient-to-r from-white to-zinc-300 bg-clip-text text-xl font-bold tracking-wider text-transparent">
+                  Chill LLMs
+                </span>
+              </div>
+            </Link>
           </div>
 
           <ul className="hidden gap-10 text-sm font-medium text-white lg:flex">
@@ -133,10 +138,17 @@ const Navbar = () => {
                   <>
                     <Link
                       href="/dashboard"
-                      className="hidden items-center gap-2 px-4 py-2 text-sm font-medium text-white transition-all hover:text-zinc-300 md:flex"
+                      className={`hidden items-center gap-2 px-4 py-2 text-sm font-medium transition-all md:flex ${
+                        pathname === "/dashboard"
+                          ? "rounded-lg bg-zinc-800/50 text-zinc-200"
+                          : "text-white hover:text-zinc-300"
+                      }`}
                     >
                       <Home className="h-5 w-5" />
                       <span>Dashboard</span>
+                      {pathname === "/dashboard" && (
+                        <span className="absolute bottom-0 left-0 h-[2px] w-full bg-gradient-to-r from-zinc-400 to-zinc-600" />
+                      )}
                     </Link>
                     <div className="hidden md:block">
                       <DropdownMenu>
@@ -151,7 +163,7 @@ const Navbar = () => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
                           align="end"
-                          className="mt-3 w-64 border border-zinc-700 bg-black/90 shadow-lg"
+                          className="mt-3 w-64 rounded-2xl border border-zinc-700 bg-black/90 shadow-lg"
                         >
                           <div className="border-b border-zinc-700 p-3">
                             <p className="font-bold text-white">
@@ -186,10 +198,17 @@ const Navbar = () => {
                   <>
                     <Link
                       href="/dashboard"
-                      className="hidden items-center gap-2 px-4 py-2 text-sm font-medium text-white transition-all hover:text-zinc-300 md:flex"
+                      className={`hidden items-center gap-2 px-4 py-2 text-sm font-medium transition-all md:flex ${
+                        pathname === "/dashboard"
+                          ? "rounded-lg bg-zinc-800/50 text-zinc-200"
+                          : "text-white hover:text-zinc-300"
+                      }`}
                     >
                       <Home className="h-5 w-5" />
                       <span>Dashboard</span>
+                      {pathname === "/dashboard" && (
+                        <span className="absolute bottom-0 left-0 h-[2px] w-full bg-gradient-to-r from-zinc-400 to-zinc-600" />
+                      )}
                     </Link>
                     <div className="hidden md:block">
                       <DropdownMenu>
@@ -204,7 +223,7 @@ const Navbar = () => {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
                           align="end"
-                          className="mt-3 w-64 border border-zinc-700 bg-black/90 shadow-lg"
+                          className="mt-3 w-64 rounded-2xl border border-zinc-700 bg-black/90 shadow-lg"
                         >
                           <div className="border-b border-zinc-700 p-3">
                             <p className="font-bold text-white">
@@ -239,10 +258,17 @@ const Navbar = () => {
                   <>
                     <Link
                       href="/my-chat"
-                      className="hidden items-center gap-2 px-4 py-2 text-sm font-medium text-white transition-all hover:text-zinc-300 md:flex"
+                      className={`relative hidden items-center gap-2 px-4 py-2 text-sm font-medium transition-all md:flex ${
+                        pathname === "/my-chat"
+                          ? "rounded-lg bg-zinc-800/50 text-zinc-200"
+                          : "text-white hover:text-zinc-300"
+                      }`}
                     >
                       <ChatBubbleLeftRightIcon className="h-5 w-5" />
                       <span>My Chat</span>
+                      {pathname === "/my-chat" && (
+                        <span className="absolute bottom-0 left-0 h-[2px] w-full bg-gradient-to-r from-zinc-400 to-zinc-600" />
+                      )}
                     </Link>
                     <div className="hidden md:block">
                       <DropdownMenu>
@@ -252,12 +278,11 @@ const Navbar = () => {
                             className="flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900/60 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-zinc-800 hover:text-zinc-300"
                           >
                             <UserCircleIcon className="h-5 w-5" />
-                            <span>Profile</span>
                           </button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
                           align="end"
-                          className="mt-3 w-64 border border-zinc-700 bg-black/90 shadow-lg"
+                          className="mt-3 w-64 rounded-2xl border border-zinc-700 bg-black/90 shadow-lg"
                         >
                           <div className="border-b border-zinc-700 p-3">
                             <p className="font-bold text-white">
@@ -360,7 +385,11 @@ const Navbar = () => {
               <div className="mt-6 border-t border-zinc-800 pt-6">
                 <Link
                   href="/dashboard"
-                  className="flex items-center gap-2 rounded-lg px-4 py-3 text-white transition-all hover:bg-zinc-800/50"
+                  className={`flex items-center gap-2 rounded-lg px-4 py-3 transition-all ${
+                    pathname === "/dashboard"
+                      ? "bg-zinc-800/70 text-zinc-200"
+                      : "text-white hover:bg-zinc-800/50"
+                  }`}
                   onClick={toggleMobileMenu}
                 >
                   <Home className="h-5 w-5" />
@@ -392,7 +421,11 @@ const Navbar = () => {
               <div className="mt-6 border-t border-zinc-800 pt-6">
                 <Link
                   href="/dashboard"
-                  className="flex items-center gap-2 rounded-lg px-4 py-3 text-white transition-all hover:bg-zinc-800/50"
+                  className={`flex items-center gap-2 rounded-lg px-4 py-3 transition-all ${
+                    pathname === "/dashboard"
+                      ? "bg-zinc-800/70 text-zinc-200"
+                      : "text-white hover:bg-zinc-800/50"
+                  }`}
                   onClick={toggleMobileMenu}
                 >
                   <Home className="h-5 w-5" />
@@ -424,7 +457,11 @@ const Navbar = () => {
               <div className="mt-6 border-t border-zinc-800 pt-6">
                 <Link
                   href="/my-chat"
-                  className="flex items-center gap-2 rounded-lg px-4 py-3 text-white transition-all hover:bg-zinc-800/50"
+                  className={`flex items-center gap-2 rounded-lg px-4 py-3 transition-all ${
+                    pathname === "/my-chat"
+                      ? "bg-zinc-800/70 text-zinc-200"
+                      : "text-white hover:bg-zinc-800/50"
+                  }`}
                   onClick={toggleMobileMenu}
                 >
                   <ChatBubbleLeftRightIcon className="h-5 w-5" />

@@ -33,4 +33,33 @@ const createAdmin = async () => {
   }
 };
 
+const createStudent = async () => {
+  try {
+    const password = "password";
+    const hashedPassword = await hash(password, 10);
+    const user = await prisma.user.create({
+      data: {
+        email: "student@gmail.com",
+        password: hashedPassword,
+        name: "student",
+      },
+    });
+
+    await prisma.student.create({
+      data: {
+        userId: user.id,
+      },
+    });
+
+    console.log("Student created successfully");
+  } catch (error) {
+    if (error instanceof PrismaClientKnownRequestError && error.code === "P2002") {
+      console.log("Student already exists");
+    } else {
+      console.log(error);
+    }
+  }
+};
+
 createAdmin();
+createStudent();

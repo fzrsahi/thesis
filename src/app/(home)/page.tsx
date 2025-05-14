@@ -2,13 +2,10 @@
 
 import { motion } from "framer-motion";
 import { Montserrat, Orbitron } from "next/font/google";
-import { SessionProvider } from "next-auth/react";
 
 import { AnimatedBlobs } from "@/components/animations/AnimatedBlobs";
 import WordParticleAnimation from "@/components/animations/WordParticleAnimation";
 import { useIsMobile } from "@/hooks/use-mobile";
-
-import Navbar from "../components/ui/Navbar";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 const orbitron = Orbitron({ subsets: ["latin"] });
@@ -23,9 +20,6 @@ const Home = () => {
 
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-black">
-      <SessionProvider>
-        <Navbar />
-      </SessionProvider>
       <AnimatedBlobs />
       <section
         className={`relative z-10 flex w-full flex-col items-center justify-center px-4 text-center ${

@@ -12,7 +12,7 @@
     "generate:api-types": "npx openapi-typescript src/app/api-docs/openapi.json -o src/app/shared/types/api.ts",
     "prisma:push": "npx prisma db push",
     "generate:migration": "npx prisma migrate dev",
-    "create:admin": "tsx src/script/createAdmin.ts",
+    "create:account": "tsx src/script/createAccount.ts",
     "postinstall": "npx prisma generate"
   },
   "dependencies": {
