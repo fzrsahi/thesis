@@ -33,8 +33,8 @@ model Student {
   id            Int      @id @default(autoincrement())
   userId        Int      @unique
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  gpa           Float? // IPK mahasiswa
-  interests     Json? // Array minat, contoh: ["AI","Desain"]
+  gpa           String? // IPK mahasiswa
+  interests     String[] // Array minat, contoh: ["AI","Desain"]
   transcriptUrl String? // URL transkrip nilai
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
@@ -81,27 +81,42 @@ model Membership {
 /// Competitions Catalog
 model Competition {
   id           Int      @id @default(autoincrement())
-  title        String // Judul lomba
+  title        String // Judul lomba, misalnya: "GEMASTIK Data Mining"
   description  String // Deskripsi lomba
-  field        String // Bidang misal: "Teknologi", "Seni"
-  type         String // Jenis: "individu" / "tim"
+  field        String // Bidang, misalnya: "Teknologi", "Desain" (untuk Category Distribution)
+  type         String // Jenis: "Individu" atau "Tim"
   minGPA       Float? // IPK minimal
-  requirements Json? // Kriteria khusus, contoh: {"language":"Python"}
+  requirements Json?    @default("{}") // Kriteria khusus, contoh: {"language": "Python", "experience": "Hackathon"}
   startDate    DateTime // Tanggal mulai lomba
   endDate      DateTime // Tanggal berakhir / deadline
+  location     String? // Lokasi lomba (opsional)
+  organizer    String? // Penyelenggara (opsional)
   createdAt    DateTime @default(now())
 
   participants StudentCompetition[]
+  stats        CompetitionStats? // Relasi ke statistik kompetisi
+}
+
+/// Competition Statistics (untuk Category Distribution dan Performance Metrics)
+model CompetitionStats {
+  id                   Int         @id @default(autoincrement())
+  competitionId        Int         @unique
+  competition          Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  categoryDistribution Json        @default("{}") // Untuk pie chart, contoh: {"Teknologi": 0.6, "Desain": 0.3}
+  performanceMetrics   Json        @default("{}") // Untuk bar chart, contoh: {"participation_rate": 0.7, "avg_match_score": 0.85}
+  updatedAt            DateTime    @updatedAt
 }
 
 /// Matching Results
 model StudentCompetition {
-  id            Int     @id @default(autoincrement())
+  id            Int      @id @default(autoincrement())
   studentId     Int
   competitionId Int
-  score         Float // 0.0–1.0: skor kecocokan AI (driven by RAG)
-  applied       Boolean @default(false) // Status pendaftaran
+  matchScore    Float    @default(0.0) // 0.0–1.0: skor kecocokan AI (driven by RAG)
+  applied       Boolean  @default(false) // Status pendaftaran
   feedback      String? // Komentar / feedback user
+  rating        Int? // Nilai 1-5
+  createdAt     DateTime @default(now())
 
   student     Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
   competition Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
@@ -113,8 +128,8 @@ model StudentCompetition {
 model Recommendation {
   id        Int      @id @default(autoincrement())
   studentId Int
-  prompt    String // Prompt yang dikirim ke LLM (may include retrieved context for RAG)
-  response  String // Output LLM (generated with RAG)
+  prompt    String // Prompt yang dikirim ke LLM (termasuk konteks RAG)
+  response  Json // Output LLM dalam format JSON
   createdAt DateTime @default(now())
 
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
@@ -134,7 +149,7 @@ model LLMChatSession {
 model LLMChatMessage {
   id        Int      @id @default(autoincrement())
   sessionId Int
-  role      String // "user" atau "assistant" (assistant responses powered by RAG)
+  role      String // "user" atau "assistant"
   content   String // Isi pesan
   createdAt DateTime @default(now())
 
@@ -146,23 +161,20 @@ model AlumniExperience {
   id           Int      @id @default(autoincrement())
   name         String // Nama senior
   gpa          Float // IPK mereka
-  interests    Json // Minat senior sebagai array JSON
+  interests    Json     @default("[]") // Minat senior sebagai array JSON
   achievements String? // Ringkasan prestasi
   organization String? // Organisasi utama
   competition  String // Nama lomba yang diikuti
   result       String // Hasil lomba, contoh: "Juara 1"
   year         Int // Tahun lomba
   createdAt    DateTime @default(now())
-  // This data serves as a knowledge source for the RAG system.
-  // It will be vectorized and retrieved to provide context to the LLM
-  // for generating more relevant and informed recommendations/responses.
 }
 
 /// Embeddings (Crucial for RAG: use pgvector for ease of vector querying)
 model Embedding {
   id        Int      @id @default(autoincrement())
-  model     String // e.g. "text-embedding-ada-002"
+  model     String // e.g. "all-MiniLM-L6-v2"
   vector    Bytes // Simpan vektor (byte array)
-  metadata  Json? // { "type":"student", "id":1 }, { "type":"competition", "id":5 }, { "type":"alumni_experience", "id":X }
+  metadata  Json?    @default("{}") // Contoh: { "type": "competition", "id": 5 }
   createdAt DateTime @default(now())
 }

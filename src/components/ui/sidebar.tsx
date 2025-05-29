@@ -7,9 +7,9 @@ import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 
 import { Role } from "@/app/shared/const/role";
+import { useIsMobile } from "@/client/hooks/useMobile";
 import { adminPaths, routes } from "@/constants/auth-routes";
 import { Route } from "@/constants/auth-routes.type";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
 export const Sidebar = () => {

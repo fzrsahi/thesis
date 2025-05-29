@@ -3,9 +3,9 @@
 import { motion } from "framer-motion";
 import { Montserrat, Orbitron } from "next/font/google";
 
+import { useIsMobile } from "@/client/hooks/useMobile";
 import { AnimatedBlobs } from "@/components/animations/AnimatedBlobs";
 import WordParticleAnimation from "@/components/animations/WordParticleAnimation";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 const montserrat = Montserrat({ subsets: ["latin"] });
 const orbitron = Orbitron({ subsets: ["latin"] });

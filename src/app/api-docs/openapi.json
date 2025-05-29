@@ -14,13 +14,579 @@
       "description": "API server"
     }
   ],
-  "paths": {},
+  "paths": {
+    "/my-recommendation": {
+      "get": {
+        "summary": "Get personalized competition recommendations",
+        "description": "Fetches personalized recommendations for the logged-in student, processed in the background using LLM and RAG.",
+        "operationId": "getMyRecommendations",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved recommendations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                },
+                "example": {
+                  "success": true,
+                  "data": {
+                    "recommendations": [
+                      {
+                        "id": 1,
+                        "competition": "Hackathon ZIA 2024",
+                        "match_score": 0.87,
+                        "reason": "Kompetisi ini sesuai karena Anda memiliki minat di bidang AI dan Pemrograman, serta IPK Anda (3.7) memenuhi persyaratan minimum (3.0). Pengalaman alumni menunjukkan mahasiswa dengan profil serupa sering berhasil di kompetisi ini.",
+                        "skill_distribution": {
+                          "AI": 0.7,
+                          "Pemrograman": 0.6,
+                          "Desain": 0.3
+                        },
+                        "rank": 1,
+                        "details": {
+                          "start_date": "2025-06-01",
+                          "end_date": "2025-06-05",
+                          "location": "Online",
+                          "organizer": "ZIA Tech"
+                        },
+                        "applied": false
+                      },
+                      {
+                        "id": 2,
+                        "competition": "Business Plan Competition",
+                        "match_score": 0.62,
+                        "reason": "Kompetisi ini cukup sesuai karena Anda memiliki minat sekunder di bidang Bisnis, meskipun keterampilan utama Anda adalah AI dan Pemrograman. IPK Anda juga memenuhi syarat, tetapi pengalaman di bidang bisnis masih terbatas berdasarkan data Anda.",
+                        "skill_distribution": {
+                          "Bisnis": 0.5,
+                          "Pemrograman": 0.4,
+                          "Desain": 0.2
+                        },
+                        "rank": 2,
+                        "details": {
+                          "start_date": "2025-07-01",
+                          "end_date": "2025-07-10",
+                          "location": "Surabaya",
+                          "organizer": "KADIN"
+                        },
+                        "applied": true
+                      }
+                    ],
+                    "skills_profile": {
+                      "AI": 0.7,
+                      "Pemrograman": 0.6,
+                      "Desain": 0.3,
+                      "Bisnis": 0.2
+                    },
+                    "category_distribution": {
+                      "Teknologi": 0.6,
+                      "Desain": 0.25,
+                      "Bisnis": 0.15
+                    },
+                    "performance_metrics": {
+                      "participation_rate": 0.65,
+                      "avg_match_score": 0.78
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/students/personal-data": {
+      "get": {
+        "tags": ["Student"],
+        "summary": "Get student personal data",
+        "description": "Retrieve current student's personal profile information",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Student personal data retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        },
+                        "student_id": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Student"],
+        "summary": "Update student personal data",
+        "description": "Update student's personal profile information",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StudentPersonalDataUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Student personal data updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/StudentPersonalData"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/students/academic-data": {
+      "get": {
+        "tags": ["Student"],
+        "summary": "Get student academic data",
+        "description": "Retrieve all academic information for the current student including achievements and memberships",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Student academic data retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/StudentAcademicData"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Student"],
+        "summary": "Update student academic data",
+        "description": "Update student's academic information including achievements and memberships",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StudentAcademicDataUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Student academic data updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/StudentAcademicData"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
   "components": {
     "securitySchemes": {
       "bearerAuth": {
         "type": "http",
         "scheme": "bearer",
         "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "SuccessResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "data": {
+            "$ref": "#/components/schemas/RecommendationResponse"
+          }
+        },
+        "required": ["success", "data"]
+      },
+      "RecommendationResponse": {
+        "type": "object",
+        "properties": {
+          "recommendations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "example": 1,
+                  "description": "Unique identifier for the competition"
+                },
+                "competition": {
+                  "type": "string",
+                  "example": "Hackathon ZIA 2024",
+                  "description": "Name of the competition"
+                },
+                "match_score": {
+                  "type": "number",
+                  "format": "float",
+                  "example": 0.87,
+                  "description": "Match score (0.0 - 1.0)"
+                },
+                "reason": {
+                  "type": "string",
+                  "example": "Kompetisi ini sesuai karena Anda memiliki minat di bidang AI dan Pemrograman, serta IPK Anda (3.7) memenuhi persyaratan minimum (3.0). Pengalaman alumni menunjukkan mahasiswa dengan profil serupa sering berhasil di kompetisi ini.",
+                  "description": "AI-generated explanation for why this competition is recommended"
+                },
+                "skill_distribution": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "number",
+                    "format": "float"
+                  },
+                  "example": { "AI": 0.7, "Pemrograman": 0.6, "Desain": 0.3 },
+                  "description": "Skill distribution for the competition"
+                },
+                "rank": {
+                  "type": "integer",
+                  "example": 1,
+                  "description": "Rank based on match score"
+                },
+                "details": {
+                  "type": "object",
+                  "properties": {
+                    "start_date": {
+                      "type": "string",
+                      "format": "date",
+                      "example": "2025-06-01"
+                    },
+                    "end_date": {
+                      "type": "string",
+                      "format": "date",
+                      "example": "2025-06-05"
+                    },
+                    "location": {
+                      "type": "string",
+                      "example": "Online"
+                    },
+                    "organizer": {
+                      "type": "string",
+                      "example": "ZIA Tech"
+                    }
+                  }
+                },
+                "applied": {
+                  "type": "boolean",
+                  "example": false,
+                  "description": "Whether the student has applied to this competition"
+                }
+              },
+              "required": [
+                "id",
+                "competition",
+                "match_score",
+                "reason",
+                "skill_distribution",
+                "rank",
+                "details",
+                "applied"
+              ]
+            }
+          },
+          "skills_profile": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number",
+              "format": "float"
+            },
+            "example": { "AI": 0.7, "Pemrograman": 0.6, "Desain": 0.3, "Bisnis": 0.2 },
+            "description": "Overall skill profile for the radar chart"
+          },
+          "category_distribution": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number",
+              "format": "float"
+            },
+            "example": { "Teknologi": 0.6, "Desain": 0.25, "Bisnis": 0.15 },
+            "description": "Category distribution for the pie chart"
+          },
+          "performance_metrics": {
+            "type": "object",
+            "properties": {
+              "participation_rate": {
+                "type": "number",
+                "format": "float",
+                "example": 0.65,
+                "description": "Participation rate of students"
+              },
+              "avg_match_score": {
+                "type": "number",
+                "format": "float",
+                "example": 0.78,
+                "description": "Average match score"
+              }
+            },
+            "required": ["participation_rate", "avg_match_score"]
+          }
+        },
+        "required": [
+          "recommendations",
+          "skills_profile",
+          "category_distribution",
+          "performance_metrics"
+        ]
+      },
+      "StudentPersonalData": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "student_id": {
+            "type": "string"
+          },
+          "major": {
+            "type": "string"
+          },
+          "interests": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "StudentPersonalDataUpdate": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "student_id": {
+            "type": "string"
+          }
+        }
+      },
+      "StudentAcademicData": {
+        "type": "object",
+        "properties": {
+          "gpa": {
+            "type": "string"
+          },
+          "transcript_url": {
+            "type": "string"
+          },
+          "interests": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "achievements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Achievement"
+            }
+          },
+          "memberships": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Membership"
+            }
+          }
+        }
+      },
+      "StudentAcademicDataUpdate": {
+        "type": "object",
+        "properties": {
+          "gpa": {
+            "type": "string"
+          },
+          "transcript_url": {
+            "type": "string"
+          },
+          "achievements": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AchievementCreate"
+            }
+          },
+          "memberships": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MembershipCreate"
+            }
+          }
+        }
+      },
+      "Achievement": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "AchievementCreate": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "date": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        "required": ["title", "description", "date"]
+      },
+      "Membership": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "organization": {
+            "type": "string"
+          },
+          "position": {
+            "type": "string"
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date"
+          }
+        }
+      },
+      "MembershipCreate": {
+        "type": "object",
+        "properties": {
+          "organization": {
+            "type": "string"
+          },
+          "position": {
+            "type": "string"
+          },
+          "start_date": {
+            "type": "string",
+            "format": "date"
+          },
+          "end_date": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        "required": ["organization", "position", "start_date"]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
       }
     }
   },

@@ -1,3 +1,5 @@
+import Button from "@/components/ui/button";
+
 const MyChatPage = () => (
   <div>
     <h1 className="mb-2 text-2xl font-bold">My Chat</h1>
@@ -51,12 +53,12 @@ const MyChatPage = () => (
           placeholder="Ketik pesan..."
           className="flex-1 rounded-lg border border-zinc-700/50 bg-zinc-800/70 px-4 py-2.5 text-sm text-white outline-none focus:border-zinc-600"
         />
-        <button
+        <Button
           type="button"
-          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+          className="rounded-lg bg-zinc-700 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-600"
         >
           Kirim
-        </button>
+        </Button>
       </div>
     </div>
   </div>

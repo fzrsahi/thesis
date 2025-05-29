@@ -2,9 +2,9 @@
 
 import React from "react";
 
+import { useIsMobile } from "@/client/hooks/useMobile";
 import Navbar from "@/components/ui/Navbar";
 import { UserSidebar, SidebarProvider, useSidebar } from "@/components/ui/user-sidebar";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
 const LayoutContent = ({ children }: { children: React.ReactNode }) => {

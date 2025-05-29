@@ -6,9 +6,9 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect, createContext, useContext, useMemo } from "react";
 
 import { ROLES } from "@/app/shared/const/role";
+import { useIsMobile } from "@/client/hooks/useMobile";
 import { routes } from "@/constants/auth-routes";
 import { Route } from "@/constants/auth-routes.type";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
 const SidebarContext = createContext<{
