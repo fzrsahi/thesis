@@ -120,3 +120,124 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Global Typography Styles */
+@layer base {
+  html {
+    @apply bg-black text-white;
+  }
+
+  body {
+    @apply bg-black font-medium text-white;
+    font-family:
+      "Inter",
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      "Roboto",
+      "Oxygen",
+      "Ubuntu",
+      "Cantarell",
+      "Fira Sans",
+      "Droid Sans",
+      "Helvetica Neue",
+      sans-serif;
+  }
+
+  /* Headings */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-bold text-white;
+  }
+
+  h1 {
+    @apply text-3xl font-extrabold md:text-5xl lg:text-6xl;
+  }
+
+  h2 {
+    @apply text-2xl font-bold md:text-4xl;
+  }
+
+  h3 {
+    @apply text-xl font-bold md:text-2xl;
+  }
+
+  h4 {
+    @apply text-lg font-semibold md:text-xl;
+  }
+
+  h5 {
+    @apply text-base font-semibold md:text-lg;
+  }
+
+  h6 {
+    @apply text-sm font-semibold md:text-base;
+  }
+
+  /* Paragraphs and text */
+  p {
+    @apply leading-relaxed text-zinc-300;
+  }
+
+  /* Links */
+  a {
+    @apply text-zinc-300 transition-colors duration-300 hover:text-white;
+  }
+
+  /* Form elements */
+  input,
+  textarea,
+  select {
+    @apply border-zinc-700 bg-zinc-800 text-white placeholder:text-zinc-400;
+  }
+
+  /* Buttons */
+  button {
+    @apply font-medium transition-all duration-300;
+  }
+
+  /* Labels */
+  label {
+    @apply font-medium text-zinc-300;
+  }
+
+  /* Cards and containers */
+  .card {
+    @apply border-zinc-800 bg-zinc-900 text-white;
+  }
+}
+
+/* Utility classes for consistent styling */
+@layer utilities {
+  .text-emphasis {
+    @apply font-bold text-zinc-300;
+  }
+
+  .text-highlight {
+    @apply text-white italic;
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-zinc-400 via-white to-zinc-500 bg-clip-text text-transparent;
+  }
+
+  .text-muted {
+    @apply text-zinc-400;
+  }
+
+  .text-secondary {
+    @apply text-zinc-300;
+  }
+
+  .bg-dark-card {
+    @apply border-zinc-800 bg-zinc-900;
+  }
+
+  .bg-dark-input {
+    @apply border-zinc-700 bg-zinc-800;
+  }
+}

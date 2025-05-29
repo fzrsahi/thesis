@@ -23,51 +23,89 @@ import { Badge } from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { cn } from "@/lib/utils";
+import {
+  TypographyH1,
+  TypographyH2,
+  TypographyH3,
+  TypographyP,
+  TypographyEmphasis,
+  TypographyMuted,
+  TypographyLarge,
+} from "@/components/ui/typography";
 
-// Mock data untuk demonstrasi
+// Mock data untuk demonstrasi berdasarkan schema Prisma
 const mockRecommendations = [
   {
     id: 1,
     title: "Hackathon AI Innovation 2024",
-    category: "Technology",
-    difficulty: "Advanced",
-    matchScore: 95,
-    deadline: "2024-02-15",
-    location: "Jakarta",
-    prize: "Rp 50,000,000",
-    participants: 500,
     description: "Kompetisi pengembangan AI untuk solusi smart city",
+    category: "TECHNOLOGY",
+    difficulty: "ADVANCED",
+    registrationStart: new Date("2024-01-15"),
+    registrationEnd: new Date("2024-02-10"),
+    eventStart: new Date("2024-02-15"),
+    eventEnd: new Date("2024-02-17"),
+    location: "Jakarta",
+    maxParticipants: 500,
+    currentParticipants: 350,
+    prizes: [
+      { position: 1, amount: 50000000, description: "Juara 1" },
+      { position: 2, amount: 25000000, description: "Juara 2" },
+      { position: 3, amount: 15000000, description: "Juara 3" },
+    ],
+    requirements: ["Mahasiswa aktif", "Tim 3-5 orang", "Pengalaman programming"],
     tags: ["AI", "Machine Learning", "Smart City"],
     organizer: "Tech Indonesia",
+    isActive: true,
+    matchScore: 95,
   },
   {
     id: 2,
     title: "Business Plan Competition",
-    category: "Business",
-    difficulty: "Intermediate",
-    matchScore: 87,
-    deadline: "2024-03-01",
-    location: "Bandung",
-    prize: "Rp 25,000,000",
-    participants: 300,
     description: "Kompetisi rencana bisnis untuk startup teknologi",
+    category: "BUSINESS",
+    difficulty: "INTERMEDIATE",
+    registrationStart: new Date("2024-01-20"),
+    registrationEnd: new Date("2024-02-25"),
+    eventStart: new Date("2024-03-01"),
+    eventEnd: new Date("2024-03-03"),
+    location: "Bandung",
+    maxParticipants: 300,
+    currentParticipants: 180,
+    prizes: [
+      { position: 1, amount: 25000000, description: "Juara 1" },
+      { position: 2, amount: 15000000, description: "Juara 2" },
+      { position: 3, amount: 10000000, description: "Juara 3" },
+    ],
+    requirements: ["Mahasiswa S1/S2", "Tim maksimal 4 orang", "Business plan lengkap"],
     tags: ["Business", "Startup", "Innovation"],
     organizer: "Startup Hub",
+    isActive: true,
+    matchScore: 87,
   },
   {
     id: 3,
     title: "UI/UX Design Challenge",
-    category: "Design",
-    difficulty: "Beginner",
-    matchScore: 78,
-    deadline: "2024-02-28",
-    location: "Online",
-    prize: "Rp 15,000,000",
-    participants: 200,
     description: "Desain aplikasi mobile untuk e-commerce",
+    category: "DESIGN",
+    difficulty: "BEGINNER",
+    registrationStart: new Date("2024-01-10"),
+    registrationEnd: new Date("2024-02-20"),
+    eventStart: new Date("2024-02-28"),
+    eventEnd: new Date("2024-03-01"),
+    location: "Online",
+    maxParticipants: 200,
+    currentParticipants: 120,
+    prizes: [
+      { position: 1, amount: 15000000, description: "Juara 1" },
+      { position: 2, amount: 10000000, description: "Juara 2" },
+      { position: 3, amount: 5000000, description: "Juara 3" },
+    ],
+    requirements: ["Portfolio design", "Software design tools", "Presentasi"],
     tags: ["UI/UX", "Mobile", "E-commerce"],
     organizer: "Design Community",
+    isActive: true,
+    matchScore: 78,
   },
 ];
 
@@ -194,7 +232,7 @@ const SpiderChart = ({ data, size = 200 }: { data: SpiderChartDataPoint[]; size?
         return (
           <div
             key={`label-${labelIndex}`}
-            className="absolute text-xs text-zinc-300"
+            className="absolute text-xs font-medium text-zinc-300"
             style={{
               left: labelX - 25,
               top: labelY - 10,
@@ -202,8 +240,8 @@ const SpiderChart = ({ data, size = 200 }: { data: SpiderChartDataPoint[]; size?
               textAlign: "center",
             }}
           >
-            <div className="font-medium">{point.label}</div>
-            <div className="text-zinc-400">{point.value}%</div>
+            {point.label}
+            <div className="text-xs font-bold text-white">{point.value}%</div>
           </div>
         );
       })}
@@ -211,286 +249,369 @@ const SpiderChart = ({ data, size = 200 }: { data: SpiderChartDataPoint[]; size?
   );
 };
 
+// Helper function to format currency
+const formatCurrency = (amount: number) =>
+  new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    minimumFractionDigits: 0,
+  }).format(amount);
+
+// Helper function to format date
+const formatDate = (date: Date) =>
+  new Intl.DateTimeFormat("id-ID", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  }).format(date);
+
+// Helper function to get difficulty badge color
+const getDifficultyColor = (difficulty: string) => {
+  switch (difficulty) {
+    case "BEGINNER":
+      return "bg-green-500";
+    case "INTERMEDIATE":
+      return "bg-yellow-500";
+    case "ADVANCED":
+      return "bg-red-500";
+    default:
+      return "bg-gray-500";
+  }
+};
+
 // Empty State Component
 const EmptyState = ({ onStartAnalysis }: { onStartAnalysis: () => void }) => (
   <div className="flex min-h-[60vh] flex-col items-center justify-center space-y-6 text-center">
-    <div className="rounded-full bg-zinc-800/50 p-6">
-      <Target className="h-16 w-16 text-zinc-400" />
+    <div className="rounded-full bg-zinc-800 p-6">
+      <Target className="h-12 w-12 text-zinc-400" />
     </div>
-
     <div className="space-y-2">
-      <h2 className="text-2xl font-bold text-white">Belum Ada Rekomendasi</h2>
-      <p className="max-w-md text-zinc-400">
-        Anda belum mencoba fitur rekomendasi kami. Lengkapi profil Anda untuk mendapatkan
-        rekomendasi lomba yang sesuai dengan minat dan kemampuan Anda.
-      </p>
+      <TypographyH2 className="text-2xl">Belum Ada Rekomendasi</TypographyH2>
+      <TypographyP className="max-w-md">
+        Mulai analisis profil Anda untuk mendapatkan rekomendasi kompetisi yang sesuai dengan
+        <TypographyEmphasis> keahlian dan minat</TypographyEmphasis> Anda.
+      </TypographyP>
     </div>
-
-    <div className="flex flex-col gap-4 sm:flex-row">
-      <Button onClick={onStartAnalysis} className="bg-white text-black hover:bg-zinc-200">
-        <Activity className="mr-2 h-4 w-4" />
-        Mulai Analisis Profil
-      </Button>
-    </div>
-
-    <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-      <Card className="border-zinc-800 bg-zinc-900/50">
-        <CardContent className="p-4 text-center">
-          <Trophy className="mx-auto mb-2 h-8 w-8 text-yellow-500" />
-          <p className="text-sm text-zinc-400">Rekomendasi Personal</p>
-        </CardContent>
-      </Card>
-      <Card className="border-zinc-800 bg-zinc-900/50">
-        <CardContent className="p-4 text-center">
-          <BarChart3 className="mx-auto mb-2 h-8 w-8 text-blue-500" />
-          <p className="text-sm text-zinc-400">Analisis Kemampuan</p>
-        </CardContent>
-      </Card>
-      <Card className="border-zinc-800 bg-zinc-900/50">
-        <CardContent className="p-4 text-center">
-          <TrendingUp className="mx-auto mb-2 h-8 w-8 text-green-500" />
-          <p className="text-sm text-zinc-400">Tracking Progress</p>
-        </CardContent>
-      </Card>
-    </div>
+    <Button
+      onClick={onStartAnalysis}
+      className="border border-zinc-700 bg-zinc-800 text-white hover:bg-zinc-700"
+    >
+      <Activity className="mr-2 h-4 w-4" />
+      Mulai Analisis Profil
+    </Button>
   </div>
 );
 
-// Recommendation Content Component
+// Main Content Component
 const RecommendationContent = () => (
-  <div className="space-y-6">
+  <div className="space-y-8">
     {/* Header */}
-    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <div>
-        <h1 className="text-2xl font-bold text-white">Rekomendasi Lomba</h1>
-        <p className="text-zinc-300">Lomba yang cocok berdasarkan profil dan minat Anda</p>
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <TypographyH1 className="text-3xl md:text-4xl">
+            Rekomendasi{" "}
+            <span className="bg-gradient-to-r from-zinc-400 via-white to-zinc-500 bg-clip-text text-transparent">
+              Kompetisi
+            </span>
+          </TypographyH1>
+          <TypographyP className="mt-2">
+            Kompetisi yang dipersonalisasi berdasarkan{" "}
+            <TypographyEmphasis>profil dan preferensi</TypographyEmphasis> Anda
+          </TypographyP>
+        </div>
+        <Button className="border border-zinc-700 bg-zinc-800 text-white hover:bg-zinc-700">
+          <Activity className="mr-2 h-4 w-4" />
+          Refresh Analisis
+        </Button>
       </div>
-      <Button className="bg-white text-black hover:bg-zinc-200">
-        <Activity className="mr-2 h-4 w-4" />
-        Refresh Rekomendasi
-      </Button>
-    </div>
 
-    {/* Stats Overview */}
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      <Card className="border-zinc-800 bg-zinc-900">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-zinc-300">Total Rekomendasi</p>
-              <p className="text-2xl font-bold text-white">{mockStats.totalRecommendations}</p>
-            </div>
-            <Trophy className="h-8 w-8 text-yellow-500" />
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="border-zinc-800 bg-zinc-900">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-zinc-300">Rata-rata Match</p>
-              <p className="text-2xl font-bold text-white">{mockStats.averageMatch}%</p>
-            </div>
-            <Target className="h-8 w-8 text-blue-500" />
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="border-zinc-800 bg-zinc-900">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-zinc-300">Kategori Cocok</p>
-              <p className="text-2xl font-bold text-white">{mockStats.categoriesMatched}</p>
-            </div>
-            <PieChart className="h-8 w-8 text-purple-500" />
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card className="border-zinc-800 bg-zinc-900">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-zinc-300">Success Rate</p>
-              <p className="text-2xl font-bold text-white">{mockStats.successRate}%</p>
-            </div>
-            <TrendingUp className="h-8 w-8 text-green-500" />
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-      {/* Recommendations List */}
-      <div className="lg:col-span-2">
+      {/* Stats Overview */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
         <Card className="border-zinc-800 bg-zinc-900">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-white">
-              <Award className="h-5 w-5" />
-              Rekomendasi Teratas
-            </CardTitle>
-            <CardDescription className="text-zinc-300">
-              Lomba dengan tingkat kesesuaian tertinggi untuk profil Anda
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-2">
+              <Trophy className="h-5 w-5 text-yellow-500" />
+              <div>
+                <TypographyMuted>Total Rekomendasi</TypographyMuted>
+                <TypographyLarge className="text-white">
+                  {mockStats.totalRecommendations}
+                </TypographyLarge>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-zinc-800 bg-zinc-900">
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-2">
+              <TrendingUp className="h-5 w-5 text-green-500" />
+              <div>
+                <TypographyMuted>Rata-rata Match</TypographyMuted>
+                <TypographyLarge className="text-white">{mockStats.averageMatch}%</TypographyLarge>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-zinc-800 bg-zinc-900">
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-2">
+              <BarChart3 className="h-5 w-5 text-blue-500" />
+              <div>
+                <TypographyMuted>Kategori Cocok</TypographyMuted>
+                <TypographyLarge className="text-white">
+                  {mockStats.categoriesMatched}
+                </TypographyLarge>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-zinc-800 bg-zinc-900">
+          <CardContent className="p-4">
+            <div className="flex items-center space-x-2">
+              <Award className="h-5 w-5 text-purple-500" />
+              <div>
+                <TypographyMuted>Success Rate</TypographyMuted>
+                <TypographyLarge className="text-white">{mockStats.successRate}%</TypographyLarge>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+
+    <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+      {/* Main Content - Recommendations List */}
+      <div className="space-y-6 lg:col-span-2">
+        <div>
+          <TypographyH3 className="mb-4">Top Rekomendasi untuk Anda</TypographyH3>
+          <div className="space-y-4">
             {mockRecommendations.map((rec) => (
-              <div
+              <Card
                 key={rec.id}
-                className="rounded-lg border border-zinc-800 bg-zinc-800/50 p-4 transition-colors hover:bg-zinc-800/70"
+                className="border-zinc-800 bg-zinc-900 transition-colors hover:border-zinc-700"
               >
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                  <div className="flex-1 space-y-2">
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-white">{rec.title}</h3>
-                      <Badge
-                        variant="secondary"
-                        className={cn(
-                          "text-xs",
-                          rec.matchScore >= 90
-                            ? "bg-green-500/20 text-green-400"
-                            : rec.matchScore >= 80
-                              ? "bg-yellow-500/20 text-yellow-400"
-                              : "bg-blue-500/20 text-blue-400"
-                        )}
-                      >
-                        {rec.matchScore}% Match
-                      </Badge>
-                    </div>
-
-                    <p className="text-sm text-zinc-300">{rec.description}</p>
-
-                    <div className="flex flex-wrap gap-1">
-                      {rec.tags.map((tag, tagIndex) => (
+                <CardHeader>
+                  <div className="flex items-start justify-between">
+                    <div className="space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <CardTitle className="text-white">{rec.title}</CardTitle>
                         <Badge
-                          key={`${rec.id}-tag-${tagIndex}`}
-                          variant="outline"
-                          className="border-zinc-700 text-xs text-zinc-300"
+                          className={`text-xs ${getDifficultyColor(rec.difficulty)} text-white`}
                         >
+                          {rec.difficulty}
+                        </Badge>
+                      </div>
+                      <CardDescription className="text-zinc-400">{rec.description}</CardDescription>
+                    </div>
+                    <Badge variant="gradient" className="ml-4">
+                      {rec.matchScore}% Match
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {/* Tags */}
+                    <div className="flex flex-wrap gap-2">
+                      {rec.tags.map((tag, tagIndex) => (
+                        <Badge key={tagIndex} variant="secondary">
                           {tag}
                         </Badge>
                       ))}
                     </div>
 
-                    <div className="flex flex-wrap gap-4 text-xs text-zinc-300">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
-                        {rec.deadline}
+                    {/* Details Grid */}
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div className="flex items-center space-x-2">
+                        <Calendar className="h-4 w-4 text-zinc-400" />
+                        <span className="text-zinc-300">
+                          Deadline: {formatDate(rec.registrationEnd)}
+                        </span>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <MapPin className="h-3 w-3" />
-                        {rec.location}
+                      <div className="flex items-center space-x-2">
+                        <MapPin className="h-4 w-4 text-zinc-400" />
+                        <span className="text-zinc-300">{rec.location}</span>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <Trophy className="h-3 w-3" />
-                        {rec.prize}
+                      <div className="flex items-center space-x-2">
+                        <Trophy className="h-4 w-4 text-zinc-400" />
+                        <span className="text-zinc-300">
+                          Prize: {formatCurrency(rec.prizes[0].amount)}
+                        </span>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <Users className="h-3 w-3" />
-                        {rec.participants} peserta
+                      <div className="flex items-center space-x-2">
+                        <Users className="h-4 w-4 text-zinc-400" />
+                        <span className="text-zinc-300">
+                          {rec.currentParticipants}/{rec.maxParticipants} peserta
+                        </span>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="flex flex-col gap-2">
-                    <Progress value={rec.matchScore} className="w-20" />
-                    <Button size="sm" className="bg-white text-black hover:bg-zinc-200">
-                      <ExternalLink className="mr-1 h-3 w-3" />
-                      Detail
-                    </Button>
+                    {/* Event Timeline */}
+                    <div className="space-y-2 rounded-lg bg-zinc-800 p-3">
+                      <div className="text-xs text-zinc-400">Timeline Event:</div>
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                          <span className="text-zinc-400">Registrasi:</span>
+                          <div className="text-zinc-300">
+                            {formatDate(rec.registrationStart)} - {formatDate(rec.registrationEnd)}
+                          </div>
+                        </div>
+                        <div>
+                          <span className="text-zinc-400">Event:</span>
+                          <div className="text-zinc-300">
+                            {formatDate(rec.eventStart)} - {formatDate(rec.eventEnd)}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Requirements */}
+                    <div className="space-y-2">
+                      <div className="text-xs text-zinc-400">Requirements:</div>
+                      <div className="flex flex-wrap gap-1">
+                        {rec.requirements.map((req, reqIndex) => (
+                          <Badge key={reqIndex} variant="outline" className="text-xs">
+                            {req}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Participation Progress */}
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-xs">
+                        <span className="text-zinc-400">Partisipasi</span>
+                        <span className="text-zinc-300">
+                          {Math.round((rec.currentParticipants / rec.maxParticipants) * 100)}%
+                        </span>
+                      </div>
+                      <Progress
+                        value={(rec.currentParticipants / rec.maxParticipants) * 100}
+                        className="h-2"
+                      />
+                    </div>
+
+                    {/* Action Buttons */}
+                    <div className="flex space-x-2">
+                      <Button
+                        size="sm"
+                        className="border border-zinc-700 bg-zinc-800 text-white hover:bg-zinc-700"
+                      >
+                        <ExternalLink className="mr-2 h-4 w-4" />
+                        Lihat Detail
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="border-zinc-700 text-zinc-300 hover:bg-zinc-800"
+                      >
+                        Simpan
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
-      {/* Analytics Sidebar */}
+      {/* Sidebar - Analytics */}
       <div className="space-y-6">
-        {/* Student Skills Spider Chart */}
+        {/* Student Stats Spider Chart */}
         <Card className="border-zinc-800 bg-zinc-900">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-white">
+            <CardTitle className="flex items-center space-x-2 text-white">
               <Radar className="h-5 w-5" />
-              Profil Kemampuan
+              <span>Profil Kemampuan</span>
             </CardTitle>
-            <CardDescription className="text-zinc-300">
-              Analisis skill berdasarkan aktivitas Anda
-            </CardDescription>
           </CardHeader>
-          <CardContent className="flex justify-center">
-            <SpiderChart data={studentStats} size={220} />
+          <CardContent>
+            <div className="flex justify-center">
+              <SpiderChart data={studentStats} size={200} />
+            </div>
           </CardContent>
         </Card>
 
         {/* Category Distribution */}
         <Card className="border-zinc-800 bg-zinc-900">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-white">
+            <CardTitle className="flex items-center space-x-2 text-white">
               <PieChart className="h-5 w-5" />
-              Distribusi Kategori
+              <span>Distribusi Kategori</span>
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            {categoryData.map((category, categoryIndex) => (
-              <div key={`category-${categoryIndex}`} className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-zinc-200">{category.name}</span>
-                  <span className="text-zinc-300">{category.value}%</span>
+          <CardContent>
+            <div className="space-y-3">
+              {categoryData.map((category, categoryIndex) => (
+                <div key={categoryIndex} className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-zinc-300">{category.name}</span>
+                    <span className="font-medium text-white">{category.value}%</span>
+                  </div>
+                  <Progress value={category.value} className="h-2" />
                 </div>
-                <div className="h-2 rounded-full bg-zinc-800">
-                  <div
-                    className={cn("h-full rounded-full", category.color)}
-                    style={{ width: `${category.value}%` }}
-                  />
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </CardContent>
         </Card>
 
         {/* Performance Metrics */}
         <Card className="border-zinc-800 bg-zinc-900">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-white">
+            <CardTitle className="flex items-center space-x-2 text-white">
               <BarChart3 className="h-5 w-5" />
-              Metrik Performa
+              <span>Metrik Performa</span>
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-zinc-200">Skill Match</span>
-                <span className="text-zinc-300">92%</span>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-zinc-300">Akurasi Prediksi</span>
+                  <span className="font-medium text-white">87%</span>
+                </div>
+                <Progress value={87} className="h-2" />
               </div>
-              <Progress value={92} className="h-2" />
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-zinc-300">Tingkat Partisipasi</span>
+                  <span className="font-medium text-white">73%</span>
+                </div>
+                <Progress value={73} className="h-2" />
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-zinc-300">Kepuasan Rekomendasi</span>
+                  <span className="font-medium text-white">91%</span>
+                </div>
+                <Progress value={91} className="h-2" />
+              </div>
             </div>
+          </CardContent>
+        </Card>
 
+        {/* Quick Actions */}
+        <Card className="border-zinc-800 bg-zinc-900">
+          <CardHeader>
+            <CardTitle className="text-white">Quick Actions</CardTitle>
+          </CardHeader>
+          <CardContent>
             <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-zinc-200">Interest Alignment</span>
-                <span className="text-zinc-300">88%</span>
-              </div>
-              <Progress value={88} className="h-2" />
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-zinc-200">Experience Level</span>
-                <span className="text-zinc-300">75%</span>
-              </div>
-              <Progress value={75} className="h-2" />
-            </div>
-
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-zinc-200">Availability</span>
-                <span className="text-zinc-300">95%</span>
-              </div>
-              <Progress value={95} className="h-2" />
+              <Button className="w-full justify-start border border-zinc-700 bg-zinc-800 text-white hover:bg-zinc-700">
+                <Calendar className="mr-2 h-4 w-4" />
+                Set Reminder
+              </Button>
+              <Button className="w-full justify-start border border-zinc-700 bg-zinc-800 text-white hover:bg-zinc-700">
+                <Users className="mr-2 h-4 w-4" />
+                Find Team
+              </Button>
+              <Button className="w-full justify-start border border-zinc-700 bg-zinc-800 text-white hover:bg-zinc-700">
+                <Activity className="mr-2 h-4 w-4" />
+                Update Profile
+              </Button>
             </div>
           </CardContent>
         </Card>
@@ -499,16 +620,26 @@ const RecommendationContent = () => (
   </div>
 );
 
+// Main Page Component
 const MyRecommendationPage = () => {
-  const [hasRecommendations, setHasRecommendations] = useState(true); // Set to true untuk melihat content
+  const [hasRecommendations, setHasRecommendations] = useState(true);
+
+  const handleStartAnalysis = () => {
+    // Simulate analysis process
+    setTimeout(() => {
+      setHasRecommendations(true);
+    }, 2000);
+  };
 
   return (
-    <div>
-      {hasRecommendations ? (
-        <RecommendationContent />
-      ) : (
-        <EmptyState onStartAnalysis={() => setHasRecommendations(true)} />
-      )}
+    <div className="min-h-screen bg-black p-6">
+      <div className="mx-auto max-w-7xl">
+        {hasRecommendations ? (
+          <RecommendationContent />
+        ) : (
+          <EmptyState onStartAnalysis={handleStartAnalysis} />
+        )}
+      </div>
     </div>
   );
 };
