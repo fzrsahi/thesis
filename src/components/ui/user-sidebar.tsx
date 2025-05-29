@@ -3,7 +3,7 @@
 import { Settings, ChevronLeft, ChevronRight, Menu } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, createContext, useContext, useMemo } from "react";
 
 import { ROLES } from "@/app/shared/const/role";
 import { routes } from "@/constants/auth-routes";
@@ -11,9 +11,33 @@ import { Route } from "@/constants/auth-routes.type";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
+const SidebarContext = createContext<{
+  collapsed: boolean;
+  setCollapsed: (collapsed: boolean) => void;
+}>({
+  collapsed: false,
+  setCollapsed: () => {},
+});
+
+export const useSidebar = () => useContext(SidebarContext);
+
+export const SidebarProvider = ({ children }: { children: React.ReactNode }) => {
+  const [collapsed, setCollapsed] = useState(false);
+
+  const contextValue = useMemo(
+    () => ({
+      collapsed,
+      setCollapsed,
+    }),
+    [collapsed, setCollapsed]
+  );
+
+  return <SidebarContext.Provider value={contextValue}>{children}</SidebarContext.Provider>;
+};
+
 export const UserSidebar = () => {
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState(false);
+  const { collapsed, setCollapsed } = useSidebar();
   const isMobile = useIsMobile();
   const [mobileOpen, setMobileOpen] = useState(false);
 

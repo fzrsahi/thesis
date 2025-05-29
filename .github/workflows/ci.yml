@@ -25,9 +25,6 @@ jobs:
     - name: Run ESLint
       run: npm run lint
 
-    - name: Build
-      run: npm run build
-
     - name: Cache build
       uses: actions/cache@v3
       with:

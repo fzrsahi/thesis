@@ -99,7 +99,7 @@ model StudentCompetition {
   id            Int     @id @default(autoincrement())
   studentId     Int
   competitionId Int
-  score         Float // 0.0–1.0: skor kecocokan AI
+  score         Float // 0.0–1.0: skor kecocokan AI (driven by RAG)
   applied       Boolean @default(false) // Status pendaftaran
   feedback      String? // Komentar / feedback user
 
@@ -113,8 +113,8 @@ model StudentCompetition {
 model Recommendation {
   id        Int      @id @default(autoincrement())
   studentId Int
-  prompt    String // Prompt yang dikirim ke LLM
-  response  String // Output LLM
+  prompt    String // Prompt yang dikirim ke LLM (may include retrieved context for RAG)
+  response  String // Output LLM (generated with RAG)
   createdAt DateTime @default(now())
 
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
@@ -134,14 +134,14 @@ model LLMChatSession {
 model LLMChatMessage {
   id        Int      @id @default(autoincrement())
   sessionId Int
-  role      String // "user" atau "assistant"
+  role      String // "user" atau "assistant" (assistant responses powered by RAG)
   content   String // Isi pesan
   createdAt DateTime @default(now())
 
   session LLMChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 }
 
-/// Alumni Data for Model Training
+/// Alumni Data for RAG Knowledge Base
 model AlumniExperience {
   id           Int      @id @default(autoincrement())
   name         String // Nama senior
@@ -153,13 +153,16 @@ model AlumniExperience {
   result       String // Hasil lomba, contoh: "Juara 1"
   year         Int // Tahun lomba
   createdAt    DateTime @default(now())
+  // This data serves as a knowledge source for the RAG system.
+  // It will be vectorized and retrieved to provide context to the LLM
+  // for generating more relevant and informed recommendations/responses.
 }
 
-/// Embeddings (Opsional: gunakan pgvector untuk kemudahan query vektor)
+/// Embeddings (Crucial for RAG: use pgvector for ease of vector querying)
 model Embedding {
   id        Int      @id @default(autoincrement())
   model     String // e.g. "text-embedding-ada-002"
   vector    Bytes // Simpan vektor (byte array)
-  metadata  Json? // { "type":"student", "id":1 } atau { "type":"competition", "id":5 }
+  metadata  Json? // { "type":"student", "id":1 }, { "type":"competition", "id":5 }, { "type":"alumni_experience", "id":X }
   createdAt DateTime @default(now())
 }

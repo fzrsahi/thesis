@@ -16,6 +16,7 @@ export const routes: Route[] = [
   { name: "Pengaturan", href: "/settings", roles: [ROLES.ADMIN], icon: Settings },
   { name: "Chat", href: "/chat", roles: [ROLES.ADVISOR, ROLES.ADMIN], icon: MessageCircle },
   { name: "Profile", href: "/student/profile", roles: [ROLES.STUDENT], icon: User },
+  { name: "Recomendation", href: "/my-recomendation", roles: [ROLES.STUDENT], icon: BookOpen },
   { name: "My Chat", href: "/my-chat", roles: [ROLES.STUDENT], icon: MessageCircle },
 ];
 
