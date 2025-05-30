@@ -5,7 +5,7 @@ const personalData = createQueryKeys("personal-data", {
 });
 
 const academicData = createQueryKeys("academic-data", {
-  academicData: () => ["academic-data"],
+  data: () => ["academic-data"],
 });
 
 export const queryKeys = mergeQueryKeys(personalData, academicData);

@@ -26,11 +26,13 @@ export const academicDataSchema = z.object({
       })
     )
     .optional(),
-  memberships: z
+  interests: z.array(z.string()).optional(),
+  experiences: z
     .array(
       z.object({
         organization: z.string(),
         position: z.string(),
+        description: z.string(),
         start_date: z.string(),
         end_date: z.string().optional(),
       })

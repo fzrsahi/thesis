@@ -302,13 +302,13 @@ export interface components {
       transcript_url?: string;
       interests?: string[];
       achievements?: components["schemas"]["Achievement"][];
-      memberships?: components["schemas"]["Membership"][];
+      experiences?: components["schemas"]["Experience"][];
     };
     StudentAcademicDataUpdate: {
       gpa?: string;
       transcript_url?: string;
       achievements?: components["schemas"]["AchievementCreate"][];
-      memberships?: components["schemas"]["MembershipCreate"][];
+      experiences?: components["schemas"]["ExperienceCreate"][];
     };
     Achievement: {
       id?: number;
@@ -323,18 +323,20 @@ export interface components {
       /** Format: date */
       date: string;
     };
-    Membership: {
+    Experience: {
       id?: number;
       organization?: string;
+      description?: string;
       position?: string;
       /** Format: date */
       start_date?: string;
       /** Format: date */
       end_date?: string;
     };
-    MembershipCreate: {
+    ExperienceCreate: {
       organization: string;
       position: string;
+      description: string;
       /** Format: date */
       start_date: string;
       /** Format: date */

@@ -4,9 +4,7 @@ import { useForm } from "react-hook-form";
 
 import {
   type PersonalDataPayload,
-  type AcademicDataPayload,
   personalDataSchema,
-  academicDataSchema,
 } from "@/app/shared/schema/student/profile/ProfileSchema";
 
 import { useQueryGetPersonalData } from "./useQueryGetPersonalData";
@@ -30,15 +28,4 @@ const usePersonalForm = () => {
   });
 };
 
-const useAcademicForm = () =>
-  useForm<AcademicDataPayload>({
-    resolver: zodResolver(academicDataSchema),
-    defaultValues: {
-      gpa: "0",
-      transcript_url: "",
-      achievements: [],
-      memberships: [],
-    },
-  });
-
-export { usePersonalData, usePersonalForm, useAcademicForm };
+export { usePersonalData, usePersonalForm };

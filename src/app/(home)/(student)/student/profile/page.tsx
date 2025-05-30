@@ -3,7 +3,7 @@
 import { Separator } from "@radix-ui/react-dropdown-menu";
 import { Plus, X, User, GraduationCap } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, KeyboardEvent } from "react";
 import { useFieldArray } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -19,21 +19,27 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import Input from "@/components/ui/input";
+import Skeleton from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
-import { usePersonalData, usePersonalForm, useAcademicForm } from "./_api/usePersonalData";
+import { useAcademicData, useAcademicForm } from "./_api/useAcademicData";
+import { usePersonalData, usePersonalForm } from "./_api/usePersonalData";
 
 const UserProfilePage = () => {
   const { data: session } = useSession();
   const [activeTab, setActiveTab] = useState<"personal" | "academic">("personal");
   const [isEditingPersonal, setIsEditingPersonal] = useState(false);
   const [isEditingAcademic, setIsEditingAcademic] = useState(false);
+  const [interestInput, setInterestInput] = useState("");
+  const [interests, setInterests] = useState<string[]>([]);
 
   const {
     data: personalData,
     isLoading: isLoadingPersonal,
     error: personalError,
   } = usePersonalData();
+
+  const { data: academicData, isLoading: isLoadingAcademic } = useAcademicData();
 
   const personalForm = usePersonalForm();
   const academicForm = useAcademicForm();
@@ -47,12 +53,12 @@ const UserProfilePage = () => {
   });
 
   const {
-    fields: membershipFields,
-    append: appendMembership,
-    remove: removeMembership,
+    fields: experienceFields,
+    append: appendExperience,
+    remove: removeExperience,
   } = useFieldArray({
     control: academicForm.control,
-    name: "memberships",
+    name: "experiences",
   });
 
   useEffect(() => {
@@ -64,6 +70,35 @@ const UserProfilePage = () => {
       });
     }
   }, [personalData, personalForm]);
+
+  useEffect(() => {
+    if (academicData) {
+      academicForm.reset({
+        gpa: academicData.gpa || "",
+        transcript_url: academicData.transcript_url || "",
+        achievements: academicData.achievements || [],
+        experiences: academicData.experiences || [],
+      });
+      setInterests(academicData.interests || []);
+    }
+  }, [academicData, academicForm]);
+
+  const handleAddInterest = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && interestInput.trim()) {
+      e.preventDefault();
+      const newInterest = interestInput.trim();
+
+      if (!interests.includes(newInterest)) {
+        setInterests([...interests, newInterest]);
+        setInterestInput("");
+      }
+    }
+  };
+
+  const handleRemoveInterest = (indexToRemove: number) => {
+    const updatedInterests = interests.filter((_, index) => index !== indexToRemove);
+    setInterests(updatedInterests);
+  };
 
   const onSubmitPersonal = () => {
     toast("Personal data updated successfully", {
@@ -94,14 +129,6 @@ const UserProfilePage = () => {
     },
   ];
 
-  if (isLoadingPersonal) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-white">Loading...</div>
-      </div>
-    );
-  }
-
   if (personalError) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -129,7 +156,7 @@ const UserProfilePage = () => {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={cn(
-                  "flex flex-1 items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-all",
+                  "flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-all",
                   activeTab === tab.id
                     ? "bg-white text-black shadow-sm"
                     : "text-zinc-400 hover:bg-zinc-700 hover:text-white"
@@ -153,7 +180,11 @@ const UserProfilePage = () => {
           <CardContent className="flex flex-col items-center gap-4">
             <Avatar className="h-32 w-32">
               <AvatarFallback className="bg-zinc-800 text-2xl">
-                {personalData?.name?.charAt(0) || session?.user?.name?.charAt(0) || "U"}
+                {isLoadingPersonal ? (
+                  <Skeleton className="h-8 w-8" />
+                ) : (
+                  personalData?.name?.charAt(0) || session?.user?.name?.charAt(0) || "U"
+                )}
               </AvatarFallback>
             </Avatar>
           </CardContent>
@@ -163,11 +194,19 @@ const UserProfilePage = () => {
               <Separator className="bg-zinc-800" />
               <div className="text-sm">
                 <p className="text-zinc-400">Name</p>
-                <p>{personalData?.name || "Not provided"}</p>
+                {isLoadingPersonal ? (
+                  <Skeleton className="h-4 w-24" />
+                ) : (
+                  <p>{personalData?.name || "Not provided"}</p>
+                )}
               </div>
               <div className="text-sm">
                 <p className="text-zinc-400">Student ID</p>
-                <p>{personalData?.student_id || "Not provided"}</p>
+                {isLoadingPersonal ? (
+                  <Skeleton className="h-4 w-32" />
+                ) : (
+                  <p>{personalData?.student_id || "Not provided"}</p>
+                )}
               </div>
               <div className="text-sm">
                 <p className="text-zinc-400">Status</p>
@@ -216,12 +255,16 @@ const UserProfilePage = () => {
                           <FormItem>
                             <FormLabel className="text-zinc-300">Full Name</FormLabel>
                             <FormControl>
-                              <Input
-                                placeholder="Full name"
-                                {...field}
-                                readOnly={!isEditingPersonal}
-                                className="border-zinc-700 bg-zinc-800 text-white"
-                              />
+                              {isLoadingPersonal ? (
+                                <Skeleton className="h-10 w-full" />
+                              ) : (
+                                <Input
+                                  placeholder="Full name"
+                                  {...field}
+                                  readOnly={!isEditingPersonal}
+                                  className="border-zinc-700 bg-zinc-800 text-white"
+                                />
+                              )}
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -234,12 +277,16 @@ const UserProfilePage = () => {
                           <FormItem>
                             <FormLabel className="text-zinc-300">Student ID</FormLabel>
                             <FormControl>
-                              <Input
-                                placeholder="Student identification number"
-                                {...field}
-                                readOnly={!isEditingPersonal}
-                                className="border-zinc-700 bg-zinc-800 text-white"
-                              />
+                              {isLoadingPersonal ? (
+                                <Skeleton className="h-10 w-full" />
+                              ) : (
+                                <Input
+                                  placeholder="Student identification number"
+                                  {...field}
+                                  readOnly={!isEditingPersonal}
+                                  className="border-zinc-700 bg-zinc-800 text-white"
+                                />
+                              )}
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -254,12 +301,16 @@ const UserProfilePage = () => {
                         <FormItem>
                           <FormLabel className="text-zinc-300">Email</FormLabel>
                           <FormControl>
-                            <Input
-                              placeholder="Email"
-                              {...field}
-                              readOnly
-                              className="border-zinc-700 bg-zinc-800 text-white"
-                            />
+                            {isLoadingPersonal ? (
+                              <Skeleton className="h-10 w-full" />
+                            ) : (
+                              <Input
+                                placeholder="Email"
+                                {...field}
+                                readOnly
+                                className="border-zinc-700 bg-zinc-800 text-white"
+                              />
+                            )}
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -310,12 +361,16 @@ const UserProfilePage = () => {
                         <FormItem>
                           <FormLabel className="text-zinc-300">GPA</FormLabel>
                           <FormControl>
-                            <Input
-                              placeholder="GPA"
-                              {...field}
-                              readOnly={!isEditingAcademic}
-                              className="border-zinc-700 bg-zinc-800 text-white"
-                            />
+                            {isLoadingAcademic ? (
+                              <Skeleton className="h-10 w-full" />
+                            ) : (
+                              <Input
+                                placeholder="GPA"
+                                {...field}
+                                readOnly={!isEditingAcademic}
+                                className="border-zinc-700 bg-zinc-800 text-white"
+                              />
+                            )}
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -330,17 +385,63 @@ const UserProfilePage = () => {
                         <FormItem>
                           <FormLabel className="text-zinc-300">Transcript URL</FormLabel>
                           <FormControl>
-                            <Input
-                              placeholder="Transcript URL"
-                              {...field}
-                              readOnly={!isEditingAcademic}
-                              className="border-zinc-700 bg-zinc-800 text-white"
-                            />
+                            {isLoadingAcademic ? (
+                              <Skeleton className="h-10 w-full" />
+                            ) : (
+                              <Input
+                                placeholder="Transcript URL"
+                                {...field}
+                                readOnly={!isEditingAcademic}
+                                className="border-zinc-700 bg-zinc-800 text-white"
+                              />
+                            )}
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
+
+                    {/* Interests Section - Multi Select Tags */}
+                    <div className="space-y-4">
+                      <FormLabel className="text-zinc-300">Interests</FormLabel>
+
+                      {/* Display existing interests as tags */}
+                      <div className="flex flex-wrap gap-2">
+                        {interests.map((interest) => (
+                          <div
+                            key={interest}
+                            className="flex items-center gap-1 rounded-full bg-blue-600 px-3 py-1 text-sm text-white"
+                          >
+                            <span>{interest}</span>
+                            {isEditingAcademic && (
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveInterest(interests.indexOf(interest))}
+                                className="ml-1 rounded-full p-0.5 hover:bg-blue-700"
+                              >
+                                <X className="h-3 w-3" />
+                              </button>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Input for adding new interests */}
+                      {isEditingAcademic && (
+                        <div className="space-y-2">
+                          <Input
+                            placeholder="Type an interest and press Enter (e.g., Programming, AI, Design)"
+                            value={interestInput}
+                            onChange={(e) => setInterestInput(e.target.value)}
+                            onKeyDown={handleAddInterest}
+                            className="border-zinc-700 bg-zinc-800 text-white"
+                          />
+                          <p className="text-xs text-zinc-400">
+                            Press Enter to add an interest. Click the X on tags to remove them.
+                          </p>
+                        </div>
+                      )}
+                    </div>
 
                     {/* Achievements Section */}
                     <div className="space-y-4">
@@ -365,202 +466,256 @@ const UserProfilePage = () => {
                         )}
                       </div>
 
-                      {achievementFields.map((achieveField, index) => (
-                        <div
-                          key={achieveField.id}
-                          className="space-y-2 rounded-lg border border-zinc-700 p-4"
-                        >
-                          <div className="flex items-center gap-2">
-                            <FormField
-                              control={academicForm.control}
-                              name={`achievements.${index}.title`}
-                              render={({ field }) => (
-                                <FormItem className="flex-1">
-                                  <FormLabel className="text-zinc-300">Achievement Title</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      placeholder="Achievement title"
-                                      {...field}
-                                      readOnly={!isEditingAcademic}
-                                      className="border-zinc-700 bg-zinc-800 text-white"
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            {isEditingAcademic && (
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => removeAchievement(index)}
-                                className="mt-6 h-8 w-8 p-0 text-zinc-400 hover:bg-zinc-800 hover:text-white"
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
-                            )}
-                          </div>
-                          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                            <FormField
-                              control={academicForm.control}
-                              name={`achievements.${index}.description`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel className="text-zinc-300">Description</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      placeholder="Achievement description"
-                                      {...field}
-                                      readOnly={!isEditingAcademic}
-                                      className="border-zinc-700 bg-zinc-800 text-white"
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={academicForm.control}
-                              name={`achievements.${index}.date`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel className="text-zinc-300">Date</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      placeholder="Achievement date"
-                                      {...field}
-                                      readOnly={!isEditingAcademic}
-                                      className="border-zinc-700 bg-zinc-800 text-white"
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
+                      {isLoadingAcademic ? (
+                        <div className="space-y-4">
+                          <div className="rounded-lg border border-zinc-700 p-4">
+                            <Skeleton className="h-10 w-full" />
+                            <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+                              <Skeleton className="h-10 w-full" />
+                              <Skeleton className="h-10 w-full" />
+                            </div>
                           </div>
                         </div>
-                      ))}
+                      ) : (
+                        achievementFields.map((achieveField, index) => (
+                          <div
+                            key={achieveField.id}
+                            className="space-y-2 rounded-lg border border-zinc-700 p-4"
+                          >
+                            <div className="flex items-center gap-2">
+                              <FormField
+                                control={academicForm.control}
+                                name={`achievements.${index}.title`}
+                                render={({ field }) => (
+                                  <FormItem className="flex-1">
+                                    <FormLabel className="text-zinc-300">
+                                      Achievement Title
+                                    </FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        placeholder="Achievement title"
+                                        {...field}
+                                        readOnly={!isEditingAcademic}
+                                        className="border-zinc-700 bg-zinc-800 text-white"
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              {isEditingAcademic && (
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => removeAchievement(index)}
+                                  className="mt-6 h-8 w-8 p-0 text-zinc-400 hover:bg-zinc-800 hover:text-white"
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              )}
+                            </div>
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                              <FormField
+                                control={academicForm.control}
+                                name={`achievements.${index}.description`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-zinc-300">Description</FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        placeholder="Achievement description"
+                                        {...field}
+                                        readOnly={!isEditingAcademic}
+                                        className="border-zinc-700 bg-zinc-800 text-white"
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              <FormField
+                                control={academicForm.control}
+                                name={`achievements.${index}.date`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-zinc-300">Date</FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        placeholder="Achievement date"
+                                        {...field}
+                                        readOnly={!isEditingAcademic}
+                                        className="border-zinc-700 bg-zinc-800 text-white"
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                          </div>
+                        ))
+                      )}
                     </div>
 
-                    {/* Memberships Section */}
+                    {/* Experiences Section */}
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
-                        <FormLabel className="text-zinc-300">Memberships</FormLabel>
+                        <FormLabel className="text-zinc-300">Experiences</FormLabel>
                         {isEditingAcademic && (
                           <Button
                             type="button"
                             variant="outline"
                             size="sm"
                             onClick={() =>
-                              appendMembership({
+                              appendExperience({
                                 organization: "",
                                 position: "",
                                 start_date: "",
                                 end_date: "",
+                                description: "",
                               })
                             }
                             className="flex items-center gap-1 bg-white text-black hover:bg-zinc-200"
                           >
-                            <Plus className="h-3 w-3" /> Add Membership
+                            <Plus className="h-3 w-3" /> Add Experience
                           </Button>
                         )}
                       </div>
 
-                      {membershipFields.map((membershipField, index) => (
-                        <div
-                          key={membershipField.id}
-                          className="space-y-2 rounded-lg border border-zinc-700 p-4"
-                        >
-                          <div className="flex items-center gap-2">
-                            <FormField
-                              control={academicForm.control}
-                              name={`memberships.${index}.organization`}
-                              render={({ field }) => (
-                                <FormItem className="flex-1">
-                                  <FormLabel className="text-zinc-300">Organization</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      placeholder="Organization name"
-                                      {...field}
-                                      readOnly={!isEditingAcademic}
-                                      className="border-zinc-700 bg-zinc-800 text-white"
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            {isEditingAcademic && (
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => removeMembership(index)}
-                                className="mt-6 h-8 w-8 p-0 text-zinc-400 hover:bg-zinc-800 hover:text-white"
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
-                            )}
-                          </div>
-                          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                            <FormField
-                              control={academicForm.control}
-                              name={`memberships.${index}.position`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel className="text-zinc-300">Position</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      placeholder="Position/Role"
-                                      {...field}
-                                      readOnly={!isEditingAcademic}
-                                      className="border-zinc-700 bg-zinc-800 text-white"
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={academicForm.control}
-                              name={`memberships.${index}.start_date`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel className="text-zinc-300">Start Date</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      placeholder="Start date"
-                                      {...field}
-                                      readOnly={!isEditingAcademic}
-                                      className="border-zinc-700 bg-zinc-800 text-white"
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
-                            <FormField
-                              control={academicForm.control}
-                              name={`memberships.${index}.end_date`}
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel className="text-zinc-300">End Date</FormLabel>
-                                  <FormControl>
-                                    <Input
-                                      placeholder="End date"
-                                      {...field}
-                                      readOnly={!isEditingAcademic}
-                                      className="border-zinc-700 bg-zinc-800 text-white"
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              )}
-                            />
+                      {isLoadingAcademic ? (
+                        <div className="space-y-4">
+                          <div className="rounded-lg border border-zinc-700 p-4">
+                            <Skeleton className="h-10 w-full" />
+                            <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+                              <Skeleton className="h-10 w-full" />
+                              <Skeleton className="h-10 w-full" />
+                            </div>
+                            <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+                              <Skeleton className="h-10 w-full" />
+                              <Skeleton className="h-10 w-full" />
+                            </div>
+                            <div className="mt-4">
+                              <Skeleton className="h-10 w-full" />
+                            </div>
                           </div>
                         </div>
-                      ))}
+                      ) : (
+                        experienceFields.map((experienceField, index) => (
+                          <div
+                            key={experienceField.id}
+                            className="space-y-2 rounded-lg border border-zinc-700 p-4"
+                          >
+                            <div className="flex items-center gap-2">
+                              <FormField
+                                control={academicForm.control}
+                                name={`experiences.${index}.organization`}
+                                render={({ field }) => (
+                                  <FormItem className="flex-1">
+                                    <FormLabel className="text-zinc-300">Organization</FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        placeholder="Organization name"
+                                        {...field}
+                                        readOnly={!isEditingAcademic}
+                                        className="border-zinc-700 bg-zinc-800 text-white"
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              {isEditingAcademic && (
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => removeExperience(index)}
+                                  className="mt-6 h-8 w-8 p-0 text-zinc-400 hover:bg-zinc-800 hover:text-white"
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              )}
+                            </div>
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                              <FormField
+                                control={academicForm.control}
+                                name={`experiences.${index}.position`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-zinc-300">Position</FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        placeholder="Position"
+                                        {...field}
+                                        readOnly={!isEditingAcademic}
+                                        className="border-zinc-700 bg-zinc-800 text-white"
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              <FormField
+                                control={academicForm.control}
+                                name={`experiences.${index}.start_date`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-zinc-300">Start Date</FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        placeholder="Start date"
+                                        {...field}
+                                        readOnly={!isEditingAcademic}
+                                        className="border-zinc-700 bg-zinc-800 text-white"
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                              <FormField
+                                control={academicForm.control}
+                                name={`experiences.${index}.end_date`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-zinc-300">End Date</FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        placeholder="End date"
+                                        {...field}
+                                        readOnly={!isEditingAcademic}
+                                        className="border-zinc-700 bg-zinc-800 text-white"
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                              <FormField
+                                control={academicForm.control}
+                                name={`experiences.${index}.description`}
+                                render={({ field }) => (
+                                  <FormItem>
+                                    <FormLabel className="text-zinc-300">Description</FormLabel>
+                                    <FormControl>
+                                      <Input
+                                        placeholder="Experience description"
+                                        {...field}
+                                        readOnly={!isEditingAcademic}
+                                        className="border-zinc-700 bg-zinc-800 text-white"
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                )}
+                              />
+                            </div>
+                          </div>
+                        ))
+                      )}
                     </div>
 
                     {isEditingAcademic && (

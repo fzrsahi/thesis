@@ -19,6 +19,8 @@ model User {
   Admin   Admin?
   Student Student?
   Advisor Advisor?
+
+  @@map("users")
 }
 
 model Admin {
@@ -27,6 +29,8 @@ model Admin {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("admins")
 }
 
 model Student {
@@ -40,10 +44,12 @@ model Student {
   updatedAt     DateTime @updatedAt
 
   achievements    Achievement[]
-  memberships     Membership[]
+  experiences     Experience[]
   recommendations Recommendation[]
   competitions    StudentCompetition[]
   chatSessions    LLMChatSession[]
+
+  @@map("students")
 }
 
 model Advisor {
@@ -52,6 +58,8 @@ model Advisor {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("advisors")
 }
 
 /// Student Data
@@ -64,18 +72,23 @@ model Achievement {
   createdAt   DateTime @default(now())
 
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@map("achievements")
 }
 
-model Membership {
-  id               Int       @id @default(autoincrement())
-  studentId        Int
-  organizationName String // Nama organisasi
-  position         String? // Jabatan dalam organisasi
-  startDate        DateTime // Mulai keanggotaan
-  endDate          DateTime? // Selesai (opsional)
-  createdAt        DateTime  @default(now())
+model Experience {
+  id           Int       @id @default(autoincrement())
+  studentId    Int
+  organization String // Nama organisasi/perusahaan/institusi
+  position     String? // Jabatan/posisi dalam pengalaman
+  description  String? // Deskripsi pengalaman
+  startDate    DateTime // Mulai pengalaman
+  endDate      DateTime? // Selesai (opsional)
+  createdAt    DateTime  @default(now())
 
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@map("experiences")
 }
 
 /// Competitions Catalog
@@ -95,6 +108,8 @@ model Competition {
 
   participants StudentCompetition[]
   stats        CompetitionStats? // Relasi ke statistik kompetisi
+
+  @@map("competitions")
 }
 
 /// Competition Statistics (untuk Category Distribution dan Performance Metrics)
@@ -105,6 +120,8 @@ model CompetitionStats {
   categoryDistribution Json        @default("{}") // Untuk pie chart, contoh: {"Teknologi": 0.6, "Desain": 0.3}
   performanceMetrics   Json        @default("{}") // Untuk bar chart, contoh: {"participation_rate": 0.7, "avg_match_score": 0.85}
   updatedAt            DateTime    @updatedAt
+
+  @@map("competitionStats")
 }
 
 /// Matching Results
@@ -122,6 +139,7 @@ model StudentCompetition {
   competition Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
 
   @@unique([studentId, competitionId])
+  @@map("studentCompetitions")
 }
 
 /// Recommendation Logs
@@ -133,6 +151,8 @@ model Recommendation {
   createdAt DateTime @default(now())
 
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@map("recommendations")
 }
 
 /// Chat Sessions & Messages
@@ -144,6 +164,8 @@ model LLMChatSession {
 
   student  Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
   messages LLMChatMessage[]
+
+  @@map("llmChatSessions")
 }
 
 model LLMChatMessage {
@@ -154,6 +176,8 @@ model LLMChatMessage {
   createdAt DateTime @default(now())
 
   session LLMChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@map("llmChatMessages")
 }
 
 /// Alumni Data for RAG Knowledge Base
@@ -168,6 +192,8 @@ model AlumniExperience {
   result       String // Hasil lomba, contoh: "Juara 1"
   year         Int // Tahun lomba
   createdAt    DateTime @default(now())
+
+  @@map("alumniExperiences")
 }
 
 /// Embeddings (Crucial for RAG: use pgvector for ease of vector querying)
@@ -177,4 +203,6 @@ model Embedding {
   vector    Bytes // Simpan vektor (byte array)
   metadata  Json?    @default("{}") // Contoh: { "type": "competition", "id": 5 }
   createdAt DateTime @default(now())
+
+  @@map("embeddings")
 }

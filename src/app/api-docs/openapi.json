@@ -470,10 +470,10 @@
               "$ref": "#/components/schemas/Achievement"
             }
           },
-          "memberships": {
+          "experiences": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Membership"
+              "$ref": "#/components/schemas/Experience"
             }
           }
         }
@@ -493,10 +493,10 @@
               "$ref": "#/components/schemas/AchievementCreate"
             }
           },
-          "memberships": {
+          "experiences": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/MembershipCreate"
+              "$ref": "#/components/schemas/ExperienceCreate"
             }
           }
         }
@@ -535,13 +535,16 @@
         },
         "required": ["title", "description", "date"]
       },
-      "Membership": {
+      "Experience": {
         "type": "object",
         "properties": {
           "id": {
             "type": "integer"
           },
           "organization": {
+            "type": "string"
+          },
+          "description": {
             "type": "string"
           },
           "position": {
@@ -557,13 +560,16 @@
           }
         }
       },
-      "MembershipCreate": {
+      "ExperienceCreate": {
         "type": "object",
         "properties": {
           "organization": {
             "type": "string"
           },
           "position": {
+            "type": "string"
+          },
+          "description": {
             "type": "string"
           },
           "start_date": {
@@ -575,7 +581,7 @@
             "format": "date"
           }
         },
-        "required": ["organization", "position", "start_date"]
+        "required": ["organization", "position", "start_date", "description"]
       },
       "ErrorResponse": {
         "type": "object",
