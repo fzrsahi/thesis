@@ -9,3 +9,8 @@ export const GET = async (_request: NextRequest) =>
       student_id: "12345678",
     },
   });
+
+export const PUT = async (_request: NextRequest) =>
+  NextResponse.json({
+    success: true,
+  });

@@ -20,7 +20,13 @@ export const GET = async (_request: NextRequest) =>
           position: "Position 1",
           start_date: "2021-01-01",
           end_date: "2021-01-01",
+          description: "Description 1",
         },
       ],
     },
+  });
+
+export const PUT = async (_request: NextRequest) =>
+  NextResponse.json({
+    success: true,
   });

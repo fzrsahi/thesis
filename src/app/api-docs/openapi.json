@@ -257,6 +257,34 @@
           }
         }
       }
+    },
+    "/students/transcript": {
+      "post": {
+        "summary": "Upload student transcript",
+        "description": "Upload student's transcript file",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "transcript": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Transcript file upload (PDF format)"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {

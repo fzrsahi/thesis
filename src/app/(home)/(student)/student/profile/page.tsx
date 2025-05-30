@@ -1,9 +1,12 @@
+/* eslint-disable jsx-a11y/click-events-have-key-events */
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+
 "use client";
 
 import { Separator } from "@radix-ui/react-dropdown-menu";
-import { Plus, X, User, GraduationCap } from "lucide-react";
+import { Plus, X, User, GraduationCap, Upload } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useState, useEffect, KeyboardEvent } from "react";
+import { useState, useEffect, KeyboardEvent, useRef } from "react";
 import { useFieldArray } from "react-hook-form";
 import { toast } from "sonner";
 
@@ -32,6 +35,9 @@ const UserProfilePage = () => {
   const [isEditingAcademic, setIsEditingAcademic] = useState(false);
   const [interestInput, setInterestInput] = useState("");
   const [interests, setInterests] = useState<string[]>([]);
+  const [transcriptFile, setTranscriptFile] = useState<File | null>(null);
+  const [transcriptPreview, setTranscriptPreview] = useState<string>("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
     data: personalData,
@@ -76,10 +82,12 @@ const UserProfilePage = () => {
       academicForm.reset({
         gpa: academicData.gpa || "",
         transcript_url: academicData.transcript_url || "",
+        interests: academicData.interests || [],
         achievements: academicData.achievements || [],
         experiences: academicData.experiences || [],
       });
       setInterests(academicData.interests || []);
+      setTranscriptPreview(academicData.transcript_url || "");
     }
   }, [academicData, academicForm]);
 
@@ -100,6 +108,45 @@ const UserProfilePage = () => {
     setInterests(updatedInterests);
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const allowedTypes = ["application/pdf", "image/jpeg", "image/png", "image/jpg"];
+      if (!allowedTypes.includes(file.type)) {
+        toast.error("Invalid file type", {
+          description: "Please upload a PDF",
+        });
+        return;
+      }
+
+      const maxSize = 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        toast.error("File too large", {
+          description: "Please upload a file smaller than 5MB",
+        });
+        return;
+      }
+
+      setTranscriptFile(file);
+      setTranscriptPreview(file.name);
+      toast.success("File selected", {
+        description: `${file.name} is ready to upload`,
+      });
+    }
+  };
+
+  const handleUploadClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleRemoveFile = () => {
+    setTranscriptFile(null);
+    setTranscriptPreview("");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   const onSubmitPersonal = () => {
     toast("Personal data updated successfully", {
       description: "Your personal information has been saved",
@@ -108,6 +155,11 @@ const UserProfilePage = () => {
   };
 
   const onSubmitAcademic = () => {
+    // Here you would handle the file upload to your server
+    if (transcriptFile) {
+      // Upload logic would go here
+    }
+
     toast("Academic data updated successfully", {
       description: "Your academic information has been saved",
     });
@@ -377,29 +429,110 @@ const UserProfilePage = () => {
                       )}
                     />
 
-                    {/* Transcript URL Section */}
-                    <FormField
-                      control={academicForm.control}
-                      name="transcript_url"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-zinc-300">Transcript URL</FormLabel>
-                          <FormControl>
-                            {isLoadingAcademic ? (
-                              <Skeleton className="h-10 w-full" />
-                            ) : (
-                              <Input
-                                placeholder="Transcript URL"
-                                {...field}
-                                readOnly={!isEditingAcademic}
-                                className="border-zinc-700 bg-zinc-800 text-white"
+                    {/* Transcript Upload Section */}
+                    <div className="space-y-4">
+                      <FormLabel className="text-zinc-300">Transcript</FormLabel>
+
+                      {isLoadingAcademic ? (
+                        <Skeleton className="h-32 w-full" />
+                      ) : (
+                        <div className="space-y-4">
+                          {/* Current transcript display */}
+                          {transcriptPreview && !transcriptFile && (
+                            <div className="rounded-lg border border-zinc-700 bg-zinc-800 p-4">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <div className="rounded bg-zinc-600 p-2">
+                                    <Upload className="h-4 w-4" />
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-medium text-white">
+                                      Current Transcript
+                                    </p>
+                                    <p className="text-xs text-zinc-400">
+                                      {transcriptPreview.includes("http")
+                                        ? "Uploaded file"
+                                        : transcriptPreview}
+                                    </p>
+                                  </div>
+                                </div>
+                                {transcriptPreview.includes("http") && (
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => window.open(transcriptPreview, "_blank")}
+                                    className="bg-zinc-700 text-white hover:bg-zinc-600"
+                                  >
+                                    View
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* File upload area */}
+                          {isEditingAcademic && (
+                            <div className="space-y-4">
+                              {/* Selected file preview */}
+                              {transcriptFile && (
+                                <div className="rounded-lg border border-green-600 bg-green-900/20 p-4">
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-2">
+                                      <div className="rounded bg-green-600 p-2">
+                                        <Upload className="h-4 w-4" />
+                                      </div>
+                                      <div>
+                                        <p className="text-sm font-medium text-white">
+                                          Selected File
+                                        </p>
+                                        <p className="text-xs text-zinc-400">
+                                          {transcriptFile.name}
+                                        </p>
+                                        <p className="text-xs text-zinc-400">
+                                          {(transcriptFile.size / 1024 / 1024).toFixed(2)} MB
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <Button
+                                      type="button"
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={handleRemoveFile}
+                                      className="text-red-400 hover:bg-red-900/20 hover:text-red-300"
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Upload button */}
+                              <div
+                                onClick={handleUploadClick}
+                                className="cursor-pointer rounded-lg border-2 border-dashed border-zinc-600 bg-zinc-800/50 p-8 text-center transition-colors hover:border-zinc-500 hover:bg-zinc-800"
+                              >
+                                <Upload className="mx-auto h-8 w-8 text-zinc-400" />
+                                <p className="mt-2 text-sm font-medium text-white">
+                                  {transcriptFile ? "Change transcript file" : "Upload transcript"}
+                                </p>
+                                <p className="mt-1 text-xs text-zinc-400">
+                                  PDF, JPEG, PNG up to 5MB
+                                </p>
+                              </div>
+
+                              <input
+                                ref={fileInputRef}
+                                type="file"
+                                accept=".pdf,.jpg,.jpeg,.png"
+                                onChange={handleFileChange}
+                                className="hidden"
                               />
-                            )}
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
+                            </div>
+                          )}
+                        </div>
                       )}
-                    />
+                    </div>
 
                     {/* Interests Section - Multi Select Tags */}
                     <div className="space-y-4">
@@ -410,14 +543,14 @@ const UserProfilePage = () => {
                         {interests.map((interest) => (
                           <div
                             key={interest}
-                            className="flex items-center gap-1 rounded-full bg-blue-600 px-3 py-1 text-sm text-white"
+                            className="flex items-center gap-1 rounded-full bg-zinc-600 px-3 py-1 text-sm text-white"
                           >
                             <span>{interest}</span>
                             {isEditingAcademic && (
                               <button
                                 type="button"
                                 onClick={() => handleRemoveInterest(interests.indexOf(interest))}
-                                className="ml-1 rounded-full p-0.5 hover:bg-blue-700"
+                                className="ml-1 rounded-full p-0.5 hover:bg-zinc-700"
                               >
                                 <X className="h-3 w-3" />
                               </button>

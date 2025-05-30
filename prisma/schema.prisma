@@ -96,9 +96,9 @@ model Competition {
   id           Int      @id @default(autoincrement())
   title        String // Judul lomba, misalnya: "GEMASTIK Data Mining"
   description  String // Deskripsi lomba
-  field        String // Bidang, misalnya: "Teknologi", "Desain" (untuk Category Distribution)
+  field        String[] // Bidang, misalnya: "Teknologi", "Desain" (untuk Category Distribution)
   type         String // Jenis: "Individu" atau "Tim"
-  minGPA       Float? // IPK minimal
+  minGPA       String? // IPK minimal
   requirements Json?    @default("{}") // Kriteria khusus, contoh: {"language": "Python", "experience": "Hackathon"}
   startDate    DateTime // Tanggal mulai lomba
   endDate      DateTime // Tanggal berakhir / deadline
@@ -184,8 +184,8 @@ model LLMChatMessage {
 model AlumniExperience {
   id           Int      @id @default(autoincrement())
   name         String // Nama senior
-  gpa          Float // IPK mereka
-  interests    Json     @default("[]") // Minat senior sebagai array JSON
+  gpa          String // IPK mereka
+  interests    String[] // Minat senior sebagai array JSON
   achievements String? // Ringkasan prestasi
   organization String? // Organisasi utama
   competition  String // Nama lomba yang diikuti

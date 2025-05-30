@@ -297,7 +297,7 @@ const EmptyState = ({ onStartAnalysis }: { onStartAnalysis: () => void }) => (
     </div>
     <Button
       onClick={onStartAnalysis}
-      className="border border-zinc-700 bg-zinc-800 text-white hover:bg-zinc-700"
+      className="cursor-pointer border border-zinc-700 bg-zinc-800 text-white hover:bg-zinc-700"
     >
       <Activity className="mr-2 h-4 w-4" />
       Start Profile Analysis
