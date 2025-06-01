@@ -27,7 +27,6 @@ const useMutationPutPersonalData = (options?: {
   return useMutation({
     mutationFn: putPersonalData,
     onSuccess: (data) => {
-      // Update the cache directly instead of invalidating to avoid refetch
       queryClient.setQueryData(["personal-data"], data.data);
 
       options?.onSuccess?.(data);

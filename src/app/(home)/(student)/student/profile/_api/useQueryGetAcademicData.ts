@@ -18,8 +18,8 @@ const useQueryGetAcademicData = () =>
   useQuery({
     queryKey: ["academic-data"],
     queryFn: getAcademicDataQuery,
-    staleTime: 5 * 60 * 1000, // 5 minutes - reduce unnecessary refetches
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 
 export { useQueryGetAcademicData };
