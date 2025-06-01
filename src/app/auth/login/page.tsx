@@ -82,7 +82,7 @@ const LoginForm = () => {
               />
             </svg>
           </div>
-          <h1 className="text-xl font-semibold text-white">Selamat datang di Chill LLMs</h1>
+          <h1 className="text-xl font-semibold text-white">Selamat datang di Scout</h1>
           <p className="mt-1 text-center text-xs text-zinc-400">
             Masuk dengan akun Anda untuk melanjutkan
           </p>
@@ -163,7 +163,7 @@ const LoginForm = () => {
       </motion.div>
 
       <div className="absolute right-0 bottom-4 left-0 z-10 text-center text-xs text-zinc-600">
-        © {new Date().getFullYear()} Chill LLMs.
+        © {new Date().getFullYear()} Scout.
       </div>
     </div>
   );

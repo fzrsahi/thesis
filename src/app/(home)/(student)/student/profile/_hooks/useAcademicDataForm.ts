@@ -6,15 +6,7 @@ import {
   academicDataSchema,
 } from "@/app/shared/schema/student/profile/ProfileSchema";
 
-import { useQueryGetAcademicData } from "./useQueryGetAcademicData";
-
-const useAcademicData = () => {
-  const { data, isLoading, error } = useQueryGetAcademicData();
-
-  return { data, isLoading, error };
-};
-
-const useAcademicForm = () =>
+const useAcademicDataForm = () =>
   useForm<AcademicDataPayload>({
     resolver: zodResolver(academicDataSchema),
     defaultValues: {
@@ -25,4 +17,4 @@ const useAcademicForm = () =>
     },
   });
 
-export { useAcademicData, useAcademicForm };
+export { useAcademicDataForm };

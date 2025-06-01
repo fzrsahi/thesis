@@ -23,7 +23,7 @@ const MyChatPage = () => (
         </div>
         <div className="flex-1 rounded-xl bg-zinc-700/70 p-4">
           <p className="text-sm text-white">
-            Saya ingin bertanya tentang fitur-fitur baru dari ChillLLMs
+            Saya ingin bertanya tentang fitur-fitur baru dari Scout
           </p>
         </div>
       </div>
@@ -34,7 +34,7 @@ const MyChatPage = () => (
         </div>
         <div className="flex-1 rounded-xl bg-zinc-800/70 p-4">
           <p className="text-sm text-zinc-300">
-            Tentu! ChillLLMs baru saja merilis beberapa fitur baru, termasuk:
+            Tentu! Scout baru saja merilis beberapa fitur baru, termasuk:
           </p>
           <ul className="mt-2 list-disc space-y-1 pl-4 text-sm text-zinc-300">
             <li>Dukungan untuk lebih banyak model AI</li>

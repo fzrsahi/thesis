@@ -179,7 +179,7 @@ export const UserSidebar = () => {
           )}
         >
           <div className={cn("text-center text-xs text-zinc-500", collapsed ? "hidden" : "block")}>
-            © 2025 ChillLLMs
+            © 2025 Scout
           </div>
           {collapsed && (
             <div className="text-zinc-500">

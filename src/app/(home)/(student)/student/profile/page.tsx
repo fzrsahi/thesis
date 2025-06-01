@@ -8,8 +8,11 @@ import { Plus, X, User, GraduationCap, Upload } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useState, useEffect, KeyboardEvent, useRef } from "react";
 import { useFieldArray } from "react-hook-form";
-import { toast } from "sonner";
 
+import {
+  PersonalDataPayload,
+  AcademicDataPayload,
+} from "@/app/shared/schema/student/profile/ProfileSchema";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import Button from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -25,14 +28,15 @@ import Input from "@/components/ui/input";
 import Skeleton from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
-import { useAcademicData, useAcademicForm } from "./_api/useAcademicData";
-import { usePersonalData, usePersonalForm } from "./_api/usePersonalData";
+import { useMutationPutAcademicData } from "./_api/useMutationPutAcademicData";
+import { useAcademicData } from "./_hooks/useAcademicData";
+import { useAcademicDataForm } from "./_hooks/useAcademicDataForm";
+import { usePersonalData } from "./_hooks/usePersonalData";
+import { usePersonalDataForm } from "./_hooks/usePersonalDataForm";
 
 const UserProfilePage = () => {
   const { data: session } = useSession();
   const [activeTab, setActiveTab] = useState<"personal" | "academic">("personal");
-  const [isEditingPersonal, setIsEditingPersonal] = useState(false);
-  const [isEditingAcademic, setIsEditingAcademic] = useState(false);
   const [interestInput, setInterestInput] = useState("");
   const [interests, setInterests] = useState<string[]>([]);
   const [transcriptFile, setTranscriptFile] = useState<File | null>(null);
@@ -47,8 +51,14 @@ const UserProfilePage = () => {
 
   const { data: academicData, isLoading: isLoadingAcademic } = useAcademicData();
 
-  const personalForm = usePersonalForm();
-  const academicForm = useAcademicForm();
+  const {
+    form: personalForm,
+    handleSubmit: handleSubmitPersonal,
+    isLoading: isSubmittingPersonal,
+  } = usePersonalDataForm(personalData);
+
+  const academicForm = useAcademicDataForm();
+
   const {
     fields: achievementFields,
     append: appendAchievement,
@@ -67,15 +77,14 @@ const UserProfilePage = () => {
     name: "experiences",
   });
 
-  useEffect(() => {
-    if (personalData) {
-      personalForm.reset({
-        name: personalData.name || "",
-        student_id: personalData.student_id || "",
-        email: personalData.email || "",
-      });
-    }
-  }, [personalData, personalForm]);
+  const { mutate: putAcademicData, isPending: isSubmittingAcademic } = useMutationPutAcademicData({
+    onError: () => {
+      // Error handling without toast
+    },
+    onSuccess: () => {
+      // Success handling without toast
+    },
+  });
 
   useEffect(() => {
     if (academicData) {
@@ -113,25 +122,16 @@ const UserProfilePage = () => {
     if (file) {
       const allowedTypes = ["application/pdf", "image/jpeg", "image/png", "image/jpg"];
       if (!allowedTypes.includes(file.type)) {
-        toast.error("Invalid file type", {
-          description: "Please upload a PDF",
-        });
         return;
       }
 
       const maxSize = 5 * 1024 * 1024;
       if (file.size > maxSize) {
-        toast.error("File too large", {
-          description: "Please upload a file smaller than 5MB",
-        });
         return;
       }
 
       setTranscriptFile(file);
       setTranscriptPreview(file.name);
-      toast.success("File selected", {
-        description: `${file.name} is ready to upload`,
-      });
     }
   };
 
@@ -147,23 +147,18 @@ const UserProfilePage = () => {
     }
   };
 
-  const onSubmitPersonal = () => {
-    toast("Personal data updated successfully", {
-      description: "Your personal information has been saved",
-    });
-    setIsEditingPersonal(false);
+  const onSubmitPersonal = (data: PersonalDataPayload) => {
+    handleSubmitPersonal(data);
   };
 
-  const onSubmitAcademic = () => {
-    // Here you would handle the file upload to your server
-    if (transcriptFile) {
-      // Upload logic would go here
-    }
+  const onSubmitAcademic = (data: AcademicDataPayload) => {
+    // Update interests in the form data
+    const formDataWithInterests = {
+      ...data,
+      interests,
+    };
 
-    toast("Academic data updated successfully", {
-      description: "Your academic information has been saved",
-    });
-    setIsEditingAcademic(false);
+    putAcademicData(formDataWithInterests);
   };
 
   const tabs = [
@@ -276,7 +271,7 @@ const UserProfilePage = () => {
         <div className="space-y-8 lg:col-span-3">
           {activeTab === "personal" && (
             <Card className="border-zinc-800 bg-zinc-900 text-white">
-              <CardHeader className="flex flex-row items-center justify-between">
+              <CardHeader>
                 <div>
                   <CardTitle className="flex items-center gap-2">
                     <User className="h-5 w-5" />
@@ -286,12 +281,6 @@ const UserProfilePage = () => {
                     Your personal information
                   </CardDescription>
                 </div>
-                <Button
-                  onClick={() => setIsEditingPersonal(!isEditingPersonal)}
-                  className="bg-white text-black hover:bg-zinc-200"
-                >
-                  {isEditingPersonal ? "Cancel" : "Edit"}
-                </Button>
               </CardHeader>
               <CardContent>
                 <Form {...personalForm}>
@@ -313,7 +302,6 @@ const UserProfilePage = () => {
                                 <Input
                                   placeholder="Full name"
                                   {...field}
-                                  readOnly={!isEditingPersonal}
                                   className="border-zinc-700 bg-zinc-800 text-white"
                                 />
                               )}
@@ -335,7 +323,6 @@ const UserProfilePage = () => {
                                 <Input
                                   placeholder="Student identification number"
                                   {...field}
-                                  readOnly={!isEditingPersonal}
                                   className="border-zinc-700 bg-zinc-800 text-white"
                                 />
                               )}
@@ -369,11 +356,13 @@ const UserProfilePage = () => {
                       )}
                     />
 
-                    {isEditingPersonal && (
-                      <Button type="submit" className="bg-white text-black hover:bg-zinc-200">
-                        Save Personal Data
-                      </Button>
-                    )}
+                    <Button
+                      type="submit"
+                      disabled={isSubmittingPersonal}
+                      className="bg-white text-black hover:bg-zinc-200 disabled:opacity-50"
+                    >
+                      {isSubmittingPersonal ? "Updating..." : "Update Personal Data"}
+                    </Button>
                   </form>
                 </Form>
               </CardContent>
@@ -382,7 +371,7 @@ const UserProfilePage = () => {
 
           {activeTab === "academic" && (
             <Card className="border-zinc-800 bg-zinc-900 text-white">
-              <CardHeader className="flex flex-row items-center justify-between">
+              <CardHeader>
                 <div>
                   <CardTitle className="flex items-center gap-2">
                     <GraduationCap className="h-5 w-5" />
@@ -392,12 +381,6 @@ const UserProfilePage = () => {
                     Your academic information and achievements
                   </CardDescription>
                 </div>
-                <Button
-                  onClick={() => setIsEditingAcademic(!isEditingAcademic)}
-                  className="bg-white text-black hover:bg-zinc-200"
-                >
-                  {isEditingAcademic ? "Cancel" : "Edit"}
-                </Button>
               </CardHeader>
               <CardContent>
                 <Form {...academicForm}>
@@ -419,7 +402,6 @@ const UserProfilePage = () => {
                               <Input
                                 placeholder="GPA"
                                 {...field}
-                                readOnly={!isEditingAcademic}
                                 className="border-zinc-700 bg-zinc-800 text-white"
                               />
                             )}
@@ -472,64 +454,58 @@ const UserProfilePage = () => {
                           )}
 
                           {/* File upload area */}
-                          {isEditingAcademic && (
-                            <div className="space-y-4">
-                              {/* Selected file preview */}
-                              {transcriptFile && (
-                                <div className="rounded-lg border border-green-600 bg-green-900/20 p-4">
-                                  <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-2">
-                                      <div className="rounded bg-green-600 p-2">
-                                        <Upload className="h-4 w-4" />
-                                      </div>
-                                      <div>
-                                        <p className="text-sm font-medium text-white">
-                                          Selected File
-                                        </p>
-                                        <p className="text-xs text-zinc-400">
-                                          {transcriptFile.name}
-                                        </p>
-                                        <p className="text-xs text-zinc-400">
-                                          {(transcriptFile.size / 1024 / 1024).toFixed(2)} MB
-                                        </p>
-                                      </div>
+                          <div className="space-y-4">
+                            {/* Selected file preview */}
+                            {transcriptFile && (
+                              <div className="rounded-lg border border-green-600 bg-green-900/20 p-4">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <div className="rounded bg-green-600 p-2">
+                                      <Upload className="h-4 w-4" />
                                     </div>
-                                    <Button
-                                      type="button"
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={handleRemoveFile}
-                                      className="text-red-400 hover:bg-red-900/20 hover:text-red-300"
-                                    >
-                                      <X className="h-4 w-4" />
-                                    </Button>
+                                    <div>
+                                      <p className="text-sm font-medium text-white">
+                                        Selected File
+                                      </p>
+                                      <p className="text-xs text-zinc-400">{transcriptFile.name}</p>
+                                      <p className="text-xs text-zinc-400">
+                                        {(transcriptFile.size / 1024 / 1024).toFixed(2)} MB
+                                      </p>
+                                    </div>
                                   </div>
+                                  <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={handleRemoveFile}
+                                    className="text-red-400 hover:bg-red-900/20 hover:text-red-300"
+                                  >
+                                    <X className="h-4 w-4" />
+                                  </Button>
                                 </div>
-                              )}
-
-                              {/* Upload button */}
-                              <div
-                                onClick={handleUploadClick}
-                                className="cursor-pointer rounded-lg border-2 border-dashed border-zinc-600 bg-zinc-800/50 p-8 text-center transition-colors hover:border-zinc-500 hover:bg-zinc-800"
-                              >
-                                <Upload className="mx-auto h-8 w-8 text-zinc-400" />
-                                <p className="mt-2 text-sm font-medium text-white">
-                                  {transcriptFile ? "Change transcript file" : "Upload transcript"}
-                                </p>
-                                <p className="mt-1 text-xs text-zinc-400">
-                                  PDF, JPEG, PNG up to 5MB
-                                </p>
                               </div>
+                            )}
 
-                              <input
-                                ref={fileInputRef}
-                                type="file"
-                                accept=".pdf,.jpg,.jpeg,.png"
-                                onChange={handleFileChange}
-                                className="hidden"
-                              />
+                            {/* Upload button */}
+                            <div
+                              onClick={handleUploadClick}
+                              className="cursor-pointer rounded-lg border-2 border-dashed border-zinc-600 bg-zinc-800/50 p-8 text-center transition-colors hover:border-zinc-500 hover:bg-zinc-800"
+                            >
+                              <Upload className="mx-auto h-8 w-8 text-zinc-400" />
+                              <p className="mt-2 text-sm font-medium text-white">
+                                {transcriptFile ? "Change transcript file" : "Upload transcript"}
+                              </p>
+                              <p className="mt-1 text-xs text-zinc-400">PDF, JPEG, PNG up to 5MB</p>
                             </div>
-                          )}
+
+                            <input
+                              ref={fileInputRef}
+                              type="file"
+                              accept=".pdf,.jpg,.jpeg,.png"
+                              onChange={handleFileChange}
+                              className="hidden"
+                            />
+                          </div>
                         </div>
                       )}
                     </div>
@@ -546,57 +522,51 @@ const UserProfilePage = () => {
                             className="flex items-center gap-1 rounded-full bg-zinc-600 px-3 py-1 text-sm text-white"
                           >
                             <span>{interest}</span>
-                            {isEditingAcademic && (
-                              <button
-                                type="button"
-                                onClick={() => handleRemoveInterest(interests.indexOf(interest))}
-                                className="ml-1 rounded-full p-0.5 hover:bg-zinc-700"
-                              >
-                                <X className="h-3 w-3" />
-                              </button>
-                            )}
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveInterest(interests.indexOf(interest))}
+                              className="ml-1 rounded-full p-0.5 hover:bg-zinc-700"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
                           </div>
                         ))}
                       </div>
 
                       {/* Input for adding new interests */}
-                      {isEditingAcademic && (
-                        <div className="space-y-2">
-                          <Input
-                            placeholder="Type an interest and press Enter (e.g., Programming, AI, Design)"
-                            value={interestInput}
-                            onChange={(e) => setInterestInput(e.target.value)}
-                            onKeyDown={handleAddInterest}
-                            className="border-zinc-700 bg-zinc-800 text-white"
-                          />
-                          <p className="text-xs text-zinc-400">
-                            Press Enter to add an interest. Click the X on tags to remove them.
-                          </p>
-                        </div>
-                      )}
+                      <div className="space-y-2">
+                        <Input
+                          placeholder="Type an interest and press Enter (e.g., Programming, AI, Design)"
+                          value={interestInput}
+                          onChange={(e) => setInterestInput(e.target.value)}
+                          onKeyDown={handleAddInterest}
+                          className="border-zinc-700 bg-zinc-800 text-white"
+                        />
+                        <p className="text-xs text-zinc-400">
+                          Press Enter to add an interest. Click the X on tags to remove them.
+                        </p>
+                      </div>
                     </div>
 
                     {/* Achievements Section */}
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <FormLabel className="text-zinc-300">Achievements</FormLabel>
-                        {isEditingAcademic && (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() =>
-                              appendAchievement({
-                                title: "",
-                                description: "",
-                                date: "",
-                              })
-                            }
-                            className="flex items-center gap-1 bg-white text-black hover:bg-zinc-200"
-                          >
-                            <Plus className="h-3 w-3" /> Add Achievement
-                          </Button>
-                        )}
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            appendAchievement({
+                              title: "",
+                              description: "",
+                              date: "",
+                            })
+                          }
+                          className="flex items-center gap-1 bg-white text-black hover:bg-zinc-200"
+                        >
+                          <Plus className="h-3 w-3" /> Add Achievement
+                        </Button>
                       </div>
 
                       {isLoadingAcademic ? (
@@ -628,7 +598,6 @@ const UserProfilePage = () => {
                                       <Input
                                         placeholder="Achievement title"
                                         {...field}
-                                        readOnly={!isEditingAcademic}
                                         className="border-zinc-700 bg-zinc-800 text-white"
                                       />
                                     </FormControl>
@@ -636,17 +605,15 @@ const UserProfilePage = () => {
                                   </FormItem>
                                 )}
                               />
-                              {isEditingAcademic && (
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => removeAchievement(index)}
-                                  className="mt-6 h-8 w-8 p-0 text-zinc-400 hover:bg-zinc-800 hover:text-white"
-                                >
-                                  <X className="h-4 w-4" />
-                                </Button>
-                              )}
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeAchievement(index)}
+                                className="mt-6 h-8 w-8 p-0 text-zinc-400 hover:bg-zinc-800 hover:text-white"
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
                             </div>
                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                               <FormField
@@ -659,7 +626,6 @@ const UserProfilePage = () => {
                                       <Input
                                         placeholder="Achievement description"
                                         {...field}
-                                        readOnly={!isEditingAcademic}
                                         className="border-zinc-700 bg-zinc-800 text-white"
                                       />
                                     </FormControl>
@@ -677,7 +643,6 @@ const UserProfilePage = () => {
                                       <Input
                                         placeholder="Achievement date"
                                         {...field}
-                                        readOnly={!isEditingAcademic}
                                         className="border-zinc-700 bg-zinc-800 text-white"
                                       />
                                     </FormControl>
@@ -695,25 +660,23 @@ const UserProfilePage = () => {
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
                         <FormLabel className="text-zinc-300">Experiences</FormLabel>
-                        {isEditingAcademic && (
-                          <Button
-                            type="button"
-                            variant="outline"
-                            size="sm"
-                            onClick={() =>
-                              appendExperience({
-                                organization: "",
-                                position: "",
-                                start_date: "",
-                                end_date: "",
-                                description: "",
-                              })
-                            }
-                            className="flex items-center gap-1 bg-white text-black hover:bg-zinc-200"
-                          >
-                            <Plus className="h-3 w-3" /> Add Experience
-                          </Button>
-                        )}
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            appendExperience({
+                              organization: "",
+                              position: "",
+                              start_date: "",
+                              end_date: "",
+                              description: "",
+                            })
+                          }
+                          className="flex items-center gap-1 bg-white text-black hover:bg-zinc-200"
+                        >
+                          <Plus className="h-3 w-3" /> Add Experience
+                        </Button>
                       </div>
 
                       {isLoadingAcademic ? (
@@ -750,7 +713,6 @@ const UserProfilePage = () => {
                                       <Input
                                         placeholder="Organization name"
                                         {...field}
-                                        readOnly={!isEditingAcademic}
                                         className="border-zinc-700 bg-zinc-800 text-white"
                                       />
                                     </FormControl>
@@ -758,17 +720,15 @@ const UserProfilePage = () => {
                                   </FormItem>
                                 )}
                               />
-                              {isEditingAcademic && (
-                                <Button
-                                  type="button"
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => removeExperience(index)}
-                                  className="mt-6 h-8 w-8 p-0 text-zinc-400 hover:bg-zinc-800 hover:text-white"
-                                >
-                                  <X className="h-4 w-4" />
-                                </Button>
-                              )}
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => removeExperience(index)}
+                                className="mt-6 h-8 w-8 p-0 text-zinc-400 hover:bg-zinc-800 hover:text-white"
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
                             </div>
                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                               <FormField
@@ -781,7 +741,6 @@ const UserProfilePage = () => {
                                       <Input
                                         placeholder="Position"
                                         {...field}
-                                        readOnly={!isEditingAcademic}
                                         className="border-zinc-700 bg-zinc-800 text-white"
                                       />
                                     </FormControl>
@@ -799,7 +758,6 @@ const UserProfilePage = () => {
                                       <Input
                                         placeholder="Start date"
                                         {...field}
-                                        readOnly={!isEditingAcademic}
                                         className="border-zinc-700 bg-zinc-800 text-white"
                                       />
                                     </FormControl>
@@ -819,7 +777,6 @@ const UserProfilePage = () => {
                                       <Input
                                         placeholder="End date"
                                         {...field}
-                                        readOnly={!isEditingAcademic}
                                         className="border-zinc-700 bg-zinc-800 text-white"
                                       />
                                     </FormControl>
@@ -837,7 +794,6 @@ const UserProfilePage = () => {
                                       <Input
                                         placeholder="Experience description"
                                         {...field}
-                                        readOnly={!isEditingAcademic}
                                         className="border-zinc-700 bg-zinc-800 text-white"
                                       />
                                     </FormControl>
@@ -851,11 +807,13 @@ const UserProfilePage = () => {
                       )}
                     </div>
 
-                    {isEditingAcademic && (
-                      <Button type="submit" className="bg-white text-black hover:bg-zinc-200">
-                        Save Academic Data
-                      </Button>
-                    )}
+                    <Button
+                      type="submit"
+                      disabled={isSubmittingAcademic}
+                      className="bg-white text-black hover:bg-zinc-200 disabled:opacity-50"
+                    >
+                      {isSubmittingAcademic ? "Updating..." : "Update Academic Data"}
+                    </Button>
                   </form>
                 </Form>
               </CardContent>

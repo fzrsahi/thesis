@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Thesis Frontend",
-  description: "Frontend for thesis project",
+  title: "Scout",
+  description: "Scout App",
 };
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => (

@@ -180,7 +180,7 @@ export const Sidebar = () => {
           )}
         >
           <div className={cn("text-center text-xs text-zinc-500", collapsed ? "hidden" : "block")}>
-            © 2025 ChillLLMs
+            © 2025 Scout
             <p className="mt-1">Version 1.0.0</p>
           </div>
           {collapsed && (

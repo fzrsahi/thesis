@@ -65,7 +65,7 @@ const Navbar = () => {
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-zinc-600 to-zinc-800 text-xl font-bold text-white shadow-lg shadow-zinc-500/20">
               C
             </div>
-            <span className="text-xl font-bold tracking-wider text-white">Chill LLMs</span>
+            <span className="text-xl font-bold tracking-wider text-white">Scout</span>
           </div>
           <div className="h-8 w-24 animate-pulse rounded-full bg-zinc-800" />
         </div>
@@ -94,7 +94,7 @@ const Navbar = () => {
                   C
                 </div>
                 <span className="bg-gradient-to-r from-white to-zinc-300 bg-clip-text text-xl font-bold tracking-wider text-transparent">
-                  Chill LLMs
+                  Scout
                 </span>
               </div>
             </Link>

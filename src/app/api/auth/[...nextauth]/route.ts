@@ -50,7 +50,7 @@ const authOptions: NextAuthOptions = {
             console.error("Auth error:", error);
           }
           console.error("Auth error:", error);
-          throw new Error("Terjadi Kesalahan Server");
+          throw error;
         }
       },
     }),

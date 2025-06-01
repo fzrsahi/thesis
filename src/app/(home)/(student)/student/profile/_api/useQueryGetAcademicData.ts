@@ -1,19 +1,25 @@
-import { queryKeys } from "@/app/shared/const/queryKeys";
-import apiClient from "@/client/api/apiClient";
-import useQueryProvider from "@/client/hooks/useQueryProvider";
+import { useQuery } from "@tanstack/react-query";
 
-const getAcademicDataQuery = async () => {
-  const res = await apiClient.request<"/students/academic-data", "get">(
+import { paths } from "@/app/shared/types/api";
+import apiClient from "@/client/api/apiClient";
+
+type AcademicDataResponse =
+  paths["/students/academic-data"]["get"]["responses"]["200"]["content"]["application/json"];
+
+const getAcademicDataQuery = async (): Promise<AcademicDataResponse["data"]> => {
+  const response = await apiClient.request<"/students/academic-data", "get">(
     "get",
     "/students/academic-data"
   );
-  return res.data;
+  return response.data;
 };
 
-const useQueryGetAcademicData = () => {
-  const { queryKey } = queryKeys["academic-data"].data();
-  const queryFn = () => getAcademicDataQuery();
-  return useQueryProvider({ queryKey, queryFn });
-};
+const useQueryGetAcademicData = () =>
+  useQuery({
+    queryKey: ["academic-data"],
+    queryFn: getAcademicDataQuery,
+    staleTime: 5 * 60 * 1000, // 5 minutes - reduce unnecessary refetches
+    gcTime: 10 * 60 * 1000, // 10 minutes
+  });
 
 export { useQueryGetAcademicData };
