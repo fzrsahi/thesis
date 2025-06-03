@@ -19,7 +19,7 @@ const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error("Email atau password salah");
+          throw new Error("Invalid email or password");
         }
 
         try {
@@ -35,13 +35,13 @@ const authOptions: NextAuthOptions = {
           });
 
           if (!user) {
-            throw new Error("Email atau password salah");
+            throw new Error("Invalid email or password");
           }
 
           const role = await getUserRole(user.id);
 
           if (!role) {
-            throw new Error("Terjadi Kesalahan Server");
+            throw new Error("Invalid email or password");
           }
 
           return { ...user, id: user.id.toString(), role } as User;
@@ -105,4 +105,4 @@ const authOptions: NextAuthOptions = {
 
 const handler = NextAuth(authOptions);
 
-export { handler as GET, handler as POST };
+export { handler as GET, handler as POST, authOptions };

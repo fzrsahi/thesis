@@ -10,15 +10,18 @@ type UploadTranscriptRequest = Omit<
   transcript: File;
 };
 
-const uploadTranscriptSchema = z.object({
+export const UploadTranscriptSchema = z.object({
   transcript: z
     .instanceof(File)
+    .refine((file) => file.size > 0, {
+      message: "Transcript is required",
+    })
     .refine((file) => file.type === "application/pdf", {
-      message: "File must be a PDF",
+      message: "Only PDF format is allowed",
     })
     .refine((file) => file.size <= 2 * 1024 * 1024, {
       message: "File size must be less than 2MB",
     }),
 } satisfies InferZodMap<UploadTranscriptRequest>);
 
-export type UploadTranscriptPayload = z.infer<typeof uploadTranscriptSchema>;
+export type UploadTranscriptPayload = z.infer<typeof UploadTranscriptSchema>;

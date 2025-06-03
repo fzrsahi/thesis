@@ -2,7 +2,7 @@ import { Prisma } from "@prisma/client";
 
 import { prisma } from "../prisma/prisma";
 
-export const findStudentByUserId = async (
+export const findStudentByUserId = (
   userId: number,
   fields: Prisma.StudentSelect = {
     id: true,
@@ -14,4 +14,12 @@ export const findStudentByUserId = async (
   prisma.student.findFirst({
     where: { userId },
     select: fields,
+  });
+
+export const updateStudentTranscript = (studentId: number, transcriptId: string) =>
+  prisma.student.update({
+    where: { id: studentId },
+    data: {
+      transcript: transcriptId,
+    },
   });

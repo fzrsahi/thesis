@@ -15,6 +15,60 @@
     }
   ],
   "paths": {
+    "/auth/session": {
+      "get": {
+        "summary": "Get session information",
+        "description": "Retrieve session information for the authenticated user",
+        "operationId": "getSession",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved session information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "user": {
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "example": "student"
+                        },
+                        "email": {
+                          "type": "string",
+                          "example": "student@gmail.com"
+                        },
+                        "id": {
+                          "type": "string",
+                          "example": "1"
+                        },
+                        "role": {
+                          "type": "string",
+                          "example": "student"
+                        }
+                      },
+                      "required": ["name", "email", "id", "role"]
+                    },
+                    "expires": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2025-07-03T14:08:10.770Z"
+                    }
+                  },
+                  "required": ["user", "expires"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/my-recommendation": {
       "get": {
         "summary": "Get personalized competition recommendations",

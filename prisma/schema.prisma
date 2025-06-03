@@ -34,14 +34,14 @@ model Admin {
 }
 
 model Student {
-  id            Int      @id @default(autoincrement())
-  userId        Int      @unique
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  gpa           String? // IPK mahasiswa
-  interests     String[] // Array minat, contoh: ["AI","Desain"]
-  transcriptUrl String? // URL transkrip nilai
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id         Int      @id @default(autoincrement())
+  userId     Int      @unique
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gpa        String? // IPK mahasiswa
+  interests  String[] // Array minat, contoh: ["AI","Desain"]
+  transcript String? // ID transkrip nilai
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   achievements    Achievement[]
   experiences     Experience[]

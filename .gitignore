@@ -42,3 +42,6 @@ next-env.d.ts
 
 # docker data
 docker/
+
+# google drive credentials
+google-credentials.json
