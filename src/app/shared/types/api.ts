@@ -4,6 +4,26 @@
  */
 
 export interface paths {
+  "/auth/session": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get session information
+     * @description Retrieve session information for the authenticated user
+     */
+    get: operations["getSession"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/my-recommendation": {
     parameters: {
       query?: never;
@@ -56,7 +76,7 @@ export interface paths {
               data?: {
                 name?: string;
                 email?: string;
-                student_id?: string;
+                studentId?: string;
               };
             };
           };
@@ -327,7 +347,7 @@ export interface components {
       id?: number;
       name?: string;
       email?: string;
-      student_id?: string;
+      studentId?: string;
       major?: string;
       interests?: string[];
     };
@@ -394,6 +414,42 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+  getSession: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successfully retrieved session information */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            user: {
+              /** @example student */
+              name: string;
+              /** @example student@gmail.com */
+              email: string;
+              /** @example 1 */
+              id: string;
+              /** @example student */
+              role: string;
+            };
+            /**
+             * Format: date-time
+             * @example 2025-07-03T14:08:10.770Z
+             */
+            expires: string;
+          };
+        };
+      };
+    };
+  };
   getMyRecommendations: {
     parameters: {
       query?: never;

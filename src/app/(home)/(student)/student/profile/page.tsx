@@ -237,31 +237,14 @@ const UserProfilePage = () => {
           </CardContent>
           <CardContent>
             <div className="space-y-2">
-              <h3 className="font-medium">Account Information</h3>
               <Separator className="bg-zinc-800" />
               <div className="text-sm">
-                <p className="text-zinc-400">Name</p>
-                {isLoadingPersonal ? (
-                  <Skeleton className="h-4 w-24" />
-                ) : (
-                  <p>{personalData?.name || "Not provided"}</p>
-                )}
+                <p className="text-zinc-400">Major</p>
+                <p>Informatics Engineering</p>
               </div>
               <div className="text-sm">
-                <p className="text-zinc-400">Student ID</p>
-                {isLoadingPersonal ? (
-                  <Skeleton className="h-4 w-32" />
-                ) : (
-                  <p>{personalData?.student_id || "Not provided"}</p>
-                )}
-              </div>
-              <div className="text-sm">
-                <p className="text-zinc-400">Status</p>
-                <p>Active Student</p>
-              </div>
-              <div className="text-sm">
-                <p className="text-zinc-400">Member Since</p>
-                <p>September 2023</p>
+                <p className="text-zinc-400">Faculty</p>
+                <p>Engineering</p>
               </div>
             </div>
           </CardContent>

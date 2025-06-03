@@ -28,7 +28,7 @@ const usePersonalDataForm = (data?: PersonalDataResponse | undefined) => {
     defaultValues: {
       name: session?.user?.name || "",
       email: session?.user?.email || "",
-      student_id: "12345",
+      student_id: "",
     },
   });
 
@@ -45,18 +45,18 @@ const usePersonalDataForm = (data?: PersonalDataResponse | undefined) => {
       data &&
       (data.name !== form.getValues("name") ||
         data.email !== form.getValues("email") ||
-        data.student_id !== form.getValues("student_id"))
+        data.studentId !== form.getValues("student_id"))
     ) {
       form.reset({
         name: data.name || session?.user?.name || "",
         email: data.email || session?.user?.email || "",
-        student_id: data.student_id || "12345",
+        student_id: data.studentId || "",
       });
     }
   }, [
     data?.name,
     data?.email,
-    data?.student_id,
+    data?.studentId,
     session?.user?.name,
     session?.user?.email,
     data,

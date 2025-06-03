@@ -184,7 +184,7 @@
                         "email": {
                           "type": "string"
                         },
-                        "student_id": {
+                        "studentId": {
                           "type": "string"
                         }
                       }
@@ -503,7 +503,7 @@
           "email": {
             "type": "string"
           },
-          "student_id": {
+          "studentId": {
             "type": "string"
           },
           "major": {

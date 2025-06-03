@@ -40,6 +40,7 @@ model Student {
   gpa        String? // IPK mahasiswa
   interests  String[] // Array minat, contoh: ["AI","Desain"]
   transcript String? // ID transkrip nilai
+  studentId  String? // ID mahasiswa
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
