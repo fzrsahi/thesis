@@ -23,11 +23,9 @@ export const getStudentTranscripts = async (userId: number) => {
     fileId: true,
   });
 
-  return Promise.all(
-    transcripts.map(async (transcript) => ({
-      id: transcript.id,
-      semester: transcript.semester,
-      fileUrl: getFileUrl(transcript.fileId),
-    }))
-  );
+  return transcripts.map((transcript) => ({
+    id: transcript.id,
+    semester: transcript.semester,
+    fileUrl: getFileUrl(transcript.fileId),
+  }));
 };

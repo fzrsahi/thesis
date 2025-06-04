@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 
+import { queryKeys } from "@/app/shared/const/queryKeys";
 import apiClient from "@/client/api/apiClient";
+import useQueryProvider from "@/client/hooks/useQueryProvider";
 
 export interface Transcript {
   id: number;
@@ -17,15 +19,16 @@ const getTranscripts = async (): Promise<GetTranscriptsResponse> => {
   const response = await apiClient.request<"/students/transcript", "get">(
     "get",
     "/students/transcript",
-    undefined,
-    undefined
   );
 
   return response as GetTranscriptsResponse;
 };
 
-export const useQueryGetTranscripts = () =>
-  useQuery({
-    queryKey: ["transcripts"],
-    queryFn: getTranscripts,
+export const useQueryGetTranscripts = () => {
+  const { queryKey } = queryKeys.transcript.list();
+  const queryFn = () => getTranscripts();
+  return useQueryProvider({
+    queryKey,
+    queryFn,
   });
+};

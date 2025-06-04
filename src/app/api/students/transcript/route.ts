@@ -33,8 +33,9 @@ export const POST = withAuth(
       }
 
       await uploadTranscript(Number(session.user.id), result.data);
-      return NextResponse.json(TRANSCRIPT_ERROR_RESPONSE.BAD_REQUEST, {
-        status: HttpStatusCode.BadRequest,
+
+      return NextResponse.json({
+        success: true,
       });
     } catch (error) {
       if (isCustomError(error)) {

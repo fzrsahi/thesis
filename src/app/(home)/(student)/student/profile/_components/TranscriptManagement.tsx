@@ -15,9 +15,7 @@ import {
 import { FormLabel } from "@/components/ui/form";
 import Skeleton from "@/components/ui/skeleton";
 
-import { useQueryGetTranscripts } from "../_api/useQueryGetTranscripts";
-import { useDeleteTranscript } from "../_hooks/useDeleteTranscript";
-import { usePostTranscript } from "../_hooks/usePostTranscript";
+import { useTranscript } from "../_hooks/useTranscript";
 
 interface TranscriptManagementProps {
   isLoading?: boolean;
@@ -26,9 +24,9 @@ interface TranscriptManagementProps {
 const TranscriptManagement = ({
   isLoading: externalLoading = false,
 }: TranscriptManagementProps) => {
-  const { data: transcriptsData, isLoading: isLoadingTranscripts } = useQueryGetTranscripts();
-
   const {
+    transcripts,
+    isLoadingTranscripts,
     isCreateDialogOpen,
     setIsCreateDialogOpen,
     newTranscriptSemester,
@@ -42,9 +40,6 @@ const TranscriptManagement = ({
     handleNewTranscriptUploadClick,
     handleCreateTranscript,
     resetUploadError,
-  } = usePostTranscript();
-
-  const {
     isDeleteDialogOpen,
     setIsDeleteDialogOpen,
     transcriptToDelete,
@@ -54,15 +49,10 @@ const TranscriptManagement = ({
     handleConfirmDelete,
     handleCancelDelete,
     resetDeleteError,
-  } = useDeleteTranscript();
+    handleViewTranscript,
+  } = useTranscript();
 
-  const transcripts = transcriptsData?.data || [];
   const isLoading = externalLoading || isLoadingTranscripts;
-
-  // Common handler
-  const handleViewTranscript = (transcript: { fileUrl: string }) => {
-    window.open(transcript.fileUrl, "_blank", "noopener,noreferrer");
-  };
 
   const handleUploadKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") {
@@ -258,7 +248,6 @@ const TranscriptManagement = ({
                     <p className="text-sm font-medium text-white">
                       Semester {transcript.semester} Transcript
                     </p>
-                    <p className="text-xs text-zinc-500">{transcript.fileUrl}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">

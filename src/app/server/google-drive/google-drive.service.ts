@@ -61,5 +61,5 @@ export const uploadFile = async (file: File) => {
   };
 };
 
-export const getFileUrl = async (fileId: string) =>
+export const getFileUrl = (fileId: string) =>
   `https://drive.google.com/file/d/${fileId}/view?usp=sharing`;
