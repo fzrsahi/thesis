@@ -1,5 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
-
 import { queryKeys } from "@/app/shared/const/queryKeys";
 import apiClient from "@/client/api/apiClient";
 import useQueryProvider from "@/client/hooks/useQueryProvider";
@@ -18,7 +16,7 @@ interface GetTranscriptsResponse {
 const getTranscripts = async (): Promise<GetTranscriptsResponse> => {
   const response = await apiClient.request<"/students/transcript", "get">(
     "get",
-    "/students/transcript",
+    "/students/transcript"
   );
 
   return response as GetTranscriptsResponse;
