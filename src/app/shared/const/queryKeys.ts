@@ -10,4 +10,10 @@ const academicData = createQueryKeys("academic-data", {
   update: () => ["update-academic-data"],
 });
 
-export const queryKeys = mergeQueryKeys(personalData, academicData);
+const transcript = createQueryKeys("transcript", {
+  list: () => ["transcript"],
+  create: () => ["create-transcript"],
+  delete: () => ["delete-transcript"],
+});
+
+export const queryKeys = mergeQueryKeys(personalData, academicData, transcript);

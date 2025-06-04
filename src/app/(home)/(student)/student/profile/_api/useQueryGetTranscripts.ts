@@ -15,18 +15,17 @@ interface GetTranscriptsResponse {
 
 const getTranscripts = async (): Promise<GetTranscriptsResponse> => {
   const response = await apiClient.request<"/students/transcript", "get">(
-    'get',
-    '/students/transcript',
+    "get",
+    "/students/transcript",
     undefined,
-    undefined,
+    undefined
   );
 
   return response as GetTranscriptsResponse;
 };
 
-export const useQueryGetTranscripts = () => {
-  return useQuery({
+export const useQueryGetTranscripts = () =>
+  useQuery({
     queryKey: ["transcripts"],
     queryFn: getTranscripts,
   });
-}; 

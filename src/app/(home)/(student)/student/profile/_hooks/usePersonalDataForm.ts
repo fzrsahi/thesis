@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import {
@@ -15,13 +16,20 @@ type PersonalDataResponse =
   paths["/students/personal-data"]["get"]["responses"]["200"]["content"]["application/json"]["data"];
 
 const usePersonalDataForm = (data?: PersonalDataResponse | undefined) => {
+  const [errorMessage, setErrorMessage] = useState("");
   const { data: session } = useSession();
 
   const {
     mutate: putPersonalData,
     isPending: isPutPending,
     isSuccess: isPutSuccess,
-  } = useMutationPutPersonalData();
+  } = useMutationPutPersonalData({
+    onError: (error) => {
+      if (error instanceof AxiosError) {
+        setErrorMessage(error.response?.data.message ?? "");
+      }
+    },
+  });
 
   const form = useForm<PersonalDataPayload>({
     resolver: zodResolver(personalDataSchema),
@@ -37,7 +45,7 @@ const usePersonalDataForm = (data?: PersonalDataResponse | undefined) => {
   };
 
   const resetForm = () => {
-    form.reset();
+    setErrorMessage("");
   };
 
   useEffect(() => {
@@ -69,6 +77,7 @@ const usePersonalDataForm = (data?: PersonalDataResponse | undefined) => {
     resetForm,
     isLoading: isPutPending,
     isSuccess: isPutSuccess,
+    errorMessage,
   };
 };
 

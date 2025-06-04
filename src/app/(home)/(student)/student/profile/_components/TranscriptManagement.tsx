@@ -1,9 +1,7 @@
 "use client";
 
-import { Plus, X, Upload } from "lucide-react";
-import { useState, useRef } from "react";
+import { Plus, X, Upload, AlertCircle } from "lucide-react";
 
-import { UploadTranscriptSchema } from "@/app/shared/schema/student/profile/TranscriptSchema";
 import Button from "@/components/ui/button";
 import {
   Dialog,
@@ -17,10 +15,9 @@ import {
 import { FormLabel } from "@/components/ui/form";
 import Skeleton from "@/components/ui/skeleton";
 
-import { useMutationDeleteTranscript } from "../_api/useMutationDeleteTranscript";
-import { useMutationPostTranscript } from "../_api/useMutationPostTranscript";
 import { useQueryGetTranscripts } from "../_api/useQueryGetTranscripts";
-import { Transcript } from "../_api/useQueryGetTranscripts";
+import { useDeleteTranscript } from "../_hooks/useDeleteTranscript";
+import { usePostTranscript } from "../_hooks/usePostTranscript";
 
 interface TranscriptManagementProps {
   isLoading?: boolean;
@@ -30,118 +27,48 @@ const TranscriptManagement = ({
   isLoading: externalLoading = false,
 }: TranscriptManagementProps) => {
   const { data: transcriptsData, isLoading: isLoadingTranscripts } = useQueryGetTranscripts();
-  const { mutate: uploadTranscript, isPending: isUploading } = useMutationPostTranscript({
-    onSuccess: () => {
-      handleCancelCreateTranscript();
-      console.log("Transcript uploaded successfully");
-    },
-    onError: (error) => {
-      console.error("Failed to upload transcript:", error);
-      alert("Failed to upload transcript. Please try again.");
-    },
-  });
-  const { mutate: deleteTranscript, isPending: isDeleting } = useMutationDeleteTranscript({
-    onSuccess: () => {
-      handleCancelDelete();
-      console.log("Transcript deleted successfully");
-    },
-    onError: (error) => {
-      console.error("Failed to delete transcript:", error);
-      alert("Failed to delete transcript. Please try again.");
-    },
-  });
 
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [transcriptToDelete, setTranscriptToDelete] = useState<Transcript | null>(null);
-  const [newTranscriptSemester, setNewTranscriptSemester] = useState("");
-  const [newTranscriptFile, setNewTranscriptFile] = useState<File | null>(null);
+  const {
+    isCreateDialogOpen,
+    setIsCreateDialogOpen,
+    newTranscriptSemester,
+    setNewTranscriptSemester,
+    newTranscriptFile,
+    newTranscriptFileInputRef,
+    isUploading,
+    uploadError,
+    handleCancelCreateTranscript,
+    handleNewTranscriptFileChange,
+    handleNewTranscriptUploadClick,
+    handleCreateTranscript,
+    resetUploadError,
+  } = usePostTranscript();
 
-  const newTranscriptFileInputRef = useRef<HTMLInputElement>(null);
+  const {
+    isDeleteDialogOpen,
+    setIsDeleteDialogOpen,
+    transcriptToDelete,
+    isDeleting,
+    deleteError,
+    handleDeleteTranscriptClick,
+    handleConfirmDelete,
+    handleCancelDelete,
+    resetDeleteError,
+  } = useDeleteTranscript();
 
   const transcripts = transcriptsData?.data || [];
   const isLoading = externalLoading || isLoadingTranscripts;
 
-  const handleCancelCreateTranscript = () => {
-    setIsCreateDialogOpen(false);
-    setNewTranscriptSemester("");
-    setNewTranscriptFile(null);
-    if (newTranscriptFileInputRef.current) {
-      newTranscriptFileInputRef.current.value = "";
-    }
-  };
-
-  const handleNewTranscriptFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      // Use TranscriptSchema validation
-      try {
-        UploadTranscriptSchema.shape.transcript.parse(file);
-        setNewTranscriptFile(file);
-      } catch (error) {
-        if (error instanceof Error) {
-          alert(error.message);
-        } else {
-          alert("Invalid file");
-        }
-        // Reset file input
-        if (newTranscriptFileInputRef.current) {
-          newTranscriptFileInputRef.current.value = "";
-        }
-      }
-    }
-  };
-
-  const handleNewTranscriptUploadClick = () => {
-    newTranscriptFileInputRef.current?.click();
-  };
-
-  const handleCreateTranscript = () => {
-    if (!newTranscriptSemester || !newTranscriptFile) {
-      alert("Please select semester and upload a file");
-      return;
-    }
-
-    const existingSemester = transcripts.find((t) => t.semester === newTranscriptSemester);
-    if (existingSemester) {
-      alert(`Transcript for semester ${newTranscriptSemester} already exists`);
-      return;
-    }
-
-    try {
-      const validatedData = UploadTranscriptSchema.parse({
-        semester: newTranscriptSemester,
-        transcript: newTranscriptFile,
-      });
-
-      uploadTranscript(validatedData);
-    } catch (error) {
-      if (error instanceof Error) {
-        alert(error.message);
-      } else {
-        alert("Validation failed");
-      }
-    }
-  };
-
-  const handleDeleteTranscriptClick = (transcript: Transcript) => {
-    setTranscriptToDelete(transcript);
-    setIsDeleteDialogOpen(true);
-  };
-
-  const handleConfirmDelete = () => {
-    if (transcriptToDelete) {
-      deleteTranscript(transcriptToDelete.id);
-    }
-  };
-
-  const handleCancelDelete = () => {
-    setIsDeleteDialogOpen(false);
-    setTranscriptToDelete(null);
-  };
-
-  const handleViewTranscript = (transcript: Transcript) => {
+  // Common handler
+  const handleViewTranscript = (transcript: { fileUrl: string }) => {
     window.open(transcript.fileUrl, "_blank", "noopener,noreferrer");
+  };
+
+  const handleUploadKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      handleNewTranscriptUploadClick();
+    }
   };
 
   return (
@@ -167,6 +94,23 @@ const TranscriptManagement = ({
               </DialogDescription>
             </DialogHeader>
 
+            {/* Upload Error Message Display */}
+            {uploadError && (
+              <div className="flex items-center gap-2 rounded-lg border border-red-700 bg-red-900/20 p-3">
+                <AlertCircle className="h-4 w-4 text-red-400" />
+                <p className="text-sm text-red-400">{uploadError}</p>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={resetUploadError}
+                  className="ml-auto h-6 w-6 p-0 text-red-400 hover:bg-red-800 hover:text-red-300"
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+            )}
+
             <div className="space-y-4">
               {/* Semester Selection */}
               <div className="space-y-2">
@@ -189,8 +133,11 @@ const TranscriptManagement = ({
               <div className="space-y-2">
                 <FormLabel className="text-zinc-300">Transcript File</FormLabel>
                 <div
+                  role="button"
+                  tabIndex={0}
                   onClick={handleNewTranscriptUploadClick}
-                  className="cursor-pointer rounded-lg border-2 border-dashed border-zinc-600 bg-zinc-700/50 p-6 text-center transition-colors hover:border-zinc-500 hover:bg-zinc-700"
+                  onKeyDown={handleUploadKeyDown}
+                  className="cursor-pointer rounded-lg border-2 border-dashed border-zinc-600 bg-zinc-700/50 p-6 text-center transition-colors hover:border-zinc-500 hover:bg-zinc-700 focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 focus:outline-none"
                 >
                   <Upload className="mx-auto h-6 w-6 text-zinc-400" />
                   <p className="mt-2 text-sm text-white">
@@ -240,6 +187,23 @@ const TranscriptManagement = ({
               Are you sure you want to delete this transcript? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
+
+          {/* Delete Error Message Display */}
+          {deleteError && (
+            <div className="flex items-center gap-2 rounded-lg border border-red-700 bg-red-900/20 p-3">
+              <AlertCircle className="h-4 w-4 text-red-400" />
+              <p className="text-sm text-red-400">{deleteError}</p>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={resetDeleteError}
+                className="ml-auto h-6 w-6 p-0 text-red-400 hover:bg-red-800 hover:text-red-300"
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            </div>
+          )}
 
           {transcriptToDelete && (
             <div className="rounded-lg border border-zinc-700 bg-zinc-800 p-3">
@@ -328,7 +292,7 @@ const TranscriptManagement = ({
               <Upload className="mx-auto h-8 w-8 text-zinc-400" />
               <p className="mt-2 text-sm font-medium text-white">No transcripts uploaded</p>
               <p className="mt-1 text-xs text-zinc-400">
-                Click "Add Transcript" to upload your semester transcripts
+                Click &ldquo;Add Transcript&rdquo; to upload your semester transcripts
               </p>
             </div>
           )}

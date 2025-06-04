@@ -1,3 +1,7 @@
+import { HttpStatusCode } from "axios";
+import { NextRequest, NextResponse } from "next/server";
+
+import { withAuth } from "@/app/server/auth/with-auth";
 import {
   TRANSCRIPT_ERROR_LOG,
   TRANSCRIPT_ERROR_RESPONSE,
@@ -5,9 +9,6 @@ import {
 import { deleteStudentTranscriptUsecase } from "@/app/server/transcript/usecase/delete-student-transcript.usecase";
 import { isCustomError, customErrorToResponse } from "@/app/server/utils/error/custom-error";
 import { ROLES } from "@/app/shared/const/role";
-import { withAuth } from "@/app/server/auth/with-auth";
-import { NextRequest, NextResponse } from "next/server";
-import { HttpStatusCode } from "axios";
 
 export const DELETE = withAuth(
   async (request: NextRequest, session) => {

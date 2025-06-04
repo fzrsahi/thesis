@@ -1,7 +1,8 @@
+import { HttpStatusCode } from "axios";
+
 import { findStudentByUserId } from "../../student/student.repository";
 import { STUDENT_ERROR_RESPONSE } from "../../user/student.error";
 import { customError } from "../../utils/error/custom-error";
-import { HttpStatusCode } from "axios";
 import { TRANSCRIPT_ERROR_RESPONSE } from "../transcript.error";
 import {
   deleteTranscriptByIdAndStudentId,

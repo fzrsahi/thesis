@@ -53,6 +53,8 @@ const UserProfilePage = () => {
     form: personalForm,
     handleSubmit: handleSubmitPersonal,
     isLoading: isSubmittingPersonal,
+    errorMessage,
+    resetForm,
   } = usePersonalDataForm(personalData);
 
   const academicForm = useAcademicDataForm();
@@ -236,6 +238,9 @@ const UserProfilePage = () => {
                   <form
                     onSubmit={personalForm.handleSubmit(onSubmitPersonal)}
                     className="space-y-6"
+                    onChange={() => {
+                      resetForm();
+                    }}
                   >
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                       <FormField
@@ -301,6 +306,9 @@ const UserProfilePage = () => {
                             )}
                           </FormControl>
                           <FormMessage />
+                          {errorMessage && (
+                            <p className="mt-2 ml-2 text-sm text-red-500">{errorMessage}</p>
+                          )}
                         </FormItem>
                       )}
                     />

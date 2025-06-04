@@ -6,6 +6,7 @@ import {
   TRANSCRIPT_ERROR_LOG,
   TRANSCRIPT_ERROR_RESPONSE,
 } from "@/app/server/transcript/transcript.error";
+import { getStudentTranscripts } from "@/app/server/transcript/usecase/get-student-transcripts.usecase";
 import { uploadTranscript } from "@/app/server/transcript/usecase/upload.transcript.usecase";
 import { isCustomError, customErrorToResponse } from "@/app/server/utils/error/custom-error";
 import { ROLES } from "@/app/shared/const/role";
@@ -13,7 +14,6 @@ import {
   UploadTranscriptPayload,
   UploadTranscriptSchema,
 } from "@/app/shared/schema/student/profile/TranscriptSchema";
-import { getStudentTranscripts } from "@/app/server/transcript/usecase/get-student-transcripts.usecase";
 
 export const POST = withAuth(
   async (request: NextRequest, session) => {
@@ -33,9 +33,8 @@ export const POST = withAuth(
       }
 
       await uploadTranscript(Number(session.user.id), result.data);
-
-      return NextResponse.json({
-        success: true,
+      return NextResponse.json(TRANSCRIPT_ERROR_RESPONSE.BAD_REQUEST, {
+        status: HttpStatusCode.BadRequest,
       });
     } catch (error) {
       if (isCustomError(error)) {

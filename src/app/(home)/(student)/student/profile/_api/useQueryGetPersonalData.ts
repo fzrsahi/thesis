@@ -1,7 +1,7 @@
-import { useQuery } from "@tanstack/react-query";
-
+import { queryKeys } from "@/app/shared/const/queryKeys";
 import { paths } from "@/app/shared/types/api";
 import apiClient from "@/client/api/apiClient";
+import useQueryProvider from "@/client/hooks/useQueryProvider";
 
 type PersonalDataResponse =
   paths["/students/personal-data"]["get"]["responses"]["200"]["content"]["application/json"];
@@ -14,12 +14,13 @@ const getPersonalDataQuery = async (): Promise<PersonalDataResponse["data"]> => 
   return response.data;
 };
 
-const useQueryGetPersonalData = () =>
-  useQuery({
-    queryKey: ["personal-data"],
-    queryFn: getPersonalDataQuery,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
+const useQueryGetPersonalData = () => {
+  const { queryKey } = queryKeys["personal-data"].data();
+  const queryFn = () => getPersonalDataQuery();
+  return useQueryProvider({
+    queryKey,
+    queryFn,
   });
+};
 
 export { useQueryGetPersonalData };

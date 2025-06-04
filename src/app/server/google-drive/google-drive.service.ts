@@ -9,66 +9,57 @@ const filename = "google-credentials.json";
 const parentFolderId = "1hYcOHEWdoetWqy0gj5ilc-wHP9CoByCK";
 
 export const authorize = async () => {
-  try {
-    const credentialsPath = path.join(process.cwd(), filename);
-    const auth = new JWT({
-      keyFile: credentialsPath,
-      scopes,
-    });
+  const credentialsPath = path.join(process.cwd(), filename);
+  const auth = new JWT({
+    keyFile: credentialsPath,
+    scopes,
+  });
 
-    await auth.authorize();
-    return auth;
-  } catch (error) {
-    throw error;
-  }
+  await auth.authorize();
+  return auth;
 };
 
 export const uploadFile = async (file: File) => {
-  try {
-    const auth = await authorize();
-    const drive = new drive_v3.Drive({ auth });
+  const auth = await authorize();
+  const drive = new drive_v3.Drive({ auth });
 
-    const fileMetadata = {
-      name: file.name,
-      parents: [parentFolderId],
-    };
+  const fileMetadata = {
+    name: file.name,
+    parents: [parentFolderId],
+  };
 
-    const arrayBuffer = await file.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    const stream = Readable.from(buffer);
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+  const stream = Readable.from(buffer);
 
-    const media = {
-      mimeType: file.type,
-      body: stream,
-    };
+  const media = {
+    mimeType: file.type,
+    body: stream,
+  };
 
-    const response = await drive.files.create({
-      requestBody: fileMetadata,
-      media,
-      fields: "id",
-    });
+  const response = await drive.files.create({
+    requestBody: fileMetadata,
+    media,
+    fields: "id",
+  });
 
-    const fileId = response.data.id;
+  const fileId = response.data.id;
 
-    await drive.permissions.create({
-      fileId: fileId!,
-      requestBody: {
-        role: "reader",
-        type: "anyone",
-      },
-    });
+  await drive.permissions.create({
+    fileId: fileId!,
+    requestBody: {
+      role: "reader",
+      type: "anyone",
+    },
+  });
 
-    const fullUrl = `https://drive.google.com/file/d/${fileId}/view?usp=sharing`;
+  const fullUrl = `https://drive.google.com/file/d/${fileId}/view?usp=sharing`;
 
-    return {
-      id: fileId!,
-      url: fullUrl,
-    };
-  } catch (error) {
-    throw error;
-  }
+  return {
+    id: fileId!,
+    url: fullUrl,
+  };
 };
 
-export const getFileUrl = async (fileId: string) => {
-  return `https://drive.google.com/file/d/${fileId}/view?usp=sharing`;
-};
+export const getFileUrl = async (fileId: string) =>
+  `https://drive.google.com/file/d/${fileId}/view?usp=sharing`;

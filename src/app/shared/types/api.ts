@@ -4,610 +4,601 @@
  */
 
 export interface paths {
-    "/auth/session": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get session information
-         * @description Retrieve session information for the authenticated user
-         */
-        get: operations["getSession"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+  "/auth/session": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/my-recommendation": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get personalized competition recommendations
-         * @description Fetches personalized recommendations for the logged-in student, processed in the background using LLM and RAG.
-         */
-        get: operations["getMyRecommendations"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get session information
+     * @description Retrieve session information for the authenticated user
+     */
+    get: operations["getSession"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/my-recommendation": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/students/personal-data": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * Get student personal data
-         * @description Retrieve current student's personal profile information
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Student personal data retrieved successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example true */
-                            success?: boolean;
-                            data?: {
-                                name?: string;
-                                email?: string;
-                                studentId?: string;
-                            };
-                        };
-                    };
-                };
-            };
-        };
-        /**
-         * Update student personal data
-         * @description Update student's personal profile information
-         */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["StudentPersonalDataUpdate"];
-                };
-            };
-            responses: {
-                /** @description Student personal data updated successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example true */
-                            success?: boolean;
-                            data?: components["schemas"]["StudentPersonalData"];
-                        };
-                    };
-                };
-            };
-        };
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    /**
+     * Get personalized competition recommendations
+     * @description Fetches personalized recommendations for the logged-in student, processed in the background using LLM and RAG.
+     */
+    get: operations["getMyRecommendations"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/students/personal-data": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    "/students/academic-data": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    /**
+     * Get student personal data
+     * @description Retrieve current student's personal profile information
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Student personal data retrieved successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": {
+              /** @example true */
+              success?: boolean;
+              data?: {
+                name?: string;
+                email?: string;
+                studentId?: string;
+              };
+            };
+          };
         };
-        /**
-         * Get student academic data
-         * @description Retrieve all academic information for the current student including achievements and memberships
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Student academic data retrieved successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example true */
-                            success?: boolean;
-                            data?: components["schemas"]["StudentAcademicData"];
-                        };
-                    };
-                };
-            };
-        };
-        /**
-         * Update student academic data
-         * @description Update student's academic information including achievements and memberships
-         */
-        put: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "application/json": components["schemas"]["StudentAcademicDataUpdate"];
-                };
-            };
-            responses: {
-                /** @description Student academic data updated successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            /** @example true */
-                            success?: boolean;
-                            data?: components["schemas"]["StudentAcademicData"];
-                        };
-                    };
-                };
-            };
-        };
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+      };
     };
-    "/students/transcript": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    /**
+     * Update student personal data
+     * @description Update student's personal profile information
+     */
+    put: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["StudentPersonalDataUpdate"];
         };
-        /**
-         * Get student transcripts
-         * @description Get all transcripts for the current student
-         */
-        get: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
+      };
+      responses: {
+        /** @description Student personal data updated successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": {
+              /** @example true */
+              success?: boolean;
+              data?: components["schemas"]["StudentPersonalData"];
             };
-            requestBody?: never;
-            responses: {
-                /** @description Successfully retrieved transcripts */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content: {
-                        "application/json": {
-                            success?: boolean;
-                            data?: components["schemas"]["Transcript"][];
-                        };
-                    };
-                };
-            };
+          };
         };
-        put?: never;
-        /**
-         * Upload student transcript
-         * @description Upload student's transcript file
-         */
-        post: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path?: never;
-                cookie?: never;
-            };
-            requestBody: {
-                content: {
-                    "multipart/form-data": {
-                        /**
-                         * Format: binary
-                         * @description Transcript file upload (PDF format)
-                         */
-                        transcript?: string;
-                        /** @description Semester of the transcript */
-                        semester?: string;
-                    };
-                };
-            };
-            responses: never;
-        };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+      };
     };
-    "/students/transcript/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        get?: never;
-        put?: never;
-        post?: never;
-        /**
-         * Delete student transcript
-         * @description Delete a transcript for the current student
-         */
-        delete: {
-            parameters: {
-                query?: never;
-                header?: never;
-                path: {
-                    id: number;
-                };
-                cookie?: never;
-            };
-            requestBody?: never;
-            responses: {
-                /** @description Transcript deleted successfully */
-                200: {
-                    headers: {
-                        [name: string]: unknown;
-                    };
-                    content?: never;
-                };
-            };
-        };
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/students/academic-data": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
+    /**
+     * Get student academic data
+     * @description Retrieve all academic information for the current student including achievements and memberships
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Student academic data retrieved successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": {
+              /** @example true */
+              success?: boolean;
+              data?: components["schemas"]["StudentAcademicData"];
+            };
+          };
+        };
+      };
+    };
+    /**
+     * Update student academic data
+     * @description Update student's academic information including achievements and memberships
+     */
+    put: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["StudentAcademicDataUpdate"];
+        };
+      };
+      responses: {
+        /** @description Student academic data updated successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": {
+              /** @example true */
+              success?: boolean;
+              data?: components["schemas"]["StudentAcademicData"];
+            };
+          };
+        };
+      };
+    };
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/students/transcript": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get student transcripts
+     * @description Get all transcripts for the current student
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Successfully retrieved transcripts */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": {
+              success?: boolean;
+              data?: {
+                id?: number;
+                semester?: string;
+                fileUrl?: string;
+              }[];
+            };
+          };
+        };
+      };
+    };
+    put?: never;
+    /**
+     * Upload student transcript
+     * @description Upload student's transcript file
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "multipart/form-data": {
+            /**
+             * Format: binary
+             * @description Transcript file upload (PDF format)
+             */
+            transcript?: string;
+            /** @description Semester of the transcript */
+            semester?: string;
+          };
+        };
+      };
+      responses: never;
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/students/transcript/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    put?: never;
+    post?: never;
+    /**
+     * Delete student transcript
+     * @description Delete a transcript for the current student
+     */
+    delete: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: number;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Transcript deleted successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-    schemas: {
-        SuccessResponse: {
-            /** @example true */
-            success: boolean;
-            data: components["schemas"]["RecommendationResponse"];
-        };
-        RecommendationResponse: {
-            recommendations: {
-                /**
-                 * @description Unique identifier for the competition
-                 * @example 1
-                 */
-                id: number;
-                /**
-                 * @description Name of the competition
-                 * @example Hackathon ZIA 2024
-                 */
-                competition: string;
-                /**
-                 * Format: float
-                 * @description Match score (0.0 - 1.0)
-                 * @example 0.87
-                 */
-                match_score: number;
-                /**
-                 * @description AI-generated explanation for why this competition is recommended
-                 * @example Kompetisi ini sesuai karena Anda memiliki minat di bidang AI dan Pemrograman, serta IPK Anda (3.7) memenuhi persyaratan minimum (3.0). Pengalaman alumni menunjukkan mahasiswa dengan profil serupa sering berhasil di kompetisi ini.
-                 */
-                reason: string;
-                /**
-                 * @description Skill distribution for the competition
-                 * @example {
-                 *       "AI": 0.7,
-                 *       "Pemrograman": 0.6,
-                 *       "Desain": 0.3
-                 *     }
-                 */
-                skill_distribution: {
-                    [key: string]: number;
-                };
-                /**
-                 * @description Rank based on match score
-                 * @example 1
-                 */
-                rank: number;
-                details: {
-                    /**
-                     * Format: date
-                     * @example 2025-06-01
-                     */
-                    start_date?: string;
-                    /**
-                     * Format: date
-                     * @example 2025-06-05
-                     */
-                    end_date?: string;
-                    /** @example Online */
-                    location?: string;
-                    /** @example ZIA Tech */
-                    organizer?: string;
-                };
-                /**
-                 * @description Whether the student has applied to this competition
-                 * @example false
-                 */
-                applied: boolean;
-            }[];
-            /**
-             * @description Overall skill profile for the radar chart
-             * @example {
-             *       "AI": 0.7,
-             *       "Pemrograman": 0.6,
-             *       "Desain": 0.3,
-             *       "Bisnis": 0.2
-             *     }
-             */
-            skills_profile: {
-                [key: string]: number;
-            };
-            /**
-             * @description Category distribution for the pie chart
-             * @example {
-             *       "Teknologi": 0.6,
-             *       "Desain": 0.25,
-             *       "Bisnis": 0.15
-             *     }
-             */
-            category_distribution: {
-                [key: string]: number;
-            };
-            performance_metrics: {
-                /**
-                 * Format: float
-                 * @description Participation rate of students
-                 * @example 0.65
-                 */
-                participation_rate: number;
-                /**
-                 * Format: float
-                 * @description Average match score
-                 * @example 0.78
-                 */
-                avg_match_score: number;
-            };
-        };
-        StudentPersonalData: {
-            id?: number;
-            name?: string;
-            email?: string;
-            studentId?: string;
-            major?: string;
-            interests?: string[];
-        };
-        StudentPersonalDataUpdate: {
-            name?: string;
-            email?: string;
-            student_id?: string;
-        };
-        StudentAcademicData: {
-            gpa?: string;
-            transcript_url?: string;
-            interests?: string[];
-            achievements?: components["schemas"]["Achievement"][];
-            experiences?: components["schemas"]["Experience"][];
-        };
-        StudentAcademicDataUpdate: {
-            gpa?: string;
-            transcript_url?: string;
-            achievements?: components["schemas"]["AchievementCreate"][];
-            experiences?: components["schemas"]["ExperienceCreate"][];
-        };
-        Achievement: {
-            id?: number;
-            title?: string;
-            description?: string;
-            /** Format: date */
-            date?: string;
-        };
-        AchievementCreate: {
-            title: string;
-            description: string;
-            /** Format: date */
-            date: string;
-        };
-        Experience: {
-            id?: number;
-            organization?: string;
-            description?: string;
-            position?: string;
-            /** Format: date */
-            start_date?: string;
-            /** Format: date */
-            end_date?: string;
-        };
-        ExperienceCreate: {
-            organization: string;
-            position: string;
-            description: string;
-            /** Format: date */
-            start_date: string;
-            /** Format: date */
-            end_date?: string;
-        };
-        Transcript: {
-            id?: number;
-            /** @description Semester number (1-12) */
-            semester?: string;
-            /** @description URL to access the transcript file */
-            fileUrl?: string;
-            /** Format: date-time */
-            createdAt?: string;
-        };
-        TranscriptCreate: {
-            /** @description Semester number (1-12) */
-            semester: string;
-        };
-        ErrorResponse: {
-            error?: string;
-            message?: string;
-        };
+  schemas: {
+    SuccessResponse: {
+      /** @example true */
+      success: boolean;
+      data: components["schemas"]["RecommendationResponse"];
     };
-    responses: never;
-    parameters: never;
-    requestBodies: never;
-    headers: never;
-    pathItems: never;
+    RecommendationResponse: {
+      recommendations: {
+        /**
+         * @description Unique identifier for the competition
+         * @example 1
+         */
+        id: number;
+        /**
+         * @description Name of the competition
+         * @example Hackathon ZIA 2024
+         */
+        competition: string;
+        /**
+         * Format: float
+         * @description Match score (0.0 - 1.0)
+         * @example 0.87
+         */
+        match_score: number;
+        /**
+         * @description AI-generated explanation for why this competition is recommended
+         * @example Kompetisi ini sesuai karena Anda memiliki minat di bidang AI dan Pemrograman, serta IPK Anda (3.7) memenuhi persyaratan minimum (3.0). Pengalaman alumni menunjukkan mahasiswa dengan profil serupa sering berhasil di kompetisi ini.
+         */
+        reason: string;
+        /**
+         * @description Skill distribution for the competition
+         * @example {
+         *       "AI": 0.7,
+         *       "Pemrograman": 0.6,
+         *       "Desain": 0.3
+         *     }
+         */
+        skill_distribution: {
+          [key: string]: number;
+        };
+        /**
+         * @description Rank based on match score
+         * @example 1
+         */
+        rank: number;
+        details: {
+          /**
+           * Format: date
+           * @example 2025-06-01
+           */
+          start_date?: string;
+          /**
+           * Format: date
+           * @example 2025-06-05
+           */
+          end_date?: string;
+          /** @example Online */
+          location?: string;
+          /** @example ZIA Tech */
+          organizer?: string;
+        };
+        /**
+         * @description Whether the student has applied to this competition
+         * @example false
+         */
+        applied: boolean;
+      }[];
+      /**
+       * @description Overall skill profile for the radar chart
+       * @example {
+       *       "AI": 0.7,
+       *       "Pemrograman": 0.6,
+       *       "Desain": 0.3,
+       *       "Bisnis": 0.2
+       *     }
+       */
+      skills_profile: {
+        [key: string]: number;
+      };
+      /**
+       * @description Category distribution for the pie chart
+       * @example {
+       *       "Teknologi": 0.6,
+       *       "Desain": 0.25,
+       *       "Bisnis": 0.15
+       *     }
+       */
+      category_distribution: {
+        [key: string]: number;
+      };
+      performance_metrics: {
+        /**
+         * Format: float
+         * @description Participation rate of students
+         * @example 0.65
+         */
+        participation_rate: number;
+        /**
+         * Format: float
+         * @description Average match score
+         * @example 0.78
+         */
+        avg_match_score: number;
+      };
+    };
+    StudentPersonalData: {
+      id?: number;
+      name?: string;
+      email?: string;
+      studentId?: string;
+      major?: string;
+      interests?: string[];
+    };
+    StudentPersonalDataUpdate: {
+      name?: string;
+      email?: string;
+      student_id?: string;
+    };
+    StudentAcademicData: {
+      gpa?: string;
+      transcript_url?: string;
+      interests?: string[];
+      achievements?: components["schemas"]["Achievement"][];
+      experiences?: components["schemas"]["Experience"][];
+    };
+    StudentAcademicDataUpdate: {
+      gpa?: string;
+      transcript_url?: string;
+      achievements?: components["schemas"]["AchievementCreate"][];
+      experiences?: components["schemas"]["ExperienceCreate"][];
+    };
+    Achievement: {
+      id?: number;
+      title?: string;
+      description?: string;
+      /** Format: date */
+      date?: string;
+    };
+    AchievementCreate: {
+      title: string;
+      description: string;
+      /** Format: date */
+      date: string;
+    };
+    Experience: {
+      id?: number;
+      organization?: string;
+      description?: string;
+      position?: string;
+      /** Format: date */
+      start_date?: string;
+      /** Format: date */
+      end_date?: string;
+    };
+    ExperienceCreate: {
+      organization: string;
+      position: string;
+      description: string;
+      /** Format: date */
+      start_date: string;
+      /** Format: date */
+      end_date?: string;
+    };
+    ErrorResponse: {
+      error?: string;
+      message?: string;
+    };
+  };
+  responses: never;
+  parameters: never;
+  requestBodies: never;
+  headers: never;
+  pathItems: never;
 }
 export type $defs = Record<string, never>;
 export interface operations {
-    getSession: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description Successfully retrieved session information */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    "application/json": {
-                        user: {
-                            /** @example student */
-                            name: string;
-                            /** @example student@gmail.com */
-                            email: string;
-                            /** @example 1 */
-                            id: string;
-                            /** @example student */
-                            role: string;
-                        };
-                        /**
-                         * Format: date-time
-                         * @example 2025-07-03T14:08:10.770Z
-                         */
-                        expires: string;
-                    };
-                };
-            };
-        };
+  getSession: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
     };
-    getMyRecommendations: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
+    requestBody?: never;
+    responses: {
+      /** @description Successfully retrieved session information */
+      200: {
+        headers: {
+          [name: string]: unknown;
         };
-        requestBody?: never;
-        responses: {
-            /** @description Successfully retrieved recommendations */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /** @example {
-                     *       "success": true,
-                     *       "data": {
-                     *         "recommendations": [
-                     *           {
-                     *             "id": 1,
-                     *             "competition": "Hackathon ZIA 2024",
-                     *             "match_score": 0.87,
-                     *             "reason": "Kompetisi ini sesuai karena Anda memiliki minat di bidang AI dan Pemrograman, serta IPK Anda (3.7) memenuhi persyaratan minimum (3.0). Pengalaman alumni menunjukkan mahasiswa dengan profil serupa sering berhasil di kompetisi ini.",
-                     *             "skill_distribution": {
-                     *               "AI": 0.7,
-                     *               "Pemrograman": 0.6,
-                     *               "Desain": 0.3
-                     *             },
-                     *             "rank": 1,
-                     *             "details": {
-                     *               "start_date": "2025-06-01",
-                     *               "end_date": "2025-06-05",
-                     *               "location": "Online",
-                     *               "organizer": "ZIA Tech"
-                     *             },
-                     *             "applied": false
-                     *           },
-                     *           {
-                     *             "id": 2,
-                     *             "competition": "Business Plan Competition",
-                     *             "match_score": 0.62,
-                     *             "reason": "Kompetisi ini cukup sesuai karena Anda memiliki minat sekunder di bidang Bisnis, meskipun keterampilan utama Anda adalah AI dan Pemrograman. IPK Anda juga memenuhi syarat, tetapi pengalaman di bidang bisnis masih terbatas berdasarkan data Anda.",
-                     *             "skill_distribution": {
-                     *               "Bisnis": 0.5,
-                     *               "Pemrograman": 0.4,
-                     *               "Desain": 0.2
-                     *             },
-                     *             "rank": 2,
-                     *             "details": {
-                     *               "start_date": "2025-07-01",
-                     *               "end_date": "2025-07-10",
-                     *               "location": "Surabaya",
-                     *               "organizer": "KADIN"
-                     *             },
-                     *             "applied": true
-                     *           }
-                     *         ],
-                     *         "skills_profile": {
-                     *           "AI": 0.7,
-                     *           "Pemrograman": 0.6,
-                     *           "Desain": 0.3,
-                     *           "Bisnis": 0.2
-                     *         },
-                     *         "category_distribution": {
-                     *           "Teknologi": 0.6,
-                     *           "Desain": 0.25,
-                     *           "Bisnis": 0.15
-                     *         },
-                     *         "performance_metrics": {
-                     *           "participation_rate": 0.65,
-                     *           "avg_match_score": 0.78
-                     *         }
-                     *       }
-                     *     } */
-                    "application/json": components["schemas"]["SuccessResponse"];
-                };
+        content: {
+          "application/json": {
+            user: {
+              /** @example student */
+              name: string;
+              /** @example student@gmail.com */
+              email: string;
+              /** @example 1 */
+              id: string;
+              /** @example student */
+              role: string;
             };
+            /**
+             * Format: date-time
+             * @example 2025-07-03T14:08:10.770Z
+             */
+            expires: string;
+          };
         };
+      };
     };
+  };
+  getMyRecommendations: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Successfully retrieved recommendations */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          /** @example {
+           *       "success": true,
+           *       "data": {
+           *         "recommendations": [
+           *           {
+           *             "id": 1,
+           *             "competition": "Hackathon ZIA 2024",
+           *             "match_score": 0.87,
+           *             "reason": "Kompetisi ini sesuai karena Anda memiliki minat di bidang AI dan Pemrograman, serta IPK Anda (3.7) memenuhi persyaratan minimum (3.0). Pengalaman alumni menunjukkan mahasiswa dengan profil serupa sering berhasil di kompetisi ini.",
+           *             "skill_distribution": {
+           *               "AI": 0.7,
+           *               "Pemrograman": 0.6,
+           *               "Desain": 0.3
+           *             },
+           *             "rank": 1,
+           *             "details": {
+           *               "start_date": "2025-06-01",
+           *               "end_date": "2025-06-05",
+           *               "location": "Online",
+           *               "organizer": "ZIA Tech"
+           *             },
+           *             "applied": false
+           *           },
+           *           {
+           *             "id": 2,
+           *             "competition": "Business Plan Competition",
+           *             "match_score": 0.62,
+           *             "reason": "Kompetisi ini cukup sesuai karena Anda memiliki minat sekunder di bidang Bisnis, meskipun keterampilan utama Anda adalah AI dan Pemrograman. IPK Anda juga memenuhi syarat, tetapi pengalaman di bidang bisnis masih terbatas berdasarkan data Anda.",
+           *             "skill_distribution": {
+           *               "Bisnis": 0.5,
+           *               "Pemrograman": 0.4,
+           *               "Desain": 0.2
+           *             },
+           *             "rank": 2,
+           *             "details": {
+           *               "start_date": "2025-07-01",
+           *               "end_date": "2025-07-10",
+           *               "location": "Surabaya",
+           *               "organizer": "KADIN"
+           *             },
+           *             "applied": true
+           *           }
+           *         ],
+           *         "skills_profile": {
+           *           "AI": 0.7,
+           *           "Pemrograman": 0.6,
+           *           "Desain": 0.3,
+           *           "Bisnis": 0.2
+           *         },
+           *         "category_distribution": {
+           *           "Teknologi": 0.6,
+           *           "Desain": 0.25,
+           *           "Bisnis": 0.15
+           *         },
+           *         "performance_metrics": {
+           *           "participation_rate": 0.65,
+           *           "avg_match_score": 0.78
+           *         }
+           *       }
+           *     } */
+          "application/json": components["schemas"]["SuccessResponse"];
+        };
+      };
+    };
+  };
 }
