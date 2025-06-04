@@ -15,11 +15,3 @@ export const findStudentByUserId = (
     where: { userId },
     select: fields,
   });
-
-export const updateStudentTranscript = (studentId: number, transcriptId: string) =>
-  prisma.student.update({
-    where: { id: studentId },
-    data: {
-      transcript: transcriptId,
-    },
-  });

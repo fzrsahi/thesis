@@ -11,7 +11,7 @@ export const findAdvisorByUserId = async (
     updatedAt: true,
   }
 ) =>
-  prisma.advisor.findFirst({
+  prisma.advisor.findUnique({
     where: { userId },
     select: fields,
   });

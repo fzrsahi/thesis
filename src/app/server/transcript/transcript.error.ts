@@ -7,6 +7,10 @@ export const TRANSCRIPT_ERROR_RESPONSE = {
     code: "TRANSCRIPT_002",
     message: "Bad request.",
   },
+  NOT_FOUND: {
+    code: "TRANSCRIPT_003",
+    message: "Transcript not found.",
+  },
 };
 
 export const TRANSCRIPT_ERROR_LOG = {

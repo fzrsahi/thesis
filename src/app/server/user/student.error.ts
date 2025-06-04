@@ -7,8 +7,12 @@ export const STUDENT_ERROR_RESPONSE = {
     code: "STUDENT_002",
     message: "Student already exists.",
   },
-  STUDENT_CREATION_FAILED: {
+  INTERNAL_SERVER_ERROR: {
     code: "STUDENT_003",
-    message: "Failed to create student.",
+    message: "Internal server error.",
   },
+};
+
+export const STUDENT_ERROR_LOG_MESSAGE = {
+  INTERNAL_SERVER_ERROR: "Internal server error.",
 };

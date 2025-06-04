@@ -2,11 +2,7 @@ import path from "path";
 import { Readable } from "stream";
 
 import { drive_v3 } from "@googleapis/drive";
-import { HttpStatusCode } from "axios";
 import { JWT } from "google-auth-library";
-
-import { GOOGLE_DRIVE_ERROR_RESPONSE } from "./google-drive.error";
-import { customError } from "../utils/error/custom-error";
 
 const scopes = "https://www.googleapis.com/auth/drive.file";
 const filename = "google-credentials.json";
@@ -23,11 +19,7 @@ export const authorize = async () => {
     await auth.authorize();
     return auth;
   } catch (error) {
-    throw customError(
-      GOOGLE_DRIVE_ERROR_RESPONSE.MISSING_CREDENTIALS.code,
-      GOOGLE_DRIVE_ERROR_RESPONSE.MISSING_CREDENTIALS.message,
-      HttpStatusCode.InternalServerError
-    );
+    throw error;
   }
 };
 
@@ -73,10 +65,10 @@ export const uploadFile = async (file: File) => {
       url: fullUrl,
     };
   } catch (error) {
-    throw customError(
-      GOOGLE_DRIVE_ERROR_RESPONSE.INTERNAL_SERVER_ERROR.code,
-      GOOGLE_DRIVE_ERROR_RESPONSE.INTERNAL_SERVER_ERROR.message,
-      HttpStatusCode.InternalServerError
-    );
+    throw error;
   }
+};
+
+export const getFileUrl = async (fileId: string) => {
+  return `https://drive.google.com/file/d/${fileId}/view?usp=sharing`;
 };

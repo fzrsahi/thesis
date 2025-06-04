@@ -34,23 +34,36 @@ model Admin {
 }
 
 model Student {
-  id         Int      @id @default(autoincrement())
-  userId     Int      @unique
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  gpa        String? // IPK mahasiswa
-  interests  String[] // Array minat, contoh: ["AI","Desain"]
-  transcript String? // ID transkrip nilai
-  studentId  String? // ID mahasiswa
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gpa       String? // IPK mahasiswa
+  interests String[] // Array minat, contoh: ["AI","Desain"]
+  studentId String? // ID mahasiswa
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   achievements    Achievement[]
   experiences     Experience[]
   recommendations Recommendation[]
   competitions    StudentCompetition[]
   chatSessions    LLMChatSession[]
+  Transcript      Transcript[]
 
   @@map("students")
+}
+
+model Transcript {
+  id        Int      @id @default(autoincrement())
+  studentId Int
+  fileId    String
+  semester  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@map("transcripts")
 }
 
 model Advisor {

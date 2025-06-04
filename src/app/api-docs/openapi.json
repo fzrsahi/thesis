@@ -332,10 +332,83 @@
                     "type": "string",
                     "format": "binary",
                     "description": "Transcript file upload (PDF format)"
+                  },
+                  "semester": {
+                    "type": "string",
+                    "description": "Semester of the transcript"
                   }
                 }
               }
             }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get student transcripts",
+        "description": "Get all transcripts for the current student",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved transcripts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "number"
+                          },
+                          "semester": {
+                            "type": "string"
+                          },
+                          "fileUrl": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/students/transcript/{id}": {
+      "delete": {
+        "summary": "Delete student transcript",
+        "description": "Delete a transcript for the current student",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transcript deleted successfully"
           }
         }
       }
