@@ -1,6 +1,3 @@
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-
 "use client";
 
 import { Separator } from "@radix-ui/react-dropdown-menu";
@@ -28,7 +25,6 @@ import Input from "@/components/ui/input";
 import Skeleton from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 
-import { useMutationPutAcademicData } from "./_api/useMutationPutAcademicData";
 import TranscriptManagement from "./_components/TranscriptManagement";
 import { useAcademicData } from "./_hooks/useAcademicData";
 import { useAcademicDataForm } from "./_hooks/useAcademicDataForm";
@@ -57,7 +53,13 @@ const UserProfilePage = () => {
     resetForm,
   } = usePersonalDataForm(personalData);
 
-  const academicForm = useAcademicDataForm();
+  const {
+    form: academicForm,
+    handleSubmit: handleSubmitAcademic,
+    isLoading: isSubmittingAcademic,
+    errorMessage: academicErrorMessage,
+    resetForm: resetAcademicForm,
+  } = useAcademicDataForm(academicData);
 
   const {
     fields: achievementFields,
@@ -77,26 +79,11 @@ const UserProfilePage = () => {
     name: "experiences",
   });
 
-  const { mutate: putAcademicData, isPending: isSubmittingAcademic } = useMutationPutAcademicData({
-    onError: () => {
-      // Error handling without toast
-    },
-    onSuccess: () => {
-      // Success handling without toast
-    },
-  });
-
   useEffect(() => {
     if (academicData) {
-      academicForm.reset({
-        gpa: academicData.gpa || "",
-        interests: academicData.interests || [],
-        achievements: academicData.achievements || [],
-        experiences: academicData.experiences || [],
-      });
       setInterests(academicData.interests || []);
     }
-  }, [academicData, academicForm]);
+  }, [academicData]);
 
   const handleAddInterest = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && interestInput.trim()) {
@@ -120,13 +107,12 @@ const UserProfilePage = () => {
   };
 
   const onSubmitAcademic = (data: AcademicDataPayload) => {
-    // Update interests in the form data
     const formDataWithInterests = {
       ...data,
       interests,
     };
 
-    putAcademicData(formDataWithInterests);
+    handleSubmitAcademic(formDataWithInterests);
   };
 
   const tabs = [
@@ -344,6 +330,9 @@ const UserProfilePage = () => {
                   <form
                     onSubmit={academicForm.handleSubmit(onSubmitAcademic)}
                     className="space-y-6"
+                    onChange={() => {
+                      resetAcademicForm();
+                    }}
                   >
                     {/* GPA Section */}
                     <FormField
@@ -529,8 +518,8 @@ const UserProfilePage = () => {
                             appendExperience({
                               organization: "",
                               position: "",
-                              start_date: "",
-                              end_date: "",
+                              startDate: "",
+                              endDate: "",
                               description: "",
                             })
                           }
@@ -611,7 +600,7 @@ const UserProfilePage = () => {
                               />
                               <FormField
                                 control={academicForm.control}
-                                name={`experiences.${index}.start_date`}
+                                name={`experiences.${index}.startDate`}
                                 render={({ field }) => (
                                   <FormItem>
                                     <FormLabel className="text-zinc-300">Start Date</FormLabel>
@@ -630,7 +619,7 @@ const UserProfilePage = () => {
                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                               <FormField
                                 control={academicForm.control}
-                                name={`experiences.${index}.end_date`}
+                                name={`experiences.${index}.endDate`}
                                 render={({ field }) => (
                                   <FormItem>
                                     <FormLabel className="text-zinc-300">End Date</FormLabel>
@@ -667,6 +656,10 @@ const UserProfilePage = () => {
                         ))
                       )}
                     </div>
+
+                    {academicErrorMessage && (
+                      <p className="mt-2 ml-2 text-sm text-red-500">{academicErrorMessage}</p>
+                    )}
 
                     <Button
                       type="submit"

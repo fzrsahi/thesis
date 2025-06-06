@@ -4,9 +4,10 @@ import { HttpStatusCode } from "axios";
 import { PersonalDataPayload } from "@/app/shared/schema/student/profile/ProfileSchema";
 
 import { USER_ERROR_RESPONSE } from "../../user/user.error";
-import { findUserById, updateStudentPersonalData } from "../../user/user.repository";
+import { findUserById } from "../../user/user.repository";
 import { customError, isCustomError } from "../../utils/error/custom-error";
 import { STUDENT_ERROR_RESPONSE } from "../student.error";
+import { updateStudentPersonalData } from "../student.repository";
 
 export const updatePersonalData = async (userId: number, data: PersonalDataPayload) => {
   try {

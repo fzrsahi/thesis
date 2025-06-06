@@ -3,8 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { withAuth } from "@/app/server/auth/with-auth";
 import { STUDENT_ERROR_LOG, STUDENT_ERROR_RESPONSE } from "@/app/server/student/student.error";
+import { updateStudentPersonalData } from "@/app/server/student/student.repository";
 import { getStudentPersonalData } from "@/app/server/student/usecase/get-student-personal-data.usecase";
-import { updateStudentPersonalData } from "@/app/server/user/user.repository";
 import { isCustomError, customErrorToResponse } from "@/app/server/utils/error/custom-error";
 import { ROLES } from "@/app/shared/const/role";
 import {

@@ -103,8 +103,8 @@
                         },
                         "rank": 1,
                         "details": {
-                          "start_date": "2025-06-01",
-                          "end_date": "2025-06-05",
+                          "startDate": "2025-06-01",
+                          "endDate": "2025-06-05",
                           "location": "Online",
                           "organizer": "ZIA Tech"
                         },
@@ -122,8 +122,8 @@
                         },
                         "rank": 2,
                         "details": {
-                          "start_date": "2025-07-01",
-                          "end_date": "2025-07-10",
+                          "startDate": "2025-07-01",
+                          "endDate": "2025-07-10",
                           "location": "Surabaya",
                           "organizer": "KADIN"
                         },
@@ -482,12 +482,12 @@
                 "details": {
                   "type": "object",
                   "properties": {
-                    "start_date": {
+                    "startDate": {
                       "type": "string",
                       "format": "date",
                       "example": "2025-06-01"
                     },
-                    "end_date": {
+                    "endDate": {
                       "type": "string",
                       "format": "date",
                       "example": "2025-06-05"
@@ -610,9 +610,6 @@
           "gpa": {
             "type": "string"
           },
-          "transcript_url": {
-            "type": "string"
-          },
           "interests": {
             "type": "array",
             "items": {
@@ -638,6 +635,12 @@
         "properties": {
           "gpa": {
             "type": "string"
+          },
+          "interests": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
           },
           "achievements": {
             "type": "array",
@@ -702,13 +705,13 @@
           "position": {
             "type": "string"
           },
-          "start_date": {
+          "startDate": {
             "type": "string",
-            "format": "date"
+            "format": "date-time"
           },
-          "end_date": {
+          "endDate": {
             "type": "string",
-            "format": "date"
+            "format": "date-time"
           }
         }
       },
@@ -724,16 +727,16 @@
           "description": {
             "type": "string"
           },
-          "start_date": {
+          "startDate": {
             "type": "string",
-            "format": "date"
+            "format": "date-time"
           },
-          "end_date": {
+          "endDate": {
             "type": "string",
-            "format": "date"
+            "format": "date-time"
           }
         },
-        "required": ["organization", "position", "start_date", "description"]
+        "required": ["organization", "position", "startDate", "description"]
       },
       "ErrorResponse": {
         "type": "object",

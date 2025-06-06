@@ -2,8 +2,8 @@ import { HttpStatusCode } from "axios";
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { AUTH_ERRORS_LOG, AUTH_ERRORS_RESPONSE } from "@/app/server/auth/auth.error";
+import { authOptions } from "@/app/server/auth/authOptions";
 import { Role } from "@/app/shared/const/role";
 
 import { getUserRole } from "./services/auth.service";

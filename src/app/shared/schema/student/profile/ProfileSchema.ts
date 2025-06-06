@@ -12,29 +12,28 @@ export const personalDataSchema = z.object({
 }) satisfies z.ZodType<UpdatePersonalDataRequest>;
 
 export const academicDataSchema = z.object({
-  gpa: z.string().optional(),
-  transcript_url: z.string().url().optional(),
+  gpa: z.string().regex(/^(?:[1-3]\.\d|4\.0)$/, { message: "GPA must be between 1.0 and 4.0" }),
   achievements: z
     .array(
       z.object({
-        title: z.string(),
-        description: z.string(),
-        date: z.string(),
+        title: z.string().nonempty({ message: "Title is required" }),
+        description: z.string().nonempty({ message: "Description is required" }),
+        date: z.string().nonempty({ message: "Date is required" }),
       })
     )
-    .optional(),
-  interests: z.array(z.string()).optional(),
+    .default([]),
+  interests: z.array(z.string().nonempty({ message: "Interest is required" })).default([]),
   experiences: z
     .array(
       z.object({
-        organization: z.string(),
-        position: z.string(),
-        description: z.string(),
-        start_date: z.string(),
-        end_date: z.string().optional(),
+        organization: z.string().nonempty({ message: "Organization is required" }),
+        position: z.string().nonempty({ message: "Position is required" }),
+        description: z.string().nonempty({ message: "Description is required" }),
+        startDate: z.string().nonempty({ message: "Start date is required" }),
+        endDate: z.string().optional(),
       })
     )
-    .optional(),
+    .default([]),
 }) satisfies z.ZodType<UpdateAcademicDataRequest>;
 
 export type PersonalDataPayload = z.infer<typeof personalDataSchema>;
