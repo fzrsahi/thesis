@@ -14,6 +14,14 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import Button from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
   Form,
   FormControl,
   FormField,
@@ -36,6 +44,18 @@ const UserProfilePage = () => {
   const [activeTab, setActiveTab] = useState<"personal" | "academic">("personal");
   const [interestInput, setInterestInput] = useState("");
   const [interests, setInterests] = useState<string[]>([]);
+
+  // Delete confirmation states
+  const [isDeleteAchievementDialogOpen, setIsDeleteAchievementDialogOpen] = useState(false);
+  const [isDeleteExperienceDialogOpen, setIsDeleteExperienceDialogOpen] = useState(false);
+  const [achievementToDelete, setAchievementToDelete] = useState<{
+    index: number;
+    title: string;
+  } | null>(null);
+  const [experienceToDelete, setExperienceToDelete] = useState<{
+    index: number;
+    organization: string;
+  } | null>(null);
 
   const {
     data: personalData,
@@ -102,12 +122,68 @@ const UserProfilePage = () => {
     setInterests(updatedInterests);
   };
 
+  const handleDeleteAchievementClick = (index: number) => {
+    const title = academicForm.getValues(`achievements.${index}.title`) || "Untitled Achievement";
+    setAchievementToDelete({ index, title });
+    setIsDeleteAchievementDialogOpen(true);
+  };
+
+  const handleConfirmDeleteAchievement = () => {
+    if (achievementToDelete) {
+      removeAchievement(achievementToDelete.index);
+      setIsDeleteAchievementDialogOpen(false);
+      setAchievementToDelete(null);
+    }
+  };
+
+  const handleCancelDeleteAchievement = () => {
+    setIsDeleteAchievementDialogOpen(false);
+    setAchievementToDelete(null);
+  };
+
+  const handleDeleteExperienceClick = (index: number) => {
+    const organization =
+      academicForm.getValues(`experiences.${index}.organization`) || "Untitled Experience";
+    setExperienceToDelete({ index, organization });
+    setIsDeleteExperienceDialogOpen(true);
+  };
+
+  const handleConfirmDeleteExperience = () => {
+    if (experienceToDelete) {
+      removeExperience(experienceToDelete.index);
+      setIsDeleteExperienceDialogOpen(false);
+      setExperienceToDelete(null);
+    }
+  };
+
+  const handleCancelDeleteExperience = () => {
+    setIsDeleteExperienceDialogOpen(false);
+    setExperienceToDelete(null);
+  };
+
+  const formatDateToYearMonth = (dateString: string) => {
+    if (!dateString) return "";
+    try {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      return `${year}-${month}`;
+    } catch {
+      return "";
+    }
+  };
+
+  const formatYearMonthToDate = (yearMonth: string) => {
+    if (!yearMonth) return "";
+    return `${yearMonth}-01`;
+  };
+
   const onSubmitPersonal = (data: PersonalDataPayload) => {
     handleSubmitPersonal(data);
   };
 
   const onSubmitAcademic = (data: AcademicDataPayload) => {
-    const formDataWithInterests = {
+    const formDataWithInterests: AcademicDataPayload = {
       ...data,
       interests,
     };
@@ -170,6 +246,78 @@ const UserProfilePage = () => {
           })}
         </div>
       </div>
+
+      {/* Delete Achievement Confirmation Dialog */}
+      <Dialog open={isDeleteAchievementDialogOpen} onOpenChange={setIsDeleteAchievementDialogOpen}>
+        <DialogContent className="border-zinc-800 bg-zinc-900 text-white">
+          <DialogHeader>
+            <DialogTitle>Delete Achievement</DialogTitle>
+            <DialogDescription className="text-zinc-400">
+              Are you sure you want to delete this achievement? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+
+          {achievementToDelete && (
+            <div className="rounded-lg border border-zinc-700 bg-zinc-800 p-3">
+              <p className="text-sm font-medium text-white">{achievementToDelete.title}</p>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={handleCancelDeleteAchievement}
+              className="text-zinc-400 hover:bg-zinc-700 hover:text-white"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={handleConfirmDeleteAchievement}
+              className="bg-red-600 text-white hover:bg-red-700"
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Experience Confirmation Dialog */}
+      <Dialog open={isDeleteExperienceDialogOpen} onOpenChange={setIsDeleteExperienceDialogOpen}>
+        <DialogContent className="border-zinc-800 bg-zinc-900 text-white">
+          <DialogHeader>
+            <DialogTitle>Delete Experience</DialogTitle>
+            <DialogDescription className="text-zinc-400">
+              Are you sure you want to delete this experience? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+
+          {experienceToDelete && (
+            <div className="rounded-lg border border-zinc-700 bg-zinc-800 p-3">
+              <p className="text-sm font-medium text-white">{experienceToDelete.organization}</p>
+            </div>
+          )}
+
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={handleCancelDeleteExperience}
+              className="text-zinc-400 hover:bg-zinc-700 hover:text-white"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={handleConfirmDeleteExperience}
+              className="bg-red-600 text-white hover:bg-red-700"
+            >
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Content Area */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
@@ -335,7 +483,7 @@ const UserProfilePage = () => {
                     }}
                   >
                     {/* GPA Section */}
-                    <FormField
+                    <FormField<AcademicDataPayload>
                       control={academicForm.control}
                       name="gpa"
                       render={({ field }) => (
@@ -459,7 +607,7 @@ const UserProfilePage = () => {
                                 type="button"
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => removeAchievement(index)}
+                                onClick={() => handleDeleteAchievementClick(index)}
                                 className="mt-6 h-8 w-8 p-0 text-zinc-400 hover:bg-zinc-800 hover:text-white"
                               >
                                 <X className="h-4 w-4" />
@@ -488,11 +636,17 @@ const UserProfilePage = () => {
                                 name={`achievements.${index}.date`}
                                 render={({ field }) => (
                                   <FormItem>
-                                    <FormLabel className="text-zinc-300">Date</FormLabel>
+                                    <FormLabel className="text-zinc-300">
+                                      Date (Year-Month)
+                                    </FormLabel>
                                     <FormControl>
                                       <Input
-                                        placeholder="Achievement date"
-                                        {...field}
+                                        type="month"
+                                        placeholder="YYYY-MM"
+                                        value={formatDateToYearMonth(field.value)}
+                                        onChange={(e) =>
+                                          field.onChange(formatYearMonthToDate(e.target.value))
+                                        }
                                         className="border-zinc-700 bg-zinc-800 text-white"
                                       />
                                     </FormControl>
@@ -574,7 +728,7 @@ const UserProfilePage = () => {
                                 type="button"
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => removeExperience(index)}
+                                onClick={() => handleDeleteExperienceClick(index)}
                                 className="mt-6 h-8 w-8 p-0 text-zinc-400 hover:bg-zinc-800 hover:text-white"
                               >
                                 <X className="h-4 w-4" />
@@ -603,11 +757,17 @@ const UserProfilePage = () => {
                                 name={`experiences.${index}.startDate`}
                                 render={({ field }) => (
                                   <FormItem>
-                                    <FormLabel className="text-zinc-300">Start Date</FormLabel>
+                                    <FormLabel className="text-zinc-300">
+                                      Start Date (Year-Month)
+                                    </FormLabel>
                                     <FormControl>
                                       <Input
-                                        placeholder="Start date"
-                                        {...field}
+                                        type="month"
+                                        placeholder="YYYY-MM"
+                                        value={formatDateToYearMonth(field.value)}
+                                        onChange={(e) =>
+                                          field.onChange(formatYearMonthToDate(e.target.value))
+                                        }
                                         className="border-zinc-700 bg-zinc-800 text-white"
                                       />
                                     </FormControl>
@@ -622,11 +782,21 @@ const UserProfilePage = () => {
                                 name={`experiences.${index}.endDate`}
                                 render={({ field }) => (
                                   <FormItem>
-                                    <FormLabel className="text-zinc-300">End Date</FormLabel>
+                                    <FormLabel className="text-zinc-300">
+                                      End Date (Year-Month)
+                                    </FormLabel>
                                     <FormControl>
                                       <Input
-                                        placeholder="End date"
-                                        {...field}
+                                        type="month"
+                                        placeholder="YYYY-MM (Optional)"
+                                        value={formatDateToYearMonth(field.value || "")}
+                                        onChange={(e) =>
+                                          field.onChange(
+                                            e.target.value
+                                              ? formatYearMonthToDate(e.target.value)
+                                              : ""
+                                          )
+                                        }
                                         className="border-zinc-700 bg-zinc-800 text-white"
                                       />
                                     </FormControl>

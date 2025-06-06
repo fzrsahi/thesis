@@ -47,8 +47,6 @@ export const PUT = withAuth(
       const result = academicDataSchema.safeParse(body);
 
       if (!result.success) {
-        console.log(result.error.errors);
-
         return NextResponse.json(STUDENT_ERROR_RESPONSE.BAD_REQUEST, {
           status: HttpStatusCode.BadRequest,
         });
