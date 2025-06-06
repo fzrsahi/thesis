@@ -639,9 +639,6 @@
           "gpa": {
             "type": "string"
           },
-          "transcript_url": {
-            "type": "string"
-          },
           "achievements": {
             "type": "array",
             "items": {
