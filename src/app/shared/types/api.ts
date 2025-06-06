@@ -435,6 +435,7 @@ export interface components {
     };
     StudentAcademicDataUpdate: {
       gpa?: string;
+      interests?: string[];
       achievements?: components["schemas"]["AchievementCreate"][];
       experiences?: components["schemas"]["ExperienceCreate"][];
     };

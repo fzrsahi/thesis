@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect, useState, KeyboardEvent } from "react";
+import { useForm, useFieldArray } from "react-hook-form";
 
 import {
   AcademicDataPayload,
@@ -16,6 +16,19 @@ type AcademicDataResponse =
 
 const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
   const [errorMessage, setErrorMessage] = useState("");
+  const [interestInput, setInterestInput] = useState("");
+  const [interests, setInterests] = useState<string[]>([]);
+
+  const [isDeleteAchievementDialogOpen, setIsDeleteAchievementDialogOpen] = useState(false);
+  const [isDeleteExperienceDialogOpen, setIsDeleteExperienceDialogOpen] = useState(false);
+  const [achievementToDelete, setAchievementToDelete] = useState<{
+    index: number;
+    title: string;
+  } | null>(null);
+  const [experienceToDelete, setExperienceToDelete] = useState<{
+    index: number;
+    organization: string;
+  } | null>(null);
 
   const {
     mutate: putAcademicData,
@@ -29,7 +42,7 @@ const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
     },
   });
 
-  const form = useForm<AcademicDataPayload>({
+  const form = useForm({
     resolver: zodResolver(academicDataSchema),
     defaultValues: {
       gpa: "",
@@ -39,8 +52,107 @@ const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
     },
   });
 
+  const {
+    fields: achievementFields,
+    append: appendAchievement,
+    remove: removeAchievement,
+  } = useFieldArray({
+    control: form.control,
+    name: "achievements",
+  });
+
+  const {
+    fields: experienceFields,
+    append: appendExperience,
+    remove: removeExperience,
+  } = useFieldArray({
+    control: form.control,
+    name: "experiences",
+  });
+
+  // Date formatting utilities
+  const formatDateToYearMonth = (dateString: string) => {
+    if (!dateString) return "";
+    try {
+      const date = new Date(dateString);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      return `${year}-${month}`;
+    } catch {
+      return "";
+    }
+  };
+
+  const formatYearMonthToDate = (yearMonth: string) => {
+    if (!yearMonth) return "";
+    return `${yearMonth}-01`;
+  };
+
+  // Interests management
+  const handleAddInterest = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && interestInput.trim()) {
+      e.preventDefault();
+      const newInterest = interestInput.trim();
+
+      if (!interests.includes(newInterest)) {
+        setInterests([...interests, newInterest]);
+        setInterestInput("");
+      }
+    }
+  };
+
+  const handleRemoveInterest = (indexToRemove: number) => {
+    const updatedInterests = interests.filter((_, index) => index !== indexToRemove);
+    setInterests(updatedInterests);
+  };
+
+  // Achievement deletion handlers
+  const handleDeleteAchievementClick = (index: number) => {
+    const title = form.getValues(`achievements.${index}.title`) || "Untitled Achievement";
+    setAchievementToDelete({ index, title });
+    setIsDeleteAchievementDialogOpen(true);
+  };
+
+  const handleConfirmDeleteAchievement = () => {
+    if (achievementToDelete) {
+      removeAchievement(achievementToDelete.index);
+      setIsDeleteAchievementDialogOpen(false);
+      setAchievementToDelete(null);
+    }
+  };
+
+  const handleCancelDeleteAchievement = () => {
+    setIsDeleteAchievementDialogOpen(false);
+    setAchievementToDelete(null);
+  };
+
+  // Experience deletion handlers
+  const handleDeleteExperienceClick = (index: number) => {
+    const organization =
+      form.getValues(`experiences.${index}.organization`) || "Untitled Experience";
+    setExperienceToDelete({ index, organization });
+    setIsDeleteExperienceDialogOpen(true);
+  };
+
+  const handleConfirmDeleteExperience = () => {
+    if (experienceToDelete) {
+      removeExperience(experienceToDelete.index);
+      setIsDeleteExperienceDialogOpen(false);
+      setExperienceToDelete(null);
+    }
+  };
+
+  const handleCancelDeleteExperience = () => {
+    setIsDeleteExperienceDialogOpen(false);
+    setExperienceToDelete(null);
+  };
+
   const handleSubmit = (formData: AcademicDataPayload) => {
-    putAcademicData(formData);
+    const formDataWithInterests: AcademicDataPayload = {
+      ...formData,
+      interests,
+    };
+    putAcademicData(formDataWithInterests);
   };
 
   const resetForm = () => {
@@ -75,6 +187,9 @@ const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
         achievements: formatAchievements,
         experiences: formatExperiences,
       });
+
+      // Set interests state
+      setInterests(data.interests || []);
     }
   }, [data, form]);
 
@@ -85,6 +200,40 @@ const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
     isLoading: isPutPending,
     isSuccess: isPutSuccess,
     errorMessage,
+
+    // Field arrays
+    achievementFields,
+    appendAchievement,
+    removeAchievement,
+    experienceFields,
+    appendExperience,
+    removeExperience,
+
+    // Interests management
+    interestInput,
+    setInterestInput,
+    interests,
+    setInterests,
+    handleAddInterest,
+    handleRemoveInterest,
+
+    // Date formatting utilities
+    formatDateToYearMonth,
+    formatYearMonthToDate,
+
+    // Delete confirmation dialogs
+    isDeleteAchievementDialogOpen,
+    setIsDeleteAchievementDialogOpen,
+    isDeleteExperienceDialogOpen,
+    setIsDeleteExperienceDialogOpen,
+    achievementToDelete,
+    experienceToDelete,
+    handleDeleteAchievementClick,
+    handleConfirmDeleteAchievement,
+    handleCancelDeleteAchievement,
+    handleDeleteExperienceClick,
+    handleConfirmDeleteExperience,
+    handleCancelDeleteExperience,
   };
 };
 

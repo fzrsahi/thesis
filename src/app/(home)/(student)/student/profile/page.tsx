@@ -3,8 +3,7 @@
 import { Separator } from "@radix-ui/react-dropdown-menu";
 import { Plus, X, User, GraduationCap } from "lucide-react";
 import { useSession } from "next-auth/react";
-import { useState, useEffect, KeyboardEvent } from "react";
-import { useFieldArray } from "react-hook-form";
+import { useState } from "react";
 
 import {
   PersonalDataPayload,
@@ -42,20 +41,6 @@ import { usePersonalDataForm } from "./_hooks/usePersonalDataForm";
 const UserProfilePage = () => {
   const { data: session } = useSession();
   const [activeTab, setActiveTab] = useState<"personal" | "academic">("personal");
-  const [interestInput, setInterestInput] = useState("");
-  const [interests, setInterests] = useState<string[]>([]);
-
-  // Delete confirmation states
-  const [isDeleteAchievementDialogOpen, setIsDeleteAchievementDialogOpen] = useState(false);
-  const [isDeleteExperienceDialogOpen, setIsDeleteExperienceDialogOpen] = useState(false);
-  const [achievementToDelete, setAchievementToDelete] = useState<{
-    index: number;
-    title: string;
-  } | null>(null);
-  const [experienceToDelete, setExperienceToDelete] = useState<{
-    index: number;
-    organization: string;
-  } | null>(null);
 
   const {
     data: personalData,
@@ -79,116 +64,37 @@ const UserProfilePage = () => {
     isLoading: isSubmittingAcademic,
     errorMessage: academicErrorMessage,
     resetForm: resetAcademicForm,
+    achievementFields,
+    appendAchievement,
+    experienceFields,
+    appendExperience,
+    interestInput,
+    setInterestInput,
+    interests,
+    handleAddInterest,
+    handleRemoveInterest,
+    formatDateToYearMonth,
+    formatYearMonthToDate,
+    isDeleteAchievementDialogOpen,
+    setIsDeleteAchievementDialogOpen,
+    isDeleteExperienceDialogOpen,
+    setIsDeleteExperienceDialogOpen,
+    achievementToDelete,
+    experienceToDelete,
+    handleDeleteAchievementClick,
+    handleConfirmDeleteAchievement,
+    handleCancelDeleteAchievement,
+    handleDeleteExperienceClick,
+    handleConfirmDeleteExperience,
+    handleCancelDeleteExperience,
   } = useAcademicDataForm(academicData);
-
-  const {
-    fields: achievementFields,
-    append: appendAchievement,
-    remove: removeAchievement,
-  } = useFieldArray({
-    control: academicForm.control,
-    name: "achievements",
-  });
-
-  const {
-    fields: experienceFields,
-    append: appendExperience,
-    remove: removeExperience,
-  } = useFieldArray({
-    control: academicForm.control,
-    name: "experiences",
-  });
-
-  useEffect(() => {
-    if (academicData) {
-      setInterests(academicData.interests || []);
-    }
-  }, [academicData]);
-
-  const handleAddInterest = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && interestInput.trim()) {
-      e.preventDefault();
-      const newInterest = interestInput.trim();
-
-      if (!interests.includes(newInterest)) {
-        setInterests([...interests, newInterest]);
-        setInterestInput("");
-      }
-    }
-  };
-
-  const handleRemoveInterest = (indexToRemove: number) => {
-    const updatedInterests = interests.filter((_, index) => index !== indexToRemove);
-    setInterests(updatedInterests);
-  };
-
-  const handleDeleteAchievementClick = (index: number) => {
-    const title = academicForm.getValues(`achievements.${index}.title`) || "Untitled Achievement";
-    setAchievementToDelete({ index, title });
-    setIsDeleteAchievementDialogOpen(true);
-  };
-
-  const handleConfirmDeleteAchievement = () => {
-    if (achievementToDelete) {
-      removeAchievement(achievementToDelete.index);
-      setIsDeleteAchievementDialogOpen(false);
-      setAchievementToDelete(null);
-    }
-  };
-
-  const handleCancelDeleteAchievement = () => {
-    setIsDeleteAchievementDialogOpen(false);
-    setAchievementToDelete(null);
-  };
-
-  const handleDeleteExperienceClick = (index: number) => {
-    const organization =
-      academicForm.getValues(`experiences.${index}.organization`) || "Untitled Experience";
-    setExperienceToDelete({ index, organization });
-    setIsDeleteExperienceDialogOpen(true);
-  };
-
-  const handleConfirmDeleteExperience = () => {
-    if (experienceToDelete) {
-      removeExperience(experienceToDelete.index);
-      setIsDeleteExperienceDialogOpen(false);
-      setExperienceToDelete(null);
-    }
-  };
-
-  const handleCancelDeleteExperience = () => {
-    setIsDeleteExperienceDialogOpen(false);
-    setExperienceToDelete(null);
-  };
-
-  const formatDateToYearMonth = (dateString: string) => {
-    if (!dateString) return "";
-    try {
-      const date = new Date(dateString);
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      return `${year}-${month}`;
-    } catch {
-      return "";
-    }
-  };
-
-  const formatYearMonthToDate = (yearMonth: string) => {
-    if (!yearMonth) return "";
-    return `${yearMonth}-01`;
-  };
 
   const onSubmitPersonal = (data: PersonalDataPayload) => {
     handleSubmitPersonal(data);
   };
 
   const onSubmitAcademic = (data: AcademicDataPayload) => {
-    const formDataWithInterests: AcademicDataPayload = {
-      ...data,
-      interests,
-    };
-
-    handleSubmitAcademic(formDataWithInterests);
+    handleSubmitAcademic(data);
   };
 
   const tabs = [
@@ -483,7 +389,7 @@ const UserProfilePage = () => {
                     }}
                   >
                     {/* GPA Section */}
-                    <FormField<AcademicDataPayload>
+                    <FormField
                       control={academicForm.control}
                       name="gpa"
                       render={({ field }) => (
