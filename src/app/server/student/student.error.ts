@@ -11,6 +11,10 @@ export const STUDENT_ERROR_RESPONSE = {
     code: "STUDENT_003",
     message: "Bad request",
   },
+  NOT_COMPLETED_PROFILE: {
+    code: "STUDENT_004",
+    message: "Student profile not completed",
+  },
 };
 
 export const STUDENT_ERROR_LOG = {

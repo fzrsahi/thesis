@@ -72,6 +72,7 @@ const TranscriptManagement = ({
               variant="outline"
               size="sm"
               className="flex items-center gap-1 bg-white text-black hover:bg-zinc-200"
+              disabled={transcripts.length > 0}
             >
               <Plus className="h-3 w-3" /> Add Transcript
             </Button>

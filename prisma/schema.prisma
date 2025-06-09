@@ -48,7 +48,7 @@ model Student {
   recommendations Recommendation[]
   competitions    StudentCompetition[]
   chatSessions    LLMChatSession[]
-  Transcript      Transcript[]
+  transcript      Transcript[]
 
   @@map("students")
 }

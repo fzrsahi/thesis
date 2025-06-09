@@ -63,3 +63,11 @@ export const uploadFile = async (file: File) => {
 
 export const getFileUrl = (fileId: string) =>
   `https://drive.google.com/file/d/${fileId}/view?usp=sharing`;
+
+export const getFileById = async (fileId: string) => {
+  const auth = await authorize();
+  const drive = new drive_v3.Drive({ auth });
+
+  const response = await drive.files.get({ fileId, alt: 'media' }, { responseType: 'stream' });
+  return response.data;
+};
