@@ -4,8 +4,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
   extensions = [vector]
 }
 
@@ -41,6 +41,7 @@ model Student {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   gpa       String? // IPK mahasiswa
   interests String[] // Array minat, contoh: ["AI","Desain"]
+  skills    String[] // Array keterampilan, contoh: ["Python","Java"]
   studentId String? // ID mahasiswa
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -524,6 +524,7 @@ export interface components {
         StudentAcademicData: {
             gpa?: string;
             interests?: string[];
+            skills?: string[];
             achievements?: components["schemas"]["Achievement"][];
             experiences?: components["schemas"]["Experience"][];
         };

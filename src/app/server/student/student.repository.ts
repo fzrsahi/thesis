@@ -53,6 +53,7 @@ export const updateStudentAcademicData = async (studentId: number, data: Academi
     data: {
       gpa: data.gpa,
       interests: data.interests,
+      skills: data.skills,
       achievements: {
         createMany: {
           data:

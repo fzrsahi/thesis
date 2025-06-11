@@ -23,6 +23,7 @@ export const academicDataSchema = z.object({
     )
     .default([]),
   interests: z.array(z.string().nonempty({ message: "Interest is required" })).default([]),
+  skills: z.array(z.string().nonempty({ message: "Skill is required" })).default([]),
   experiences: z
     .array(
       z.object({

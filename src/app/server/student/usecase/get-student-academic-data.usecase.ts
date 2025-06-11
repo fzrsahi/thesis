@@ -8,6 +8,7 @@ export const getStudentAcademicDataUsecase = async (userId: number) => {
   const student = await findStudentByUserId(userId, {
     gpa: true,
     interests: true,
+    skills: true,
     achievements: {
       select: {
         id: true,

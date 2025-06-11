@@ -87,6 +87,11 @@ const UserProfilePage = () => {
     handleDeleteExperienceClick,
     handleConfirmDeleteExperience,
     handleCancelDeleteExperience,
+    skillInput,
+    setSkillInput,
+    skills,
+    handleAddSkill,
+    handleRemoveSkill,
   } = useAcademicDataForm(academicData);
 
   const onSubmitPersonal = (data: PersonalDataPayload) => {
@@ -452,6 +457,43 @@ const UserProfilePage = () => {
                       </div>
                     </div>
 
+                    {/* Skills Section - Multi Select Tags */}
+                    <div className="space-y-4">
+                      <FormLabel className="text-zinc-300">Skills</FormLabel>
+
+                      {/* Display existing interests as tags */}
+                      <div className="flex flex-wrap gap-2">
+                        {skills.map((skill, index) => (
+                          <div
+                            key={skill}
+                            className="flex items-center gap-1 rounded-full bg-zinc-600 px-3 py-1 text-sm text-white"
+                          >
+                            <span>{skill}</span>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveSkill(index)}
+                              className="ml-1 rounded-full p-0.5 hover:bg-zinc-700"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Input for adding new interests */}
+                      <div className="space-y-2">
+                        <Input
+                          placeholder="Type an skill and press Enter (e.g., Programming, Node JS, React JS, Design, etc.)"
+                          value={skillInput}
+                          onChange={(e) => setSkillInput(e.target.value)}
+                          onKeyDown={handleAddSkill}
+                          className="border-zinc-700 bg-zinc-800 text-white"
+                        />
+                        <p className="text-xs text-zinc-400">
+                          Press Enter to add an Skill. Click the X on tags to remove them.
+                        </p>
+                      </div>
+                    </div>
                     {/* Achievements Section */}
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">

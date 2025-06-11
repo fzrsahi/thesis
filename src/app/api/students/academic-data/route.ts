@@ -52,14 +52,7 @@ export const PUT = withAuth(
         });
       }
 
-      const { gpa, interests, achievements, experiences } = result.data;
-
-      await updateStudentAcademicDataUsecase(Number(session.user.id), {
-        gpa,
-        interests,
-        achievements,
-        experiences,
-      });
+      await updateStudentAcademicDataUsecase(Number(session.user.id), result.data);
 
       return NextResponse.json({
         success: true,

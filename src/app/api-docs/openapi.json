@@ -714,6 +714,12 @@
               "type": "string"
             }
           },
+          "skills": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
           "achievements": {
             "type": "array",
             "items": {

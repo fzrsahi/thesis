@@ -18,6 +18,8 @@ const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [interestInput, setInterestInput] = useState("");
   const [interests, setInterests] = useState<string[]>([]);
+  const [skillInput, setSkillInput] = useState("");
+  const [skills, setSkills] = useState<string[]>([]);
 
   const [isDeleteAchievementDialogOpen, setIsDeleteAchievementDialogOpen] = useState(false);
   const [isDeleteExperienceDialogOpen, setIsDeleteExperienceDialogOpen] = useState(false);
@@ -47,6 +49,7 @@ const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
     defaultValues: {
       gpa: "",
       interests: [],
+      skills: [],
       achievements: [],
       experiences: [],
     },
@@ -106,6 +109,24 @@ const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
     setInterests(updatedInterests);
   };
 
+  // Skills management
+  const handleAddSkill = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && skillInput.trim()) {
+      e.preventDefault();
+      const newSkill = skillInput.trim();
+
+      if (!skills.includes(newSkill)) {
+        setSkills([...skills, newSkill]);
+        setSkillInput("");
+      }
+    }
+  };
+
+  const handleRemoveSkill = (indexToRemove: number) => {
+    const updatedSkills = skills.filter((_, index) => index !== indexToRemove);
+    setSkills(updatedSkills);
+  };
+
   // Achievement deletion handlers
   const handleDeleteAchievementClick = (index: number) => {
     const title = form.getValues(`achievements.${index}.title`) || "Untitled Achievement";
@@ -148,11 +169,12 @@ const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
   };
 
   const handleSubmit = (formData: AcademicDataPayload) => {
-    const formDataWithInterests: AcademicDataPayload = {
+    const formDataWithSkillsAndInterests: AcademicDataPayload = {
       ...formData,
+      skills,
       interests,
     };
-    putAcademicData(formDataWithInterests);
+    putAcademicData(formDataWithSkillsAndInterests);
   };
 
   const resetForm = () => {
@@ -184,11 +206,13 @@ const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
       form.reset({
         gpa: data.gpa || "",
         interests: data.interests || [],
+        skills: data.skills || [],
         achievements: formatAchievements,
         experiences: formatExperiences,
       });
 
       // Set interests state
+      setSkills(data.skills || []);
       setInterests(data.interests || []);
     }
   }, [data, form]);
@@ -216,6 +240,14 @@ const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
     setInterests,
     handleAddInterest,
     handleRemoveInterest,
+
+    // Skills management
+    skillInput,
+    setSkillInput,
+    skills,
+    setSkills,
+    handleAddSkill,
+    handleRemoveSkill,
 
     // Date formatting utilities
     formatDateToYearMonth,

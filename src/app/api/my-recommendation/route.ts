@@ -1,14 +1,14 @@
+import { HttpStatusCode } from "axios";
 import { NextRequest, NextResponse } from "next/server";
 
 import { withAuth } from "@/app/server/auth/with-auth";
-import { ROLES } from "@/app/shared/const/role";
-import { customErrorToResponse, isCustomError } from "@/app/server/utils/error/custom-error";
+import { generateRecommendationUsecase } from "@/app/server/recommendation/generate-recomendation.usecase";
 import {
   RECOMMENDATION_ERROR_LOG,
   RECOMMENDATION_ERROR_RESPONSE,
 } from "@/app/server/recommendation/recomendation.error";
-import { HttpStatusCode } from "axios";
-import { generateRecommendationUsecase } from "@/app/server/recommendation/generate-recomendation.usecase";
+import { customErrorToResponse, isCustomError } from "@/app/server/utils/error/custom-error";
+import { ROLES } from "@/app/shared/const/role";
 
 export const GET = withAuth(
   async (_request: NextRequest, session) => {

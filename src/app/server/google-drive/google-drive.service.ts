@@ -68,5 +68,5 @@ export const getFileById = async (fileId: string) => {
   const auth = await authorize();
   const drive = new drive_v3.Drive({ auth });
 
-  return await drive.files.get({ fileId, alt: "media" }, { responseType: "arraybuffer" });
+  return drive.files.get({ fileId, alt: "media" }, { responseType: "arraybuffer" });
 };
