@@ -361,7 +361,9 @@ export interface paths {
                         /** @description IPK minimal */
                         minGPA?: string;
                         /** @description Kriteria khusus, contoh: {'language': 'Python', 'experience': 'Hackathon'} */
-                        requirements?: Record<string, never>;
+                        requirements?: {
+                            [key: string]: string;
+                        };
                         /**
                          * Format: date-time
                          * @description Tanggal mulai lomba

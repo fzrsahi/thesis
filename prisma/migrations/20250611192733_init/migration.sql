@@ -1,0 +1,226 @@
+-- CreateExtension
+CREATE EXTENSION IF NOT EXISTS "vector";
+
+-- CreateTable
+CREATE TABLE "users" (
+    "id" SERIAL NOT NULL,
+    "email" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "users_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "admins" (
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "admins_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "students" (
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "gpa" TEXT,
+    "interests" TEXT[],
+    "skills" TEXT[],
+    "studentId" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "students_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "transcripts" (
+    "id" SERIAL NOT NULL,
+    "studentId" INTEGER NOT NULL,
+    "fileId" TEXT NOT NULL,
+    "semester" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "transcripts_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "advisors" (
+    "id" SERIAL NOT NULL,
+    "userId" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "advisors_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "achievements" (
+    "id" SERIAL NOT NULL,
+    "studentId" INTEGER NOT NULL,
+    "title" TEXT NOT NULL,
+    "description" TEXT,
+    "date" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "achievements_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "experiences" (
+    "id" SERIAL NOT NULL,
+    "studentId" INTEGER NOT NULL,
+    "organization" TEXT NOT NULL,
+    "position" TEXT,
+    "description" TEXT,
+    "startDate" TIMESTAMP(3) NOT NULL,
+    "endDate" TIMESTAMP(3),
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "experiences_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "competitions" (
+    "id" SERIAL NOT NULL,
+    "title" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "field" TEXT[],
+    "type" TEXT NOT NULL,
+    "minGPA" TEXT,
+    "requirements" JSONB DEFAULT '{}',
+    "startDate" TIMESTAMP(3) NOT NULL,
+    "endDate" TIMESTAMP(3) NOT NULL,
+    "location" TEXT,
+    "organizer" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "competitions_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "competitionStats" (
+    "id" SERIAL NOT NULL,
+    "competitionId" INTEGER NOT NULL,
+    "categoryDistribution" JSONB NOT NULL DEFAULT '{}',
+    "performanceMetrics" JSONB NOT NULL DEFAULT '{}',
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "competitionStats_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "studentCompetitions" (
+    "id" SERIAL NOT NULL,
+    "studentId" INTEGER NOT NULL,
+    "competitionId" INTEGER NOT NULL,
+    "matchScore" DOUBLE PRECISION NOT NULL DEFAULT 0.0,
+    "applied" BOOLEAN NOT NULL DEFAULT false,
+    "feedback" TEXT,
+    "rating" INTEGER,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "studentCompetitions_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "recommendations" (
+    "id" SERIAL NOT NULL,
+    "studentId" INTEGER NOT NULL,
+    "prompt" TEXT NOT NULL,
+    "response" JSONB NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "recommendations_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "llmChatSessions" (
+    "id" SERIAL NOT NULL,
+    "studentId" INTEGER NOT NULL,
+    "title" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "llmChatSessions_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "llmChatMessages" (
+    "id" SERIAL NOT NULL,
+    "sessionId" INTEGER NOT NULL,
+    "role" TEXT NOT NULL,
+    "content" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "llmChatMessages_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "embeddings" (
+    "id" SERIAL NOT NULL,
+    "model" TEXT NOT NULL,
+    "vector" vector(1536) NOT NULL,
+    "metadata" JSONB DEFAULT '{}',
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "embeddings_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "admins_userId_key" ON "admins"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "students_userId_key" ON "students"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "advisors_userId_key" ON "advisors"("userId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "competitionStats_competitionId_key" ON "competitionStats"("competitionId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "studentCompetitions_studentId_competitionId_key" ON "studentCompetitions"("studentId", "competitionId");
+
+-- AddForeignKey
+ALTER TABLE "admins" ADD CONSTRAINT "admins_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "students" ADD CONSTRAINT "students_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "transcripts" ADD CONSTRAINT "transcripts_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "students"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "advisors" ADD CONSTRAINT "advisors_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "achievements" ADD CONSTRAINT "achievements_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "students"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "experiences" ADD CONSTRAINT "experiences_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "students"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "competitionStats" ADD CONSTRAINT "competitionStats_competitionId_fkey" FOREIGN KEY ("competitionId") REFERENCES "competitions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "studentCompetitions" ADD CONSTRAINT "studentCompetitions_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "students"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "studentCompetitions" ADD CONSTRAINT "studentCompetitions_competitionId_fkey" FOREIGN KEY ("competitionId") REFERENCES "competitions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "recommendations" ADD CONSTRAINT "recommendations_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "students"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "llmChatSessions" ADD CONSTRAINT "llmChatSessions_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "students"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "llmChatMessages" ADD CONSTRAINT "llmChatMessages_sessionId_fkey" FOREIGN KEY ("sessionId") REFERENCES "llmChatSessions"("id") ON DELETE CASCADE ON UPDATE CASCADE;

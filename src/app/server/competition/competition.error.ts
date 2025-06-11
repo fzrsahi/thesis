@@ -7,6 +7,10 @@ export const COMPETITION_ERROR_RESPONSE = {
     code: "COMPETITION_002",
     message: "Bad request",
   },
+  NOT_FOUND: {
+    code: "COMPETITION_003",
+    message: "Competition not found",
+  },
 } as const;
 
 export const COMPETITION_ERROR_LOG = {

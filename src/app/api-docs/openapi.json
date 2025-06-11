@@ -455,6 +455,9 @@
                   },
                   "requirements": {
                     "type": "object",
+                    "additionalProperties": {
+                      "type": "string"
+                    },
                     "description": "Kriteria khusus, contoh: {'language': 'Python', 'experience': 'Hackathon'}"
                   },
                   "startDate": {

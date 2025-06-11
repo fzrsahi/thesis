@@ -203,7 +203,7 @@ model LLMChatMessage {
 model Embedding {
   id        Int      @id @default(autoincrement())
   model     String // e.g. "all-MiniLM-L6-v2"
-  vector    Bytes // Simpan vektor (byte array)
+  vector    Unsupported("vector(1536)")
   metadata  Json?    @default("{}") // Contoh: { "type": "competition", "id": 5 }
   createdAt DateTime @default(now())
 

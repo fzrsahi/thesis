@@ -16,7 +16,7 @@ export const createCompetitionSchema = z.object({
   endDate: z.string().min(1),
   location: z.string().optional(),
   organizer: z.string().optional(),
-  requirements: z.object({}).optional(),
+  requirements: z.record(z.string()).optional(),
 } satisfies InferZodMap<CreateCompetitionRequest>);
 
 export type CreateCompetitionPayload = z.infer<typeof createCompetitionSchema>;
