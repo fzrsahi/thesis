@@ -1,10 +1,12 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  extensions = [vector]
 }
 
 /// User & Roles
@@ -195,20 +197,6 @@ model LLMChatMessage {
 }
 
 /// Alumni Data for RAG Knowledge Base
-model AlumniExperience {
-  id           Int      @id @default(autoincrement())
-  name         String // Nama senior
-  gpa          String // IPK mereka
-  interests    String[] // Minat senior sebagai array JSON
-  achievements String? // Ringkasan prestasi
-  organization String? // Organisasi utama
-  competition  String // Nama lomba yang diikuti
-  result       String // Hasil lomba, contoh: "Juara 1"
-  year         Int // Tahun lomba
-  createdAt    DateTime @default(now())
-
-  @@map("alumniExperiences")
-}
 
 /// Embeddings (Crucial for RAG: use pgvector for ease of vector querying)
 model Embedding {

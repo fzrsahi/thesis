@@ -1,6 +1,6 @@
 services:
   db:
-    image: postgres:alpine
+    image: pgvector/pgvector:pg16
     volumes:
       - ./docker/db/data:/var/lib/postgresql/data
     environment:
