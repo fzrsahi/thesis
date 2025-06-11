@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const generateVector = async (text: string) => {
+export const generateVector = async (text: string): Promise<number[]> => {
   const response = await axios.post(
     process.env.AZURE_EMBEDDINGS_ENDPOINT as string,
     { input: text },

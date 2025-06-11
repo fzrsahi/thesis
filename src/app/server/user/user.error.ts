@@ -11,7 +11,7 @@ export const USER_ERROR_RESPONSE = {
     code: "USER_003",
     message: "Email already exists",
   },
-};
+} as const;
 
 export const USER_ERROR_LOG = {
   INTERNAL_SERVER_ERROR: "Internal server error",

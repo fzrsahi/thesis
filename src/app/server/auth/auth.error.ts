@@ -43,7 +43,7 @@ export const AUTH_ERRORS_RESPONSE = {
     code: "AUTH_011",
     message: "Your account role has changed. Please log in again.",
   },
-};
+} as const;
 
 export const AUTH_ERRORS_LOG = {
   AUTHENTICATION_ERROR: "Authentication error:",

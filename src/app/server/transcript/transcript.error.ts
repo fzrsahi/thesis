@@ -11,7 +11,7 @@ export const TRANSCRIPT_ERROR_RESPONSE = {
     code: "TRANSCRIPT_003",
     message: "Transcript not found.",
   },
-};
+} as const;
 
 export const TRANSCRIPT_ERROR_LOG = {
   INTERNAL_SERVER_ERROR: "Internal server error:",

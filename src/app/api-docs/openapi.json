@@ -17,6 +17,7 @@
   "paths": {
     "/auth/session": {
       "get": {
+        "tags": ["Auth"],
         "summary": "Get session information",
         "description": "Retrieve session information for the authenticated user",
         "operationId": "getSession",
@@ -71,6 +72,7 @@
     },
     "/my-recommendation": {
       "get": {
+        "tags": ["Recommendation"],
         "summary": "Get personalized competition recommendations",
         "description": "Fetches personalized recommendations for the logged-in student, processed in the background using LLM and RAG.",
         "operationId": "getMyRecommendations",
@@ -314,6 +316,7 @@
     },
     "/students/transcript": {
       "post": {
+        "tags": ["Student"],
         "summary": "Upload student transcript",
         "description": "Upload student's transcript file",
         "security": [
@@ -344,6 +347,7 @@
         }
       },
       "get": {
+        "tags": ["Student"],
         "summary": "Get student transcripts",
         "description": "Get all transcripts for the current student",
         "security": [
@@ -389,6 +393,7 @@
     },
     "/students/transcript/{id}": {
       "delete": {
+        "tags": ["Student"],
         "summary": "Delete student transcript",
         "description": "Delete a transcript for the current student",
         "security": [
@@ -409,6 +414,99 @@
         "responses": {
           "200": {
             "description": "Transcript deleted successfully"
+          }
+        }
+      }
+    },
+    "/competitions": {
+      "post": {
+        "tags": ["Competition"],
+        "summary": "Create competition",
+        "description": "Create a new competition",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Judul lomba, misalnya: 'GEMASTIK Data Mining'"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Deskripsi lomba"
+                  },
+                  "field": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Bidang, misalnya: 'Teknologi', 'Desain' (untuk Category Distribution)"
+                  },
+                  "type": {
+                    "type": "string",
+                    "description": "Jenis: 'Individu' atau 'Tim'"
+                  },
+                  "minGPA": {
+                    "type": "string",
+                    "description": "IPK minimal"
+                  },
+                  "requirements": {
+                    "type": "object",
+                    "description": "Kriteria khusus, contoh: {'language': 'Python', 'experience': 'Hackathon'}"
+                  },
+                  "startDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Tanggal mulai lomba"
+                  },
+                  "endDate": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Tanggal berakhir / deadline"
+                  },
+                  "location": {
+                    "type": "string",
+                    "description": "Lokasi lomba (opsional)"
+                  },
+                  "organizer": {
+                    "type": "string",
+                    "description": "Penyelenggara (opsional)"
+                  }
+                },
+                "required": ["title", "description", "field", "type", "startDate", "endDate"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Competition created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Competition"],
+        "summary": "Get competition list",
+        "description": "Get all competitions",
+        "responses": {
+          "200": {
+            "description": "Competition list retrieved successfully"
           }
         }
       }

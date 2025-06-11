@@ -10,21 +10,28 @@ import { drive_v3 } from "@googleapis/drive";
 
 import * as pdfjs from "pdfjs-dist/legacy/build/pdf.mjs";
 import "@ungap/with-resolvers";
+import { sendPrompt } from "../model/azure/azure-openai.service";
 
 export const generateRecommendationUsecase = async (userId: number) => {
-  const studentProfile = await handleStudentProfile(userId);
+  // const studentProfile = await handleStudentProfile(userId);
 
-  const transcriptFileIds = studentProfile.transcript.map((t) => t.fileId);
-  const transcriptFile = await getFileById(transcriptFileIds[0]);
-  const cleanedTranscriptText = await handleTranscriptText(transcriptFile);
-  const profileText =
-    `IPK: ${studentProfile.gpa}, Minat: ${studentProfile.interests.join(", ")}, ` +
-    `Prestasi: ${studentProfile.achievements.map((a) => `${a.title} (${a.date.getFullYear()}) - ${a.description}`).join(", ")}, ` +
-    `Pengalaman: ${studentProfile.experiences.map((e) => `${e.organization} - ${e.position} (${e.startDate.getFullYear()} - ${e.endDate ? e.endDate.getFullYear() : "Sekarang"}) - ${e.description}`).join(", ")}, ` +
-    `Transkrip Nilai: ${cleanedTranscriptText}`;
+  // const transcriptFileIds = studentProfile.transcript.map((t) => t.fileId);
+  // const transcriptFile = await getFileById(transcriptFileIds[0]);
+  // const cleanedTranscriptText = await handleTranscriptText(transcriptFile);
+  // const profileText =
+  //   `IPK: ${studentProfile.gpa}, Minat: ${studentProfile.interests.join(", ")}, ` +
+  //   `Prestasi: ${studentProfile.achievements.map((a) => `${a.title} (${a.date.getFullYear()}) - ${a.description}`).join(", ")}, ` +
+  //   `Pengalaman: ${studentProfile.experiences.map((e) => `${e.organization} - ${e.position} (${e.startDate.getFullYear()} - ${e.endDate ? e.endDate.getFullYear() : "Sekarang"}) - ${e.description}`).join(", ")}, ` +
+  //   `Transkrip Nilai: ${cleanedTranscriptText}`;
 
-  const vector = await generateVector(profileText);
-  return vector;
+  // const vector = await generateVector(profileText);
+  // return vector;
+
+  const response = await sendPrompt("model apakah anda ini? jawab dalam json");
+
+  const recommendation = JSON.parse(response as string);
+
+  return recommendation;
 };
 
 const handleStudentProfile = async (userId: number) => {

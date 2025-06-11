@@ -1,4 +1,4 @@
-import { Home, User, BookOpen, Settings, MessageCircle } from "lucide-react";
+import { Home, User, BookOpen, Settings, MessageCircle, Brain } from "lucide-react";
 
 import { ROLES } from "@/app/shared/const/role";
 
@@ -6,12 +6,18 @@ import { Route } from "./auth-routes.type";
 
 export const routes: Route[] = [
   { name: "Dashboard", href: "/dashboard", roles: [ROLES.ADVISOR, ROLES.ADMIN], icon: Home },
+  {
+    name: "Competition",
+    href: "/competition",
+    roles: [ROLES.ADVISOR, ROLES.ADMIN],
+    icon: BookOpen,
+  },
   { name: "Mahasiswa", href: "/student", roles: [ROLES.ADVISOR, ROLES.ADMIN], icon: User },
   {
     name: "Rekomendasi",
     href: "/recomendation",
     roles: [ROLES.ADVISOR, ROLES.ADMIN],
-    icon: BookOpen,
+    icon: Brain,
   },
   { name: "Pengaturan", href: "/settings", roles: [ROLES.ADMIN], icon: Settings },
   { name: "Chat", href: "/chat", roles: [ROLES.ADVISOR, ROLES.ADMIN], icon: MessageCircle },
