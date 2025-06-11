@@ -145,12 +145,12 @@ export const findSimilarCompetitions = async (
   const similarCompetitions = await prisma.$queryRaw`
       SELECT 
         e.metadata,
-        e.vector <-> ${queryVector}::vector as distance,
-        1 - (e.vector <-> ${queryVector}::vector) as similarity
+        e.vector <=> ${queryVector}::vector as distance,
+        1 - (e.vector <=> ${queryVector}::vector) as similarity
       FROM embeddings e
       WHERE e.metadata->>'type' = 'competition'
-      AND 1 - (e.vector <-> ${queryVector}::vector) > ${threshold}
-      ORDER BY e.vector <-> ${queryVector}::vector
+      AND 1 - (e.vector <=> ${queryVector}::vector) > ${threshold}
+      ORDER BY e.vector <=> ${queryVector}::vector
       LIMIT ${limit}
     `;
 

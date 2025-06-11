@@ -67,6 +67,8 @@ export const generateRecommendationUsecase = async (userId: number) => {
         })
       : [];
 
+  console.log({ competitions, competitionIds, similarCompetitionEmbeddings });
+
   let finalCompetitions = competitions;
   if (competitions.length === 0) {
     throw customError(
