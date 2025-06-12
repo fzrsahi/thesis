@@ -24,7 +24,8 @@ export const createRecommendation = async (
   studentId: number,
   prompt: string,
   recommendation: RecommendationResponse
-) => prisma.recommendation.create({
+) =>
+  prisma.recommendation.create({
     data: {
       studentId,
       prompt,

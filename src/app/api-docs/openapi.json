@@ -88,66 +88,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/SuccessResponse"
-                },
-                "example": {
-                  "success": true,
-                  "data": {
-                    "recommendations": [
-                      {
-                        "id": 1,
-                        "competition": "Hackathon ZIA 2024",
-                        "match_score": 0.87,
-                        "reason": "Kompetisi ini sesuai karena Anda memiliki minat di bidang AI dan Pemrograman, serta IPK Anda (3.7) memenuhi persyaratan minimum (3.0). Pengalaman alumni menunjukkan mahasiswa dengan profil serupa sering berhasil di kompetisi ini.",
-                        "skill_distribution": {
-                          "AI": 0.7,
-                          "Pemrograman": 0.6,
-                          "Desain": 0.3
-                        },
-                        "rank": 1,
-                        "details": {
-                          "startDate": "2025-06-01",
-                          "endDate": "2025-06-05",
-                          "location": "Online",
-                          "organizer": "ZIA Tech"
-                        },
-                        "applied": false
-                      },
-                      {
-                        "id": 2,
-                        "competition": "Business Plan Competition",
-                        "match_score": 0.62,
-                        "reason": "Kompetisi ini cukup sesuai karena Anda memiliki minat sekunder di bidang Bisnis, meskipun keterampilan utama Anda adalah AI dan Pemrograman. IPK Anda juga memenuhi syarat, tetapi pengalaman di bidang bisnis masih terbatas berdasarkan data Anda.",
-                        "skill_distribution": {
-                          "Bisnis": 0.5,
-                          "Pemrograman": 0.4,
-                          "Desain": 0.2
-                        },
-                        "rank": 2,
-                        "details": {
-                          "startDate": "2025-07-01",
-                          "endDate": "2025-07-10",
-                          "location": "Surabaya",
-                          "organizer": "KADIN"
-                        },
-                        "applied": true
-                      }
-                    ],
-                    "skills_profile": {
-                      "AI": 0.7,
-                      "Pemrograman": 0.6,
-                      "Desain": 0.3,
-                      "Bisnis": 0.2
-                    },
-                    "category_distribution": {
-                      "Teknologi": 0.6,
-                      "Desain": 0.25,
-                      "Bisnis": 0.15
-                    },
-                    "performance_metrics": {
-                      "participation_rate": 0.65,
-                      "avg_match_score": 0.78
-                    }
-                  }
                 }
               }
             }
@@ -540,6 +480,86 @@
       "RecommendationResponse": {
         "type": "object",
         "properties": {
+          "skills_profile": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number",
+              "format": "float"
+            },
+            "example": {
+              "technical_expertise": 0.85,
+              "scientific_writing": 0.65,
+              "problem_solving": 0.83,
+              "creativity_innovation": 0.72,
+              "communication": 0.55,
+              "teamwork_collaboration": 0.78,
+              "project_management": 0.7,
+              "business_acumen": 0.5,
+              "design_thinking": 0.6,
+              "self_learning": 0.9
+            },
+            "description": "Overall skill profile for the radar chart"
+          },
+          "skills_profile_breakdown": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "example": {
+              "technical_expertise": "Dibangun dari IPK tinggi (3.66), pengalaman dalam pengembangan backend, optimasi API, integrasi OpenAI, dan kontribusi pada proyek perangkat lunak kompetisi nasional.",
+              "scientific_writing": "Nilai mata kuliah metodologi penelitian (3.7) menunjukkan kemampuan dokumentasi akademis yang cukup baik, meskipun pengalaman menulis paper/jurnal masih bisa ditingkatkan."
+            },
+            "description": "Detailed breakdown of skill profile scores"
+          },
+          "category_distribution": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "number",
+              "format": "float"
+            },
+            "example": { "Teknologi": 0.75, "Data Science": 0.15, "Bisnis": 0.1 },
+            "description": "Category distribution for the pie chart"
+          },
+          "performance_metrics": {
+            "type": "object",
+            "properties": {
+              "participation_rate": {
+                "type": "number",
+                "format": "float",
+                "example": 0.75,
+                "description": "Participation rate of students"
+              },
+              "avg_match_score": {
+                "type": "number",
+                "format": "float",
+                "example": 0.78,
+                "description": "Average match score"
+              },
+              "competition_success_rate": {
+                "type": "number",
+                "format": "float",
+                "example": 0.33,
+                "description": "Success rate in competitions"
+              },
+              "skill_growth": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "example": {
+                  "technical_expertise": "+0.15 (dari proyek di 80&Co dan kompetisi IT nasional)",
+                  "problem_solving": "+0.1 (dari pengalaman optimasi database dan AI-integrated project)"
+                },
+                "description": "Skill growth indicators"
+              }
+            },
+            "required": [
+              "participation_rate",
+              "avg_match_score",
+              "competition_success_rate",
+              "skill_growth"
+            ]
+          },
           "recommendations": {
             "type": "array",
             "items": {
@@ -552,19 +572,19 @@
                 },
                 "competition": {
                   "type": "string",
-                  "example": "Hackathon ZIA 2024",
+                  "example": "IT FEST 2025 - Software Development",
                   "description": "Name of the competition"
                 },
                 "match_score": {
                   "type": "number",
                   "format": "float",
-                  "example": 0.87,
+                  "example": 0.92,
                   "description": "Match score (0.0 - 1.0)"
                 },
-                "reason": {
+                "match_score_breakdown": {
                   "type": "string",
-                  "example": "Kompetisi ini sesuai karena Anda memiliki minat di bidang AI dan Pemrograman, serta IPK Anda (3.7) memenuhi persyaratan minimum (3.0). Pengalaman alumni menunjukkan mahasiswa dengan profil serupa sering berhasil di kompetisi ini.",
-                  "description": "AI-generated explanation for why this competition is recommended"
+                  "example": "Technical skills (0.85 * 0.3 = 0.255), Problem solving (0.83 * 0.25 = 0.2075), Creativity (0.72 * 0.2 = 0.144), Teamwork (0.78 * 0.15 = 0.117), Communication (0.55 * 0.1 = 0.055). Total = 0.92.",
+                  "description": "Detailed breakdown of how the match score was calculated"
                 },
                 "skill_distribution": {
                   "type": "object",
@@ -572,13 +592,40 @@
                     "type": "number",
                     "format": "float"
                   },
-                  "example": { "AI": 0.7, "Pemrograman": 0.6, "Desain": 0.3 },
+                  "example": {
+                    "technical_expertise": 0.9,
+                    "scientific_writing": 0.4,
+                    "problem_solving": 0.8,
+                    "creativity_innovation": 0.7,
+                    "communication": 0.4,
+                    "teamwork_collaboration": 0.7,
+                    "project_management": 0.5,
+                    "business_acumen": 0.3,
+                    "design_thinking": 0.6,
+                    "self_learning": 0.8
+                  },
                   "description": "Skill distribution for the competition"
+                },
+                "skill_distribution_breakdown": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "example": {
+                    "technical_expertise": "Bobot sangat tinggi karena kompetisi berfokus pada pengembangan perangkat lunak inovatif.",
+                    "scientific_writing": "Bobot rendah karena dokumentasi akademis tidak menjadi fokus utama."
+                  },
+                  "description": "Explanation of skill distribution for the competition"
                 },
                 "rank": {
                   "type": "integer",
                   "example": 1,
                   "description": "Rank based on match score"
+                },
+                "reason": {
+                  "type": "string",
+                  "example": "Kompetisi ini sangat cocok karena mahasiswa memiliki kekuatan di bidang software development, dengan pengalaman proyek nyata di AI dan backend. GPA memenuhi syarat minimum, dan keterlibatan dalam kompetisi serupa sebelumnya memberikan advantage.",
+                  "description": "AI-generated explanation for why this competition is recommended"
                 },
                 "details": {
                   "type": "object",
@@ -586,12 +633,12 @@
                     "startDate": {
                       "type": "string",
                       "format": "date",
-                      "example": "2025-06-01"
+                      "example": "2025-05-20"
                     },
                     "endDate": {
                       "type": "string",
                       "format": "date",
-                      "example": "2025-06-05"
+                      "example": "2025-08-25"
                     },
                     "location": {
                       "type": "string",
@@ -599,7 +646,16 @@
                     },
                     "organizer": {
                       "type": "string",
-                      "example": "ZIA Tech"
+                      "example": "itfestmicroipb"
+                    },
+                    "registration_deadline": {
+                      "type": "string",
+                      "format": "date",
+                      "example": "2025-05-01"
+                    },
+                    "website": {
+                      "type": "string",
+                      "example": "https://itfestmicroipb.com"
                     }
                   }
                 },
@@ -607,62 +663,119 @@
                   "type": "boolean",
                   "example": false,
                   "description": "Whether the student has applied to this competition"
+                },
+                "preparation_tips": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "example": [
+                    "Latihan pengembangan aplikasi berbasis AI dengan framework populer seperti TensorFlow atau PyTorch.",
+                    "Fokus pada proposal yang kuat dengan solusi inovatif, termasuk demo teknis yang menarik.",
+                    "Pelajari pola pemenang kompetisi sebelumnya untuk memahami strategi dan inovasi.",
+                    "Latihan pitching dengan focus pada storytelling dan penjelasan teknis yang jelas."
+                  ],
+                  "description": "Personalized preparation tips for the competition"
                 }
               },
               "required": [
                 "id",
                 "competition",
                 "match_score",
-                "reason",
+                "match_score_breakdown",
                 "skill_distribution",
+                "skill_distribution_breakdown",
                 "rank",
+                "reason",
                 "details",
-                "applied"
+                "applied",
+                "preparation_tips"
               ]
             }
           },
-          "skills_profile": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "number",
-              "format": "float"
-            },
-            "example": { "AI": 0.7, "Pemrograman": 0.6, "Desain": 0.3, "Bisnis": 0.2 },
-            "description": "Overall skill profile for the radar chart"
+          "development_suggestions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "course",
+                  "description": "Type of development suggestion (course, practice, etc.)"
+                },
+                "title": {
+                  "type": "string",
+                  "example": "IoT Foundations: Prototyping and Programming",
+                  "description": "Title of the development resource"
+                },
+                "platform": {
+                  "type": "string",
+                  "example": "Coursera",
+                  "description": "Platform where the resource is available"
+                },
+                "link": {
+                  "type": "string",
+                  "example": "https://www.coursera.org/learn/iot",
+                  "description": "Link to the resource"
+                },
+                "reason": {
+                  "type": "string",
+                  "example": "Untuk meningkatkan kemampuan pengembangan IoT dan prototyping yang relevan dengan kompetisi GEMASTIK Divisi IX.",
+                  "description": "Reason why this resource is recommended"
+                }
+              },
+              "required": ["type", "title", "platform", "link", "reason"]
+            }
           },
-          "category_distribution": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "number",
-              "format": "float"
-            },
-            "example": { "Teknologi": 0.6, "Desain": 0.25, "Bisnis": 0.15 },
-            "description": "Category distribution for the pie chart"
-          },
-          "performance_metrics": {
+          "profile_strength": {
             "type": "object",
             "properties": {
-              "participation_rate": {
+              "score": {
                 "type": "number",
                 "format": "float",
-                "example": 0.65,
-                "description": "Participation rate of students"
+                "example": 0.82,
+                "description": "Overall profile strength score"
               },
-              "avg_match_score": {
-                "type": "number",
-                "format": "float",
-                "example": 0.78,
-                "description": "Average match score"
+              "calculation_explanation": {
+                "type": "string",
+                "example": "IPK (3.66/4.0 * 0.25 = 0.23), Technical Skills (0.85 * 0.3 = 0.255), Experience Quality (0.8 * 0.2 = 0.16), Achievements (0.33 * 0.15 = 0.0495), Growth Potential (0.9 * 0.1 = 0.09). Total = 0.82.",
+                "description": "Detailed explanation of how the profile strength score was calculated"
+              },
+              "strengths": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "example": [
+                  "Kuat di bidang teknis dengan bukti dari proyek backend dan AI-integrated.",
+                  "Prestasi kompetisi nasional menunjukkan kemampuan bersaing.",
+                  "Kemampuan belajar mandiri sangat tinggi dengan adaptasi teknologi baru."
+                ],
+                "description": "List of profile strengths"
+              },
+              "weaknesses": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "example": [
+                  "Keterampilan komunikasi perlu ditingkatkan untuk pitching kompetisi.",
+                  "Pemahaman bisnis masih terbatas untuk kompetisi dengan aspek kewirausahaan."
+                ],
+                "description": "List of areas for improvement"
               }
             },
-            "required": ["participation_rate", "avg_match_score"]
+            "required": ["score", "calculation_explanation", "strengths", "weaknesses"]
           }
         },
         "required": [
-          "recommendations",
           "skills_profile",
+          "skills_profile_breakdown",
           "category_distribution",
-          "performance_metrics"
+          "performance_metrics",
+          "recommendations",
+          "development_suggestions",
+          "profile_strength"
         ]
       },
       "StudentPersonalData": {

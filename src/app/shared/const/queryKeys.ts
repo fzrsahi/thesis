@@ -16,4 +16,8 @@ const transcript = createQueryKeys("transcript", {
   delete: () => ["delete-transcript"],
 });
 
-export const queryKeys = mergeQueryKeys(personalData, academicData, transcript);
+const myRecommendation = createQueryKeys("my-recommendation", {
+  data: () => ["my-recommendation"],
+});
+
+export const queryKeys = mergeQueryKeys(personalData, academicData, transcript, myRecommendation);

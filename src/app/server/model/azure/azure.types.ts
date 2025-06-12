@@ -76,7 +76,6 @@ export interface RecommendationResponse {
       registration_deadline: string;
       website: string;
     };
-    applied: boolean;
     preparation_tips: string[];
   }>;
   development_suggestions: Array<{

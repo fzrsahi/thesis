@@ -51,7 +51,8 @@ const createChatModel = (
   });
 };
 
-const createEmbeddingClient = () => new AzureOpenAI({
+const createEmbeddingClient = () =>
+  new AzureOpenAI({
     apiKey: AZURE_EMBEDDING_CONFIG.apiKey,
     apiVersion: AZURE_EMBEDDING_CONFIG.apiVersion,
     endpoint: AZURE_EMBEDDING_CONFIG.endpoint,
@@ -279,7 +280,6 @@ export const generateRecommendationWithCompetitions = async (
             "registration_deadline": "Estimasi 2-4 minggu sebelum startDate",
             "website": "https://kompetisi-website.com (estimasi berdasarkan organizer)"
           }},
-          "applied": false,
           "preparation_tips": [
             "Fokus strengthening technical implementation skills dengan practice coding intensif menggunakan tech stack yang umum digunakan di kompetisi ini",
             "Improve presentation skills dengan latihan pitching 5-10 menit, focus on clear problem-solution narrative dan demo yang menarik",
