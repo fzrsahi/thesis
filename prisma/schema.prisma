@@ -147,9 +147,7 @@ model StudentCompetition {
   studentId     Int
   competitionId Int
   matchScore    Float    @default(0.0) // 0.0–1.0: skor kecocokan AI (driven by RAG)
-  applied       Boolean  @default(false) // Status pendaftaran
   feedback      String? // Komentar / feedback user
-  rating        Int? // Nilai 1-5
   createdAt     DateTime @default(now())
 
   student     Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)

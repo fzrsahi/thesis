@@ -21,6 +21,8 @@ import { findStudentByUserId } from "../student/student.repository";
 import { customError } from "../utils/error/custom-error";
 
 import "@ungap/with-resolvers";
+import { Prisma } from "@prisma/client";
+import { createRecommendation, findRecommendationByStudentId } from "./recomendation.repository";
 
 export const generateRecommendationUsecase = async (userId: number) => {
   const studentProfile = await validateStudentProfile(userId);
@@ -28,52 +30,12 @@ export const generateRecommendationUsecase = async (userId: number) => {
   const transcriptFile = await getFileById(transcriptFileIds[0]);
   const cleanedTranscriptText = await extractTranscriptText(transcriptFile);
 
-  const profileText = `
-    IPK: ${studentProfile.gpa}
-    Minat: ${studentProfile.interests.join(", ")}
-    Prestasi: ${studentProfile.achievements
-      .map((a) => `${a.title} (${a.date.getFullYear()}) - ${a.description}`)
-      .join(", ")}
-    Pengalaman: ${studentProfile.experiences
-      .map(
-        (e) =>
-          `${e.organization} - ${e.position} (${e.startDate.getFullYear()} - ${e.endDate ? e.endDate.getFullYear() : "Sekarang"}) - ${e.description}`
-      )
-      .join(", ")}
-    Transkrip Nilai: ${cleanedTranscriptText}
-  `;
-
-  const similarCompetitionEmbeddings = await findSimilarCompetitions(profileText);
-
-  const competitionIds =
-    similarCompetitionEmbeddings?.length > 0
-      ? similarCompetitionEmbeddings
-          .map((embedding: unknown) =>
-            Number((embedding as { metadata: { id: number } }).metadata.id)
-          )
-          .filter((id) => !Number.isNaN(id))
-      : [];
-
-  const competitions =
-    competitionIds.length > 0 ? await findManyCompetitionsByIds(competitionIds) : [];
-
-  const finalCompetitions = competitions.length ? competitions : await findRandomCompetitions(3);
-  if (!finalCompetitions.length) {
-    throw customError(
-      COMPETITION_ERROR_RESPONSE.NOT_FOUND.code,
-      COMPETITION_ERROR_RESPONSE.NOT_FOUND.message,
-      HttpStatusCode.NotFound
-    );
+  const existingRecommendation = await findRecommendationByStudentId(studentProfile.id);
+  if (!existingRecommendation) {
+    const recommendation = await generateRecommendation(studentProfile, cleanedTranscriptText);
+    return recommendation;
   }
-
-  const recommendation = await generateRecommendationWithCompetitions(
-    profileText,
-    finalCompetitions
-  );
-
-  await saveRecommendation(recommendation);
-
-  return recommendation;
+  return existingRecommendation;
 };
 
 const validateStudentProfile = async (userId: number) => {
@@ -160,4 +122,68 @@ const validateCompetition = async () => {
   }
 };
 
-const saveRecommendation = async (_recommendation: RecommendationResponse) => {};
+const saveRecommendation = async (
+  studentId: number,
+  prompt: string,
+  recommendation: RecommendationResponse
+) => {
+  await createRecommendation(studentId, prompt, recommendation);
+  
+};
+
+const generateRecommendation = async (
+  studentProfile: Prisma.StudentGetPayload<{
+    include: {
+      achievements: true;
+      experiences: true;
+      transcript: true;
+    };
+  }>,
+  cleanedTranscriptText: string
+): Promise<RecommendationResponse> => {
+  const profileText = `
+    IPK: ${studentProfile.gpa}
+    Minat: ${studentProfile.interests.join(", ")}
+    Prestasi: ${studentProfile.achievements
+      .map((a) => `${a.title} (${a.date.getFullYear()}) - ${a.description}`)
+      .join(", ")}
+    Pengalaman: ${studentProfile.experiences
+      .map(
+        (e) =>
+          `${e.organization} - ${e.position} (${e.startDate.getFullYear()} - ${e.endDate ? e.endDate.getFullYear() : "Sekarang"}) - ${e.description}`
+      )
+      .join(", ")}
+    Transkrip Nilai: ${cleanedTranscriptText}
+  `;
+
+  const similarCompetitionEmbeddings = await findSimilarCompetitions(profileText);
+
+  const competitionIds =
+    similarCompetitionEmbeddings?.length > 0
+      ? similarCompetitionEmbeddings
+          .map((embedding: unknown) =>
+            Number((embedding as { metadata: { id: number } }).metadata.id)
+          )
+          .filter((id) => !Number.isNaN(id))
+      : [];
+
+  const competitions =
+    competitionIds.length > 0 ? await findManyCompetitionsByIds(competitionIds) : [];
+
+  const finalCompetitions = competitions.length ? competitions : await findRandomCompetitions(3);
+  if (!finalCompetitions.length) {
+    throw customError(
+      COMPETITION_ERROR_RESPONSE.NOT_FOUND.code,
+      COMPETITION_ERROR_RESPONSE.NOT_FOUND.message,
+      HttpStatusCode.NotFound
+    );
+  }
+
+  const { result, prompt } = await generateRecommendationWithCompetitions(
+    profileText,
+    finalCompetitions
+  );
+
+  await saveRecommendation(studentProfile.id, prompt, result);
+  return result;
+};

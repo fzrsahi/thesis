@@ -134,7 +134,7 @@ export const generateStructuredResponse = async (
     profile: profileData,
   });
 
-  return result;
+  return { result, prompt };
 };
 
 export const findSimilarCompetitions = async (
@@ -161,7 +161,7 @@ export const findSimilarCompetitions = async (
 export const generateRecommendationWithCompetitions = async (
   profileText: string,
   competitions: Competition[]
-): Promise<RecommendationResponse> => {
+): Promise<{ result: RecommendationResponse; prompt: string }> => {
   const competitionContext = competitions
     .map(
       (comp, index) => `
@@ -328,7 +328,9 @@ export const generateRecommendationWithCompetitions = async (
     - Evaluasi strategic value setiap kompetisi untuk career development mahasiswa
   `;
 
-  return generateStructuredResponse(profileText, promptTemplate);
+  const { result, prompt } = await generateStructuredResponse(profileText, promptTemplate);
+
+  return { result, prompt: prompt.toString() };
 };
 
 export const generateCompetitionEmbedding = async (competitionData: Competition) => {
