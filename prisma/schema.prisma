@@ -150,7 +150,7 @@ model StudentCompetition {
   feedback      String? // Komentar / feedback user
   createdAt     DateTime @default(now())
 
-  student     Student     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  student     Student?     @relation(fields: [studentId], references: [id], onDelete: Cascade)
   competition Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
 
   @@unique([studentId, competitionId])
@@ -165,7 +165,7 @@ model Recommendation {
   response  Json // Output LLM dalam format JSON
   createdAt DateTime @default(now())
 
-  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  student Student? @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@map("recommendations")
 }
