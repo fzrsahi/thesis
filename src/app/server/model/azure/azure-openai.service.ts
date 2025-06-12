@@ -331,16 +331,7 @@ export const generateRecommendationWithCompetitions = async (
   return generateStructuredResponse(profileText, promptTemplate);
 };
 
-export const generateCompetitionEmbedding = async (competitionData: {
-  title: string;
-  description: string;
-  field: string[];
-  type: string;
-  minGPA?: number;
-  requirements: any;
-  location?: string;
-  organizer?: string;
-}) => {
+export const generateCompetitionEmbedding = async (competitionData: Competition) => {
   const competitionText = `
     Title: ${competitionData.title}
     Description: ${competitionData.description}
@@ -352,7 +343,7 @@ export const generateCompetitionEmbedding = async (competitionData: {
     Organizer: ${competitionData.organizer || "Not specified"}
   `.trim();
 
-  return await generateEmbedding(competitionText);
+  return generateEmbedding(competitionText);
 };
 
 export const generateRecommendation = async (profileText: string) => {
@@ -366,5 +357,5 @@ export const generateRecommendation = async (profileText: string) => {
     Pastikan semua nilai numerik dalam rentang 0-1 dan semua penjelasan dalam bahasa Indonesia yang informatif.
   `;
 
-  return await generateStructuredResponse(profileText, promptTemplate);
+  return generateStructuredResponse(profileText, promptTemplate);
 };

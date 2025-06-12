@@ -102,13 +102,6 @@ const validateStudentProfile = async (userId: number) => {
     !student.gpa ||
     !student.interests?.length
   ) {
-    console.log({
-      experiences: student.experiences?.length,
-      achievements: student.achievements?.length,
-      transcript: student.transcript?.length,
-      gpa: student.gpa,
-      interests: student.interests?.length,
-    });
     throw customError(
       STUDENT_ERROR_RESPONSE.NOT_COMPLETED_PROFILE.code,
       STUDENT_ERROR_RESPONSE.NOT_COMPLETED_PROFILE.message,
@@ -127,13 +120,18 @@ const extractTranscriptText = async (transcriptFile: GaxiosResponse<drive_v3.Sch
   const pdfDocument = await pdfjs.getDocument({ data: pdfDataAsUint8Array }).promise;
 
   let extractedText = "";
-  for (let i = 1; i <= pdfDocument.numPages; i++) {
-    const page = await pdfDocument.getPage(i);
-    const textContent = await page.getTextContent();
 
-    const pageText = textContent.items.map((item) => (item as TextItem).str).join(" ");
-    extractedText += `${pageText}\n`;
-  }
+  const pagePromises = Array.from({ length: pdfDocument.numPages }, (_, i) =>
+    pdfDocument.getPage(i + 1)
+  );
+
+  const pages = await Promise.all(pagePromises);
+  const textContentPromises = pages.map((page) => page.getTextContent());
+  const textContents = await Promise.all(textContentPromises);
+
+  extractedText = textContents
+    .map((textContent) => textContent.items.map((item) => (item as TextItem).str).join(" "))
+    .join("\n");
 
   return extractedText
     .replace(/KEMENTERIAN PENDIDIKAN TINGGI, SAINS, DAN TEKNOLOGI/g, "")
@@ -162,4 +160,4 @@ const validateCompetition = async () => {
   }
 };
 
-const saveRecommendation = async (recommendation: RecommendationResponse) => {};
+const saveRecommendation = async (_recommendation: RecommendationResponse) => {};
