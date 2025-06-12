@@ -1,9 +1,15 @@
 import { drive_v3 } from "@googleapis/drive";
+import { Prisma } from "@prisma/client";
 import { HttpStatusCode } from "axios";
 import { GaxiosResponse } from "gaxios";
 import * as pdfjs from "pdfjs-dist/legacy/build/pdf.mjs";
 import { TextItem } from "pdfjs-dist/types/src/display/api";
 
+import {
+  createRecommendation,
+  createStudentCompetition,
+  findRecommendationByStudentId,
+} from "./recomendation.repository";
 import { COMPETITION_ERROR_RESPONSE } from "../competition/competition.error";
 import {
   findManyCompetitionsByIds,
@@ -21,22 +27,14 @@ import { findStudentByUserId } from "../student/student.repository";
 import { customError } from "../utils/error/custom-error";
 
 import "@ungap/with-resolvers";
-import { Prisma } from "@prisma/client";
-import {
-  createRecommendation,
-  createStudentCompetition,
-  findRecommendationByStudentId,
-} from "./recomendation.repository";
 
 export const generateRecommendationUsecase = async (userId: number) => {
   const studentProfile = await validateStudentProfile(userId);
-
-  const transcriptFileIds = studentProfile.transcript.map((t) => t.fileId);
-  const transcriptFile = await getFileById(transcriptFileIds[0]);
-  const cleanedTranscriptText = await extractTranscriptText(transcriptFile);
-
   const existingRecommendation = await findRecommendationByStudentId(studentProfile.id);
   if (!existingRecommendation) {
+    const transcriptFileIds = studentProfile.transcript.map((t) => t.fileId);
+    const transcriptFile = await getFileById(transcriptFileIds[0]);
+    const cleanedTranscriptText = await extractTranscriptText(transcriptFile);
     const recommendation = await generateRecommendation(studentProfile, cleanedTranscriptText);
     return recommendation;
   }
@@ -135,15 +133,15 @@ const saveRecommendation = async (
   finalCompetitions: { id: number }[]
 ) => {
   await createRecommendation(studentId, prompt, recommendation);
-  
+
   const validRecommendations = recommendation.recommendations
     .filter((r) => r.id > 0 && r.id <= finalCompetitions.length)
     .map((r) => ({
       competitionId: finalCompetitions[r.id - 1].id, // AI uses 1-based index, convert to 0-based
       matchScore: r.match_score,
-      feedback: r.reason
+      feedback: r.reason,
     }));
-  
+
   if (validRecommendations.length > 0) {
     await createStudentCompetition(
       studentId,

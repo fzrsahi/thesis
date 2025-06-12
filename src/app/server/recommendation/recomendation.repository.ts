@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 
-import { prisma } from "../prisma/prisma";
 import { RecommendationResponse } from "../model/azure/azure.types";
+import { prisma } from "../prisma/prisma";
 
 export const findRecommendationByStudentId = async (
   studentId: number,
@@ -24,15 +24,13 @@ export const createRecommendation = async (
   studentId: number,
   prompt: string,
   recommendation: RecommendationResponse
-) => {
-  return prisma.recommendation.create({
+) => prisma.recommendation.create({
     data: {
-      studentId: studentId,
+      studentId,
       prompt,
       response: JSON.stringify(recommendation),
     },
   });
-};
 
 export const createStudentCompetition = async (
   studentId: number,

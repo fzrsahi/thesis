@@ -51,13 +51,11 @@ const createChatModel = (
   });
 };
 
-const createEmbeddingClient = () => {
-  return new AzureOpenAI({
+const createEmbeddingClient = () => new AzureOpenAI({
     apiKey: AZURE_EMBEDDING_CONFIG.apiKey,
     apiVersion: AZURE_EMBEDDING_CONFIG.apiVersion,
     endpoint: AZURE_EMBEDDING_CONFIG.endpoint,
   });
-};
 
 export const sendPrompt = async (prompt: string, model = "gpt-4o") => {
   const client = createOpenAIClient();
