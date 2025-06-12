@@ -146,7 +146,7 @@ export const generateStructuredResponse = async (
     profile: profileData,
   });
 
-  return { result, prompt };
+  return result;
 };
 
 export const findSimilarCompetitions = async (
@@ -340,9 +340,9 @@ export const generateRecommendationWithCompetitions = async (
     - Evaluasi strategic value setiap kompetisi untuk career development mahasiswa
   `;
 
-  const { result, prompt } = await generateStructuredResponse(profileText, promptTemplate);
+  const result = await generateStructuredResponse(profileText, promptTemplate);
 
-  return { result, prompt: prompt.toString() };
+  return { result, prompt: promptTemplate };
 };
 
 export const generateCompetitionEmbedding = async (competitionData: Competition) => {

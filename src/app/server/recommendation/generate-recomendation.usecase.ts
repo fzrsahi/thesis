@@ -30,7 +30,6 @@ import {
 
 export const generateRecommendationUsecase = async (userId: number) => {
   const studentProfile = await validateStudentProfile(userId);
-  console.log(studentProfile, "student 1");
 
   const transcriptFileIds = studentProfile.transcript.map((t) => t.fileId);
   const transcriptFile = await getFileById(transcriptFileIds[0]);
@@ -41,13 +40,14 @@ export const generateRecommendationUsecase = async (userId: number) => {
     const recommendation = await generateRecommendation(studentProfile, cleanedTranscriptText);
     return recommendation;
   }
-  return existingRecommendation;
+  return JSON.parse(existingRecommendation.response as string) as RecommendationResponse;
 };
 
 const validateStudentProfile = async (userId: number) => {
   await validateCompetition();
 
   const student = await findStudentByUserId(userId, {
+    id: true,
     gpa: true,
     interests: true,
     experiences: true,
@@ -131,15 +131,27 @@ const validateCompetition = async () => {
 const saveRecommendation = async (
   studentId: number,
   prompt: string,
-  recommendation: RecommendationResponse
+  recommendation: RecommendationResponse,
+  finalCompetitions: { id: number }[]
 ) => {
   await createRecommendation(studentId, prompt, recommendation);
-  await createStudentCompetition(
-    studentId,
-    recommendation.recommendations.map((r) => r.id),
-    recommendation.recommendations.map((r) => r.match_score),
-    recommendation.recommendations.map((r) => r.reason)
-  );
+  
+  const validRecommendations = recommendation.recommendations
+    .filter((r) => r.id > 0 && r.id <= finalCompetitions.length)
+    .map((r) => ({
+      competitionId: finalCompetitions[r.id - 1].id, // AI uses 1-based index, convert to 0-based
+      matchScore: r.match_score,
+      feedback: r.reason
+    }));
+  
+  if (validRecommendations.length > 0) {
+    await createStudentCompetition(
+      studentId,
+      validRecommendations.map((r) => r.competitionId),
+      validRecommendations.map((r) => r.matchScore),
+      validRecommendations.map((r) => r.feedback)
+    );
+  }
 };
 
 const generateRecommendation = async (
@@ -195,6 +207,6 @@ const generateRecommendation = async (
     finalCompetitions
   );
 
-  await saveRecommendation(studentProfile.id, prompt, result);
+  await saveRecommendation(studentProfile.id, prompt, result, finalCompetitions);
   return result;
 };
