@@ -1,12 +1,11 @@
 import { JsonOutputParser } from "@langchain/core/output_parsers";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { AzureChatOpenAI } from "@langchain/openai";
-import { Competition, PrismaClient } from "@prisma/client";
+import { Competition } from "@prisma/client";
 import { AzureOpenAI } from "openai";
 
 import { RecommendationResponse } from "./azure.types";
-
-const prisma = new PrismaClient();
+import { prisma } from "../../prisma/prisma";
 
 const AZURE_CONFIG = {
   apiKey: process.env.AZURE_OPENAI_API_KEY!,
@@ -23,7 +22,7 @@ const AZURE_EMBEDDING_CONFIG = {
   apiVersion: "2024-02-01",
 };
 
-const authorize = async () => {
+const createOpenAIClient = () => {
   const options = {
     endpoint: AZURE_CONFIG.endpoint,
     apiKey: AZURE_CONFIG.apiKey,
@@ -34,8 +33,34 @@ const authorize = async () => {
   return new AzureOpenAI(options);
 };
 
+const createChatModel = (
+  options: {
+    temperature?: number;
+    modelName?: string;
+  } = {}
+) => {
+  const { temperature = 0.7, modelName = "gpt-4o" } = options;
+
+  return new AzureChatOpenAI({
+    modelName,
+    azureOpenAIApiKey: AZURE_CONFIG.apiKey,
+    azureOpenAIApiVersion: AZURE_CONFIG.apiVersion,
+    azureOpenAIEndpoint: AZURE_CONFIG.endpoint,
+    deploymentName: AZURE_CONFIG.chatDeployment,
+    temperature,
+  });
+};
+
+const createEmbeddingClient = () => {
+  return new AzureOpenAI({
+    apiKey: AZURE_EMBEDDING_CONFIG.apiKey,
+    apiVersion: AZURE_EMBEDDING_CONFIG.apiVersion,
+    endpoint: AZURE_EMBEDDING_CONFIG.endpoint,
+  });
+};
+
 export const sendPrompt = async (prompt: string, model = "gpt-4o") => {
-  const client = await authorize();
+  const client = createOpenAIClient();
 
   const response = await client.chat.completions.create({
     messages: [
@@ -64,7 +89,7 @@ export const sendChatCompletion = async (
     responseFormat?: "text" | "json_object";
   } = {}
 ) => {
-  const client = await authorize();
+  const client = createOpenAIClient();
 
   const {
     model = "gpt-4o",
@@ -94,11 +119,7 @@ export const sendChatCompletion = async (
 };
 
 export const generateEmbedding = async (text: string): Promise<number[]> => {
-  const embeddings = new AzureOpenAI({
-    apiKey: AZURE_EMBEDDING_CONFIG.apiKey,
-    apiVersion: AZURE_EMBEDDING_CONFIG.apiVersion,
-    endpoint: AZURE_EMBEDDING_CONFIG.endpoint,
-  });
+  const embeddings = createEmbeddingClient();
 
   const vector = await embeddings.embeddings.create({
     model: AZURE_EMBEDDING_CONFIG.deploymentName,
@@ -116,16 +137,7 @@ export const generateStructuredResponse = async (
     modelName?: string;
   } = {}
 ) => {
-  const { temperature = 0.7, modelName = "gpt-4o" } = options;
-
-  const model = new AzureChatOpenAI({
-    modelName,
-    azureOpenAIApiKey: AZURE_CONFIG.apiKey,
-    azureOpenAIApiVersion: AZURE_CONFIG.apiVersion,
-    azureOpenAIEndpoint: AZURE_CONFIG.endpoint,
-    deploymentName: AZURE_CONFIG.chatDeployment,
-    temperature,
-  });
+  const model = createChatModel(options);
 
   const prompt = PromptTemplate.fromTemplate(promptTemplate);
   const chain = prompt.pipe(model).pipe(new JsonOutputParser());

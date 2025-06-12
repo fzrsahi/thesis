@@ -24,11 +24,27 @@ export const createRecommendation = async (
   studentId: number,
   prompt: string,
   recommendation: RecommendationResponse
-) =>
+) => {
   prisma.recommendation.create({
     data: {
-      studentId,
+      studentId: studentId,
       prompt,
       response: JSON.stringify(recommendation),
     },
+  });
+};
+
+export const createStudentCompetition = async (
+  studentId: number,
+  competitionIds: number[],
+  matchScores: number[],
+  feedbacks: string[]
+) =>
+  prisma.studentCompetition.createMany({
+    data: competitionIds.map((competitionId, index) => ({
+      studentId,
+      competitionId,
+      matchScore: matchScores[index],
+      feedback: feedbacks[index],
+    })),
   });

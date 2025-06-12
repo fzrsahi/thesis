@@ -22,10 +22,16 @@ import { customError } from "../utils/error/custom-error";
 
 import "@ungap/with-resolvers";
 import { Prisma } from "@prisma/client";
-import { createRecommendation, findRecommendationByStudentId } from "./recomendation.repository";
+import {
+  createRecommendation,
+  createStudentCompetition,
+  findRecommendationByStudentId,
+} from "./recomendation.repository";
 
 export const generateRecommendationUsecase = async (userId: number) => {
   const studentProfile = await validateStudentProfile(userId);
+  console.log(studentProfile, "student 1");
+
   const transcriptFileIds = studentProfile.transcript.map((t) => t.fileId);
   const transcriptFile = await getFileById(transcriptFileIds[0]);
   const cleanedTranscriptText = await extractTranscriptText(transcriptFile);
@@ -128,7 +134,12 @@ const saveRecommendation = async (
   recommendation: RecommendationResponse
 ) => {
   await createRecommendation(studentId, prompt, recommendation);
-  
+  await createStudentCompetition(
+    studentId,
+    recommendation.recommendations.map((r) => r.id),
+    recommendation.recommendations.map((r) => r.match_score),
+    recommendation.recommendations.map((r) => r.reason)
+  );
 };
 
 const generateRecommendation = async (
