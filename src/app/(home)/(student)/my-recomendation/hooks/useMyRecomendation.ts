@@ -4,7 +4,6 @@ import { paths } from "@/app/shared/types/api";
 
 import { useQueryGetMyRecomendation } from "../_api/useQueryGetMyRecomendation";
 
-// Types based on the API response structure
 export type RecommendationResponse =
   paths["/my-recommendation"]["get"]["responses"]["200"]["content"]["application/json"]["data"];
 
@@ -68,7 +67,6 @@ export interface SpiderChartDataPoint {
   type?: "student" | "competition";
 }
 
-// Helper functions
 export const formatDate = (dateString: string) => {
   const date = new Date(dateString);
   return new Intl.DateTimeFormat("en-US", {
@@ -90,7 +88,6 @@ const useMyRecomendation = () => {
     RecommendationResponse["recommendations"][number] | null
   >(null);
 
-  // Convert skills_profile to spider chart format
   const studentSkillsData: SpiderChartDataPoint[] = apiData?.skills_profile
     ? Object.entries(apiData.skills_profile).map(([skill, value]) => ({
         label: skill.replace("_", " "),
@@ -99,7 +96,6 @@ const useMyRecomendation = () => {
       }))
     : [];
 
-  // Get competition skills data when a competition is selected
   const competitionSkillsData: SpiderChartDataPoint[] = selectedCompetition
     ? Object.entries(selectedCompetition.skill_distribution).map(([skill, value]) => ({
         label: skill.replace("_", " "),
@@ -108,10 +104,7 @@ const useMyRecomendation = () => {
       }))
     : [];
 
-  const handleStartAnalysis = () => {
-    // The analysis is now handled by the API query
-    // This function is kept for future use if needed
-  };
+  const handleStartAnalysis = () => {};
 
   return {
     data: apiData,

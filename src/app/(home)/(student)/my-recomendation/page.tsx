@@ -1,6 +1,3 @@
-/* eslint-disable react/no-array-index-key */
-/* eslint-disable no-nested-ternary */
-
 "use client";
 
 import {
@@ -20,6 +17,7 @@ import {
   Lightbulb,
   ArrowRight,
 } from "lucide-react";
+import { useEffect, useRef } from "react";
 
 import {
   Accordion,
@@ -76,9 +74,10 @@ const CategoryDistributionChart = ({ data }: { data: Record<string, number> }) =
 
   return (
     <div className="space-y-4">
-      {categories.map(([category, value], index) => {
+      {categories.map(([category, value]) => {
         const percentage = (value / total) * 100;
         const colors = ["bg-blue-500", "bg-purple-500", "bg-green-500"];
+        const colorIndex = categories.findIndex(([cat]) => cat === category);
 
         return (
           <div key={category} className="space-y-2">
@@ -88,7 +87,7 @@ const CategoryDistributionChart = ({ data }: { data: Record<string, number> }) =
             </div>
             <div className="h-2 rounded-full bg-zinc-800">
               <div
-                className={`h-2 rounded-full ${colors[index % colors.length]}`}
+                className={`h-2 rounded-full ${colors[colorIndex % colors.length]}`}
                 style={{ width: `${percentage}%` }}
               />
             </div>
@@ -147,15 +146,17 @@ const ComparisonSpiderChart = ({
   studentData,
   competitionData,
   size = 300,
+  showOnlyStudent = false,
 }: {
   studentData: Array<{ label: string; value: number; type?: "student" | "competition" }>;
-  competitionData: Array<{ label: string; value: number; type?: "student" | "competition" }>;
+  competitionData?: Array<{ label: string; value: number; type?: "student" | "competition" }>;
   size?: number;
+  showOnlyStudent?: boolean;
 }) => {
   const allSkills = Array.from(
     new Set([
       ...studentData.map((item) => item.label),
-      ...competitionData.map((item) => item.label),
+      ...(competitionData || []).map((item) => item.label),
     ])
   );
 
@@ -168,14 +169,16 @@ const ComparisonSpiderChart = ({
     };
   });
 
-  const normalizedCompetitionData = allSkills.map((skill) => {
-    const competitionPoint = competitionData.find((item) => item.label === skill);
-    return {
-      label: skill,
-      value: competitionPoint?.value || 0,
-      type: "competition" as const,
-    };
-  });
+  const normalizedCompetitionData = competitionData
+    ? allSkills.map((skill) => {
+        const competitionPoint = competitionData.find((item) => item.label === skill);
+        return {
+          label: skill,
+          value: competitionPoint?.value || 0,
+          type: "competition" as const,
+        };
+      })
+    : null;
 
   const center = size / 2;
   const radius = size / 2 - 30;
@@ -204,15 +207,17 @@ const ComparisonSpiderChart = ({
     });
 
   const studentPoints = generateDataPoints(normalizedStudentData);
-  const competitionPoints = generateDataPoints(normalizedCompetitionData);
+  const competitionPoints = normalizedCompetitionData
+    ? generateDataPoints(normalizedCompetitionData)
+    : null;
 
   return (
     <div className="relative">
       <svg width={size} height={size} className="overflow-visible">
         {/* Background grid */}
-        {[0.2, 0.4, 0.6, 0.8, 1].map((scale, scaleIndex) => (
+        {[0.2, 0.4, 0.6, 0.8, 1].map((scale) => (
           <polygon
-            key={`scale-${scaleIndex}`}
+            key={`scale-${scale}`}
             points={backgroundPoints
               .map(
                 (point) =>
@@ -227,9 +232,9 @@ const ComparisonSpiderChart = ({
         ))}
 
         {/* Grid lines */}
-        {backgroundPoints.map((point, pointIndex) => (
+        {backgroundPoints.map((point) => (
           <line
-            key={`line-${pointIndex}`}
+            key={`line-${point.x}-${point.y}`}
             x1={center}
             y1={center}
             x2={point.x}
@@ -240,15 +245,17 @@ const ComparisonSpiderChart = ({
           />
         ))}
 
-        {/* Competition area */}
-        <polygon
-          points={competitionPoints.map((point) => `${point.x},${point.y}`).join(" ")}
-          fill="rgb(168 85 247)"
-          fillOpacity={0.1}
-          stroke="rgb(168 85 247)"
-          strokeWidth="2"
-          strokeDasharray="4"
-        />
+        {/* Competition area - only show if competition data exists */}
+        {!showOnlyStudent && competitionPoints && (
+          <polygon
+            points={competitionPoints.map((point) => `${point.x},${point.y}`).join(" ")}
+            fill="rgb(168 85 247)"
+            fillOpacity={0.1}
+            stroke="rgb(168 85 247)"
+            strokeWidth="2"
+            strokeDasharray="4"
+          />
+        )}
 
         {/* Student area */}
         <polygon
@@ -259,23 +266,24 @@ const ComparisonSpiderChart = ({
           strokeWidth="2"
         />
 
-        {/* Competition points */}
-        {competitionPoints.map((point, pointIndex) => (
-          <circle
-            key={`competition-point-${pointIndex}`}
-            cx={point.x}
-            cy={point.y}
-            r="4"
-            fill="rgb(168 85 247)"
-            stroke="white"
-            strokeWidth="2"
-          />
-        ))}
+        {/* Competition points - only show if competition data exists */}
+        {!showOnlyStudent &&
+          competitionPoints?.map((point) => (
+            <circle
+              key={`competition-point-${point.x}-${point.y}`}
+              cx={point.x}
+              cy={point.y}
+              r="4"
+              fill="rgb(168 85 247)"
+              stroke="white"
+              strokeWidth="2"
+            />
+          ))}
 
         {/* Student points */}
-        {studentPoints.map((point, pointIndex) => (
+        {studentPoints.map((point) => (
           <circle
-            key={`student-point-${pointIndex}`}
+            key={`student-point-${point.x}-${point.y}`}
             cx={point.x}
             cy={point.y}
             r="4"
@@ -295,7 +303,7 @@ const ComparisonSpiderChart = ({
 
         return (
           <div
-            key={`label-${labelIndex}`}
+            key={`label-${point.label}`}
             className="absolute text-xs font-medium text-zinc-300"
             style={{
               left: labelX - 40,
@@ -307,12 +315,14 @@ const ComparisonSpiderChart = ({
             <div className="truncate">{point.label}</div>
             <div className="flex justify-center space-x-2 text-[10px]">
               <span className="text-blue-400">You: {(point.value * 10).toFixed(1)}</span>
-              <span className="text-purple-400">
-                Req:{" "}
-                {competitionPoints[labelIndex]
-                  ? (competitionPoints[labelIndex].value * 10).toFixed(1)
-                  : "0.0"}
-              </span>
+              {!showOnlyStudent && competitionPoints && (
+                <span className="text-purple-400">
+                  Req:{" "}
+                  {competitionPoints[labelIndex]?.value
+                    ? (competitionPoints[labelIndex].value * 10).toFixed(1)
+                    : "0.0"}
+                </span>
+              )}
             </div>
           </div>
         );
@@ -324,10 +334,12 @@ const ComparisonSpiderChart = ({
           <div className="h-2 w-2 rounded-full bg-blue-500" />
           <span className="text-zinc-300">Your Skills</span>
         </div>
-        <div className="flex items-center space-x-2">
-          <div className="h-2 w-2 rounded-full bg-purple-500" />
-          <span className="text-zinc-300">Required Skills</span>
-        </div>
+        {!showOnlyStudent && (
+          <div className="flex items-center space-x-2">
+            <div className="h-2 w-2 rounded-full bg-purple-500" />
+            <span className="text-zinc-300">Required Skills</span>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -336,6 +348,25 @@ const ComparisonSpiderChart = ({
 const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
   const { selectedCompetition, setSelectedCompetition, studentSkillsData, competitionSkillsData } =
     useMyRecomendation();
+
+  const recommendationsRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        recommendationsRef.current &&
+        !recommendationsRef.current.contains(event.target as Node) &&
+        selectedCompetition
+      ) {
+        setSelectedCompetition(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [selectedCompetition, setSelectedCompetition]);
 
   return (
     <div className="space-y-8">
@@ -390,7 +421,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         {/* Main Content - Recommendations List */}
-        <div className="space-y-6 lg:col-span-2">
+        <div className="space-y-6 lg:col-span-2" ref={recommendationsRef}>
           <div>
             <TypographyH3 className="mb-4">Top Recommendations for You</TypographyH3>
             <div className="space-y-4">
@@ -400,7 +431,10 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                   className={`cursor-pointer border-zinc-800 bg-zinc-900 transition-all hover:border-zinc-700 ${
                     selectedCompetition?.id === rec.id ? "ring-2 ring-blue-500" : ""
                   }`}
-                  onClick={() => setSelectedCompetition(rec)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedCompetition(rec);
+                  }}
                 >
                   <CardHeader>
                     <div className="flex items-start justify-between">
@@ -536,8 +570,8 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                         </AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 pl-7">
-                            {rec.preparation_tips.map((tip, index) => (
-                              <div key={index} className="flex items-start space-x-2">
+                            {rec.preparation_tips.map((tip) => (
+                              <div key={tip} className="flex items-start space-x-2">
                                 <ArrowRight className="mt-1 h-4 w-4 text-blue-500" />
                                 <TypographyP className="text-sm text-zinc-300">{tip}</TypographyP>
                               </div>
@@ -567,31 +601,42 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
         {/* Enhanced Sidebar - Analytics */}
         <div className="space-y-6">
           {/* Skills Comparison Chart */}
-          <Card className="border-zinc-800 bg-zinc-900">
+          <Card
+            className={`border-zinc-800 bg-zinc-900 transition-all ${
+              selectedCompetition ? "ring-1 ring-blue-500/20" : ""
+            }`}
+          >
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2 text-white">
-                <Radar className="h-5 w-5" />
-                <span>Skills Comparison</span>
+              <CardTitle className="flex items-center justify-between text-white">
+                <div className="flex items-center space-x-2">
+                  <Radar className="h-5 w-5" />
+                  <span>Skills Comparison</span>
+                </div>
+                {selectedCompetition && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-xs text-zinc-400 hover:text-white"
+                    onClick={() => setSelectedCompetition(null)}
+                  >
+                    Reset View
+                  </Button>
+                )}
               </CardTitle>
               <CardDescription className="text-zinc-400">
                 {selectedCompetition
                   ? `Comparing your skills with ${selectedCompetition.competition} requirements`
-                  : "Select a competition to see skill comparison"}
+                  : "Your current skills profile"}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex justify-center">
-                {selectedCompetition ? (
-                  <ComparisonSpiderChart
-                    studentData={studentSkillsData}
-                    competitionData={competitionSkillsData}
-                    size={300}
-                  />
-                ) : (
-                  <div className="flex h-[300px] items-center justify-center text-zinc-400">
-                    Select a competition to view skill comparison
-                  </div>
-                )}
+                <ComparisonSpiderChart
+                  studentData={studentSkillsData}
+                  competitionData={selectedCompetition ? competitionSkillsData : undefined}
+                  size={300}
+                  showOnlyStudent={!selectedCompetition}
+                />
               </div>
             </CardContent>
           </Card>
@@ -664,8 +709,8 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                   <div>
                     <TypographyH3 className="mb-2 text-sm text-white">Strengths</TypographyH3>
                     <div className="space-y-2">
-                      {data.profile_strength.strengths.map((strength, index) => (
-                        <div key={index} className="flex items-start space-x-2">
+                      {data.profile_strength.strengths.map((strength) => (
+                        <div key={strength} className="flex items-start space-x-2">
                           <div className="mt-1 h-1.5 w-1.5 rounded-full bg-green-500" />
                           <TypographyP className="text-sm text-zinc-300">{strength}</TypographyP>
                         </div>
@@ -678,8 +723,8 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                       Areas for Improvement
                     </TypographyH3>
                     <div className="space-y-2">
-                      {data.profile_strength.weaknesses.map((weakness, index) => (
-                        <div key={index} className="flex items-start space-x-2">
+                      {data.profile_strength.weaknesses.map((weakness) => (
+                        <div key={weakness} className="flex items-start space-x-2">
                           <div className="mt-1 h-1.5 w-1.5 rounded-full bg-yellow-500" />
                           <TypographyP className="text-sm text-zinc-300">{weakness}</TypographyP>
                         </div>
@@ -701,37 +746,44 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {data.development_suggestions.map((suggestion, index) => (
-                  <div key={index} className="rounded-lg bg-zinc-800 p-3">
-                    <div className="flex items-center space-x-2">
-                      {suggestion.type === "course" ? (
-                        <BookOpen className="h-4 w-4 text-blue-500" />
-                      ) : suggestion.type === "community" ? (
-                        <Users className="h-4 w-4 text-purple-500" />
-                      ) : (
-                        <Code2 className="h-4 w-4 text-green-500" />
+                {data.development_suggestions.map((suggestion) => {
+                  let icon;
+                  if (suggestion.type === "course") {
+                    icon = <BookOpen className="h-4 w-4 text-blue-500" />;
+                  } else if (suggestion.type === "community") {
+                    icon = <Users className="h-4 w-4 text-purple-500" />;
+                  } else {
+                    icon = <Code2 className="h-4 w-4 text-green-500" />;
+                  }
+
+                  return (
+                    <div key={suggestion.link} className="rounded-lg bg-zinc-800 p-3">
+                      <div className="flex items-center space-x-2">
+                        {icon}
+                        <TypographyH3 className="text-sm text-white">
+                          {suggestion.title}
+                        </TypographyH3>
+                      </div>
+                      {suggestion.platform && (
+                        <TypographyP className="mt-1 text-xs text-zinc-500">
+                          Platform: {suggestion.platform}
+                        </TypographyP>
                       )}
-                      <TypographyH3 className="text-sm text-white">{suggestion.title}</TypographyH3>
-                    </div>
-                    {suggestion.platform && (
-                      <TypographyP className="mt-1 text-xs text-zinc-500">
-                        Platform: {suggestion.platform}
+                      <TypographyP className="mt-1 text-sm text-zinc-400">
+                        {suggestion.reason}
                       </TypographyP>
-                    )}
-                    <TypographyP className="mt-1 text-sm text-zinc-400">
-                      {suggestion.reason}
-                    </TypographyP>
-                    <a
-                      href={suggestion.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-2 inline-flex items-center text-xs text-blue-400 hover:underline"
-                    >
-                      Visit Resource
-                      <ExternalLink className="ml-1 h-3 w-3" />
-                    </a>
-                  </div>
-                ))}
+                      <a
+                        href={suggestion.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-2 inline-flex items-center text-xs text-blue-400 hover:underline"
+                      >
+                        Visit Resource
+                        <ExternalLink className="ml-1 h-3 w-3" />
+                      </a>
+                    </div>
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
@@ -772,7 +824,7 @@ const MyRecommendationPage = () => {
   return (
     <div className="min-h-screen bg-black p-6">
       <div className="mx-auto max-w-7xl">
-        {isLoading ? (
+        {isLoading && (
           <div className="flex min-h-[60vh] flex-col items-center justify-center space-y-6 text-center">
             <div className="rounded-full bg-zinc-800 p-6">
               <Activity className="h-12 w-12 animate-spin text-zinc-400" />
@@ -784,11 +836,9 @@ const MyRecommendationPage = () => {
               </TypographyP>
             </div>
           </div>
-        ) : data ? (
-          <RecommendationContent data={data} />
-        ) : (
-          <EmptyState onStartAnalysis={handleStartAnalysis} />
         )}
+        {!isLoading && data && <RecommendationContent data={data} />}
+        {!isLoading && !data && <EmptyState onStartAnalysis={handleStartAnalysis} />}
       </div>
     </div>
   );
