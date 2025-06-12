@@ -1,8 +1,10 @@
-import { AzureOpenAI } from "openai";
-import { AzureChatOpenAI, AzureOpenAIEmbeddings } from "@langchain/openai";
-import { PromptTemplate } from "@langchain/core/prompts";
 import { JsonOutputParser } from "@langchain/core/output_parsers";
-import { PrismaClient } from "@prisma/client";
+import { PromptTemplate } from "@langchain/core/prompts";
+import { AzureChatOpenAI } from "@langchain/openai";
+import { Competition, PrismaClient } from "@prisma/client";
+import { AzureOpenAI } from "openai";
+
+import { RecommendationResponse } from "./azure.types";
 
 const prisma = new PrismaClient();
 
@@ -138,11 +140,10 @@ export const generateStructuredResponse = async (
 export const findSimilarCompetitions = async (
   queryText: string,
   limit: number = 5,
-  threshold: number = 0.7
+  threshold: number = 0.5
 ) => {
   const queryVector = await generateEmbedding(queryText);
-
-  const similarCompetitions = await prisma.$queryRaw`
+  const similarCompetitions: unknown[] = await prisma.$queryRaw`
       SELECT 
         e.metadata,
         e.vector <=> ${queryVector}::vector as distance,
@@ -159,14 +160,14 @@ export const findSimilarCompetitions = async (
 
 export const generateRecommendationWithCompetitions = async (
   profileText: string,
-  competitions: any[]
-) => {
+  competitions: Competition[]
+): Promise<RecommendationResponse> => {
   const competitionContext = competitions
     .map(
       (comp, index) => `
     ${index + 1}. ${comp.title}
     - Description: ${comp.description}
-    - Fields: ${comp.field.join(", ")}
+    - Fields: ${comp?.field?.join(", ") || "Not specified"}
     - Type: ${comp.type}
     - Min GPA: ${comp.minGPA || "Not specified"}
     - Location: ${comp.location || "Online"}
@@ -327,7 +328,7 @@ export const generateRecommendationWithCompetitions = async (
     - Evaluasi strategic value setiap kompetisi untuk career development mahasiswa
   `;
 
-  return await generateStructuredResponse(profileText, promptTemplate);
+  return generateStructuredResponse(profileText, promptTemplate);
 };
 
 export const generateCompetitionEmbedding = async (competitionData: {

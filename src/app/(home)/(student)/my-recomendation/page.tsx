@@ -27,6 +27,12 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,12 +46,6 @@ import {
   TypographyMuted,
   TypographyLarge,
 } from "@/components/ui/typography";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 
 // Types based on the API response structure
 interface SkillsProfileBreakdown {

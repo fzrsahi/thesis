@@ -1,7 +1,8 @@
-import { CreateCompetitionPayload } from "@/app/shared/schema/competition/CompetitionSchema";
-import { createCompetition } from "../competition.repository";
 import { generateCompetitionEmbedding } from "@/app/server/model/azure/azure-openai.service";
+import { CreateCompetitionPayload } from "@/app/shared/schema/competition/CompetitionSchema";
+
 import { createEmbedding } from "../../embedding/embedding.repository";
+import { createCompetition } from "../competition.repository";
 
 export const createCompetitionUsecase = async (payload: CreateCompetitionPayload) => {
   const competition = await createCompetition(payload);
@@ -18,7 +19,7 @@ export const createCompetitionUsecase = async (payload: CreateCompetitionPayload
 
   await createEmbedding({
     model: "text-embedding-3-small",
-    vector: vector,
+    vector,
     metadata: {
       type: "competition",
       id: Number(competition.id),

@@ -8,3 +8,17 @@ export const createCompetition = async (payload: CreateCompetitionPayload) =>
   });
 
 export const getCompetitions = async () => prisma.competition.findMany();
+
+export const findManyCompetitionsByIds = async (ids: number[]) =>
+  prisma.competition.findMany({
+    where: {
+      id: {
+        in: ids,
+      },
+    },
+  });
+
+export const findRandomCompetitions = async (limit: number) =>
+  prisma.competition.findMany({
+    take: limit,
+  });

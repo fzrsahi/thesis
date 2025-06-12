@@ -3,19 +3,22 @@ import { HttpStatusCode } from "axios";
 import { GaxiosResponse } from "gaxios";
 import * as pdfjs from "pdfjs-dist/legacy/build/pdf.mjs";
 import { TextItem } from "pdfjs-dist/types/src/display/api";
-import { Prisma } from "@prisma/client";
 
+import { COMPETITION_ERROR_RESPONSE } from "../competition/competition.error";
+import {
+  findManyCompetitionsByIds,
+  findRandomCompetitions,
+  getCompetitions,
+} from "../competition/competition.repository";
 import { getFileById } from "../google-drive/google-drive.service";
-import { STUDENT_ERROR_RESPONSE } from "../student/student.error";
-import { findStudentByUserId } from "../student/student.repository";
-import { customError } from "../utils/error/custom-error";
 import {
   generateRecommendationWithCompetitions,
   findSimilarCompetitions,
 } from "../model/azure/azure-openai.service";
-import { COMPETITION_ERROR_RESPONSE } from "../competition/competition.error";
-import { getCompetitions } from "../competition/competition.repository";
-import { prisma } from "../prisma/prisma";
+import { RecommendationResponse } from "../model/azure/azure.types";
+import { STUDENT_ERROR_RESPONSE } from "../student/student.error";
+import { findStudentByUserId } from "../student/student.repository";
+import { customError } from "../utils/error/custom-error";
 
 import "@ungap/with-resolvers";
 
@@ -40,54 +43,25 @@ export const generateRecommendationUsecase = async (userId: number) => {
     Transkrip Nilai: ${cleanedTranscriptText}
   `;
 
-  const similarCompetitionEmbeddings = (await findSimilarCompetitions(
-    profileText,
-    10,
-    0.5
-  )) as any[];
+  const similarCompetitionEmbeddings = await findSimilarCompetitions(profileText);
 
   const competitionIds =
     similarCompetitionEmbeddings?.length > 0
       ? similarCompetitionEmbeddings
-          .map((embedding: any) => Number(embedding.metadata.id))
-          .filter((id) => !isNaN(id))
+          .map((embedding: unknown) =>
+            Number((embedding as { metadata: { id: number } }).metadata.id)
+          )
+          .filter((id) => !Number.isNaN(id))
       : [];
 
   const competitions =
-    competitionIds.length > 0
-      ? await prisma.competition.findMany({
-          where: {
-            id: {
-              in: competitionIds,
-            },
-          },
-          orderBy: {
-            startDate: "asc",
-          },
-        })
-      : [];
+    competitionIds.length > 0 ? await findManyCompetitionsByIds(competitionIds) : [];
 
-  console.log({ competitions, competitionIds, similarCompetitionEmbeddings });
-
-  let finalCompetitions = competitions;
-  if (competitions.length === 0) {
+  const finalCompetitions = competitions.length ? competitions : await findRandomCompetitions(3);
+  if (!finalCompetitions.length) {
     throw customError(
       COMPETITION_ERROR_RESPONSE.NOT_FOUND.code,
-      "No competitions available for recommendation",
-      HttpStatusCode.NotFound
-    );
-  }
-
-  if (finalCompetitions.length === 0) {
-    finalCompetitions = await prisma.competition.findMany({
-      take: 3,
-    });
-  }
-
-  if (finalCompetitions.length === 0) {
-    throw customError(
-      COMPETITION_ERROR_RESPONSE.NOT_FOUND.code,
-      "No competitions available for recommendation",
+      COMPETITION_ERROR_RESPONSE.NOT_FOUND.message,
       HttpStatusCode.NotFound
     );
   }
@@ -97,27 +71,9 @@ export const generateRecommendationUsecase = async (userId: number) => {
     finalCompetitions
   );
 
-  let recommendationJson;
-  recommendationJson =
-    typeof recommendation === "string" ? JSON.parse(recommendation) : recommendation;
+  await saveRecommendation(recommendation);
 
-  if (!recommendationJson || typeof recommendationJson !== "object") {
-    throw customError(
-      "RECOMMENDATION_INVALID_FORMAT",
-      "Invalid recommendation format received",
-      HttpStatusCode.InternalServerError
-    );
-  }
-
-  // await prisma.recommendation.create({
-  //   data: {
-  //     studentId: studentProfile.id,
-  //     prompt: profileText,
-  //     response: recommendationJson,
-  //   },
-  // });
-
-  return recommendationJson;
+  return recommendation;
 };
 
 const validateStudentProfile = async (userId: number) => {
@@ -205,3 +161,5 @@ const validateCompetition = async () => {
     );
   }
 };
+
+const saveRecommendation = async (recommendation: RecommendationResponse) => {};
