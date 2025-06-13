@@ -1,17 +1,18 @@
+import { HttpStatusCode } from "axios";
+import { NextRequest, NextResponse } from "next/server";
+
+import { withAuth } from "@/app/server/auth/with-auth";
 import {
   COMPETITION_ERROR_RESPONSE,
   COMPETITION_ERROR_LOG,
 } from "@/app/server/competition/competition.error";
+import { generateCompetitionUsecase } from "@/app/server/competition/usecase/generate-competition.usecase";
 import { isCustomError, customErrorToResponse } from "@/app/server/utils/error/custom-error";
 import { ROLES } from "@/app/shared/const/role";
 import {
   competitionGenerateSchema,
   CreateCompetitionGeneratePayload,
 } from "@/app/shared/schema/competition/CompetitionGenerateSchema";
-import { withAuth } from "@/app/server/auth/with-auth";
-import { NextRequest, NextResponse } from "next/server";
-import { HttpStatusCode } from "axios";
-import { generateCompetitionUsecase } from "@/app/server/competition/usecase/generate-competition.usecase";
 
 export const POST = withAuth(
   async (request: NextRequest) => {

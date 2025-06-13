@@ -1,4 +1,5 @@
 import { z } from "zod";
+
 import { paths } from "../../types/api";
 import { InferZodMap } from "../../utils/zod/zodTypeHelper";
 
@@ -13,5 +14,3 @@ export const competitionGenerateSchema = z.object({
 } satisfies InferZodMap<CreateCompetitionGenerateRequest>);
 
 export type CreateCompetitionGeneratePayload = z.infer<typeof competitionGenerateSchema>;
-
-

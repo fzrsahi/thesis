@@ -4,9 +4,10 @@ import { AzureChatOpenAI } from "@langchain/openai";
 import { Competition } from "@prisma/client";
 import { AzureOpenAI } from "openai";
 
+import { CreateCompetitionPayload } from "@/app/shared/schema/competition/CompetitionSchema";
+
 import { RecommendationResponse } from "./azure.types";
 import { prisma } from "../../prisma/prisma";
-import { CreateCompetitionPayload } from "@/app/shared/schema/competition/CompetitionSchema";
 
 const AZURE_CONFIG = {
   apiKey: process.env.AZURE_OPENAI_API_KEY!,
@@ -65,8 +66,7 @@ export const sendPrompt = async (
     userMessage: string;
   },
   model = "gpt-4o",
-  responseFormat: "text" | "json_object" = "text",
-  searchWeb: boolean = false
+  responseFormat: "text" | "json_object" = "text"
 ) => {
   const client = createOpenAIClient();
 
@@ -82,58 +82,6 @@ export const sendPrompt = async (
       },
     ],
     model,
-    response_format: { type: responseFormat },
-    ...(searchWeb && {
-      web_search_options: {
-        search_context_size: "high",
-        user_location: {
-          type: "approximate",
-          approximate: {
-            country: "ID",
-            region: "Indonesia",
-          },
-        },
-      },
-    }),
-  });
-
-  return response.choices[0].message.content;
-};
-
-export const sendChatCompletion = async (
-  userMessage: string,
-  systemMessage = "You are a helpful assistant.",
-  options: {
-    model?: string;
-    temperature?: number;
-
-    maxTokens?: number;
-    responseFormat?: "text" | "json_object";
-  } = {}
-) => {
-  const client = createOpenAIClient();
-
-  const {
-    model = "gpt-4o",
-    temperature = 0.7,
-    maxTokens = 4000,
-    responseFormat = "json_object",
-  } = options;
-
-  const response = await client.chat.completions.create({
-    messages: [
-      {
-        role: "system",
-        content: systemMessage,
-      },
-      {
-        role: "user",
-        content: userMessage,
-      },
-    ],
-    model,
-    temperature,
-    max_tokens: maxTokens,
     response_format: { type: responseFormat },
   });
 
@@ -200,15 +148,15 @@ export const generateRecommendationWithCompetitions = async (
     .map(
       (comp, index) => `
     ${index + 1}. ${comp.title}
-    - Description: ${comp.description}
-    - Fields: ${comp?.field?.join(", ") || "Not specified"}
-    - Type: ${comp.type}
-    - Min GPA: ${comp.minGPA || "Not specified"}
-    - Location: ${comp.location || "Online"}
+    - Deskripsi: ${comp.description}
+    - Bidang: ${comp?.field?.join(", ") || "Not specified"}
+    - Jenis: ${comp.type}
+    - Minimum GPA: ${comp.minGPA || "Not specified"}
+    - Lokasi: ${comp.location || "Online"}
     - Organizer: ${comp.organizer || "TBD"}
-    - Start Date: ${comp.startDate}
-    - End Date: ${comp.endDate}
-    - Requirements: ${JSON.stringify(comp.requirements).replace(/{/g, "{{").replace(/}/g, "}}")}
+    - Tanggal Mulai: ${comp.startDate}
+    - Tanggal Selesai: ${comp.endDate}
+    - Persyaratan: ${JSON.stringify(comp.requirements).replace(/{/g, "{{").replace(/}/g, "}}")}
   `
     )
     .join("\n");
@@ -225,40 +173,40 @@ export const generateRecommendationWithCompetitions = async (
     Berdasarkan profil mahasiswa dan daftar kompetisi yang tersedia, lakukan analisis mendalam dan berikan rekomendasi yang terstruktur dalam format JSON yang sesuai dengan struktur berikut:
     
     {{
-      "skills_profile": {{
-        "technical_expertise": 0.78,
-        "scientific_writing": 0.65,
-        "problem_solving": 0.82,
-        "creativity_innovation": 0.7,
+      "skillsProfile": {{
+        "technicalExpertise": 0.78,
+        "scientificWriting": 0.65,
+        "problemSolving": 0.82,
+        "creativityInnovation": 0.7,
         "communication": 0.6,
-        "teamwork_collaboration": 0.75,
-        "project_management": 0.68,
-        "business_acumen": 0.5,
-        "design_thinking": 0.58,
-        "self_learning": 0.9
+        "teamworkCollaboration": 0.75,
+        "projectManagement": 0.68,
+        "businessAcumen": 0.5,
+        "designThinking": 0.58,
+        "selfLearning": 0.9
       }},
-      "skills_profile_breakdown": {{
-        "technical_expertise": "Analisis kemampuan teknis berdasarkan IPK mata kuliah teknis, proyek programming, pengalaman magang teknologi, dan prestasi lomba teknis",
-        "scientific_writing": "Evaluasi berdasarkan nilai mata kuliah metodologi penelitian, pengalaman menulis paper/jurnal, prestasi karya tulis ilmiah, dan kualitas dokumentasi proyek",
-        "problem_solving": "Penilaian dari prestasi olimpiade/lomba algoritma, kemampuan analisis kasus, pengalaman debugging, dan pendekatan sistematis dalam menyelesaikan tugas",
-        "creativity_innovation": "Berdasarkan partisipasi hackathon, ide original dalam proyek, kemampuan berpikir out-of-the-box, dan solusi kreatif yang pernah dibuat",
+      "skillsProfileBreakdown": {{
+        "technicalExpertise": "Analisis kemampuan teknis berdasarkan IPK mata kuliah teknis, proyek programming, pengalaman magang teknologi, dan prestasi lomba teknis",
+        "scientificWriting": "Evaluasi berdasarkan nilai mata kuliah metodologi penelitian, pengalaman menulis paper/jurnal, prestasi karya tulis ilmiah, dan kualitas dokumentasi proyek",
+        "problemSolving": "Penilaian dari prestasi olimpiade/lomba algoritma, kemampuan analisis kasus, pengalaman debugging, dan pendekatan sistematis dalam menyelesaikan tugas",
+        "creativityInnovation": "Berdasarkan partisipasi hackathon, ide original dalam proyek, kemampuan berpikir out-of-the-box, dan solusi kreatif yang pernah dibuat",
         "communication": "Evaluasi dari pengalaman presentasi, kemampuan public speaking, aktivitas organisasi, dan feedback komunikasi dari pengalaman kerja/magang",
-        "teamwork_collaboration": "Analisis dari pengalaman kerja tim, peran dalam organisasi, feedback kolaborasi, dan kemampuan koordinasi dalam proyek kelompok",
-        "project_management": "Penilaian berdasarkan pengalaman memimpin proyek, kemampuan planning dan organizing, penggunaan tools manajemen, dan track record penyelesaian deadline",
-        "business_acumen": "Evaluasi dari pengalaman magang bisnis/startup, pemahaman model bisnis, analisis market, dan kemampuan business development",
-        "design_thinking": "Berdasarkan pengalaman UX/UI design, kemampuan empathy mapping, user research, dan pendekatan human-centered design",
-        "self_learning": "Analisis dari kemampuan adaptasi teknologi baru, inisiatif belajar mandiri, sertifikasi online, dan perkembangan skill dari waktu ke waktu"
+        "teamworkCollaboration": "Anal  isis dari pengalaman kerja tim, peran dalam organisasi, feedback kolaborasi, dan kemampuan koordinasi dalam proyek kelompok",
+        "projectManagement": "Penilaian berdasarkan pengalaman memimpin proyek, kemampuan planning dan organizing, penggunaan tools manajemen, dan track record penyelesaian deadline",
+        "businessAcumen": "Evaluasi dari pengalaman magang bisnis/startup, pemahaman model bisnis, analisis market, dan kemampuan business development",
+        "designThinking": "Berdasarkan pengalaman UX/UI design, kemampuan empathy mapping, user research, dan pendekatan human-centered design",
+        "selfLearning": "Analisis dari kemampuan adaptasi teknologi baru, inisiatif belajar mandiri, sertifikasi online, dan perkembangan skill dari waktu ke waktu"
       }},
-      "category_distribution": {{
+      "categoryDistribution": {{
         "Teknologi": 0.7,
         "Data Science": 0.2,
         "Bisnis": 0.1
       }},
-      "performance_metrics": {{
-        "participation_rate": 0.75,
-        "avg_match_score": 0.78,
-        "competition_success_rate": 0.33,
-        "skill_growth": {{
+      "performanceMetrics": {{
+        "participationRate": 0.75,
+        "avgMatchScore": 0.78,
+        "competitionSuccessRate": 0.33,
+        "skillGrowth": {{
           "Skill1": "+0.15 (dari pengalaman spesifik yang disebutkan)",
           "Skill2": "+0.1 (dari pengalaman spesifik yang disebutkan)"
         }}
@@ -267,31 +215,31 @@ export const generateRecommendationWithCompetitions = async (
         {{
           "id": 1,
           "competition": "Nama Kompetisi PERSIS dari daftar yang tersedia",
-          "match_score": 0.92,
-          "match_score_breakdown": "Perhitungan detail: Technical skills (skor_mahasiswa/requirement_kompetisi * bobot_skill), Problem solving (skor/requirement * bobot), dst. Formula: Σ(skill_match * skill_weight) dengan penjelasan setiap komponen",
-          "skill_distribution": {{
-            "technical_expertise": 0.9,
-            "scientific_writing": 0.4,
-            "problem_solving": 0.8,
-            "creativity_innovation": 0.7,
+          "matchScore": 0.92,
+          "matchScoreBreakdown": "Perhitungan detail: Technical skills (skor_mahasiswa/requirement_kompetisi * bobot_skill), Problem solving (skor/requirement * bobot), dst. Formula: Σ(skill_match * skill_weight) dengan penjelasan setiap komponen",
+          "skillDistribution": {{
+            "technicalExpertise": 0.9,
+            "scientificWriting": 0.4,
+            "problemSolving": 0.8,
+            "creativityInnovation": 0.7,
             "communication": 0.4,
-            "teamwork_collaboration": 0.6,
-            "project_management": 0.3,
-            "business_acumen": 0.2,
-            "design_thinking": 0.5,
-            "self_learning": 0.8
+            "teamworkCollaboration": 0.6,
+            "projectManagement": 0.3,
+            "businessAcumen": 0.2,
+            "designThinking": 0.5,
+            "selfLearning": 0.8
           }},
-          "skill_distribution_breakdown": {{
-            "technical_expertise": "Bobot tinggi (0.9) karena kompetisi ini membutuhkan kemampuan programming dan implementasi teknis yang tinggi sesuai dengan requirement kompetisi",
-            "scientific_writing": "Bobot rendah (0.4) karena fokus kompetisi lebih ke implementasi daripada dokumentasi akademis",
-            "problem_solving": "Bobot tinggi (0.8) karena kompetisi menuntut analisis kompleks dan solusi inovatif",
-            "creativity_innovation": "Bobot sedang-tinggi (0.7) karena diperlukan ide original dan pendekatan baru",
+          "skillDistributionBreakdown": {{
+            "technicalExpertise": "Bobot tinggi (0.9) karena kompetisi ini membutuhkan kemampuan programming dan implementasi teknis yang tinggi sesuai dengan requirement kompetisi",
+            "scientificWriting": "Bobot rendah (0.4) karena fokus kompetisi lebih ke implementasi daripada dokumentasi akademis",
+            "problemSolving": "Bobot tinggi (0.8) karena kompetisi menuntut analisis kompleks dan solusi inovatif",
+            "creativityInnovation": "Bobot sedang-tinggi (0.7) karena diperlukan ide original dan pendekatan baru",
             "communication": "Bobot sedang (0.4) untuk presentasi final dan pitching",
-            "teamwork_collaboration": "Bobot sedang (0.6) jika kompetisi berbasis tim",
-            "project_management": "Bobot rendah (0.3) karena waktu kompetisi relatif singkat",
-            "business_acumen": "Bobot rendah (0.2) karena fokus teknis bukan bisnis",
-            "design_thinking": "Bobot sedang (0.5) untuk user experience consideration",
-            "self_learning": "Bobot tinggi (0.8) karena membutuhkan adaptasi cepat dengan tools/framework baru"
+            "teamworkCollaboration": "Bobot sedang (0.6) jika kompetisi berbasis tim",
+            "projectManagement": "Bobot rendah (0.3) karena waktu kompetisi relatif singkat",
+            "businessAcumen": "Bobot rendah (0.2) karena fokus teknis bukan bisnis",
+            "designThinking": "Bobot sedang (0.5) untuk user experience consideration",
+            "selfLearning": "Bobot tinggi (0.8) karena membutuhkan adaptasi cepat dengan tools/framework baru"
           }},
           "rank": 1,
           "reason": "Kompetisi ini sangat cocok karena requirement utamanya (programming, AI/ML, problem solving) sesuai dengan kekuatan mahasiswa. GPA mahasiswa (X.XX) memenuhi minimum requirement (X.XX). Pengalaman magang di bidang teknologi dan prestasi lomba programming mendukung success rate tinggi.",
@@ -300,10 +248,10 @@ export const generateRecommendationWithCompetitions = async (
             "endDate": "YYYY-MM-DD sesuai data kompetisi", 
             "location": "Lokasi sesuai data kompetisi",
             "organizer": "Organizer sesuai data kompetisi",
-            "registration_deadline": "Estimasi 2-4 minggu sebelum startDate",
+            "registrationDeadline": "Estimasi 2-4 minggu sebelum startDate",
             "website": "https://kompetisi-website.com (estimasi berdasarkan organizer)"
           }},
-          "preparation_tips": [
+          "preparationTips": [
             "Fokus strengthening technical implementation skills dengan practice coding intensif menggunakan tech stack yang umum digunakan di kompetisi ini",
             "Improve presentation skills dengan latihan pitching 5-10 menit, focus on clear problem-solution narrative dan demo yang menarik",
             "Study case studies dari pemenang kompetisi serupa tahun sebelumnya untuk memahami pattern dan strategi yang sukses",
@@ -311,7 +259,7 @@ export const generateRecommendationWithCompetitions = async (
           ]
         }}
       ],
-      "development_suggestions": [
+      "developmentSuggestions": [
         {{
           "type": "course",
           "title": "Nama Kursus spesifik yang address skill gap teridentifikasi",
@@ -327,9 +275,9 @@ export const generateRecommendationWithCompetitions = async (
           "reason": "Practical experience dibutuhkan untuk mengasah implementation skills dan problem-solving speed yang crucial untuk kompetisi"
         }}
       ],
-      "profile_strength": {{
+      "profileStrength": {{
         "score": 0.82,
-        "calculation_explanation": "Perhitungan berdasarkan weighted formula: IPK (X.XX/4.0 * 0.25 = Y), Technical Skills (rata-rata 0.ZZ * 0.3 = A), Experience Quality (score based on relevance * 0.2 = B), Achievements (national/international weight * 0.15 = C), Growth Potential (learning velocity * 0.1 = D). Total: Y + A + B + C + D = 0.82",
+        "calculationExplanation": "Perhitungan berdasarkan weighted formula: IPK (X.XX/4.0 * 0.25 = Y), Technical Skills (rata-rata 0.ZZ * 0.3 = A), Experience Quality (score based on relevance * 0.2 = B), Achievements (national/international weight * 0.15 = C), Growth Potential (learning velocity * 0.1 = D). Total: Y + A + B + C + D = 0.82",
         "strengths": [
           "Strong technical foundation dengan evidence konkret dari proyek X dan pengalaman Y yang demonstrate mastery level Z",
           "Proven track record dalam competitive environment dengan prestasi A di kompetisi B yang menunjukkan kemampuan perform under pressure",
@@ -367,16 +315,102 @@ export const generateRecommendationWithCompetitions = async (
 };
 
 export const generateCompetitionEmbedding = async (competitionData: CreateCompetitionPayload) => {
-  const competitionText = `
-    Title: ${competitionData.title}
-    Description: ${competitionData.description}
-    Fields: ${competitionData.field.join(", ")}
-    Type: ${competitionData.type}
-    Minimum GPA: ${competitionData.minGPA || "Not specified"}
-    Requirements: ${JSON.stringify(competitionData.requirements || "Not specified")}
-    Location: ${competitionData.location || "Not specified"}
-    Organizer: ${competitionData.organizer || "Not specified"}
-  `.trim();
+  const competitionTextParts = [
+    `Title: ${competitionData.title}`,
+    `Description: ${competitionData.description}`,
+    `Fields: ${competitionData.field.join(", ")}`,
+    `Type: ${competitionData.type}`,
+    `Source URL: ${competitionData.sourceUrl}`,
+    `Relevant Courses: ${competitionData.relevantCourses.join(", ")}`,
+    `Relevant Skills: ${competitionData.relevantSkills.join(", ")}`,
+  ];
+
+  if (competitionData.minGPA) {
+    competitionTextParts.push(`Minimal IPK: ${competitionData.minGPA}`);
+  }
+
+  if (competitionData.requirements) {
+    const requirementsText = [];
+    if (competitionData.requirements.teamComposition) {
+      requirementsText.push(`Komposisi Tim: ${competitionData.requirements.teamComposition}`);
+    }
+    if (competitionData.requirements.originality) {
+      requirementsText.push(`Kreativitas: ${competitionData.requirements.originality}`);
+    }
+    if (competitionData.requirements.other) {
+      requirementsText.push(`Lainnya: ${competitionData.requirements.other}`);
+    }
+    if (requirementsText.length > 0) {
+      competitionTextParts.push(`Persyaratan: ${requirementsText.join(", ")}`);
+    }
+  }
+
+  if (competitionData.location) {
+    competitionTextParts.push(`Lokasi: ${competitionData.location}`);
+  }
+
+  if (competitionData.organizer) {
+    competitionTextParts.push(`Organizer: ${competitionData.organizer}`);
+  }
+
+  if (competitionData.startDate) {
+    competitionTextParts.push(`Tanggal Mulai: ${competitionData.startDate}`);
+  }
+
+  if (competitionData.endDate) {
+    competitionTextParts.push(`Tanggal Selesai: ${competitionData.endDate}`);
+  }
+
+  if (competitionData.evaluationCriteria) {
+    const criteriaText = [];
+    if (competitionData.evaluationCriteria.preliminaryRound) {
+      criteriaText.push(`Babak Penyisihan: ${competitionData.evaluationCriteria.preliminaryRound}`);
+    }
+    if (competitionData.evaluationCriteria.finalRound) {
+      criteriaText.push(`Babak Final: ${competitionData.evaluationCriteria.finalRound}`);
+    }
+    if (competitionData.evaluationCriteria.other) {
+      criteriaText.push(`Lainnya: ${competitionData.evaluationCriteria.other}`);
+    }
+    if (criteriaText.length > 0) {
+      competitionTextParts.push(`Kriteria Evaluasi: ${criteriaText.join(", ")}`);
+    }
+  }
+
+  if (competitionData.competitionStatistics) {
+    const statisticsText = [];
+    if (competitionData.competitionStatistics.summary) {
+      statisticsText.push(`Ringkasan: ${competitionData.competitionStatistics.summary}`);
+    }
+    if (
+      competitionData.competitionStatistics.totalApplicantsPastYear &&
+      competitionData.competitionStatistics.totalApplicantsPastYear.length > 0
+    ) {
+      const applicantsText = competitionData.competitionStatistics.totalApplicantsPastYear
+        .filter((item) => item.count !== null && item.year !== null)
+        .map((item) => `${item.year}: ${item.count} applicants`)
+        .join(", ");
+      if (applicantsText) {
+        statisticsText.push(`Total Pendaftar: ${applicantsText}`);
+      }
+    }
+    if (
+      competitionData.competitionStatistics.pastUngParticipants &&
+      competitionData.competitionStatistics.pastUngParticipants.length > 0
+    ) {
+      const ungParticipantsText = competitionData.competitionStatistics.pastUngParticipants
+        .map((item) => `${item.year}: ${item.name} (${item.count} members)`)
+        .join(", ");
+      statisticsText.push(
+        `Peserta Mahasiswa Universitas Negeri Gorontalo sebelumnya: ${ungParticipantsText}`
+      );
+    }
+    if (statisticsText.length > 0) {
+      competitionTextParts.push(`Statistik Kompetisi: ${statisticsText.join("; ")}`);
+    }
+  }
+
+  const competitionText = competitionTextParts.join("\n    ");
 
   return generateEmbedding(competitionText);
 };

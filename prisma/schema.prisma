@@ -130,25 +130,45 @@ model Competition {
   updatedAt          DateTime  @default(now())
 
   participants StudentCompetition[]
-  stats        CompetitionStats? // Relasi ke statistik kompetisi
+  competitionStats CompetitionStats? // Relasi ke statistik kompetisi
 
   @@map("competitions")
 }
 
 /// Competition Statistics (untuk Category Distribution dan Performance Metrics)
 model CompetitionStats {
-  id                            Int         @id @default(autoincrement())
-  competitionId                 Int         @unique
-  competition                   Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
-  summary                       String? // Ringkasan statistik kompetisi
-  totalApplicantsPastYear       Int? // Jumlah total pendaftar tahun lalu
-  finalistCountPastYear         Int? // Jumlah finalis tahun lalu
-  pastParticipatingUniversities String[] // Contoh universitas yang pernah berpartisipasi
-  pastUngParticipants           String[] // Riwayat partisipasi UNG
-  updatedAt                     DateTime    @default(now())
-  createdAt                     DateTime    @default(now())
+  id                      Int                       @id @default(autoincrement())
+  competitionId           Int                       @unique
+  competition             Competition               @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  summary                 String? // Ringkasan statistik kompetisi
+  pastUngParticipants     PastUngParticipant[] // Peserta UNG di tahun-tahun sebelumnya
+  totalApplicantsPastYear TotalApplicantsPastYear[] // Jumlah pendaftar per tahun
+  updatedAt               DateTime                  @default(now())
+  createdAt               DateTime                  @default(now())
 
   @@map("competitionStats")
+}
+
+model PastUngParticipant {
+  id                 Int              @id @default(autoincrement())
+  competitionStatsId Int
+  year               String? // Tahun partisipasi peserta dari Universitas Negeri Gorontalo (UNG)
+  name               String? // Nama peserta dari UNG
+  count              Int? // Jumlah anggota dalam tim atau 1 jika individu
+  competitionStats   CompetitionStats @relation(fields: [competitionStatsId], references: [id], onDelete: Cascade)
+
+  @@map("pastUngParticipants")
+}
+
+model TotalApplicantsPastYear {
+  id                 Int              @id @default(autoincrement())
+  competitionStatsId Int
+  count              Int? // Jumlah pendaftar pada tahun tertentu. Null jika tidak diketahui
+  year               String? // Tahun terkait. Null jika tidak disebut
+
+  competitionStats   CompetitionStats @relation(fields: [competitionStatsId], references: [id], onDelete: Cascade)
+
+  @@map("totalApplicantsPastYear")
 }
 
 /// Matching Results

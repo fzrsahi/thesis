@@ -396,58 +396,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "title": {
-                    "type": "string",
-                    "description": "Judul lomba, misalnya: 'GEMASTIK Data Mining'"
-                  },
-                  "description": {
-                    "type": "string",
-                    "description": "Deskripsi lomba"
-                  },
-                  "field": {
-                    "type": "array",
-                    "items": {
-                      "type": "string"
-                    },
-                    "description": "Bidang, misalnya: 'Teknologi', 'Desain' (untuk Category Distribution)"
-                  },
-                  "type": {
-                    "type": "string",
-                    "description": "Jenis: 'Individu' atau 'Tim'"
-                  },
-                  "minGPA": {
-                    "type": "string",
-                    "description": "IPK minimal"
-                  },
-                  "requirements": {
-                    "type": "object",
-                    "additionalProperties": {
-                      "type": "string"
-                    },
-                    "description": "Kriteria khusus, contoh: {'language': 'Python', 'experience': 'Hackathon'}"
-                  },
-                  "startDate": {
-                    "type": "string",
-                    "format": "date-time",
-                    "description": "Tanggal mulai lomba"
-                  },
-                  "endDate": {
-                    "type": "string",
-                    "format": "date-time",
-                    "description": "Tanggal berakhir / deadline"
-                  },
-                  "location": {
-                    "type": "string",
-                    "description": "Lokasi lomba (opsional)"
-                  },
-                  "organizer": {
-                    "type": "string",
-                    "description": "Penyelenggara (opsional)"
-                  }
-                },
-                "required": ["title", "description", "field", "type", "startDate", "endDate"]
+                "$ref": "#/components/schemas/GenerateCompetitionResponse"
               }
             }
           }
@@ -503,7 +452,7 @@
                   "website": {
                     "type": "string"
                   },
-                  "addition_details": {
+                  "additionalDetails": {
                     "type": "string"
                   }
                 },
@@ -518,7 +467,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/GenerateCompetitionResponse"
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/GenerateCompetitionResponse"
+                    }
+                  },
+                  "required": ["success", "data"]
                 }
               }
             }
@@ -572,7 +531,6 @@
           },
           "type": {
             "type": "string",
-            "enum": ["Individual", "Team"],
             "description": "Indicates whether participants compete solo or in groups"
           },
           "minGPA": {
@@ -583,7 +541,7 @@
           "requirements": {
             "type": "object",
             "properties": {
-              "team_composition": {
+              "teamComposition": {
                 "type": "string",
                 "nullable": true,
                 "description": "Details on team size and composition",
@@ -601,16 +559,17 @@
                 "description": "Additional eligibility criteria",
                 "example": "Must submit a proposal"
               }
-            }
+            },
+            "required": ["teamComposition", "originality", "other"]
           },
           "startDate": {
             "type": "string",
-            "format": "date",
+            "nullable": true,
             "description": "The competition's start or registration date (YYYY-MM-DD format)"
           },
           "endDate": {
             "type": "string",
-            "format": "date",
+            "nullable": true,
             "description": "The competition's end or final date (YYYY-MM-DD format)"
           },
           "location": {
@@ -624,16 +583,16 @@
             "description": "The organizing entity",
             "example": "Ministry of Education"
           },
-          "evaluation_criteria": {
+          "evaluationCriteria": {
             "type": "object",
             "properties": {
-              "preliminary_round": {
+              "preliminaryRound": {
                 "type": "string",
                 "nullable": true,
                 "description": "Criteria for initial judging",
                 "example": "Originality: 30%, Impact: 30%"
               },
-              "final_round": {
+              "finalRound": {
                 "type": "string",
                 "nullable": true,
                 "description": "Criteria for final judging",
@@ -641,66 +600,74 @@
               },
               "other": {
                 "type": "string",
+                "nullable": true,
                 "description": "Other evaluation criteria"
               }
-            }
+            },
+            "required": ["preliminaryRound", "finalRound", "other"]
           },
-          "competition_statistics": {
+          "competitionStatistics": {
             "type": "object",
             "properties": {
               "summary": {
                 "type": "string",
+                "nullable": true,
                 "description": "A brief overview of historical participation data, including years and sources"
               },
-              "total_applicants_past_year": {
-                "type": "object",
-                "properties": {
-                  "count": {
-                    "type": "integer",
-                    "nullable": true,
-                    "description": "Number of teams or individuals who applied in the most recent year"
-                  },
-                  "year": {
-                    "type": "string",
-                    "nullable": true,
-                    "description": "The year of the applicant data",
-                    "example": "2023"
-                  }
-                }
-              },
-              "finalist_count_past_year": {
-                "type": "object",
-                "properties": {
-                  "count": {
-                    "type": "integer",
-                    "nullable": true,
-                    "description": "Number of teams or individuals who reached the finals in the most recent year"
-                  },
-                  "year": {
-                    "type": "string",
-                    "nullable": true,
-                    "description": "The year of the finalist data",
-                    "example": "2023"
-                  }
-                }
-              },
-              "past_ung_participants": {
+              "totalApplicantsPastYear": {
                 "type": "array",
                 "items": {
-                  "type": "string"
-                },
-                "nullable": true,
-                "description": "Names of past participants from Universitas Negeri Gorontalo, if available"
+                  "type": "object",
+                  "properties": {
+                    "count": {
+                      "type": "integer",
+                      "nullable": true,
+                      "description": "Number of teams or individuals who applied in the specified year"
+                    },
+                    "year": {
+                      "type": "string",
+                      "nullable": true,
+                      "description": "The year of the applicant data",
+                      "example": "2023"
+                    }
+                  },
+                  "required": ["count", "year"]
+                }
+              },
+              "pastUngParticipants": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "year": {
+                      "type": "string",
+                      "description": "Year of participation"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "Name of the participant from UNG"
+                    },
+                    "count": {
+                      "type": "integer",
+                      "description": "Number of team members or 1 if individual"
+                    }
+                  },
+                  "required": ["year", "name", "count"]
+                }
               }
             },
-            "required": ["summary"]
+            "required": [
+              "summary",
+              "totalApplicantsPastYear",
+              "finalistCountPastYear",
+              "pastUngParticipants"
+            ]
           },
-          "source_url": {
+          "sourceUrl": {
             "type": "string",
-            "nullable": true,
             "description": "The primary website or document URL for the competition"
           },
-          "relevant_courses": {
+          "relevantCourses": {
             "type": "array",
             "items": {
               "type": "string"
@@ -708,7 +675,7 @@
             "description": "Academic courses directly relevant to the competition's technical or non-technical focus",
             "example": ["Software Engineering", "Instructional Design"]
           },
-          "relevant_skills": {
+          "relevantSkills": {
             "type": "array",
             "items": {
               "type": "string"
@@ -722,50 +689,54 @@
           "description",
           "field",
           "type",
+          "minGPA",
+          "requirements",
           "startDate",
           "endDate",
-          "requirements",
-          "evaluation_criteria",
-          "competition_statistics",
-          "relevant_courses",
-          "relevant_skills"
+          "location",
+          "organizer",
+          "evaluationCriteria",
+          "competitionStatistics",
+          "sourceUrl",
+          "relevantCourses",
+          "relevantSkills"
         ]
       },
       "RecommendationResponse": {
         "type": "object",
         "properties": {
-          "skills_profile": {
+          "skillsProfile": {
             "type": "object",
             "additionalProperties": {
               "type": "number",
               "format": "float"
             },
             "example": {
-              "technical_expertise": 0.85,
-              "scientific_writing": 0.65,
-              "problem_solving": 0.83,
-              "creativity_innovation": 0.72,
+              "technicalExpertise": 0.85,
+              "scientificWriting": 0.65,
+              "problemSolving": 0.83,
+              "creativityInnovation": 0.72,
               "communication": 0.55,
-              "teamwork_collaboration": 0.78,
-              "project_management": 0.7,
-              "business_acumen": 0.5,
-              "design_thinking": 0.6,
-              "self_learning": 0.9
+              "teamworkCollaboration": 0.78,
+              "projectManagement": 0.7,
+              "businessAcumen": 0.5,
+              "designThinking": 0.6,
+              "selfLearning": 0.9
             },
             "description": "Overall skill profile for the radar chart"
           },
-          "skills_profile_breakdown": {
+          "skillsProfileBreakdown": {
             "type": "object",
             "additionalProperties": {
               "type": "string"
             },
             "example": {
-              "technical_expertise": "Dibangun dari IPK tinggi (3.66), pengalaman dalam pengembangan backend, optimasi API, integrasi OpenAI, dan kontribusi pada proyek perangkat lunak kompetisi nasional.",
-              "scientific_writing": "Nilai mata kuliah metodologi penelitian (3.7) menunjukkan kemampuan dokumentasi akademis yang cukup baik, meskipun pengalaman menulis paper/jurnal masih bisa ditingkatkan."
+              "technicalExpertise": "Dibangun dari IPK tinggi (3.66), pengalaman dalam pengembangan backend, optimasi API, integrasi OpenAI, dan kontribusi pada proyek perangkat lunak kompetisi nasional.",
+              "scientificWriting": "Nilai mata kuliah metodologi penelitian (3.7) menunjukkan kemampuan dokumentasi akademis yang cukup baik, meskipun pengalaman menulis paper/jurnal masih bisa ditingkatkan."
             },
             "description": "Detailed breakdown of skill profile scores"
           },
-          "category_distribution": {
+          "categoryDistribution": {
             "type": "object",
             "additionalProperties": {
               "type": "number",
@@ -774,44 +745,44 @@
             "example": { "Teknologi": 0.75, "Data Science": 0.15, "Bisnis": 0.1 },
             "description": "Category distribution for the pie chart"
           },
-          "performance_metrics": {
+          "performanceMetrics": {
             "type": "object",
             "properties": {
-              "participation_rate": {
+              "participationRate": {
                 "type": "number",
                 "format": "float",
                 "example": 0.75,
                 "description": "Participation rate of students"
               },
-              "avg_match_score": {
+              "avgMatchScore": {
                 "type": "number",
                 "format": "float",
                 "example": 0.78,
                 "description": "Average match score"
               },
-              "competition_success_rate": {
+              "competitionSuccessRate": {
                 "type": "number",
                 "format": "float",
                 "example": 0.33,
                 "description": "Success rate in competitions"
               },
-              "skill_growth": {
+              "skillGrowth": {
                 "type": "object",
                 "additionalProperties": {
                   "type": "string"
                 },
                 "example": {
-                  "technical_expertise": "+0.15 (dari proyek di 80&Co dan kompetisi IT nasional)",
-                  "problem_solving": "+0.1 (dari pengalaman optimasi database dan AI-integrated project)"
+                  "technicalExpertise": "+0.15 (dari proyek di 80&Co dan kompetisi IT nasional)",
+                  "problemSolving": "+0.1 (dari pengalaman optimasi database dan AI-integrated project)"
                 },
                 "description": "Skill growth indicators"
               }
             },
             "required": [
-              "participation_rate",
-              "avg_match_score",
-              "competition_success_rate",
-              "skill_growth"
+              "participationRate",
+              "avgMatchScore",
+              "competitionSuccessRate",
+              "skillGrowth"
             ]
           },
           "recommendations": {
@@ -829,45 +800,45 @@
                   "example": "IT FEST 2025 - Software Development",
                   "description": "Name of the competition"
                 },
-                "match_score": {
+                "matchScore": {
                   "type": "number",
                   "format": "float",
                   "example": 0.92,
                   "description": "Match score (0.0 - 1.0)"
                 },
-                "match_score_breakdown": {
+                "matchScoreBreakdown": {
                   "type": "string",
                   "example": "Technical skills (0.85 * 0.3 = 0.255), Problem solving (0.83 * 0.25 = 0.2075), Creativity (0.72 * 0.2 = 0.144), Teamwork (0.78 * 0.15 = 0.117), Communication (0.55 * 0.1 = 0.055). Total = 0.92.",
                   "description": "Detailed breakdown of how the match score was calculated"
                 },
-                "skill_distribution": {
+                "skillDistribution": {
                   "type": "object",
                   "additionalProperties": {
                     "type": "number",
                     "format": "float"
                   },
                   "example": {
-                    "technical_expertise": 0.9,
-                    "scientific_writing": 0.4,
-                    "problem_solving": 0.8,
-                    "creativity_innovation": 0.7,
+                    "technicalExpertise": 0.9,
+                    "scientificWriting": 0.4,
+                    "problemSolving": 0.8,
+                    "creativityInnovation": 0.7,
                     "communication": 0.4,
-                    "teamwork_collaboration": 0.7,
-                    "project_management": 0.5,
-                    "business_acumen": 0.3,
-                    "design_thinking": 0.6,
-                    "self_learning": 0.8
+                    "teamworkCollaboration": 0.7,
+                    "projectManagement": 0.5,
+                    "businessAcumen": 0.3,
+                    "designThinking": 0.6,
+                    "selfLearning": 0.8
                   },
                   "description": "Skill distribution for the competition"
                 },
-                "skill_distribution_breakdown": {
+                "skillDistributionBreakdown": {
                   "type": "object",
                   "additionalProperties": {
                     "type": "string"
                   },
                   "example": {
-                    "technical_expertise": "Bobot sangat tinggi karena kompetisi berfokus pada pengembangan perangkat lunak inovatif.",
-                    "scientific_writing": "Bobot rendah karena dokumentasi akademis tidak menjadi fokus utama."
+                    "technicalExpertise": "Bobot sangat tinggi karena kompetisi berfokus pada pengembangan perangkat lunak inovatif.",
+                    "scientificWriting": "Bobot rendah karena dokumentasi akademis tidak menjadi fokus utama."
                   },
                   "description": "Explanation of skill distribution for the competition"
                 },
@@ -902,7 +873,7 @@
                       "type": "string",
                       "example": "itfestmicroipb"
                     },
-                    "registration_deadline": {
+                    "registrationDeadline": {
                       "type": "string",
                       "format": "date",
                       "example": "2025-05-01"
@@ -918,7 +889,7 @@
                   "example": false,
                   "description": "Whether the student has applied to this competition"
                 },
-                "preparation_tips": {
+                "preparationTips": {
                   "type": "array",
                   "items": {
                     "type": "string"
@@ -935,19 +906,19 @@
               "required": [
                 "id",
                 "competition",
-                "match_score",
-                "match_score_breakdown",
-                "skill_distribution",
-                "skill_distribution_breakdown",
+                "matchScore",
+                "matchScoreBreakdown",
+                "skillDistribution",
+                "skillDistributionBreakdown",
                 "rank",
                 "reason",
                 "details",
                 "applied",
-                "preparation_tips"
+                "preparationTips"
               ]
             }
           },
-          "development_suggestions": {
+          "developmentSuggestions": {
             "type": "array",
             "items": {
               "type": "object",
@@ -981,7 +952,7 @@
               "required": ["type", "title", "platform", "link", "reason"]
             }
           },
-          "profile_strength": {
+          "profileStrength": {
             "type": "object",
             "properties": {
               "score": {
@@ -990,7 +961,7 @@
                 "example": 0.82,
                 "description": "Overall profile strength score"
               },
-              "calculation_explanation": {
+              "calculationExplanation": {
                 "type": "string",
                 "example": "IPK (3.66/4.0 * 0.25 = 0.23), Technical Skills (0.85 * 0.3 = 0.255), Experience Quality (0.8 * 0.2 = 0.16), Achievements (0.33 * 0.15 = 0.0495), Growth Potential (0.9 * 0.1 = 0.09). Total = 0.82.",
                 "description": "Detailed explanation of how the profile strength score was calculated"
@@ -1019,17 +990,17 @@
                 "description": "List of areas for improvement"
               }
             },
-            "required": ["score", "calculation_explanation", "strengths", "weaknesses"]
+            "required": ["score", "calculationExplanation", "strengths", "weaknesses"]
           }
         },
         "required": [
-          "skills_profile",
-          "skills_profile_breakdown",
-          "category_distribution",
-          "performance_metrics",
+          "skillsProfile",
+          "skillsProfileBreakdown",
+          "categoryDistribution",
+          "performanceMetrics",
           "recommendations",
-          "development_suggestions",
-          "profile_strength"
+          "developmentSuggestions",
+          "profileStrength"
         ]
       },
       "StudentPersonalData": {
@@ -1067,7 +1038,7 @@
           "email": {
             "type": "string"
           },
-          "student_id": {
+          "studentId": {
             "type": "string"
           }
         }

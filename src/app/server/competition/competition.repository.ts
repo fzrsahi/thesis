@@ -4,7 +4,37 @@ import { prisma } from "../prisma/prisma";
 
 export const createCompetition = async (payload: CreateCompetitionPayload) =>
   prisma.competition.create({
-    data: payload,
+    data: {
+      title: payload.title,
+      description: payload.description,
+      field: payload.field,
+      type: payload.type,
+      minGPA: payload.minGPA,
+      requirements: payload.requirements,
+      startDate: payload.startDate ? new Date(payload.startDate) : null,
+      endDate: payload.endDate ? new Date(payload.endDate) : null,
+      location: payload.location,
+      organizer: payload.organizer,
+      evaluationCriteria: payload.evaluationCriteria,
+      sourceUrl: payload.sourceUrl,
+      relevantCourses: payload.relevantCourses,
+      relevantSkills: payload.relevantSkills,
+      competitionStats: {
+        create: {
+          summary: payload.competitionStatistics.summary,
+          totalApplicantsPastYear: {
+            createMany: {
+              data: payload.competitionStatistics.totalApplicantsPastYear,
+            },
+          },
+          pastUngParticipants: {
+            createMany: {
+              data: payload.competitionStatistics.pastUngParticipants,
+            },
+          },
+        },
+      },
+    },
   });
 
 export const getCompetitions = async () => prisma.competition.findMany();

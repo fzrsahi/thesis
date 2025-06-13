@@ -88,8 +88,8 @@ const useMyRecomendation = () => {
     RecommendationResponse["recommendations"][number] | null
   >(null);
 
-  const studentSkillsData: SpiderChartDataPoint[] = apiData?.skills_profile
-    ? Object.entries(apiData.skills_profile).map(([skill, value]) => ({
+  const studentSkillsData: SpiderChartDataPoint[] = apiData?.skillsProfile
+    ? Object.entries(apiData.skillsProfile).map(([skill, value]) => ({
         label: skill.replace("_", " "),
         value,
         type: "student",
@@ -97,7 +97,7 @@ const useMyRecomendation = () => {
     : [];
 
   const competitionSkillsData: SpiderChartDataPoint[] = selectedCompetition
-    ? Object.entries(selectedCompetition.skill_distribution).map(([skill, value]) => ({
+    ? Object.entries(selectedCompetition.skillDistribution).map(([skill, value]) => ({
         label: skill.replace("_", " "),
         value,
         type: "competition",

@@ -11,12 +11,40 @@ export const createCompetitionSchema = z.object({
   description: z.string().min(1),
   field: z.array(z.string()).min(1),
   type: z.string().min(1),
-  minGPA: z.string().optional(),
-  startDate: z.string().min(1),
-  endDate: z.string().min(1),
-  location: z.string().optional(),
-  organizer: z.string().optional(),
-  requirements: z.record(z.string()).optional(),
+  minGPA: z.string().nullable(),
+  requirements: z.object({
+    teamComposition: z.string().nullable(),
+    originality: z.string().nullable(),
+    other: z.string().nullable(),
+  }),
+  startDate: z.string().nullable(),
+  endDate: z.string().nullable(),
+  location: z.string().nullable(),
+  organizer: z.string().nullable(),
+  evaluationCriteria: z.object({
+    preliminaryRound: z.string().nullable(),
+    finalRound: z.string().nullable(),
+    other: z.string().nullable(),
+  }),
+  competitionStatistics: z.object({
+    summary: z.string().nullable(),
+    totalApplicantsPastYear: z.array(
+      z.object({
+        count: z.number().nullable(),
+        year: z.string().nullable(),
+      })
+    ),
+    pastUngParticipants: z.array(
+      z.object({
+        year: z.string(),
+        name: z.string(),
+        count: z.number(),
+      })
+    ),
+  }),
+  sourceUrl: z.string().min(1),
+  relevantCourses: z.array(z.string()),
+  relevantSkills: z.array(z.string()),
 } satisfies InferZodMap<CreateCompetitionRequest>);
 
 export type CreateCompetitionPayload = z.infer<typeof createCompetitionSchema>;

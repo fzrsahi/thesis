@@ -118,7 +118,7 @@ const CategoryDistributionChart = ({ data }: { data: Record<string, number> }) =
 const PerformanceMetricsCard = ({
   metrics,
 }: {
-  metrics: RecommendationResponse["performance_metrics"];
+  metrics: RecommendationResponse["performanceMetrics"];
 }) => (
   <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
     <div className="rounded-lg bg-zinc-800 p-4">
@@ -127,7 +127,7 @@ const PerformanceMetricsCard = ({
         <div>
           <TypographyMuted>Participation Rate</TypographyMuted>
           <TypographyLarge className="text-white">
-            {(metrics.participation_rate * 10).toFixed(1)}/10
+            {(metrics.participationRate * 10).toFixed(1)}/10
           </TypographyLarge>
         </div>
       </div>
@@ -139,7 +139,7 @@ const PerformanceMetricsCard = ({
         <div>
           <TypographyMuted>Avg Match Score</TypographyMuted>
           <TypographyLarge className="text-white">
-            {(metrics.avg_match_score * 10).toFixed(1)}/10
+            {(metrics.avgMatchScore * 10).toFixed(1)}/10
           </TypographyLarge>
         </div>
       </div>
@@ -151,7 +151,7 @@ const PerformanceMetricsCard = ({
         <div>
           <TypographyMuted>Success Rate</TypographyMuted>
           <TypographyLarge className="text-white">
-            {(metrics.competition_success_rate * 10).toFixed(1)}/10
+            {(metrics.competitionSuccessRate * 10).toFixed(1)}/10
           </TypographyLarge>
         </div>
       </div>
@@ -416,13 +416,13 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <PerformanceMetricsCard metrics={data.performance_metrics} />
+            <PerformanceMetricsCard metrics={data.performanceMetrics} />
 
             {/* Skill Growth Section */}
             <div className="mt-6">
               <TypographyH3 className="mb-3 text-white">Recent Skill Growth</TypographyH3>
               <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                {Object.entries(data.performance_metrics.skill_growth).map(([skill, growth]) => (
+                {Object.entries(data.performanceMetrics.skillGrowth).map(([skill, growth]) => (
                   <div key={skill} className="rounded-lg bg-zinc-800 p-3">
                     <div className="flex items-center justify-between">
                       <span className="text-zinc-300">{skill}</span>
@@ -471,8 +471,8 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                           {rec.reason}
                         </CardDescription>
                       </div>
-                      <Badge className={`ml-4 text-white ${getMatchScoreColor(rec.match_score)}`}>
-                        {(rec.match_score * 10).toFixed(1)}/10 Match
+                      <Badge className={`ml-4 text-white ${getMatchScoreColor(rec.matchScore)}`}>
+                        {(rec.matchScore * 10).toFixed(1)}/10 Match
                       </Badge>
                     </div>
                   </CardHeader>
@@ -488,7 +488,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                         <AccordionContent>
                           <div className="space-y-4 pl-7">
                             <TypographyP className="text-sm text-zinc-300">
-                              {rec.match_score_breakdown}
+                              {rec.matchScoreBreakdown}
                             </TypographyP>
                           </div>
                         </AccordionContent>
@@ -503,7 +503,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                         </AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 pl-7">
-                            {Object.entries(rec.skill_distribution_breakdown).map(
+                            {Object.entries(rec.skillDistributionBreakdown).map(
                               ([skill, explanation]) => (
                                 <div key={skill} className="rounded-lg bg-zinc-800 p-3">
                                   <div className="mb-2 flex items-center justify-between">
@@ -511,7 +511,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                                       {skill.replace("_", " ")}
                                     </span>
                                     <span className="text-blue-400">
-                                      {(rec.skill_distribution[skill] * 10).toFixed(1)}/10
+                                      {(rec.skillDistribution[skill] * 10).toFixed(1)}/10
                                     </span>
                                   </div>
                                   <TypographyP className="text-sm text-zinc-400">
@@ -587,7 +587,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                         </AccordionTrigger>
                         <AccordionContent>
                           <div className="space-y-3 pl-7">
-                            {rec.preparation_tips.map((tip) => (
+                            {rec.preparationTips.map((tip) => (
                               <div key={tip} className="flex items-start space-x-2">
                                 <ArrowRight className="mt-1 h-4 w-4 text-blue-500" />
                                 <TypographyP className="text-sm text-zinc-300">{tip}</TypographyP>
@@ -668,14 +668,14 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {Object.entries(data.skills_profile_breakdown).map(([skill, explanation]) => (
+                {Object.entries(data.skillsProfileBreakdown).map(([skill, explanation]) => (
                   <div key={skill} className="rounded-lg bg-zinc-800 p-3">
                     <div className="mb-2 flex items-center justify-between">
                       <span className="text-sm font-medium text-white">
                         {skill.replace("_", " ")}
                       </span>
                       <span className="font-medium text-blue-400">
-                        {(data.skills_profile[skill] * 10).toFixed(1)}/10
+                        {(data.skillsProfile[skill] * 10).toFixed(1)}/10
                       </span>
                     </div>
                     <TypographyP className="text-xs text-zinc-400">{explanation}</TypographyP>
@@ -694,7 +694,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <CategoryDistributionChart data={data.category_distribution} />
+              <CategoryDistributionChart data={data.categoryDistribution} />
             </CardContent>
           </Card>
 
@@ -712,21 +712,21 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                   <div className="flex justify-between text-sm">
                     <span className="text-zinc-300">Overall Score</span>
                     <span className="font-medium text-white">
-                      {(data.profile_strength.score * 10).toFixed(1)}/10
+                      {(data.profileStrength.score * 10).toFixed(1)}/10
                     </span>
                   </div>
-                  <Progress value={data.profile_strength.score * 100} className="h-2" />
+                  <Progress value={data.profileStrength.score * 100} className="h-2" />
                 </div>
 
                 <div className="text-xs text-zinc-400">
-                  {data.profile_strength.calculation_explanation}
+                  {data.profileStrength.calculationExplanation}
                 </div>
 
                 <div className="space-y-3">
                   <div>
                     <TypographyH3 className="mb-2 text-sm text-white">Strengths</TypographyH3>
                     <div className="space-y-2">
-                      {data.profile_strength.strengths.map((strength) => (
+                      {data.profileStrength.strengths.map((strength) => (
                         <div key={strength} className="flex items-start space-x-2">
                           <div className="mt-1 h-1.5 w-1.5 rounded-full bg-green-500" />
                           <TypographyP className="text-sm text-zinc-300">{strength}</TypographyP>
@@ -740,7 +740,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                       Areas for Improvement
                     </TypographyH3>
                     <div className="space-y-2">
-                      {data.profile_strength.weaknesses.map((weakness) => (
+                      {data.profileStrength.weaknesses.map((weakness) => (
                         <div key={weakness} className="flex items-start space-x-2">
                           <div className="mt-1 h-1.5 w-1.5 rounded-full bg-yellow-500" />
                           <TypographyP className="text-sm text-zinc-300">{weakness}</TypographyP>
@@ -763,7 +763,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {data.development_suggestions.map((suggestion) => {
+                {data.developmentSuggestions.map((suggestion) => {
                   let icon;
                   if (suggestion.type === "course") {
                     icon = <BookOpen className="h-4 w-4 text-blue-500" />;

@@ -85,7 +85,7 @@ const saveRecommendation = async (
     .filter((r) => r.id > 0 && r.id <= finalCompetitions.length)
     .map((r) => ({
       competitionId: finalCompetitions[r.id - 1].id,
-      matchScore: r.match_score,
+      matchScore: r.matchScore,
       feedback: r.reason,
     }));
 

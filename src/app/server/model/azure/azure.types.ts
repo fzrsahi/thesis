@@ -1,70 +1,70 @@
 export interface RecommendationResponse {
-  skills_profile: {
-    technical_expertise: number;
-    scientific_writing: number;
-    problem_solving: number;
-    creativity_innovation: number;
+  skillsProfile: {
+    technicalExpertise: number;
+    scientificWriting: number;
+    problemSolving: number;
+    creativityInnovation: number;
     communication: number;
-    teamwork_collaboration: number;
-    project_management: number;
-    business_acumen: number;
-    design_thinking: number;
-    self_learning: number;
+    teamworkCollaboration: number;
+    projectManagement: number;
+    businessAcumen: number;
+    designThinking: number;
+    selfLearning: number;
   };
-  skills_profile_breakdown: {
-    technical_expertise: string;
-    scientific_writing: string;
-    problem_solving: string;
-    creativity_innovation: string;
+  skillsProfileBreakdown: {
+    technicalExpertise: string;
+    scientificWriting: string;
+    problemSolving: string;
+    creativityInnovation: string;
     communication: string;
-    teamwork_collaboration: string;
-    project_management: string;
-    business_acumen: string;
-    design_thinking: string;
-    self_learning: string;
+    teamworkCollaboration: string;
+    projectManagement: string;
+    businessAcumen: string;
+    designThinking: string;
+    selfLearning: string;
   };
-  category_distribution: {
+  categoryDistribution: {
     Teknologi: number;
     DataScience: number;
-    Bisnis: number;
+    Business: number;
   };
-  performance_metrics: {
-    participation_rate: number;
-    avg_match_score: number;
-    competition_success_rate: number;
-    skill_growth: {
-      technical_expertise: string;
-      problem_solving: string;
+  performanceMetrics: {
+    participationRate: number;
+    avgMatchScore: number;
+    competitionSuccessRate: number;
+    skillGrowth: {
+      technicalExpertise: string;
+      problemSolving: string;
     };
   };
   recommendations: Array<{
     id: number;
     competition: string;
-    match_score: number;
-    match_score_breakdown: string;
-    skill_distribution: {
-      technical_expertise: number;
-      scientific_writing: number;
-      problem_solving: number;
-      creativity_innovation: number;
+    matchScore: number;
+    matchScoreBreakdown: string;
+    skillDistribution: {
+      technicalExpertise: number;
+      scientificWriting: number;
+      problemSolving: number;
+      creativityInnovation: number;
       communication: number;
-      teamwork_collaboration: number;
-      project_management: number;
-      business_acumen: number;
-      design_thinking: number;
-      self_learning: number;
+      teamworkCollaboration: number;
+      projectManagement: number;
+      businessAcumen: number;
+      designThinking: number;
+      selfLearning: number;
     };
-    skill_distribution_breakdown: {
-      technical_expertise: string;
-      scientific_writing: string;
-      problem_solving: string;
-      creativity_innovation: string;
+    skillDistributionBreakdown: {
+      technicalExpertise: string;
+      scientificWriting: string;
+      problemSolving: string;
+      creativityInnovation: string;
       communication: string;
-      teamwork_collaboration: string;
-      project_management: string;
-      business_acumen: string;
-      design_thinking: string;
-      self_learning: string;
+      teamworkCollaboration: string;
+      projectManagement: string;
+      businessAcumen: string;
+      designThinking: string;
+      selfLearning: string;
     };
     rank: number;
     reason: string;
@@ -73,21 +73,21 @@ export interface RecommendationResponse {
       endDate: string;
       location: string;
       organizer: string;
-      registration_deadline: string;
+      registrationDeadline: string;
       website: string;
     };
-    preparation_tips: string[];
+    preparationTips: string[];
   }>;
-  development_suggestions: Array<{
+  developmentSuggestions: Array<{
     type: string;
     title: string;
     platform: string;
     link: string;
     reason: string;
   }>;
-  profile_strength: {
+  profileStrength: {
     score: number;
-    calculation_explanation: string;
+    calculationExplanation: string;
     strengths: string[];
     weaknesses: string[];
   };
