@@ -6,6 +6,7 @@ import { AzureOpenAI } from "openai";
 
 import { RecommendationResponse } from "./azure.types";
 import { prisma } from "../../prisma/prisma";
+import { CreateCompetitionPayload } from "@/app/shared/schema/competition/CompetitionSchema";
 
 const AZURE_CONFIG = {
   apiKey: process.env.AZURE_OPENAI_API_KEY!,
@@ -64,7 +65,8 @@ export const sendPrompt = async (
     userMessage: string;
   },
   model = "gpt-4o",
-  responseFormat: "text" | "json_object" = "text"
+  responseFormat: "text" | "json_object" = "text",
+  searchWeb: boolean = false
 ) => {
   const client = createOpenAIClient();
 
@@ -81,6 +83,18 @@ export const sendPrompt = async (
     ],
     model,
     response_format: { type: responseFormat },
+    ...(searchWeb && {
+      web_search_options: {
+        search_context_size: "high",
+        user_location: {
+          type: "approximate",
+          approximate: {
+            country: "ID",
+            region: "Indonesia",
+          },
+        },
+      },
+    }),
   });
 
   return response.choices[0].message.content;
@@ -352,14 +366,14 @@ export const generateRecommendationWithCompetitions = async (
   return { result, prompt: promptTemplate };
 };
 
-export const generateCompetitionEmbedding = async (competitionData: Competition) => {
+export const generateCompetitionEmbedding = async (competitionData: CreateCompetitionPayload) => {
   const competitionText = `
     Title: ${competitionData.title}
     Description: ${competitionData.description}
     Fields: ${competitionData.field.join(", ")}
     Type: ${competitionData.type}
     Minimum GPA: ${competitionData.minGPA || "Not specified"}
-    Requirements: ${JSON.stringify(competitionData.requirements)}
+    Requirements: ${JSON.stringify(competitionData.requirements || "Not specified")}
     Location: ${competitionData.location || "Not specified"}
     Organizer: ${competitionData.organizer || "Not specified"}
   `.trim();

@@ -57,13 +57,13 @@ model Student {
 }
 
 model Transcript {
-  id        Int      @id @default(autoincrement())
-  studentId Int
-  fileId    String
-  semester  String
+  id             Int      @id @default(autoincrement())
+  studentId      Int
+  fileId         String
+  semester       String
   transcriptText String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
@@ -111,18 +111,23 @@ model Experience {
 
 /// Competitions Catalog
 model Competition {
-  id           Int      @id @default(autoincrement())
-  title        String // Judul lomba, misalnya: "GEMASTIK Data Mining"
-  description  String // Deskripsi lomba
-  field        String[] // Bidang, misalnya: "Teknologi", "Desain" (untuk Category Distribution)
-  type         String // Jenis: "Individu" atau "Tim"
-  minGPA       String? // IPK minimal
-  requirements Json?    @default("{}") // Kriteria khusus, contoh: {"language": "Python", "experience": "Hackathon"}
-  startDate    DateTime // Tanggal mulai lomba
-  endDate      DateTime // Tanggal berakhir / deadline
-  location     String? // Lokasi lomba (opsional)
-  organizer    String? // Penyelenggara (opsional)
-  createdAt    DateTime @default(now())
+  id                 Int       @id @default(autoincrement())
+  title              String // Judul lomba, misalnya: "Program Kreativitas Mahasiswa Karsa Cipta"
+  description        String // Deskripsi lomba
+  field              String[] // Bidang, misalnya: ["Aplikasi Mobile", "Sistem Informasi", "Kecerdasan Buatan"]
+  type               String? // Jenis: "Individual", "Team", atau "Both"
+  minGPA             String? // IPK minimal
+  requirements       Json?     @default("{}") // Kriteria khusus, contoh: {"team_composition": "3-5 mahasiswa", "originality": "Karya harus orisinal"}
+  startDate          DateTime? // Tanggal mulai lomba
+  endDate            DateTime? // Tanggal berakhir / deadline
+  location           String? // Lokasi lomba (opsional)
+  organizer          String? // Penyelenggara (opsional)
+  evaluationCriteria Json?     @default("{}") // Kriteria penilaian, contoh: {"preliminary_round": "...", "final_round": "..."}
+  sourceUrl          String? // URL sumber informasi lomba
+  relevantCourses    String[] // Mata kuliah yang relevan
+  relevantSkills     String[] // Keterampilan yang relevan
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @default(now())
 
   participants StudentCompetition[]
   stats        CompetitionStats? // Relasi ke statistik kompetisi
@@ -132,12 +137,16 @@ model Competition {
 
 /// Competition Statistics (untuk Category Distribution dan Performance Metrics)
 model CompetitionStats {
-  id                   Int         @id @default(autoincrement())
-  competitionId        Int         @unique
-  competition          Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
-  categoryDistribution Json        @default("{}") // Untuk pie chart, contoh: {"Teknologi": 0.6, "Desain": 0.3}
-  performanceMetrics   Json        @default("{}") // Untuk bar chart, contoh: {"participation_rate": 0.7, "avg_match_score": 0.85}
-  updatedAt            DateTime    @updatedAt
+  id                            Int         @id @default(autoincrement())
+  competitionId                 Int         @unique
+  competition                   Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  summary                       String? // Ringkasan statistik kompetisi
+  totalApplicantsPastYear       Int? // Jumlah total pendaftar tahun lalu
+  finalistCountPastYear         Int? // Jumlah finalis tahun lalu
+  pastParticipatingUniversities String[] // Contoh universitas yang pernah berpartisipasi
+  pastUngParticipants           String[] // Riwayat partisipasi UNG
+  updatedAt                     DateTime    @default(now())
+  createdAt                     DateTime    @default(now())
 
   @@map("competitionStats")
 }
@@ -151,7 +160,7 @@ model StudentCompetition {
   feedback      String? // Komentar / feedback user
   createdAt     DateTime @default(now())
 
-  student     Student?     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  student     Student?    @relation(fields: [studentId], references: [id], onDelete: Cascade)
   competition Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
 
   @@unique([studentId, competitionId])
@@ -200,11 +209,11 @@ model LLMChatMessage {
 
 /// Embeddings (Crucial for RAG: use pgvector for ease of vector querying)
 model Embedding {
-  id        Int      @id @default(autoincrement())
+  id        Int                         @id @default(autoincrement())
   model     String // e.g. "all-MiniLM-L6-v2"
   vector    Unsupported("vector(1536)")
-  metadata  Json?    @default("{}") // Contoh: { "type": "competition", "id": 5 }
-  createdAt DateTime @default(now())
+  metadata  Json?                       @default("{}") // Contoh: { "type": "competition", "id": 5 }
+  createdAt DateTime                    @default(now())
 
   @@map("embeddings")
 }

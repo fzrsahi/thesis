@@ -11,7 +11,7 @@ export const createCompetitionSchema = z.object({
   description: z.string().min(1),
   field: z.array(z.string()).min(1),
   type: z.string().min(1),
-  minGPA: z.string().min(1),
+  minGPA: z.string().optional(),
   startDate: z.string().min(1),
   endDate: z.string().min(1),
   location: z.string().optional(),

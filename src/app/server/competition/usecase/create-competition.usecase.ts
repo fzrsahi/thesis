@@ -6,16 +6,7 @@ import { createCompetition } from "../competition.repository";
 
 export const createCompetitionUsecase = async (payload: CreateCompetitionPayload) => {
   const competition = await createCompetition(payload);
-  const vector = await generateCompetitionEmbedding({
-    title: payload.title,
-    description: payload.description,
-    field: payload.field,
-    type: payload.type,
-    minGPA: payload.minGPA ? Number(payload.minGPA) : undefined,
-    requirements: payload.requirements,
-    location: payload.location,
-    organizer: payload.organizer,
-  });
+  const vector = await generateCompetitionEmbedding(payload);
 
   await createEmbedding({
     model: "text-embedding-3-small",

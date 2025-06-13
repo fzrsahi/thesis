@@ -481,8 +481,53 @@
           }
         }
       }
+    },
+    "/competitions/generate": {
+      "post": {
+        "tags": ["Competition"],
+        "summary": "Generate competition",
+        "description": "Generate a new competition",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "website": {
+                    "type": "string"
+                  },
+                  "addition_details": {
+                    "type": "string"
+                  }
+                },
+                "required": ["title", "description", "website"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Competition generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateCompetitionResponse"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
+
   "components": {
     "securitySchemes": {
       "bearerAuth": {
@@ -504,6 +549,187 @@
           }
         },
         "required": ["success", "data"]
+      },
+      "GenerateCompetitionResponse": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "The exact name of the competition",
+            "example": "LIDM 2025 - Inovasi Teknologi Digital Pendidikan (Divisi1)"
+          },
+          "description": {
+            "type": "string",
+            "description": "A brief overview of the competition's purpose and scope"
+          },
+          "field": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "The primary domain(s) of the competition",
+            "example": ["Educational Technology", "Software Development"]
+          },
+          "type": {
+            "type": "string",
+            "enum": ["Individual", "Team"],
+            "description": "Indicates whether participants compete solo or in groups"
+          },
+          "minGPA": {
+            "type": "string",
+            "nullable": true,
+            "description": "Minimum GPA requirement for eligibility, if specified; otherwise, null"
+          },
+          "requirements": {
+            "type": "object",
+            "properties": {
+              "team_composition": {
+                "type": "string",
+                "nullable": true,
+                "description": "Details on team size and composition",
+                "example": "3-5 students from the same university"
+              },
+              "originality": {
+                "type": "string",
+                "nullable": true,
+                "description": "Rules about the originality of submissions",
+                "example": "Work must be original"
+              },
+              "other": {
+                "type": "string",
+                "nullable": true,
+                "description": "Additional eligibility criteria",
+                "example": "Must submit a proposal"
+              }
+            }
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date",
+            "description": "The competition's start or registration date (YYYY-MM-DD format)"
+          },
+          "endDate": {
+            "type": "string",
+            "format": "date",
+            "description": "The competition's end or final date (YYYY-MM-DD format)"
+          },
+          "location": {
+            "type": "string",
+            "nullable": true,
+            "description": "The event's location, e.g., 'Online' or a specific city/university; null if unspecified"
+          },
+          "organizer": {
+            "type": "string",
+            "nullable": true,
+            "description": "The organizing entity",
+            "example": "Ministry of Education"
+          },
+          "evaluation_criteria": {
+            "type": "object",
+            "properties": {
+              "preliminary_round": {
+                "type": "string",
+                "nullable": true,
+                "description": "Criteria for initial judging",
+                "example": "Originality: 30%, Impact: 30%"
+              },
+              "final_round": {
+                "type": "string",
+                "nullable": true,
+                "description": "Criteria for final judging",
+                "example": "Presentation and functionality"
+              },
+              "other": {
+                "type": "string",
+                "description": "Other evaluation criteria"
+              }
+            }
+          },
+          "competition_statistics": {
+            "type": "object",
+            "properties": {
+              "summary": {
+                "type": "string",
+                "description": "A brief overview of historical participation data, including years and sources"
+              },
+              "total_applicants_past_year": {
+                "type": "object",
+                "properties": {
+                  "count": {
+                    "type": "integer",
+                    "nullable": true,
+                    "description": "Number of teams or individuals who applied in the most recent year"
+                  },
+                  "year": {
+                    "type": "string",
+                    "nullable": true,
+                    "description": "The year of the applicant data",
+                    "example": "2023"
+                  }
+                }
+              },
+              "finalist_count_past_year": {
+                "type": "object",
+                "properties": {
+                  "count": {
+                    "type": "integer",
+                    "nullable": true,
+                    "description": "Number of teams or individuals who reached the finals in the most recent year"
+                  },
+                  "year": {
+                    "type": "string",
+                    "nullable": true,
+                    "description": "The year of the finalist data",
+                    "example": "2023"
+                  }
+                }
+              },
+              "past_ung_participants": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "nullable": true,
+                "description": "Names of past participants from Universitas Negeri Gorontalo, if available"
+              }
+            },
+            "required": ["summary"]
+          },
+          "source_url": {
+            "type": "string",
+            "nullable": true,
+            "description": "The primary website or document URL for the competition"
+          },
+          "relevant_courses": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Academic courses directly relevant to the competition's technical or non-technical focus",
+            "example": ["Software Engineering", "Instructional Design"]
+          },
+          "relevant_skills": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Skills directly relevant to the competition's technical or non-technical requirements",
+            "example": ["Python", "Instructional Design"]
+          }
+        },
+        "required": [
+          "title",
+          "description",
+          "field",
+          "type",
+          "startDate",
+          "endDate",
+          "requirements",
+          "evaluation_criteria",
+          "competition_statistics",
+          "relevant_courses",
+          "relevant_skills"
+        ]
       },
       "RecommendationResponse": {
         "type": "object",
