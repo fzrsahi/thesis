@@ -2,15 +2,17 @@ import { Prisma } from "@prisma/client";
 
 import { prisma } from "../prisma/prisma";
 
-export const createTranscript = (
-  studentId: number,
-  { fileId, semester }: { fileId: string; semester: string }
-) =>
+interface CreateTranscriptPayload {
+  fileId: string;
+  semester: string;
+  transcriptText: string;
+}
+
+export const createTranscript = (studentId: number, payload: CreateTranscriptPayload) =>
   prisma.transcript.create({
     data: {
       studentId,
-      fileId,
-      semester,
+      ...payload,
     },
   });
 

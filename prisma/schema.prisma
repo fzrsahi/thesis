@@ -61,6 +61,7 @@ model Transcript {
   studentId Int
   fileId    String
   semester  String
+  transcriptText String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

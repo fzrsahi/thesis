@@ -58,21 +58,29 @@ const createEmbeddingClient = () =>
     endpoint: AZURE_EMBEDDING_CONFIG.endpoint,
   });
 
-export const sendPrompt = async (prompt: string, model = "gpt-4o") => {
+export const sendPrompt = async (
+  prompt: {
+    systemMessage?: string;
+    userMessage: string;
+  },
+  model = "gpt-4o",
+  responseFormat: "text" | "json_object" = "text"
+) => {
   const client = createOpenAIClient();
 
   const response = await client.chat.completions.create({
     messages: [
       {
         role: "system",
-        content: "You are a helpful assistant.",
+        content: prompt.systemMessage || "You are a helpful assistant.",
       },
       {
         role: "user",
-        content: prompt,
+        content: prompt.userMessage,
       },
     ],
     model,
+    response_format: { type: responseFormat },
   });
 
   return response.choices[0].message.content;
@@ -84,6 +92,7 @@ export const sendChatCompletion = async (
   options: {
     model?: string;
     temperature?: number;
+
     maxTokens?: number;
     responseFormat?: "text" | "json_object";
   } = {}

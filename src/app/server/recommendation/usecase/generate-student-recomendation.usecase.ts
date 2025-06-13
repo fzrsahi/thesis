@@ -1,9 +1,5 @@
-import { drive_v3 } from "@googleapis/drive";
 import { Prisma } from "@prisma/client";
 import { HttpStatusCode } from "axios";
-import { GaxiosResponse } from "gaxios";
-import * as pdfjs from "pdfjs-dist/legacy/build/pdf.mjs";
-import { TextItem } from "pdfjs-dist/types/src/display/api";
 
 import { COMPETITION_ERROR_RESPONSE } from "../../competition/competition.error";
 import {
@@ -11,7 +7,6 @@ import {
   findRandomCompetitions,
   getCompetitions,
 } from "../../competition/competition.repository";
-import { getFileById } from "../../google-drive/google-drive.service";
 import {
   generateRecommendationWithCompetitions,
   findSimilarCompetitions,
@@ -26,10 +21,7 @@ import "@ungap/with-resolvers";
 
 export const createRecommendationUsecase = async (userId: number) => {
   const studentProfile = await validateStudentProfile(userId);
-  const transcriptFileIds = studentProfile.transcript.map((t) => t.fileId);
-  const transcriptFile = await getFileById(transcriptFileIds[0]);
-  const cleanedTranscriptText = await extractTranscriptText(transcriptFile);
-  await generateRecommendation(studentProfile, cleanedTranscriptText);
+  await generateRecommendation(studentProfile);
 };
 
 const validateStudentProfile = async (userId: number) => {
@@ -67,42 +59,6 @@ const validateStudentProfile = async (userId: number) => {
   }
 
   return student;
-};
-
-const extractTranscriptText = async (transcriptFile: GaxiosResponse<drive_v3.Schema$File>) => {
-  await import("pdfjs-dist/legacy/build/pdf.worker.mjs");
-
-  const pdfDataAsUint8Array = new Uint8Array(transcriptFile.data as ArrayBuffer);
-
-  const pdfDocument = await pdfjs.getDocument({ data: pdfDataAsUint8Array }).promise;
-
-  let extractedText = "";
-
-  const pagePromises = Array.from({ length: pdfDocument.numPages }, (_, i) =>
-    pdfDocument.getPage(i + 1)
-  );
-
-  const pages = await Promise.all(pagePromises);
-  const textContentPromises = pages.map((page) => page.getTextContent());
-  const textContents = await Promise.all(textContentPromises);
-
-  extractedText = textContents
-    .map((textContent) => textContent.items.map((item) => (item as TextItem).str).join(" "))
-    .join("\n");
-
-  return extractedText
-    .replace(/KEMENTERIAN PENDIDIKAN TINGGI, SAINS, DAN TEKNOLOGI/g, "")
-    .replace(/UNIVERSITAS NEGERI GORONTALO/g, "")
-    .replace(/Fakultas Teknik/g, "")
-    .replace(/Jalan: Jenderal Sudirman No\. 6 Kota Gorontalo/g, "")
-    .replace(/Telepon: \(0435\) 821183 Fax: \(0435\) 821752/g, "")
-    .replace(/Laman: www\.ung\.ac\.id/g, "")
-    .replace(/Sistem Informasi Akademik/g, "")
-    .replace(/https?:\/\/\S+/g, "")
-    .replace(/\d{1,2}\/\d{1,2}\/\d{2,4}, \d{1,2}:\d{2} (AM|PM)/g, "")
-    .replace(/No\s+Kode\s+Nama Mata Kuliah\s+SKS\s+Mutu\s+Lambang/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
 };
 
 const validateCompetition = async () => {
@@ -150,8 +106,7 @@ const generateRecommendation = async (
       experiences: true;
       transcript: true;
     };
-  }>,
-  cleanedTranscriptText: string
+  }>
 ): Promise<RecommendationResponse> => {
   const profileText = `
     IPK: ${studentProfile.gpa}
@@ -165,7 +120,7 @@ const generateRecommendation = async (
           `${e.organization} - ${e.position} (${e.startDate.getFullYear()} - ${e.endDate ? e.endDate.getFullYear() : "Sekarang"}) - ${e.description}`
       )
       .join(", ")}
-    Transkrip Nilai: ${cleanedTranscriptText}
+    Transkrip Nilai: ${studentProfile.transcript[0].transcriptText}
   `;
 
   const similarCompetitionEmbeddings = await findSimilarCompetitions(profileText);
