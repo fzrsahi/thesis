@@ -18,6 +18,7 @@ const transcript = createQueryKeys("transcript", {
 
 const myRecommendation = createQueryKeys("my-recommendation", {
   data: () => ["my-recommendation"],
+  create: () => ["create-my-recommendation"],
 });
 
 export const queryKeys = mergeQueryKeys(personalData, academicData, transcript, myRecommendation);

@@ -37,7 +37,33 @@ export interface paths {
      */
     get: operations["getMyRecommendations"];
     put?: never;
-    post?: never;
+    /**
+     * Generate student recommendation
+     * @description Generate a new recommendation for the student
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Recommendation generated successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": {
+              /** @example true */
+              success?: boolean;
+            };
+          };
+        };
+      };
+    };
     delete?: never;
     options?: never;
     head?: never;

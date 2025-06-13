@@ -20,16 +20,24 @@ export const findRecommendationByStudentId = async (
     select,
   });
 
-export const createRecommendation = async (
+export const createOrUpdateRecomendation = async (
   studentId: number,
   prompt: string,
   recommendation: RecommendationResponse
 ) =>
-  prisma.recommendation.create({
-    data: {
+  prisma.recommendation.upsert({
+    create: {
       studentId,
       prompt,
       response: JSON.stringify(recommendation),
+    },
+    update: {
+      prompt,
+      response: JSON.stringify(recommendation),
+    },
+    where: {
+      studentId,
+      id: 0,
     },
   });
 
@@ -38,7 +46,13 @@ export const createStudentCompetition = async (
   competitionIds: number[],
   matchScores: number[],
   feedbacks: string[]
-) =>
+) => {
+  await prisma.studentCompetition.deleteMany({
+    where: {
+      studentId,
+    },
+  });
+
   prisma.studentCompetition.createMany({
     data: competitionIds.map((competitionId, index) => ({
       studentId,
@@ -47,3 +61,4 @@ export const createStudentCompetition = async (
       feedback: feedbacks[index],
     })),
   });
+};

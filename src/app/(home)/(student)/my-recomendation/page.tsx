@@ -45,25 +45,42 @@ import {
   getMatchScoreColor,
   type RecommendationResponse,
 } from "./hooks/useMyRecomendation";
+import { usePostMyRecomendation } from "./hooks/usePostMyRecomendation";
 
-const EmptyState = ({ onStartAnalysis }: { onStartAnalysis: () => void }) => (
+const EmptyState = ({
+  onStartAnalysis,
+  isCreating,
+}: {
+  onStartAnalysis: () => void;
+  isCreating: boolean;
+}) => (
   <div className="flex min-h-[60vh] flex-col items-center justify-center space-y-6 text-center">
     <div className="rounded-full bg-zinc-800 p-6">
       <Target className="h-12 w-12 text-zinc-400" />
     </div>
     <div className="space-y-2">
-      <TypographyH2 className="text-2xl">No Recommendations Yet</TypographyH2>
+      <TypographyH2 className="text-2xl">Belum Ada Rekomendasi</TypographyH2>
       <TypographyP className="max-w-md">
-        Start analyzing your profile to get competition recommendations that match your
-        <TypographyEmphasis> skills and interests</TypographyEmphasis>.
+        Mulai analisis profil Anda untuk mendapatkan rekomendasi kompetisi yang sesuai dengan
+        <TypographyEmphasis> keterampilan dan minat Anda</TypographyEmphasis>.
       </TypographyP>
     </div>
     <Button
       onClick={onStartAnalysis}
+      disabled={isCreating}
       className="cursor-pointer border border-zinc-700 bg-zinc-800 text-white hover:bg-zinc-700"
     >
-      <Activity className="mr-2 h-4 w-4" />
-      Start Profile Analysis
+      {isCreating ? (
+        <>
+          <Activity className="mr-2 h-4 w-4 animate-spin" />
+          Menganalisis Profil...
+        </>
+      ) : (
+        <>
+          <Activity className="mr-2 h-4 w-4" />
+          Mulai Analisis Profil
+        </>
+      )}
     </Button>
   </div>
 );
@@ -794,7 +811,39 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
 };
 
 const MyRecommendationPage = () => {
-  const { data, isLoading, error, handleStartAnalysis } = useMyRecomendation();
+  const { data, isLoading, error } = useMyRecomendation();
+  const { createMyRecomendation, isCreating } = usePostMyRecomendation();
+
+  const handleStartAnalysis = () => {
+    createMyRecomendation();
+  };
+
+  if (isCreating) {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center space-y-6 text-center">
+        <div className="rounded-full bg-zinc-800 p-6">
+          <Activity className="h-12 w-12 animate-spin text-zinc-400" />
+        </div>
+        <div className="space-y-2">
+          <TypographyH2 className="text-2xl">Menganalisis Profil Anda</TypographyH2>
+          <TypographyP className="max-w-md">
+            Mohon tunggu sebentar, kami sedang menganalisis profil Anda untuk memberikan rekomendasi
+            yang sesuai...
+          </TypographyP>
+        </div>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <div className="min-h-screen bg-black p-6">
+        <div className="mx-auto max-w-7xl">
+          <EmptyState onStartAnalysis={handleStartAnalysis} isCreating={isCreating} />
+        </div>
+      </div>
+    );
+  }
 
   if (error) {
     return (
@@ -803,11 +852,9 @@ const MyRecommendationPage = () => {
           <Activity className="h-12 w-12 text-red-400" />
         </div>
         <div className="space-y-2">
-          <TypographyH2 className="text-2xl">Error Loading Recommendations</TypographyH2>
+          <TypographyH2 className="text-2xl">Gagal Memuat Rekomendasi</TypographyH2>
           <TypographyP className="max-w-md text-red-400">
-            {error instanceof Error
-              ? error.message
-              : "An error occurred while loading recommendations"}
+            {error instanceof Error ? error.message : "Terjadi kesalahan saat memuat rekomendasi"}
           </TypographyP>
         </div>
         <Button
@@ -815,7 +862,7 @@ const MyRecommendationPage = () => {
           className="cursor-pointer border border-red-700 bg-red-800 text-white hover:bg-red-700"
         >
           <Activity className="mr-2 h-4 w-4" />
-          Try Again
+          Coba Lagi
         </Button>
       </div>
     );
@@ -830,15 +877,17 @@ const MyRecommendationPage = () => {
               <Activity className="h-12 w-12 animate-spin text-zinc-400" />
             </div>
             <div className="space-y-2">
-              <TypographyH2 className="text-2xl">Analyzing Your Profile</TypographyH2>
+              <TypographyH2 className="text-2xl">Memuat Rekomendasi</TypographyH2>
               <TypographyP className="max-w-md">
-                Please wait while we generate personalized recommendations for you...
+                Mohon tunggu sebentar, kami sedang memuat rekomendasi Anda...
               </TypographyP>
             </div>
           </div>
         )}
         {!isLoading && data && <RecommendationContent data={data} />}
-        {!isLoading && !data && <EmptyState onStartAnalysis={handleStartAnalysis} />}
+        {!isLoading && !data && (
+          <EmptyState onStartAnalysis={handleStartAnalysis} isCreating={isCreating} />
+        )}
       </div>
     </div>
   );

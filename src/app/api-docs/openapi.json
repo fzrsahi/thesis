@@ -93,6 +93,34 @@
             }
           }
         }
+      },
+      "post": {
+        "tags": ["Recommendation"],
+        "summary": "Generate student recommendation",
+        "description": "Generate a new recommendation for the student",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recommendation generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/students/personal-data": {

@@ -5,40 +5,31 @@ import { GaxiosResponse } from "gaxios";
 import * as pdfjs from "pdfjs-dist/legacy/build/pdf.mjs";
 import { TextItem } from "pdfjs-dist/types/src/display/api";
 
-import {
-  createRecommendation,
-  createStudentCompetition,
-  findRecommendationByStudentId,
-} from "./recomendation.repository";
-import { COMPETITION_ERROR_RESPONSE } from "../competition/competition.error";
+import { COMPETITION_ERROR_RESPONSE } from "../../competition/competition.error";
 import {
   findManyCompetitionsByIds,
   findRandomCompetitions,
   getCompetitions,
-} from "../competition/competition.repository";
-import { getFileById } from "../google-drive/google-drive.service";
+} from "../../competition/competition.repository";
+import { getFileById } from "../../google-drive/google-drive.service";
 import {
   generateRecommendationWithCompetitions,
   findSimilarCompetitions,
-} from "../model/azure/azure-openai.service";
-import { RecommendationResponse } from "../model/azure/azure.types";
-import { STUDENT_ERROR_RESPONSE } from "../student/student.error";
-import { findStudentByUserId } from "../student/student.repository";
-import { customError } from "../utils/error/custom-error";
+} from "../../model/azure/azure-openai.service";
+import { RecommendationResponse } from "../../model/azure/azure.types";
+import { STUDENT_ERROR_RESPONSE } from "../../student/student.error";
+import { findStudentByUserId } from "../../student/student.repository";
+import { customError } from "../../utils/error/custom-error";
+import { createOrUpdateRecomendation, createStudentCompetition } from "../recomendation.repository";
 
 import "@ungap/with-resolvers";
 
-export const generateRecommendationUsecase = async (userId: number) => {
+export const createRecommendationUsecase = async (userId: number) => {
   const studentProfile = await validateStudentProfile(userId);
-  const existingRecommendation = await findRecommendationByStudentId(studentProfile.id);
-  if (!existingRecommendation) {
-    const transcriptFileIds = studentProfile.transcript.map((t) => t.fileId);
-    const transcriptFile = await getFileById(transcriptFileIds[0]);
-    const cleanedTranscriptText = await extractTranscriptText(transcriptFile);
-    const recommendation = await generateRecommendation(studentProfile, cleanedTranscriptText);
-    return recommendation;
-  }
-  return JSON.parse(existingRecommendation.response as string) as RecommendationResponse;
+  const transcriptFileIds = studentProfile.transcript.map((t) => t.fileId);
+  const transcriptFile = await getFileById(transcriptFileIds[0]);
+  const cleanedTranscriptText = await extractTranscriptText(transcriptFile);
+  await generateRecommendation(studentProfile, cleanedTranscriptText);
 };
 
 const validateStudentProfile = async (userId: number) => {
@@ -132,12 +123,12 @@ const saveRecommendation = async (
   recommendation: RecommendationResponse,
   finalCompetitions: { id: number }[]
 ) => {
-  await createRecommendation(studentId, prompt, recommendation);
+  await createOrUpdateRecomendation(studentId, prompt, recommendation);
 
   const validRecommendations = recommendation.recommendations
     .filter((r) => r.id > 0 && r.id <= finalCompetitions.length)
     .map((r) => ({
-      competitionId: finalCompetitions[r.id - 1].id, // AI uses 1-based index, convert to 0-based
+      competitionId: finalCompetitions[r.id - 1].id,
       matchScore: r.match_score,
       feedback: r.reason,
     }));
