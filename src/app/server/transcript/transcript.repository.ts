@@ -12,7 +12,9 @@ export const createTranscript = (studentId: number, payload: CreateTranscriptPay
   prisma.transcript.create({
     data: {
       studentId,
-      ...payload,
+      fileId: payload.fileId,
+      semester: payload.semester,
+      transcriptText: payload.transcriptText,
     },
   });
 

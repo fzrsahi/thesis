@@ -69,16 +69,31 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      return {
-        ...session,
-        user: {
-          ...session.user,
-          id: token.id,
-          email: token.email,
-          name: token.name,
-          role: token.role,
-        },
-      };
+      try {
+        if (!token.id) {
+          throw new Error("Invalid session");
+        }
+
+        const currentRole = await getUserRole(Number(token.id));
+
+        if (!currentRole) {
+          throw new Error("Invalid session");
+        }
+
+        return {
+          ...session,
+          user: {
+            ...session.user,
+            id: token.id,
+            email: token.email,
+            name: token.name,
+            role: token.role,
+          },
+        };
+      } catch (error) {
+        console.error("Session validation error:", error);
+        throw error;
+      }
     },
     async redirect({ url, baseUrl }) {
       if (url.startsWith("/")) {

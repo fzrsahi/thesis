@@ -467,7 +467,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                             </Badge>
                           )}
                         </div>
-                        <CardDescription className="max-w-2xl text-zinc-400">
+                        <CardDescription className="max-w-5xlxl mt-3 text-base leading-relaxed text-zinc-400">
                           {rec.reason}
                         </CardDescription>
                       </div>
@@ -812,7 +812,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
 
 const MyRecommendationPage = () => {
   const { data, isLoading, error } = useMyRecomendation();
-  const { createMyRecomendation, isCreating } = usePostMyRecomendation();
+  const { createMyRecomendation, isCreating, error: createError } = usePostMyRecomendation();
 
   const handleStartAnalysis = () => {
     createMyRecomendation();
@@ -835,6 +835,29 @@ const MyRecommendationPage = () => {
     );
   }
 
+  if (createError) {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center space-y-6 text-center">
+        <div className="rounded-full bg-zinc-800 p-6">
+          <Activity className="h-12 w-12 text-zinc-400" />
+        </div>
+        <div className="space-y-2">
+          <TypographyH2 className="text-2xl">
+            Gagal Membuat Rekomendasi: <br />
+            <span>{createError}</span>
+          </TypographyH2>
+        </div>
+        <Button
+          onClick={handleStartAnalysis}
+          className="cursor-pointer border border-zinc-700 bg-zinc-800 text-white hover:bg-zinc-700"
+        >
+          <Activity className="mr-2 h-4 w-4" />
+          Coba Lagi
+        </Button>
+      </div>
+    );
+  }
+
   if (!data) {
     return (
       <div className="min-h-screen bg-black p-6">
@@ -848,18 +871,20 @@ const MyRecommendationPage = () => {
   if (error) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center space-y-6 text-center">
-        <div className="rounded-full bg-red-800 p-6">
-          <Activity className="h-12 w-12 text-red-400" />
+        <div className="rounded-full bg-zinc-800 p-6">
+          <Activity className="h-12 w-12 text-zinc-400" />
         </div>
         <div className="space-y-2">
           <TypographyH2 className="text-2xl">Gagal Memuat Rekomendasi</TypographyH2>
-          <TypographyP className="max-w-md text-red-400">
-            {error instanceof Error ? error.message : "Terjadi kesalahan saat memuat rekomendasi"}
+          <TypographyP className="max-w-md">
+            <span className="text-red-500">
+              {error instanceof Error ? error.message : "Terjadi kesalahan saat memuat rekomendasi"}
+            </span>
           </TypographyP>
         </div>
         <Button
           onClick={handleStartAnalysis}
-          className="cursor-pointer border border-red-700 bg-red-800 text-white hover:bg-red-700"
+          className="cursor-pointer border border-zinc-700 bg-zinc-800 text-white hover:bg-zinc-700"
         >
           <Activity className="mr-2 h-4 w-4" />
           Coba Lagi

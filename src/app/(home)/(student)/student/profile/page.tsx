@@ -30,6 +30,8 @@ import {
 } from "@/components/ui/form";
 import Input from "@/components/ui/input";
 import Skeleton from "@/components/ui/skeleton";
+import { Textarea } from "@/components/ui/textarea";
+import { TypographyP } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 
 import TranscriptManagement from "./_components/TranscriptManagement";
@@ -515,23 +517,19 @@ const UserProfilePage = () => {
                         </Button>
                       </div>
 
-                      {isLoadingAcademic ? (
-                        <div className="space-y-4">
-                          <div className="rounded-lg border border-zinc-700 p-4">
-                            <Skeleton className="h-10 w-full" />
-                            <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-                              <Skeleton className="h-10 w-full" />
-                              <Skeleton className="h-10 w-full" />
-                            </div>
-                          </div>
+                      {achievementFields.length === 0 ? (
+                        <div className="rounded-lg border border-dashed border-zinc-700 p-8 text-center">
+                          <TypographyP className="text-zinc-400">
+                            No achievements added yet. Click the button above to add one.
+                          </TypographyP>
                         </div>
                       ) : (
                         achievementFields.map((achieveField, index) => (
                           <div
                             key={achieveField.id}
-                            className="space-y-2 rounded-lg border border-zinc-700 p-4"
+                            className="space-y-4 rounded-lg border border-zinc-800 bg-zinc-900 p-4"
                           >
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center justify-between gap-3">
                               <FormField
                                 control={academicForm.control}
                                 name={`achievements.${index}.title`}
@@ -551,58 +549,56 @@ const UserProfilePage = () => {
                                   </FormItem>
                                 )}
                               />
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleDeleteAchievementClick(index)}
-                                className="mt-6 h-8 w-8 p-0 text-zinc-400 hover:bg-zinc-800 hover:text-white"
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
+                              <div className="flex items-center gap-2">
+                                <FormField
+                                  control={academicForm.control}
+                                  name={`achievements.${index}.date`}
+                                  render={({ field }) => (
+                                    <FormItem>
+                                      <FormLabel className="text-zinc-300">Date</FormLabel>
+                                      <FormControl>
+                                        <Input
+                                          type="month"
+                                          placeholder="YYYY-MM"
+                                          value={formatDateToYearMonth(field.value)}
+                                          onChange={(e) =>
+                                            field.onChange(formatYearMonthToDate(e.target.value))
+                                          }
+                                          className="w-48 border-zinc-700 bg-zinc-800 text-white"
+                                        />
+                                      </FormControl>
+                                      <FormMessage />
+                                    </FormItem>
+                                  )}
+                                />
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => handleDeleteAchievementClick(index)}
+                                  className="mt-6 h-8 w-8 p-0 text-zinc-400 hover:bg-zinc-800 hover:text-white"
+                                >
+                                  <X className="h-4 w-4" />
+                                </Button>
+                              </div>
                             </div>
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                              <FormField
-                                control={academicForm.control}
-                                name={`achievements.${index}.description`}
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel className="text-zinc-300">Description</FormLabel>
-                                    <FormControl>
-                                      <Input
-                                        placeholder="Achievement description"
-                                        {...field}
-                                        className="border-zinc-700 bg-zinc-800 text-white"
-                                      />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                              <FormField
-                                control={academicForm.control}
-                                name={`achievements.${index}.date`}
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel className="text-zinc-300">
-                                      Date (Year-Month)
-                                    </FormLabel>
-                                    <FormControl>
-                                      <Input
-                                        type="month"
-                                        placeholder="YYYY-MM"
-                                        value={formatDateToYearMonth(field.value)}
-                                        onChange={(e) =>
-                                          field.onChange(formatYearMonthToDate(e.target.value))
-                                        }
-                                        className="border-zinc-700 bg-zinc-800 text-white"
-                                      />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
-                            </div>
+                            <FormField
+                              control={academicForm.control}
+                              name={`achievements.${index}.description`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-zinc-300">Description</FormLabel>
+                                  <FormControl>
+                                    <Textarea
+                                      placeholder="Achievement description"
+                                      {...field}
+                                      className="min-h-[100px] resize-y border-zinc-700 bg-zinc-800 text-white"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
                           </div>
                         ))
                       )}
@@ -620,9 +616,9 @@ const UserProfilePage = () => {
                             appendExperience({
                               organization: "",
                               position: "",
+                              description: "",
                               startDate: "",
                               endDate: "",
-                              description: "",
                             })
                           }
                           className="flex items-center gap-1 bg-white text-black hover:bg-zinc-200"
@@ -631,30 +627,19 @@ const UserProfilePage = () => {
                         </Button>
                       </div>
 
-                      {isLoadingAcademic ? (
-                        <div className="space-y-4">
-                          <div className="rounded-lg border border-zinc-700 p-4">
-                            <Skeleton className="h-10 w-full" />
-                            <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-                              <Skeleton className="h-10 w-full" />
-                              <Skeleton className="h-10 w-full" />
-                            </div>
-                            <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-                              <Skeleton className="h-10 w-full" />
-                              <Skeleton className="h-10 w-full" />
-                            </div>
-                            <div className="mt-4">
-                              <Skeleton className="h-10 w-full" />
-                            </div>
-                          </div>
+                      {experienceFields.length === 0 ? (
+                        <div className="rounded-lg border border-dashed border-zinc-700 p-8 text-center">
+                          <TypographyP className="text-zinc-400">
+                            No experiences added yet. Click the button above to add one.
+                          </TypographyP>
                         </div>
                       ) : (
                         experienceFields.map((experienceField, index) => (
                           <div
                             key={experienceField.id}
-                            className="space-y-2 rounded-lg border border-zinc-700 p-4"
+                            className="space-y-4 rounded-lg border border-zinc-800 bg-zinc-900 p-4"
                           >
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center justify-between">
                               <FormField
                                 control={academicForm.control}
                                 name={`experiences.${index}.organization`}
@@ -682,7 +667,8 @@ const UserProfilePage = () => {
                                 <X className="h-4 w-4" />
                               </Button>
                             </div>
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                               <FormField
                                 control={academicForm.control}
                                 name={`experiences.${index}.position`}
@@ -705,9 +691,7 @@ const UserProfilePage = () => {
                                 name={`experiences.${index}.startDate`}
                                 render={({ field }) => (
                                   <FormItem>
-                                    <FormLabel className="text-zinc-300">
-                                      Start Date (Year-Month)
-                                    </FormLabel>
+                                    <FormLabel className="text-zinc-300">Start Date</FormLabel>
                                     <FormControl>
                                       <Input
                                         type="month"
@@ -723,20 +707,18 @@ const UserProfilePage = () => {
                                   </FormItem>
                                 )}
                               />
-                            </div>
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                               <FormField
                                 control={academicForm.control}
                                 name={`experiences.${index}.endDate`}
                                 render={({ field }) => (
                                   <FormItem>
                                     <FormLabel className="text-zinc-300">
-                                      End Date (Year-Month)
+                                      End Date (Optional)
                                     </FormLabel>
                                     <FormControl>
                                       <Input
                                         type="month"
-                                        placeholder="YYYY-MM (Optional)"
+                                        placeholder="YYYY-MM"
                                         value={formatDateToYearMonth(field.value || "")}
                                         onChange={(e) =>
                                           field.onChange(
@@ -752,24 +734,25 @@ const UserProfilePage = () => {
                                   </FormItem>
                                 )}
                               />
-                              <FormField
-                                control={academicForm.control}
-                                name={`experiences.${index}.description`}
-                                render={({ field }) => (
-                                  <FormItem>
-                                    <FormLabel className="text-zinc-300">Description</FormLabel>
-                                    <FormControl>
-                                      <Input
-                                        placeholder="Experience description"
-                                        {...field}
-                                        className="border-zinc-700 bg-zinc-800 text-white"
-                                      />
-                                    </FormControl>
-                                    <FormMessage />
-                                  </FormItem>
-                                )}
-                              />
                             </div>
+
+                            <FormField
+                              control={academicForm.control}
+                              name={`experiences.${index}.description`}
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-zinc-300">Description</FormLabel>
+                                  <FormControl>
+                                    <Textarea
+                                      placeholder="Experience description"
+                                      {...field}
+                                      className="min-h-[100px] resize-y border-zinc-700 bg-zinc-800 text-white"
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
                           </div>
                         ))
                       )}
