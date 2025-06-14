@@ -6,6 +6,7 @@ import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
 
 import { prisma } from "@/app/server/prisma/prisma";
 import { CreateCompetitionGeneratePayload } from "@/app/shared/schema/competition/CompetitionGenerateSchema";
+import { CreateCompetitionPayload } from "@/app/shared/schema/competition/CompetitionSchema";
 
 import { uploadFile } from "../../google-drive/google-drive.service";
 import { createOpenAIClient } from "../../model/azure/azure-openai.service";
@@ -18,10 +19,10 @@ import {
   getDocumentChunksVectorStore,
 } from "../../vector/pgvector.service";
 import { createCompetition, updateCompetitionById } from "../competition.repository";
+import { generateCompetitionText, storeToVectorStore } from "../helper/competition.helper";
 
 import "@ungap/with-resolvers";
 
-// Constants
 const CHUNK_SIZE = 1000;
 const CHUNK_OVERLAP = 200;
 const TOP_K_CHUNKS = 10;
@@ -78,8 +79,10 @@ export const generateCompetitionUsecase = async (
     fileId,
     competition
   );
-  await updateCompetitionById(competition.id, competitionUpdateData);
 
+  await updateCompetitionById(competition.id, competitionUpdateData);
+  const competitionText = generateCompetitionText(result as CreateCompetitionPayload);
+  await storeToVectorStore(competition, competitionText);
   return result;
 };
 
