@@ -149,14 +149,18 @@ export const generateRecommendationWithCompetitions = async (
       (comp, index) => `
     ${index + 1}. ${comp.title}
     - Deskripsi: ${comp.description}
-    - Bidang: ${comp?.field?.join(", ") || "Not specified"}
-    - Jenis: ${comp.type}
-    - Minimum GPA: ${comp.minGPA || "Not specified"}
-    - Lokasi: ${comp.location || "Online"}
-    - Organizer: ${comp.organizer || "TBD"}
-    - Tanggal Mulai: ${comp.startDate}
-    - Tanggal Selesai: ${comp.endDate}
-    - Persyaratan: ${JSON.stringify(comp.requirements).replace(/{/g, "{{").replace(/}/g, "}}")}
+    - Bidang: ${comp?.field?.join(", ") || "Tidak Ada Informasi"}
+    - Jenis: ${comp.type || "Tidak Ada Informasi"}
+    - Minimum GPA: ${comp.minGPA || "Tidak Ada Informasi"}
+    - Lokasi: ${comp.location || "Tidak Ada Informasi"}
+    - Penyelenggara: ${comp.organizer || "Tidak Ada Informasi"}
+    - Tanggal Mulai: ${comp.startDate ? new Date(comp.startDate).toLocaleDateString("id-ID") : "Tidak Ada Informasi"}
+    - Tanggal Selesai: ${comp.endDate ? new Date(comp.endDate).toLocaleDateString("id-ID") : "Tidak Ada Informasi"}
+    - URL Sumber: ${comp.sourceUrl || "Tidak Ada Informasi"}
+    - Mata Kuliah Relevan: ${comp.relevantCourses?.join(", ") || "Tidak Ada Informasi"}
+    - Keterampilan Relevan: ${comp.relevantSkills?.join(", ") || "Tidak Ada Informasi"}
+    - Persyaratan: ${comp.requirements ? JSON.stringify(comp.requirements).replace(/{/g, "{{").replace(/}/g, "}}") : "Tidak Ada Informasi"}
+    - Kriteria Evaluasi: ${comp.evaluationCriteria ? JSON.stringify(comp.evaluationCriteria).replace(/{/g, "{{").replace(/}/g, "}}") : "Tidak Ada Informasi"}
   `
     )
     .join("\n");
@@ -171,143 +175,193 @@ export const generateRecommendationWithCompetitions = async (
     ${competitionContext}
     
     Berdasarkan profil mahasiswa dan daftar kompetisi yang tersedia, lakukan analisis mendalam dan berikan rekomendasi yang terstruktur dalam format JSON yang sesuai dengan struktur berikut:
-    
-    {{
-      "skillsProfile": {{
-        "technicalExpertise": 0.78,
-        "scientificWriting": 0.65,
-        "problemSolving": 0.82,
-        "creativityInnovation": 0.7,
-        "communication": 0.6,
-        "teamworkCollaboration": 0.75,
-        "projectManagement": 0.68,
-        "businessAcumen": 0.5,
-        "designThinking": 0.58,
-        "selfLearning": 0.9
-      }},
-      "skillsProfileBreakdown": {{
-        "technicalExpertise": "Analisis kemampuan teknis berdasarkan IPK mata kuliah teknis, proyek programming, pengalaman magang teknologi, dan prestasi lomba teknis",
-        "scientificWriting": "Evaluasi berdasarkan nilai mata kuliah metodologi penelitian, pengalaman menulis paper/jurnal, prestasi karya tulis ilmiah, dan kualitas dokumentasi proyek",
-        "problemSolving": "Penilaian dari prestasi olimpiade/lomba algoritma, kemampuan analisis kasus, pengalaman debugging, dan pendekatan sistematis dalam menyelesaikan tugas",
-        "creativityInnovation": "Berdasarkan partisipasi hackathon, ide original dalam proyek, kemampuan berpikir out-of-the-box, dan solusi kreatif yang pernah dibuat",
-        "communication": "Evaluasi dari pengalaman presentasi, kemampuan public speaking, aktivitas organisasi, dan feedback komunikasi dari pengalaman kerja/magang",
-        "teamworkCollaboration": "Anal  isis dari pengalaman kerja tim, peran dalam organisasi, feedback kolaborasi, dan kemampuan koordinasi dalam proyek kelompok",
-        "projectManagement": "Penilaian berdasarkan pengalaman memimpin proyek, kemampuan planning dan organizing, penggunaan tools manajemen, dan track record penyelesaian deadline",
-        "businessAcumen": "Evaluasi dari pengalaman magang bisnis/startup, pemahaman model bisnis, analisis market, dan kemampuan business development",
-        "designThinking": "Berdasarkan pengalaman UX/UI design, kemampuan empathy mapping, user research, dan pendekatan human-centered design",
-        "selfLearning": "Analisis dari kemampuan adaptasi teknologi baru, inisiatif belajar mandiri, sertifikasi online, dan perkembangan skill dari waktu ke waktu"
-      }},
-      "categoryDistribution": {{
-        "Teknologi": 0.7,
-        "Data Science": 0.2,
-        "Bisnis": 0.1
-      }},
-      "performanceMetrics": {{
-        "participationRate": 0.75,
-        "avgMatchScore": 0.78,
-        "competitionSuccessRate": 0.33,
-        "skillGrowth": {{
-          "Skill1": "+0.15 (dari pengalaman spesifik yang disebutkan)",
-          "Skill2": "+0.1 (dari pengalaman spesifik yang disebutkan)"
-        }}
-      }},
-      "recommendations": [
-        {{
-          "id": 1,
-          "competition": "Nama Kompetisi PERSIS dari daftar yang tersedia",
-          "matchScore": 0.92,
-          "matchScoreBreakdown": "Perhitungan detail: Technical skills (skor_mahasiswa/requirement_kompetisi * bobot_skill), Problem solving (skor/requirement * bobot), dst. Formula: Σ(skill_match * skill_weight) dengan penjelasan setiap komponen",
-          "skillDistribution": {{
-            "technicalExpertise": 0.9,
-            "scientificWriting": 0.4,
-            "problemSolving": 0.8,
-            "creativityInnovation": 0.7,
-            "communication": 0.4,
-            "teamworkCollaboration": 0.6,
-            "projectManagement": 0.3,
-            "businessAcumen": 0.2,
-            "designThinking": 0.5,
-            "selfLearning": 0.8
+
+     {{
+          "studentSummary": "Mahasiswa dengan profil teknis yang sangat kuat di bidang pengembangan web, didukung oleh pengalaman magang, prestasi, dan IPK yang tinggi. Memiliki kemampuan kolaborasi dan belajar mandiri yang luar biasa, dengan area pengembangan di bidang bisnis dan desain.",
+          "skillsProfile": {{
+            "technicalExpertise": {{
+              "score": 0.85,
+              "breakdown": "Skor tinggi didasarkan pada IPK 3.9 di mata kuliah pemrograman, pengalaman magang sebagai Backend Developer, dan portofolio proyek di GitHub."
+            }},
+            "scientificWriting": {{
+              "score": 0.60,
+              "breakdown": "Skor sedang, memiliki pengalaman membuat laporan proyek akhir namun belum pernah mempublikasikan karya tulis ilmiah."
+            }},
+            "problemSolving": {{
+              "score": 0.80,
+              "breakdown": "Skor tinggi, terbukti dari keberhasilan menjuarai kompetisi algoritma tingkat universitas dan kemampuan debugging yang efisien selama magang."
+            }},
+            "creativityInnovation": {{
+              "score": 0.75,
+              "breakdown": "Skor cukup tinggi, aktif memberikan ide-ide baru dalam proyek kelompok dan pernah mengikuti hackathon."
+            }},
+            "communication": {{
+              "score": 0.70,
+              "breakdown": "Skor cukup baik, terbiasa melakukan presentasi di kelas dan aktif dalam diskusi organisasi Himpunan Mahasiswa."
+            }},
+            "teamworkCollaboration": {{
+              "score": 0.90,
+              "breakdown": "Skor sangat tinggi, memiliki pengalaman memimpin tim dalam proyek kelompok dan mendapatkan feedback positif dari rekan kerja saat magang."
+            }},
+            "projectManagement": {{
+              "score": 0.75,
+              "breakdown": "Skor cukup tinggi, berpengalaman mengelola timeline proyek kecil menggunakan Trello dan Notion di organisasi."
+            }},
+            "businessAcumen": {{
+              "score": 0.50,
+              "breakdown": "Skor rendah, belum memiliki pengalaman atau mata kuliah yang fokus pada aspek bisnis dan kewirausahaan."
+            }},
+            "designThinking": {{
+              "score": 0.65,
+              "breakdown": "Skor sedang, memahami konsep dasar UI/UX dari mata kuliah Interaksi Manusia & Komputer, namun portofolio desain masih minim."
+            }},
+            "selfLearning": {{
+              "score": 0.85,
+              "breakdown": "Skor tinggi, dibuktikan dengan perolehan beberapa sertifikasi online di bidang cloud computing dan AI."
+            }}
           }},
-          "skillDistributionBreakdown": {{
-            "technicalExpertise": "Bobot tinggi (0.9) karena kompetisi ini membutuhkan kemampuan programming dan implementasi teknis yang tinggi sesuai dengan requirement kompetisi",
-            "scientificWriting": "Bobot rendah (0.4) karena fokus kompetisi lebih ke implementasi daripada dokumentasi akademis",
-            "problemSolving": "Bobot tinggi (0.8) karena kompetisi menuntut analisis kompleks dan solusi inovatif",
-            "creativityInnovation": "Bobot sedang-tinggi (0.7) karena diperlukan ide original dan pendekatan baru",
-            "communication": "Bobot sedang (0.4) untuk presentasi final dan pitching",
-            "teamworkCollaboration": "Bobot sedang (0.6) jika kompetisi berbasis tim",
-            "projectManagement": "Bobot rendah (0.3) karena waktu kompetisi relatif singkat",
-            "businessAcumen": "Bobot rendah (0.2) karena fokus teknis bukan bisnis",
-            "designThinking": "Bobot sedang (0.5) untuk user experience consideration",
-            "selfLearning": "Bobot tinggi (0.8) karena membutuhkan adaptasi cepat dengan tools/framework baru"
+          "overallAssessment": {{
+            "strengths": [
+              "Keahlian teknis dan pemecahan masalah yang solid, dibuktikan dengan pengalaman magang dan prestasi lomba algoritma.",
+              "Kemampuan kolaborasi dan kepemimpinan tim yang sangat baik, terlihat dari peran aktif di organisasi.",
+              "Inisiatif tinggi dalam belajar mandiri yang ditunjukkan oleh perolehan sertifikasi di luar kurikulum."
+            ],
+            "weaknesses": [
+              "Pemahaman bisnis dan aspek komersialisasi produk masih sangat terbatas.",
+              "Keterampilan penulisan karya tulis ilmiah formal belum teruji untuk standar kompetisi nasional.",
+              "Pengalaman praktis dalam desain antarmuka (UI/UX) perlu diperdalam."
+            ]
           }},
-          "rank": 1,
-          "reason": "Kompetisi ini sangat cocok karena requirement utamanya (programming, AI/ML, problem solving) sesuai dengan kekuatan mahasiswa. GPA mahasiswa (X.XX) memenuhi minimum requirement (X.XX). Pengalaman magang di bidang teknologi dan prestasi lomba programming mendukung success rate tinggi.",
-          "details": {{
-            "startDate": "YYYY-MM-DD sesuai data kompetisi",
-            "endDate": "YYYY-MM-DD sesuai data kompetisi", 
-            "location": "Lokasi sesuai data kompetisi",
-            "organizer": "Organizer sesuai data kompetisi",
-            "registrationDeadline": "Estimasi 2-4 minggu sebelum startDate",
-            "website": "https://kompetisi-website.com (estimasi berdasarkan organizer)"
-          }},
-          "preparationTips": [
-            "Fokus strengthening technical implementation skills dengan practice coding intensif menggunakan tech stack yang umum digunakan di kompetisi ini",
-            "Improve presentation skills dengan latihan pitching 5-10 menit, focus on clear problem-solution narrative dan demo yang menarik",
-            "Study case studies dari pemenang kompetisi serupa tahun sebelumnya untuk memahami pattern dan strategi yang sukses",
-            "Prepare portfolio showcase yang highlight relevant projects dan technical achievements untuk mendukung kredibilitas"
+          "recommendations": [
+            {{
+              "id": 4,
+              "competitionName": "Mobile App Development Hackathon",
+              "rank": 1,
+              "matchScore": {{
+                "score": 0.85,
+                "reason": "Skor dihitung dari kesesuaian tinggi pada 6 dari 10 skill yang paling krusial (bobot >= 0.8), terutama pada 'technicalExpertise', 'teamwork', dan 'selfLearning'."
+              }},
+              "skillRequirements": {{
+                "technicalExpertise": {{ "weight": 0.9, "breakdown": "Inti dari hackathon adalah membuat prototipe fungsional dalam waktu singkat." }},
+                "scientificWriting": {{ "weight": 0.2, "breakdown": "Tidak ada tuntutan laporan ilmiah, fokus pada produk." }},
+                "problemSolving": {{ "weight": 0.8, "breakdown": "Dibutuhkan untuk mengatasi tantangan teknis tak terduga." }},
+                "creativityInnovation": {{ "weight": 0.9, "breakdown": "Ide orisinal dan solusi unik menjadi penentu kemenangan." }},
+                "communication": {{ "weight": 0.7, "breakdown": "Penting untuk presentasi/pitching di akhir acara." }},
+                "teamworkCollaboration": {{ "weight": 0.9, "breakdown": "Hackathon adalah kerja tim yang sangat intensif." }},
+                "projectManagement": {{ "weight": 0.7, "breakdown": "Dibutuhkan untuk mengelola waktu 24-48 jam secara efektif." }},
+                "businessAcumen": {{ "weight": 0.4, "breakdown": "Menjadi nilai tambah, tapi bukan fokus utama." }},
+                "designThinking": {{ "weight": 0.8, "breakdown": "Penting untuk menciptakan aplikasi yang intuitif dan user-friendly." }},
+                "selfLearning": {{ "weight": 0.9, "breakdown": "Krusial untuk adaptasi cepat dengan API atau teknologi baru." }}
+              }},
+              "reasoning": {{
+                "summary": "Kompetisi ini adalah 'perfect match' untuk memaksimalkan kekuatan teknis dan kolaborasi yang sudah Anda miliki dalam lingkungan yang cepat dan inovatif.",
+                "pros": [
+                  "Pengalaman magang sebagai Backend Developer sangat relevan untuk membangun fungsionalitas aplikasi.",
+                  "Skor 'teamworkCollaboration' yang sangat tinggi (0.90) adalah aset utama untuk sukses dalam format tim intensif.",
+                  "Kemampuan 'selfLearning' (0.85) memastikan Anda dapat cepat menguasai tool-tool baru yang dibutuhkan."
+                ],
+                "cons": [
+                  "Keterampilan 'designThinking' (0.65) masih menjadi celah dibandingkan kebutuhan kompetisi yang tinggi (bobot 0.8)."
+                ]
+              }},
+              "keyFactors": [
+                "Technical Implementation",
+                "Teamwork & Collaboration",
+                "Rapid Prototyping",
+                "Problem Solving"
+              ],
+              "preparationTips": [
+                "Segera cari rekan tim yang memiliki kekuatan di bidang UI/UX untuk menutupi celah 'designThinking'.",
+                "Buat daftar 2-3 ide aplikasi dasar sebelum kompetisi dimulai untuk menghemat waktu brainstorming.",
+                "Latih presentasi singkat (pitching) selama 3 menit yang fokus pada masalah, solusi, dan demo produk."
+              ]
+            }},
+            {{
+              "id": 1,
+              "competitionName": "Lomba Inovasi Bisnis Digital Nasional",
+              "rank": 2,
+              "matchScore": {{
+                "score": 0.72,
+                "reason": "Skor dihitung dari kesesuaian kuat pada aspek teknis, namun tertahan oleh gap signifikan pada skill 'businessAcumen' yang memiliki bobot tertinggi."
+              }},
+              "skillRequirements": {{
+                "technicalExpertise": {{ "weight": 0.7, "breakdown": "Dibutuhkan untuk membuktikan kelayakan teknis dari ide bisnis." }},
+                "scientificWriting": {{ "weight": 0.5, "breakdown": "Penting untuk menyusun proposal bisnis yang rapi dan terstruktur." }},
+                "problemSolving": {{ "weight": 0.7, "breakdown": "Dibutuhkan untuk menganalisis masalah pasar dan menemukan solusi." }},
+                "creativityInnovation": {{ "weight": 0.8, "breakdown": "Penting untuk menciptakan model bisnis yang unik dan berkelanjutan." }},
+                "communication": {{ "weight": 0.8, "breakdown": "Sangat penting untuk presentasi di hadapan investor dan juri." }},
+                "teamworkCollaboration": {{ "weight": 0.8, "breakdown": "Biasanya berbasis tim, kolaborasi antar-disiplin ilmu (teknis & bisnis) krusial." }},
+                "projectManagement": {{ "weight": 0.8, "breakdown": "Penting untuk membuat roadmap pengembangan produk dan bisnis." }},
+                "businessAcumen": {{ "weight": 0.9, "breakdown": "Ini adalah inti dari kompetisi; pemahaman pasar, monetisasi, dan strategi." }},
+                "designThinking": {{ "weight": 0.7, "breakdown": "Penting untuk memastikan produk menjawab kebutuhan pengguna secara mendalam." }},
+                "selfLearning": {{ "weight": 0.6, "breakdown": "Dibutuhkan untuk mempelajari aspek bisnis yang mungkin baru." }}
+              }},
+              "reasoning": {{
+                "summary": "Pilihan strategis sebagai 'growth opportunity' untuk keluar dari zona nyaman teknis dan membangun pemahaman bisnis yang komprehensif.",
+                "pros": [
+                  "Kemampuan teknis (0.85) dan project management (0.75) sudah sangat memadai untuk membangun prototipe yang solid.",
+                  "Kekuatan dalam kolaborasi tim (0.90) akan mempermudah kerja sama dengan anggota tim yang mungkin berlatar belakang non-teknis."
+                ],
+                "cons": [
+                  "Kelemahan utama pada 'businessAcumen' (0.50) adalah tantangan terbesar karena ini adalah skill dengan bobot tertinggi (0.9).",
+                  "Kemampuan 'scientificWriting' (0.60) mungkin perlu sedikit diasah untuk menyusun proposal bisnis yang persuasif."
+                ]
+              }},
+              "keyFactors": [
+                "Business Acumen",
+                "Product-Market Fit",
+                "Communication & Pitching",
+                "Team Collaboration"
+              ],
+              "preparationTips": [
+                "Fokus utama: pelajari 'Business Model Canvas' dan cara melakukan validasi pasar.",
+                "Cari rekan satu tim yang memiliki latar belakang manajemen atau bisnis untuk melengkapi kelemahan Anda.",
+                "Minta bimbingan dari dosen kewirausahaan untuk mereview proposal bisnis Anda."
+              ]
+            }}
+          ],
+          "developmentSuggestions": [
+            {{
+              "type": "course",
+              "title": "Become a UX Designer",
+              "link": "https://www.udacity.com/course/ux-designer-nanodegree--nd578",
+              "reason": "Untuk secara sistematis membangun keterampilan 'designThinking' dari dasar hingga tingkat portofolio, menutupi salah satu celah utama."
+            }},
+            {{
+              "type": "practice",
+              "title": "Studi Kasus Bisnis di Harvard Business Review",
+              "link": "https://hbr.org/topic/case-studies",
+              "reason": "Membaca dan menganalisis studi kasus bisnis nyata adalah cara praktis untuk melatih 'businessAcumen' dan memahami strategi di balik produk yang sukses."
+            }}
           ]
         }}
-      ],
-      "developmentSuggestions": [
-        {{
-          "type": "course",
-          "title": "Nama Kursus spesifik yang address skill gap teridentifikasi",
-          "platform": "Coursera/edX/Udemy/dll sesuai reputasi course",
-          "link": "https://actual-course-link.com",
-          "reason": "Berdasarkan analisis, skill X masih kurang 0.Y points untuk mencapai competitive level di kompetisi target. Course ini akan boost kemampuan specific skill yang dibutuhkan."
-        }},
-        {{
-          "type": "practice",
-          "title": "Specific hands-on practice recommendation",
-          "platform": "GitHub/Kaggle/HackerRank/CodeForces",
-          "link": "https://platform-link.com",
-          "reason": "Practical experience dibutuhkan untuk mengasah implementation skills dan problem-solving speed yang crucial untuk kompetisi"
-        }}
-      ],
-      "profileStrength": {{
-        "score": 0.82,
-        "calculationExplanation": "Perhitungan berdasarkan weighted formula: IPK (X.XX/4.0 * 0.25 = Y), Technical Skills (rata-rata 0.ZZ * 0.3 = A), Experience Quality (score based on relevance * 0.2 = B), Achievements (national/international weight * 0.15 = C), Growth Potential (learning velocity * 0.1 = D). Total: Y + A + B + C + D = 0.82",
-        "strengths": [
-          "Strong technical foundation dengan evidence konkret dari proyek X dan pengalaman Y yang demonstrate mastery level Z",
-          "Proven track record dalam competitive environment dengan prestasi A di kompetisi B yang menunjukkan kemampuan perform under pressure",
-          "High adaptability dan self-learning capacity yang terlihat dari rapid skill acquisition dalam timeframe X bulan"
-        ],
-        "weaknesses": [
-          "Communication dan presentation skills perlu improvement dengan focus pada storytelling dan audience engagement untuk kompetisi yang memerlukan pitching",
-          "Business understanding masih limited, perlu exposure ke market analysis dan value proposition development untuk kompetisi dengan aspek komersial"
-        ]
-      }}
-    }}
     
-    INSTRUKSI DETAIL:
-    1. WAJIB menggunakan HANYA kompetisi dari daftar yang tersedia di atas - jangan buat kompetisi fiktif
-    2. Pastikan semua nilai numerik dalam rentang 0-1 dengan 2 decimal precision
-    3. Berikan analisis yang SPESIFIK berdasarkan data konkret dari profil mahasiswa (GPA, pengalaman, prestasi, transkrip)
-    4. Match score harus calculated berdasarkan formula yang jelas: kesesuaian skill profile vs competition requirements
-    5. Skill distribution untuk setiap kompetisi harus reflect ACTUAL requirements kompetisi tersebut
-    6. Ranking berdasarkan kombinasi match score, feasibility (GPA requirement), dan strategic value
-    7. Preparation tips harus actionable dan specific untuk jenis kompetisi yang direkomendasikan
-    8. Development suggestions harus address identified skill gaps dengan resource yang real dan accessible
-    9. Semua penjelasan dalam bahasa Indonesia yang professional, informatif, dan data-driven
-    10. Berikan reasoning yang logical dan dapat diverifikasi berdasarkan input data
-
-    FOKUS ANALISIS:
-    - Cross-reference antara competency mahasiswa dengan specific requirements setiap kompetisi
-    - Identifikasi gap analysis antara current skills vs needed skills
-    - Pertimbangkan timeline kompetisi vs preparation time needed
-    - Evaluasi strategic value setiap kompetisi untuk career development mahasiswa
-  `;
+    
+    INSTRUKSI & RUBRIK
+    1. WAJIB JSON: Output harus HANYA blok JSON tunggal yang valid.  
+    2. DATA-DRIVEN: Semua analisis (breakdown, pros, cons) harus berdasarkan bukti konkret dari profil.  
+    3. RENTANG SKOR: Semua score dan weight harus antara 0.00 dan 1.00.  
+    4. PENILAIAN skillsProfile: Gunakan rubrik penilaian di bawah sebagai panduan utama. Breakdown harus menjelaskan level mahasiswa berdasarkan rubrik.  
+    5. BOBOT skillRequirements: Weight harus akurat merefleksikan pentingnya skill untuk sukses di kompetisi.  
+    6. matchScore.score: Berikan estimasi logis; jangan hitung matematis. Backend akan melakukan kalkulasi final.  
+    7. PERAN PENJELASAN:  
+       - matchScore.reason: Justifikasi kuantitatif singkat.  
+       - reasoning.summary: Narasi strategis.  
+       - reasoning.pros/cons: Bukti konkret dari profil.  
+    8. RANKING: Rank harus berdasarkan matchScore, dan nilai strategis kompetisi.  
+    9. SARAN PENGEMBANGAN: developmentSuggestions harus menargetkan weaknesses dan memberikan link ke sumber daya nyata.  
+    
+    RUBRIK PENILAIAN (Panduan untuk skillsProfile)
+    Technical Expertise:
+    - Ahli (0.85-1.0): Juara lomba teknis nasional atau magang di perusahaan teknologi ternama dengan kontribusi jelas.  
+    - Mahir (0.70-0.84): Finalis lomba teknis, magang, atau memiliki portofolio proyek kompleks.  
+    - Cukup (0.50-0.69): Pengalaman praktis terbatas pada tugas kuliah.  
+    
+    Teamwork & Collaboration:
+    - Ahli (0.85-1.0): Memimpin proyek tim atau menjadi pengurus inti organisasi lebih dari satu periode.  
+    - Mahir (0.70-0.84): Aktif dalam beberapa proyek kelompok atau anggota aktif organisasi.  
+    - Cukup (0.50-0.69): Dapat bekerja dalam tim untuk tugas kuliah.  
+    `;
 
   const result = await generateStructuredResponse(profileText, promptTemplate);
 
@@ -413,18 +467,4 @@ export const generateCompetitionEmbedding = async (competitionData: CreateCompet
   const competitionText = competitionTextParts.join("\n    ");
 
   return generateEmbedding(competitionText);
-};
-
-export const generateRecommendation = async (profileText: string) => {
-  const promptTemplate = `
-    Kamu adalah seorang konselor Lomba yang ahli dalam menganalisis profil mahasiswa dan memberikan rekomendasi kompetisi yang sesuai.
-    Berdasarkan profil mahasiswa berikut, berikan rekomendasi kompetisi yang terstruktur dalam format JSON:
-
-    {profile}
-
-    Berikan rekomendasi dalam format JSON dengan struktur yang sesuai untuk sistem rekomendasi kompetisi.
-    Pastikan semua nilai numerik dalam rentang 0-1 dan semua penjelasan dalam bahasa Indonesia yang informatif.
-  `;
-
-  return generateStructuredResponse(profileText, promptTemplate);
 };
