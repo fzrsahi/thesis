@@ -544,6 +544,7 @@
           },
           "type": {
             "type": "string",
+            "nullable": true,
             "description": "Indicates whether participants compete solo or in groups"
           },
           "minGPA": {

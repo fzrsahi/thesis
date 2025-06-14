@@ -486,7 +486,7 @@ export interface components {
              */
             field: string[];
             /** @description Indicates whether participants compete solo or in groups */
-            type: string;
+            type: string | null;
             /** @description Minimum GPA requirement for eligibility, if specified; otherwise, null */
             minGPA: string | null;
             requirements: {

@@ -10,7 +10,7 @@ export const createCompetitionSchema = z.object({
   title: z.string().min(1),
   description: z.string().min(1),
   field: z.array(z.string()).min(1),
-  type: z.string().min(1),
+  type: z.string().nullable(),
   minGPA: z.string().nullable(),
   requirements: z.object({
     teamComposition: z.string().nullable(),

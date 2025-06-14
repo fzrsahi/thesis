@@ -1,10 +1,13 @@
+import { competitions } from "@prisma/client";
+import { InputJsonValue } from "@prisma/client/runtime/library";
+
 import { CreateCompetitionPayload } from "@/app/shared/schema/competition/CompetitionSchema";
 
 import { prisma } from "../prisma/prisma";
 
 export const createCompetition = async (
   payload: CreateCompetitionPayload,
-  competitionText: string
+  competitionText?: string
 ) =>
   prisma.competitions.create({
     data: {
@@ -55,4 +58,27 @@ export const findManyCompetitionsByIds = async (ids: number[]) =>
 export const findRandomCompetitions = async (limit: number) =>
   prisma.competitions.findMany({
     take: limit,
+  });
+
+export const updateCompetitionById = async (id: number, payload: competitions) =>
+  prisma.competitions.update({
+    where: { id },
+    data: {
+      title: payload.title,
+      description: payload.description,
+      field: payload.field,
+      type: payload.type,
+      organizer: payload.organizer,
+      sourceUrl: payload.sourceUrl,
+      minGPA: payload.minGPA,
+      startDate: payload.startDate,
+      endDate: payload.endDate,
+      location: payload.location,
+      evaluationCriteria: payload.evaluationCriteria as InputJsonValue,
+      relevantCourses: payload.relevantCourses,
+      relevantSkills: payload.relevantSkills,
+      content: payload.content,
+      fileId: payload.fileId,
+      updatedAt: payload.updatedAt,
+    },
   });
