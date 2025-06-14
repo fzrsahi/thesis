@@ -1,19 +1,6 @@
-import { StringOutputParser } from "@langchain/core/output_parsers";
-import { PromptTemplate } from "@langchain/core/prompts";
-import { RunnableSequence } from "@langchain/core/runnables";
 import { AzureOpenAIEmbeddings, AzureChatOpenAI } from "@langchain/openai";
-import { HttpStatusCode } from "axios";
-import { zodResponseFormat } from "openai/helpers/zod";
-import { zodToJsonSchema } from "zod-to-json-schema";
 
-import {
-  CompetitionResponse,
-  CompetitionResponseSchema,
-} from "@/app/shared/schema/competition/CompetitionResponseSchema";
 
-import { RecommendationResponse, RecommendationResponseSchema } from "./types/recomendation.types";
-import { RECOMMENDATION_ERROR_RESPONSE } from "../../recommendation/recomendation.error";
-import { customError } from "../../utils/error/custom-error";
 
 
 

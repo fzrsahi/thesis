@@ -87,7 +87,7 @@ export const generateCompetitionUsecase = async (
   });
 
   const chain = prompt.pipe(structuredModel);
-  const result = await chain.invoke({
+  return await chain.invoke({
     title: payload.title,
     description: payload.description,
     website: payload.website,
@@ -95,7 +95,6 @@ export const generateCompetitionUsecase = async (
     context: contextText,
     currentYear: new Date().getFullYear(),
   });
-  return result;
 };
 
 export const extractTextFromPdfBuffer = async (
@@ -118,7 +117,7 @@ export const extractTextFromPdfBuffer = async (
   for (let pageNum = startPage; pageNum <= finalEndPage; pageNum++) {
     const page = await pdf.getPage(pageNum);
     const content = await page.getTextContent();
-    const pageText = content.items.map((item: any) => ("str" in item ? item.str : "")).join(" ");
+    const pageText = content.items.map((item) => ("str" in item ? item.str : "")).join(" ");
     texts.push(pageText);
   }
 

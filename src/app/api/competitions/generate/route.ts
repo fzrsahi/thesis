@@ -17,8 +17,6 @@ import {
 export const POST = withAuth(
   async (request: NextRequest) => {
     try {
-      console.log("oawkowakoawkowak");
-
       const formData = await request.formData();
       const payload: CreateCompetitionGeneratePayload = {
         title: formData.get("title") as string,

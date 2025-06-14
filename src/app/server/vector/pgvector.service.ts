@@ -5,7 +5,8 @@ import { prisma } from "@/app/server/prisma/prisma";
 
 import { createEmbeddingClient } from "../model/azure/azure-openai.service";
 
-export const getCompetitionVectorStore = () => PrismaVectorStore.withModel<competitions>(prisma).create(createEmbeddingClient(), {
+export const getCompetitionVectorStore = () =>
+  PrismaVectorStore.withModel<competitions>(prisma).create(createEmbeddingClient(), {
     prisma: Prisma,
     tableName: "competitions",
     vectorColumnName: "vector",
@@ -15,7 +16,8 @@ export const getCompetitionVectorStore = () => PrismaVectorStore.withModel<compe
     },
   });
 
-export const getDocumentChunksVectorStore = () => PrismaVectorStore.withModel<documentChunks>(prisma).create(createEmbeddingClient(), {
+export const getDocumentChunksVectorStore = () =>
+  PrismaVectorStore.withModel<documentChunks>(prisma).create(createEmbeddingClient(), {
     prisma: Prisma,
     tableName: "documentChunks",
     vectorColumnName: "vector",
@@ -30,7 +32,7 @@ export const getCompetitionRetriever = (k: number = 5) => {
   return vectorStore.asRetriever(k);
 };
 
-export const getDocumentChunksRetriever = (k: number = 5, competitionId: number) => {
+export const getDocumentChunksRetriever = (competitionId: number, k: number = 5) => {
   const vectorStore = getDocumentChunksVectorStore();
   return vectorStore.asRetriever(k, {
     competitionId: {
