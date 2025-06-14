@@ -1,6 +1,6 @@
 import { HttpStatusCode } from "axios";
 
-import { RecommendationResponse } from "../../model/azure/azure.types";
+import { RecommendationResponse } from "../../model/azure/types/recomendation.types";
 import { STUDENT_ERROR_RESPONSE } from "../../student/student.error";
 import { findStudentByUserId } from "../../student/student.repository";
 import { customError } from "../../utils/error/custom-error";

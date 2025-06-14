@@ -3,13 +3,13 @@ import { CreateCompetitionGeneratePayload } from "@/app/shared/schema/competitio
 import { sendPrompt } from "../../model/azure/azure-openai.service";
 
 export const generateCompetitionUsecase = async (payload: CreateCompetitionGeneratePayload) => {
+  const { description, title, website, additionalDetails, file, startPage, endPage } = payload;
   const competitionData = await generateCompetitionWithAzure(payload);
   return competitionData;
 };
 
 const generateCompetitionWithAzure = async (payload: CreateCompetitionGeneratePayload) => {
   const systemMessage = `Anda adalah seorang Spesialis Ekstraksi Informasi yang sangat teliti. Tugas Anda adalah membaca input teks (nama kompetisi, deskripsi, informasi lainnya, dan URL) dan menghasilkan sebuah objek JSON valid yang berisi informasi penting mengenai kompetisi mahasiswa. Informasi ini akan digunakan dalam sistem rekomendasi lomba yang mencocokkan minat, keterampilan, dan latar belakang mahasiswa.
-
   Tujuan utama: hasil ekstraksi harus lengkap, akurat, dan tidak menggunakan null kecuali benar-benar tidak ada datanya. Anda diperbolehkan menarik informasi eksplisit dan implisit dari deskripsi kompetisi, proyek contoh, teknologi yang disebutkan, dan pola umum lomba mahasiswa di Indonesia.
 
 `;

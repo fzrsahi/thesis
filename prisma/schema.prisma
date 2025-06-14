@@ -126,6 +126,7 @@ model competitions {
   sourceUrl          String? // URL sumber informasi lomba
   relevantCourses    String[] // Mata kuliah yang relevan
   relevantSkills     String[] // Keterampilan yang relevan
+  fileId       String? // File dokumen lomba
 
   vector    Unsupported("vector")?
   content   String?

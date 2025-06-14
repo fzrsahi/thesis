@@ -2,7 +2,7 @@ import { Competition } from "@prisma/client";
 import { AzureOpenAI } from "openai";
 import { zodResponseFormat } from "openai/helpers/zod";
 
-import { RecommendationResponse, RecommendationResponseSchema } from "./azure.types";
+import { RecommendationResponse, RecommendationResponseSchema } from "./types/recomendation.types";
 import { prisma } from "../../prisma/prisma";
 import { customError } from "../../utils/error/custom-error";
 import { RECOMMENDATION_ERROR_RESPONSE } from "../../recommendation/recomendation.error";

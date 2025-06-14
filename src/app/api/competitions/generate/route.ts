@@ -17,8 +17,18 @@ import {
 export const POST = withAuth(
   async (request: NextRequest) => {
     try {
-      const body: CreateCompetitionGeneratePayload = await request.json();
-      const result = competitionGenerateSchema.safeParse(body);
+      const formData = await request.formData();
+      const payload: CreateCompetitionGeneratePayload = {
+        title: formData.get("title") as string,
+        description: formData.get("description") as string,
+        website: formData.get("website") as string,
+        additionalDetails: formData.get("additionalDetails") as string,
+        file: formData.get("file") as File,
+        startPage: formData.get("startPage") ? Number(formData.get("startPage")) : undefined,
+        endPage: formData.get("endPage") ? Number(formData.get("endPage")) : undefined,
+      };
+
+      const result = competitionGenerateSchema.safeParse(payload);
       if (!result.success) {
         return NextResponse.json(COMPETITION_ERROR_RESPONSE.BAD_REQUEST, {
           status: HttpStatusCode.BadRequest,

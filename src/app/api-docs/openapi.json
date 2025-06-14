@@ -439,7 +439,7 @@
         "requestBody": {
           "required": true,
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
                 "type": "object",
                 "properties": {
@@ -454,6 +454,19 @@
                   },
                   "additionalDetails": {
                     "type": "string"
+                  },
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "Optional file upload"
+                  },
+                  "startPage": {
+                    "type": "integer",
+                    "description": "Starting page number (optional, only if file is provided)"
+                  },
+                  "endPage": {
+                    "type": "integer",
+                    "description": "Ending page number (optional, only if file is provided)"
                   }
                 },
                 "required": ["title", "description", "website"]
