@@ -28,6 +28,12 @@ export const createEmbeddingClient = () =>
     azureOpenAIApiVersion: AZURE_CONFIG.embeddingsApiVersion,
   });
 
+export const sendChatCompletion = async (prompt: string) => {
+  const model = createOpenAIClient();
+  const response = await model.invoke(prompt);
+  return response.content;
+};
+
 // const competitionExtractionPromptTemplate = `You are a specialized competition information extractor. Your task is to extract and structure competition information from the provided input into a standardized JSON format.
 
 // Input:

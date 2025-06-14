@@ -5,6 +5,7 @@ import { TextItem } from "pdfjs-dist/types/src/display/api";
 import { UploadTranscriptPayload } from "@/app/shared/schema/student/profile/TranscriptSchema";
 
 import { uploadFile } from "../../google-drive/google-drive.service";
+import { sendChatCompletion } from "../../model/azure/azure-openai.service";
 import { findStudentByUserId } from "../../student/student.repository";
 import { STUDENT_ERROR_RESPONSE } from "../../user/student.error";
 import { customError } from "../../utils/error/custom-error";
@@ -40,7 +41,7 @@ export const uploadTranscript = async (userId: number, payload: UploadTranscript
   await createTranscript(student.id, {
     fileId: id,
     semester: payload.semester,
-    transcriptText,
+    transcriptText: transcriptText as string,
   });
 };
 
@@ -104,16 +105,13 @@ const extractTranscriptToText = async (transcript: File) => {
 };
 
 const transcriptTextToSummary = async (transcriptText: string) =>
-  sendPrompt({
-    systemMessage: `
+  sendChatCompletion(`
     Anda adalah seorang analis akademik yang ahli dalam mengidentifikasi potensi mahasiswa berdasarkan transkrip nilai.
     Tugas Anda adalah membuat ringkasan naratif dari transkrip nilai seorang mahasiswa Teknik Informatika.
-    `,
-    userMessage: `Konteks Penting: Ringkasan ini akan diubah menjadi vector embedding untuk mencocokkan mahasiswa dengan kompetisi IT yang relevan. Oleh karena itu, ringkasan harus padat dengan informasi yang menyoroti keahlian dan kekuatan mahasiswa.
+    Konteks Penting: Ringkasan ini akan diubah menjadi vector embedding untuk mencocokkan mahasiswa dengan kompetisi IT yang relevan. Oleh karena itu, ringkasan harus padat dengan informasi yang menyoroti keahlian dan kekuatan mahasiswa.
     Instruksi:
     1.  **Fokus Utama**: Identifikasi dan sebutkan mata kuliah di bidang teknis (seperti Pemrograman, Algoritma, Jaringan Komputer, Kecerdasan Buatan, Basis Data, Keamanan Siber, Desain UI/UX) di mana mahasiswa mendapatkan nilai tinggi (A atau B).
     2.  **Sintesis Keahlian**: Jangan hanya mendaftar mata kuliah. Simpulkan menjadi sebuah paragraf yang menjelaskan kekuatan dan potensi keahlian mahasiswa. Contoh: "Mahasiswa ini menunjukkan keunggulan di bidang pengembangan perangkat lunak, terbukti dari nilai A pada mata kuliah Algoritma dan Pemrograman Lanjut."
     3.  **Abaikan yang Tidak Relevan**: Abaikan sepenuhnya mata kuliah umum dan non-teknis (seperti Pendidikan Agama, Kewarganegaraan, Bahasa Indonesia) karena tidak relevan untuk pencocokan kompetisi IT.
     4.  **Format**: Respons harus berupa satu paragraf ringkas dalam format teks biasa (plain text) dan dalam bahasa Indonesia.
-    Berikut adalah teks transkripnya: ${transcriptText}`,
-  });
+    Berikut adalah teks transkripnya: ${transcriptText}`);
