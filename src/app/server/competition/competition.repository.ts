@@ -2,8 +2,11 @@ import { CreateCompetitionPayload } from "@/app/shared/schema/competition/Compet
 
 import { prisma } from "../prisma/prisma";
 
-export const createCompetition = async (payload: CreateCompetitionPayload) =>
-  prisma.competition.create({
+export const createCompetition = async (
+  payload: CreateCompetitionPayload,
+  competitionText: string
+) =>
+  prisma.competitions.create({
     data: {
       title: payload.title,
       description: payload.description,
@@ -34,13 +37,14 @@ export const createCompetition = async (payload: CreateCompetitionPayload) =>
           },
         },
       },
+      content: competitionText,
     },
   });
 
-export const getCompetitions = async () => prisma.competition.findMany();
+export const getCompetitions = async () => prisma.competitions.findMany();
 
 export const findManyCompetitionsByIds = async (ids: number[]) =>
-  prisma.competition.findMany({
+  prisma.competitions.findMany({
     where: {
       id: {
         in: ids,
@@ -49,6 +53,6 @@ export const findManyCompetitionsByIds = async (ids: number[]) =>
   });
 
 export const findRandomCompetitions = async (limit: number) =>
-  prisma.competition.findMany({
+  prisma.competitions.findMany({
     take: limit,
   });

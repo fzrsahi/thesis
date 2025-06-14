@@ -1,34 +1,27 @@
-import { AzureChatOpenAI } from "@langchain/openai";
 import { Competition } from "@prisma/client";
 import { AzureOpenAI } from "openai";
 import { zodResponseFormat } from "openai/helpers/zod";
-
-import { CreateCompetitionPayload } from "@/app/shared/schema/competition/CompetitionSchema";
 
 import { RecommendationResponse, RecommendationResponseSchema } from "./azure.types";
 import { prisma } from "../../prisma/prisma";
 import { customError } from "../../utils/error/custom-error";
 import { RECOMMENDATION_ERROR_RESPONSE } from "../../recommendation/recomendation.error";
 import { HttpStatusCode } from "axios";
+import { AzureOpenAIEmbeddings } from "@langchain/openai";
 
 const AZURE_CONFIG = {
   apiKey: process.env.AZURE_OPENAI_API_KEY!,
   apiVersion: "2024-08-01-preview",
-  endpoint: process.env.AZURE_OPENAI_ENDPOINT!,
+  gptEndpoint: process.env.AZURE_OPENAI_GPT_ENDPOINT!,
   chatDeployment: "gpt-4o",
-};
-
-const AZURE_EMBEDDING_CONFIG = {
-  apiKey: process.env.AZURE_EMBEDDINGS_API_KEY!,
-  endpoint: process.env.AZURE_EMBEDDINGS_ENDPOINT!,
-  deploymentName: "text-embedding-3-small",
-  apiInstanceName: "text-embedding-3-small",
-  apiVersion: "2024-02-01",
+  embeddingsDeployment: "text-embedding-3-small",
+  instanceName: process.env.AZURE_OPENAI_INSTANCE_NAME,
+  embeddingsApiVersion: "2024-04-01-preview",
 };
 
 const createOpenAIClient = () => {
   const options = {
-    endpoint: AZURE_CONFIG.endpoint,
+    endpoint: AZURE_CONFIG.gptEndpoint,
     apiKey: AZURE_CONFIG.apiKey,
     deployment: AZURE_CONFIG.chatDeployment,
     apiVersion: AZURE_CONFIG.apiVersion,
@@ -37,12 +30,15 @@ const createOpenAIClient = () => {
   return new AzureOpenAI(options);
 };
 
-const createEmbeddingClient = () =>
-  new AzureOpenAI({
-    apiKey: AZURE_EMBEDDING_CONFIG.apiKey,
-    apiVersion: AZURE_EMBEDDING_CONFIG.apiVersion,
-    endpoint: AZURE_EMBEDDING_CONFIG.endpoint,
-  });
+export const createEmbeddingClient = () => {
+  const options = {
+    azureOpenAIApiKey: AZURE_CONFIG.apiKey,
+    azureOpenAIApiInstanceName: AZURE_CONFIG.instanceName,
+    azureOpenAIApiEmbeddingsDeploymentName: AZURE_CONFIG.embeddingsDeployment,
+    azureOpenAIApiVersion: AZURE_CONFIG.embeddingsApiVersion,
+  };
+  return new AzureOpenAIEmbeddings(options);
+};
 
 export const sendPrompt = async (
   prompt: {
@@ -204,105 +200,4 @@ export const generateRecommendationWithCompetitions = async (
   const result = await generateStructuredResponse(profileText, promptTemplate);
 
   return { result, prompt: promptTemplate };
-};
-
-export const generateCompetitionEmbedding = async (competitionData: CreateCompetitionPayload) => {
-  const competitionTextParts = [
-    `Title: ${competitionData.title}`,
-    `Description: ${competitionData.description}`,
-    `Fields: ${competitionData.field.join(", ")}`,
-    `Type: ${competitionData.type}`,
-    `Source URL: ${competitionData.sourceUrl}`,
-    `Relevant Courses: ${competitionData.relevantCourses.join(", ")}`,
-    `Relevant Skills: ${competitionData.relevantSkills.join(", ")}`,
-  ];
-
-  if (competitionData.minGPA) {
-    competitionTextParts.push(`Minimal IPK: ${competitionData.minGPA}`);
-  }
-
-  if (competitionData.requirements) {
-    const requirementsText = [];
-    if (competitionData.requirements.teamComposition) {
-      requirementsText.push(`Komposisi Tim: ${competitionData.requirements.teamComposition}`);
-    }
-    if (competitionData.requirements.originality) {
-      requirementsText.push(`Kreativitas: ${competitionData.requirements.originality}`);
-    }
-    if (competitionData.requirements.other) {
-      requirementsText.push(`Lainnya: ${competitionData.requirements.other}`);
-    }
-    if (requirementsText.length > 0) {
-      competitionTextParts.push(`Persyaratan: ${requirementsText.join(", ")}`);
-    }
-  }
-
-  if (competitionData.location) {
-    competitionTextParts.push(`Lokasi: ${competitionData.location}`);
-  }
-
-  if (competitionData.organizer) {
-    competitionTextParts.push(`Organizer: ${competitionData.organizer}`);
-  }
-
-  if (competitionData.startDate) {
-    competitionTextParts.push(`Tanggal Mulai: ${competitionData.startDate}`);
-  }
-
-  if (competitionData.endDate) {
-    competitionTextParts.push(`Tanggal Selesai: ${competitionData.endDate}`);
-  }
-
-  if (competitionData.evaluationCriteria) {
-    const criteriaText = [];
-    if (competitionData.evaluationCriteria.preliminaryRound) {
-      criteriaText.push(`Babak Penyisihan: ${competitionData.evaluationCriteria.preliminaryRound}`);
-    }
-    if (competitionData.evaluationCriteria.finalRound) {
-      criteriaText.push(`Babak Final: ${competitionData.evaluationCriteria.finalRound}`);
-    }
-    if (competitionData.evaluationCriteria.other) {
-      criteriaText.push(`Lainnya: ${competitionData.evaluationCriteria.other}`);
-    }
-    if (criteriaText.length > 0) {
-      competitionTextParts.push(`Kriteria Evaluasi: ${criteriaText.join(", ")}`);
-    }
-  }
-
-  if (competitionData.competitionStatistics) {
-    const statisticsText = [];
-    if (competitionData.competitionStatistics.summary) {
-      statisticsText.push(`Ringkasan: ${competitionData.competitionStatistics.summary}`);
-    }
-    if (
-      competitionData.competitionStatistics.totalApplicantsPastYear &&
-      competitionData.competitionStatistics.totalApplicantsPastYear.length > 0
-    ) {
-      const applicantsText = competitionData.competitionStatistics.totalApplicantsPastYear
-        .filter((item) => item.count !== null && item.year !== null)
-        .map((item) => `${item.year}: ${item.count} applicants`)
-        .join(", ");
-      if (applicantsText) {
-        statisticsText.push(`Total Pendaftar: ${applicantsText}`);
-      }
-    }
-    if (
-      competitionData.competitionStatistics.pastUngParticipants &&
-      competitionData.competitionStatistics.pastUngParticipants.length > 0
-    ) {
-      const ungParticipantsText = competitionData.competitionStatistics.pastUngParticipants
-        .map((item) => `${item.year}: ${item.name} (${item.count} members)`)
-        .join(", ");
-      statisticsText.push(
-        `Peserta Mahasiswa Universitas Negeri Gorontalo sebelumnya: ${ungParticipantsText}`
-      );
-    }
-    if (statisticsText.length > 0) {
-      competitionTextParts.push(`Statistik Kompetisi: ${statisticsText.join("; ")}`);
-    }
-  }
-
-  const competitionText = competitionTextParts.join("\n    ");
-
-  return generateEmbedding(competitionText);
 };

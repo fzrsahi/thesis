@@ -110,7 +110,7 @@ model Experience {
 }
 
 /// Competitions Catalog
-model Competition {
+model competitions {
   id                 Int       @id @default(autoincrement())
   title              String // Judul lomba, misalnya: "Program Kreativitas Mahasiswa Karsa Cipta"
   description        String // Deskripsi lomba
@@ -126,20 +126,22 @@ model Competition {
   sourceUrl          String? // URL sumber informasi lomba
   relevantCourses    String[] // Mata kuliah yang relevan
   relevantSkills     String[] // Keterampilan yang relevan
-  createdAt          DateTime  @default(now())
-  updatedAt          DateTime  @default(now())
 
-  participants StudentCompetition[]
+  vector    Unsupported("vector")?
+  content   String?
+  createdAt DateTime               @default(now())
+  updatedAt DateTime               @default(now())
+
+  participants     StudentCompetition[]
   competitionStats CompetitionStats? // Relasi ke statistik kompetisi
 
-  @@map("competitions")
 }
 
 /// Competition Statistics (untuk Category Distribution dan Performance Metrics)
 model CompetitionStats {
   id                      Int                       @id @default(autoincrement())
   competitionId           Int                       @unique
-  competition             Competition               @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  competition             competitions             @relation(fields: [competitionId], references: [id], onDelete: Cascade)
   summary                 String? // Ringkasan statistik kompetisi
   pastUngParticipants     PastUngParticipant[] // Peserta UNG di tahun-tahun sebelumnya
   totalApplicantsPastYear TotalApplicantsPastYear[] // Jumlah pendaftar per tahun
@@ -161,12 +163,12 @@ model PastUngParticipant {
 }
 
 model TotalApplicantsPastYear {
-  id                 Int              @id @default(autoincrement())
+  id                 Int     @id @default(autoincrement())
   competitionStatsId Int
   count              Int? // Jumlah pendaftar pada tahun tertentu. Null jika tidak diketahui
   year               String? // Tahun terkait. Null jika tidak disebut
 
-  competitionStats   CompetitionStats @relation(fields: [competitionStatsId], references: [id], onDelete: Cascade)
+  competitionStats CompetitionStats @relation(fields: [competitionStatsId], references: [id], onDelete: Cascade)
 
   @@map("totalApplicantsPastYear")
 }
@@ -181,7 +183,7 @@ model StudentCompetition {
   createdAt     DateTime @default(now())
 
   student     Student?    @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  competition Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  competition competitions @relation(fields: [competitionId], references: [id], onDelete: Cascade)
 
   @@unique([studentId, competitionId])
   @@map("studentCompetitions")
@@ -223,17 +225,4 @@ model LLMChatMessage {
   session LLMChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 
   @@map("llmChatMessages")
-}
-
-/// Alumni Data for RAG Knowledge Base
-
-/// Embeddings (Crucial for RAG: use pgvector for ease of vector querying)
-model Embedding {
-  id        Int                         @id @default(autoincrement())
-  model     String // e.g. "all-MiniLM-L6-v2"
-  vector    Unsupported("vector(1536)")
-  metadata  Json?                       @default("{}") // Contoh: { "type": "competition", "id": 5 }
-  createdAt DateTime                    @default(now())
-
-  @@map("embeddings")
 }

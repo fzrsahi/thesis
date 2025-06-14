@@ -46,5 +46,5 @@ export const POST = withAuth(
       });
     }
   },
-  [ROLES.STUDENT]
+  [ROLES.STUDENT, ROLES.ADMIN]
 );

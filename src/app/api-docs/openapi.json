@@ -565,12 +565,14 @@
           "startDate": {
             "type": "string",
             "nullable": true,
-            "description": "The competition's start or registration date (YYYY-MM-DD format)"
+            "description": "The competition's start or registration date (YYYY-MM-DD format)",
+            "example": "2025-01-01"
           },
           "endDate": {
             "type": "string",
             "nullable": true,
-            "description": "The competition's end or final date (YYYY-MM-DD format)"
+            "description": "The competition's end or final date (YYYY-MM-DD format)",
+            "example": "2025-01-01"
           },
           "location": {
             "type": "string",

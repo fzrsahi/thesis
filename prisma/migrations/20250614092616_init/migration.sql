@@ -43,6 +43,7 @@ CREATE TABLE "transcripts" (
     "studentId" INTEGER NOT NULL,
     "fileId" TEXT NOT NULL,
     "semester" TEXT NOT NULL,
+    "transcriptText" TEXT NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -91,14 +92,21 @@ CREATE TABLE "competitions" (
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "field" TEXT[],
-    "type" TEXT NOT NULL,
+    "type" TEXT,
     "minGPA" TEXT,
     "requirements" JSONB DEFAULT '{}',
-    "startDate" TIMESTAMP(3) NOT NULL,
-    "endDate" TIMESTAMP(3) NOT NULL,
+    "startDate" TIMESTAMP(3),
+    "endDate" TIMESTAMP(3),
     "location" TEXT,
     "organizer" TEXT,
+    "evaluationCriteria" JSONB DEFAULT '{}',
+    "sourceUrl" TEXT,
+    "relevantCourses" TEXT[],
+    "relevantSkills" TEXT[],
+    "vector" vector,
+    "content" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "competitions_pkey" PRIMARY KEY ("id")
 );
@@ -107,11 +115,32 @@ CREATE TABLE "competitions" (
 CREATE TABLE "competitionStats" (
     "id" SERIAL NOT NULL,
     "competitionId" INTEGER NOT NULL,
-    "categoryDistribution" JSONB NOT NULL DEFAULT '{}',
-    "performanceMetrics" JSONB NOT NULL DEFAULT '{}',
-    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "summary" TEXT,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "competitionStats_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "pastUngParticipants" (
+    "id" SERIAL NOT NULL,
+    "competitionStatsId" INTEGER NOT NULL,
+    "year" TEXT,
+    "name" TEXT,
+    "count" INTEGER,
+
+    CONSTRAINT "pastUngParticipants_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "totalApplicantsPastYear" (
+    "id" SERIAL NOT NULL,
+    "competitionStatsId" INTEGER NOT NULL,
+    "count" INTEGER,
+    "year" TEXT,
+
+    CONSTRAINT "totalApplicantsPastYear_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -120,9 +149,7 @@ CREATE TABLE "studentCompetitions" (
     "studentId" INTEGER NOT NULL,
     "competitionId" INTEGER NOT NULL,
     "matchScore" DOUBLE PRECISION NOT NULL DEFAULT 0.0,
-    "applied" BOOLEAN NOT NULL DEFAULT false,
     "feedback" TEXT,
-    "rating" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "studentCompetitions_pkey" PRIMARY KEY ("id")
@@ -158,17 +185,6 @@ CREATE TABLE "llmChatMessages" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "llmChatMessages_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "embeddings" (
-    "id" SERIAL NOT NULL,
-    "model" TEXT NOT NULL,
-    "vector" vector(1536) NOT NULL,
-    "metadata" JSONB DEFAULT '{}',
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "embeddings_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -209,6 +225,12 @@ ALTER TABLE "experiences" ADD CONSTRAINT "experiences_studentId_fkey" FOREIGN KE
 
 -- AddForeignKey
 ALTER TABLE "competitionStats" ADD CONSTRAINT "competitionStats_competitionId_fkey" FOREIGN KEY ("competitionId") REFERENCES "competitions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "pastUngParticipants" ADD CONSTRAINT "pastUngParticipants_competitionStatsId_fkey" FOREIGN KEY ("competitionStatsId") REFERENCES "competitionStats"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "totalApplicantsPastYear" ADD CONSTRAINT "totalApplicantsPastYear_competitionStatsId_fkey" FOREIGN KEY ("competitionStatsId") REFERENCES "competitionStats"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "studentCompetitions" ADD CONSTRAINT "studentCompetitions_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "students"("id") ON DELETE CASCADE ON UPDATE CASCADE;
