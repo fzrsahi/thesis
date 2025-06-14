@@ -1,97 +1,162 @@
+import { Document } from "@langchain/core/documents";
+import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
+
 import { CreateCompetitionGeneratePayload } from "@/app/shared/schema/competition/CompetitionGenerateSchema";
 
-import { sendPrompt } from "../../model/azure/azure-openai.service";
+import {
+  generateCompetitionResponseSchema,
+  GenerateCompetitionResponse,
+} from "../../model/azure/types/generate-competition.types";
 
-export const generateCompetitionUsecase = async (payload: CreateCompetitionGeneratePayload) => {
-  const { description, title, website, additionalDetails, file, startPage, endPage } = payload;
-  const competitionData = await generateCompetitionWithAzure(payload);
-  return competitionData;
-};
+import "@ungap/with-resolvers";
+import { prisma } from "@/app/server/prisma/prisma";
 
-const generateCompetitionWithAzure = async (payload: CreateCompetitionGeneratePayload) => {
-  const systemMessage = `Anda adalah seorang Spesialis Ekstraksi Informasi yang sangat teliti. Tugas Anda adalah membaca input teks (nama kompetisi, deskripsi, informasi lainnya, dan URL) dan menghasilkan sebuah objek JSON valid yang berisi informasi penting mengenai kompetisi mahasiswa. Informasi ini akan digunakan dalam sistem rekomendasi lomba yang mencocokkan minat, keterampilan, dan latar belakang mahasiswa.
-  Tujuan utama: hasil ekstraksi harus lengkap, akurat, dan tidak menggunakan null kecuali benar-benar tidak ada datanya. Anda diperbolehkan menarik informasi eksplisit dan implisit dari deskripsi kompetisi, proyek contoh, teknologi yang disebutkan, dan pola umum lomba mahasiswa di Indonesia.
+import { createOpenAIClient } from "../../model/azure/azure-openai.service";
+import {
+  getDocumentChunksRetriever,
+  getDocumentChunksVectorStore,
+} from "../../vector/pgvector.service";
 
-`;
+import { PromptTemplate } from "@langchain/core/prompts";
 
-  const prompt = `
-    INPUT YANG DIBERIKAN:
-    - Nama Kompetisi: ${payload.title}
-    - Deskripsi: ${payload.description}
-    - Website: ${payload.website}
-    ${payload.addition_details ? `- Detail Tambahan: ${payload.addition_details}` : ""}
+export const generateCompetitionUsecase = async (
+  payload: CreateCompetitionGeneratePayload
+): Promise<GenerateCompetitionResponse | undefined> => {
+  const { file, title, description, website, startPage, endPage } = payload;
 
-    PROSES EKSTRAKSI:
-    1. Baca dan pahami semua teks yang diberikan: deskripsi input, teks tidak terstruktur, serta konten situs jika relevan.
-    2. Jika suatu informasi tidak tersedia di teks, tetapkan nilai null—jangan menebak atau menambahkan asumsi di luar data yang ada.
-    3. Untuk nama peserta (jika muncul), tampilkan sebagai array string.
-    4. Identifikasi kursus akademik dan keterampilan yang relevan secara tepat berdasarkan fokus teknis atau non-teknis kompetisi, tanpa mengarang detail baru.
-    5. Semua tanggal harus dalam format YYYY-MM-DD jika tersedia; jika hanya tahun atau rentang yang disebutkan, sesuaikan dengan format yang memungkinkan (misalnya "2023-05" menjadi "2023-05-01" jika dianggap tanggal awal) atau tetapkan null jika tidak cukup informasi untuk tanggal pasti.
-    6. Pastikan output adalah satu objek JSON valid saja, tanpa teks penjelas di luar JSON. Struktur dan tipe data harus sesuai spesifikasi.
+  if (!file) return;
 
-    OUTPUT JSON (FORMAT WAJIB):
-    {
-        "title": "string // Nama resmi kompetisi, sesuai dengan yang tercantum di sumber (misalnya situs resmi atau dokumen panduan). Tidak boleh disingkat atau diganti.",
-        "description": "string // Ringkasan yang menjelaskan tujuan, ruang lingkup, dan karakter umum dari kompetisi. Ambil dari deskripsi resmi atau simpulkan dari narasi panjang secara akurat.",
-        "field": [
-          "string // Bidang utama kompetisi yang relevan, seperti 'Teknologi Informasi', 'Kesehatan', 'Inovasi Sosial'. Bisa lebih dari satu tergantung cakupan kompetisi."
-        ],
-        "type": "string // 'Tim' jika kompetisi dilakukan secara kelompok, 'Individual' jika dilakukan sendiri. Jika disebut kolaborasi atau tim, pilih 'Tim'.",
-        "minGPA": "string | null // IPK minimal jika disebutkan secara eksplisit. Jika tidak disebut, isi dengan null.",
-        "requirements": {
-          "teamComposition": "string | null // Struktur tim, jumlah anggota, atau ketentuan asal jurusan (contoh: '2-3 mahasiswa dari jurusan terkait'). Null jika tidak disebut.",
-          "originality": "string | null // Syarat keaslian karya, misalnya 'Karya harus orisinal'. Null jika tidak disebut.",
-          "other": "string | null // Syarat lain seperti 'Mengunggah proposal PDF', 'Mengisi formulir pendaftaran'. Null jika tidak ada informasi tambahan."
-        },
-        "startDate": "string | null // Tanggal mulai pendaftaran atau penyelenggaraan. Format YYYY-MM-DD. Jika hanya disebut bulan/tahun, gunakan tanggal 01.",
-        "endDate": "string | null // Tanggal akhir pendaftaran atau kompetisi. Format YYYY-MM-DD. Null jika tidak tersedia.",
-        "location": "string | null // Tempat pelaksanaan, bisa 'Online' atau lokasi fisik (contoh: 'Universitas Indonesia'). Null jika tidak disebutkan.",
-        "organizer": "string | null // Nama penyelenggara utama, misalnya 'Kemdikbud', 'Kampus Merdeka', atau lembaga pemerintah/pendidikan lainnya.",
-        "evaluationCriteria": {
-          "preliminary_round": "string | null // Kriteria penilaian di babak awal jika dibagi beberapa tahap. Contoh: 'Proposal 40%, Inovasi 60%'. Null jika tidak disebut.",
-          "final_round": "string | null // Kriteria penilaian di babak final. Contoh: 'Demo Produk dan Presentasi'. Null jika tidak disebut.",
-          "other": "string | null // Kriteria tambahan jika ada. Null jika tidak disebut."
-        },
-        "competitionStatistics": {
-          "summary": "string | null // Ringkasan statistik peserta historis. Contoh: '500 tim dari 100 universitas pada 2023'. Null jika tidak tersedia.",
-          "total_applicants_past_year": [
-            {
-              "count": "integer | null // Jumlah pendaftar pada tahun tertentu. Null jika tidak diketahui.",
-              "year": "string | null // Tahun terkait. Null jika tidak disebut."
-            }
-          ],
-          "finalistCountPastYear": [
-            {
-              "count": "integer | null // Jumlah finalis pada tahun tertentu. Null jika tidak diketahui.",
-              "year": "string | null // Tahun terkait. Null jika tidak disebut."
-            }
-          ],
-          "pastUngParticipants": [
-            {
-              "year": "string // Tahun partisipasi peserta dari Universitas Negeri Gorontalo (UNG).",
-              "name": "string // Nama peserta dari UNG.",
-              "count": "integer // Jumlah anggota dalam tim atau 1 jika individu."
-            }
-          ]
-        },
-        "sourceUrl": "string // URL resmi kompetisi yang digunakan sebagai sumber utama data.",
-        "relevantCourses": [
-          "string // Nama mata kuliah yang relevan dengan kompetisi. Contoh: 'Machine Learning', 'Kecerdasan Buatan', 'Penulisan Proposal'."
-        ],
-        "relevantSkills": [
-          "string // Keterampilan teknis atau non-teknis yang relevan dengan kompetisi. Contoh: 'Python', 'UI/UX', 'Public Speaking'."
-        ]
-      }
-    `;
+  const pdfText = await extractTextFromPdfBuffer(file, startPage, endPage);
 
-  const competitionData = await sendPrompt(
-    {
-      systemMessage,
-      userMessage: prompt,
+  const chunks = await splitTextIntoChunks(pdfText);
+
+  const competition = await prisma.competitions.create({
+    data: {
+      title,
+      description: description || "",
+      field: [],
+      sourceUrl: website,
+      content: pdfText,
     },
-    "gpt-4o",
-    "json_object"
+  });
+  await saveChunksToPostgres(chunks, competition.id);
+  const topK = 10;
+  const contextDocs = await getRelevantChunksBySimilarity(title, topK, competition.id);
+  const contextText = contextDocs.map((doc) => doc.pageContent).join("\n\n");
+  const model = createOpenAIClient();
+
+  const structuredModel = model.withStructuredOutput<GenerateCompetitionResponse>(
+    generateCompetitionResponseSchema
   );
 
-  return JSON.parse(competitionData || "{}");
+  const prompt = new PromptTemplate({
+    template: `Anda adalah Asisten Ahli untuk Ekstraksi Data Kompetisi. Tugas utama Anda adalah membaca dengan teliti KONTEKS yang disediakan dari dokumen panduan kompetisi, lalu mengekstrak informasi secara akurat untuk mengisi setiap field dalam skema JSON yang telah ditentukan.
+
+    PERAN DAN TUGAS:
+    1.  Baca dan Pahami: Analisis KONTEKS dari dokumen secara mendalam untuk menemukan semua detail yang relevan.
+    2.  Ekstrak Informasi: Isi setiap field dalam struktur JSON yang diminta berdasarkan data yang ada di KONTEKS.
+    3.  Gunakan Input Tambahan: Manfaatkan informasi dari INPUT PENGGUNA (jika ada) sebagai petunjuk atau pelengkap.
+    4.  Tangani Data Kosong: Jika informasi untuk sebuah field tidak dapat ditemukan secara eksplisit dalam dokumen, gunakan pengetahuan umum Anda atau informasi dari database untuk memberikan nilai yang wajar dan relevan. Hanya gunakan null jika benar-benar tidak ada informasi yang bisa didapat.
+    5.  Patuhi Format: Pastikan semua data yang diekstrak sesuai dengan tipe data yang diharapkan (string, angka, array, objek). Untuk tanggal, gunakan format YYYY-MM-DD jika memungkinkan.
+    6.  Fokus pada Akurasi: Prioritaskan keakuratan dan kesetiaan pada sumber informasi, namun jika informasi tidak tersedia dalam dokumen, gunakan pengetahuan yang relevan untuk melengkapi data.
+    7.  Inferensi Cerdas: Untuk field seperti relevantCourses dan relevantSkills, gunakan pemahaman Anda tentang jenis kompetisi untuk memberikan saran mata kuliah dan keterampilan yang relevan berdasarkan tipe dan bidang kompetisi.
+
+    INPUT PENGGUNA:
+    Nama Kompetisi: {title}
+    Deskripsi Singkat: {description}
+    Website Resmi: {website}
+    {additionalDetailsText}
+
+    KONTEKS (Teks dari Dokumen Panduan):
+    {context}
+
+    PETUNJUK TAMBAHAN:
+    - Jika tidak ada informasi tanggal dalam dokumen, perkirakan berdasarkan konteks atau pola umum kompetisi serupa
+    - Untuk field type, klasifikasikan berdasarkan karakteristik kompetisi yang teridentifikasi
+    - Untuk relevantCourses dan relevantSkills, berikan rekomendasi yang masuk akal berdasarkan jenis dan bidang kompetisi
+    - Jika organizer tidak jelas, coba identifikasi dari header, footer, atau konteks dokumen`,
+    inputVariables: [
+      "title",
+      "description",
+      "website",
+      "additionalDetailsText",
+      "context",
+      "currentYear",
+    ],
+  });
+
+  const chain = prompt.pipe(structuredModel);
+  const result = await chain.invoke({
+    title: payload.title,
+    description: payload.description,
+    website: payload.website,
+    additionalDetailsText: payload.additionalDetails || "",
+    context: contextText,
+    currentYear: new Date().getFullYear(),
+  });
+  return result;
+};
+
+export const extractTextFromPdfBuffer = async (
+  fileBuffer: File,
+  startPage: number = 1,
+  endPage?: number
+): Promise<string> => {
+  await import("pdfjs-dist/legacy/build/pdf.worker.mjs");
+
+  const arrayBuffer = await fileBuffer.arrayBuffer();
+  const pdfDataAsUint8Array = new Uint8Array(arrayBuffer);
+  const loadingTask = getDocument({ data: pdfDataAsUint8Array });
+  const pdf = await loadingTask.promise;
+
+  const totalPages = pdf.numPages;
+  const finalEndPage = endPage ?? totalPages;
+
+  const texts: string[] = [];
+
+  for (let pageNum = startPage; pageNum <= finalEndPage; pageNum++) {
+    const page = await pdf.getPage(pageNum);
+    const content = await page.getTextContent();
+    const pageText = content.items.map((item: any) => ("str" in item ? item.str : "")).join(" ");
+    texts.push(pageText);
+  }
+
+  return texts.join("\n\n");
+};
+
+export const splitTextIntoChunks = async (text: string) => {
+  const splitter = new RecursiveCharacterTextSplitter({
+    chunkSize: 1000,
+    chunkOverlap: 200,
+  });
+
+  return await splitter.createDocuments([text]);
+};
+
+export const saveChunksToPostgres = async (chunks: Document[], competitionId: number) => {
+  const documents = chunks.map((chunk) => ({
+    competitionId,
+    content: chunk.pageContent,
+  }));
+
+  const savedDocuments = await prisma.$transaction(
+    documents.map((document) =>
+      prisma.documentChunks.create({
+        data: document,
+      })
+    )
+  );
+
+  const vectorStore = getDocumentChunksVectorStore();
+  await vectorStore.addModels(savedDocuments);
+};
+
+export const getRelevantChunksBySimilarity = async (
+  query: string,
+  topK = 5,
+  competitionId: number
+) => {
+  const retriever = getDocumentChunksRetriever(topK, competitionId);
+  return await retriever.invoke(query);
 };

@@ -126,23 +126,22 @@ model competitions {
   sourceUrl          String? // URL sumber informasi lomba
   relevantCourses    String[] // Mata kuliah yang relevan
   relevantSkills     String[] // Keterampilan yang relevan
-  fileId       String? // File dokumen lomba
+  fileId             String? // File dokumen lomba
 
   vector    Unsupported("vector")?
-  content   String?
-  createdAt DateTime               @default(now())
-  updatedAt DateTime               @default(now())
+  content     String?
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @default(now())
+  documentChunks documentChunks[]
 
-  participants     StudentCompetition[]
-  competitionStats CompetitionStats? // Relasi ke statistik kompetisi
-
+  participants             StudentCompetition[]
+  competitionStats         CompetitionStats?
 }
 
-/// Competition Statistics (untuk Category Distribution dan Performance Metrics)
 model CompetitionStats {
   id                      Int                       @id @default(autoincrement())
   competitionId           Int                       @unique
-  competition             competitions             @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  competition             competitions              @relation(fields: [competitionId], references: [id], onDelete: Cascade)
   summary                 String? // Ringkasan statistik kompetisi
   pastUngParticipants     PastUngParticipant[] // Peserta UNG di tahun-tahun sebelumnya
   totalApplicantsPastYear TotalApplicantsPastYear[] // Jumlah pendaftar per tahun
@@ -150,6 +149,19 @@ model CompetitionStats {
   createdAt               DateTime                  @default(now())
 
   @@map("competitionStats")
+}
+
+model documentChunks {
+  id        String   @id @default(uuid()) // Kunci utama UUID
+  content   String   @db.Text
+  vector    Unsupported("vector")?
+
+  competitionId Int
+  createdAt     DateTime @default(now())
+
+  competition competitions @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+
+  @@map("documentChunks")
 }
 
 model PastUngParticipant {
@@ -183,7 +195,7 @@ model StudentCompetition {
   feedback      String? // Komentar / feedback user
   createdAt     DateTime @default(now())
 
-  student     Student?    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  student     Student?     @relation(fields: [studentId], references: [id], onDelete: Cascade)
   competition competitions @relation(fields: [competitionId], references: [id], onDelete: Cascade)
 
   @@unique([studentId, competitionId])

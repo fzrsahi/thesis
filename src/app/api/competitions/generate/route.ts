@@ -17,6 +17,8 @@ import {
 export const POST = withAuth(
   async (request: NextRequest) => {
     try {
+      console.log("oawkowakoawkowak");
+
       const formData = await request.formData();
       const payload: CreateCompetitionGeneratePayload = {
         title: formData.get("title") as string,
@@ -34,7 +36,6 @@ export const POST = withAuth(
           status: HttpStatusCode.BadRequest,
         });
       }
-
       const data = await generateCompetitionUsecase(result.data);
 
       return NextResponse.json({
@@ -57,5 +58,5 @@ export const POST = withAuth(
       });
     }
   },
-  [ROLES.STUDENT]
+  [ROLES.STUDENT, ROLES.ADMIN]
 );

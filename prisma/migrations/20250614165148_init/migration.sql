@@ -103,6 +103,7 @@ CREATE TABLE "competitions" (
     "sourceUrl" TEXT,
     "relevantCourses" TEXT[],
     "relevantSkills" TEXT[],
+    "fileId" TEXT,
     "vector" vector,
     "content" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -120,6 +121,17 @@ CREATE TABLE "competitionStats" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "competitionStats_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "documentChunks" (
+    "id" TEXT NOT NULL,
+    "content" TEXT NOT NULL,
+    "vector" vector,
+    "competitionId" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "documentChunks_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -225,6 +237,9 @@ ALTER TABLE "experiences" ADD CONSTRAINT "experiences_studentId_fkey" FOREIGN KE
 
 -- AddForeignKey
 ALTER TABLE "competitionStats" ADD CONSTRAINT "competitionStats_competitionId_fkey" FOREIGN KEY ("competitionId") REFERENCES "competitions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "documentChunks" ADD CONSTRAINT "documentChunks_competitionId_fkey" FOREIGN KEY ("competitionId") REFERENCES "competitions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "pastUngParticipants" ADD CONSTRAINT "pastUngParticipants_competitionStatsId_fkey" FOREIGN KEY ("competitionStatsId") REFERENCES "competitionStats"("id") ON DELETE CASCADE ON UPDATE CASCADE;

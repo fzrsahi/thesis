@@ -1,4 +1,5 @@
 import { Document } from "@langchain/core/documents";
+
 import { getCompetitionVectorStore } from "@/app/server/vector/pgvector.service";
 import { CreateCompetitionPayload } from "@/app/shared/schema/competition/CompetitionSchema";
 
