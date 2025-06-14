@@ -14,19 +14,23 @@ export const CompetitionEvaluationCriteriaSchema = z.object({
 
 export const CompetitionStatisticsSchema = z.object({
   summary: z.string().nullable(),
-  totalApplicantsPastYear: z.array(
-    z.object({
-      year: z.string().nullable(),
-      count: z.number().nullable(),
-    })
-  ).nullable(),
-  pastUngParticipants: z.array(
-    z.object({
-      year: z.string().nullable(),
-      name: z.string().nullable(),
-      count: z.number().nullable(),
-    })
-  ).nullable(),
+  totalApplicantsPastYear: z
+    .array(
+      z.object({
+        year: z.string().nullable(),
+        count: z.number().nullable(),
+      })
+    )
+    .nullable(),
+  pastUngParticipants: z
+    .array(
+      z.object({
+        year: z.string().nullable(),
+        name: z.string().nullable(),
+        count: z.number().nullable(),
+      })
+    )
+    .nullable(),
 });
 
 export const CompetitionResponseSchema = z.object({
@@ -48,4 +52,4 @@ export const CompetitionResponseSchema = z.object({
   competitionStatistics: CompetitionStatisticsSchema.nullable(),
 });
 
-export type CompetitionResponse = z.infer<typeof CompetitionResponseSchema>; 
+export type CompetitionResponse = z.infer<typeof CompetitionResponseSchema>;

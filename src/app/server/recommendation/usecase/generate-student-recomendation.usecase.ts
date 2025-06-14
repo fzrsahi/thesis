@@ -1,9 +1,7 @@
 import { HttpStatusCode } from "axios";
 
 import { COMPETITION_ERROR_RESPONSE } from "../../competition/competition.error";
-import {
-  getCompetitions,
-} from "../../competition/competition.repository";
+import { getCompetitions } from "../../competition/competition.repository";
 import { STUDENT_ERROR_RESPONSE } from "../../student/student.error";
 import { findStudentByUserId } from "../../student/student.repository";
 import { customError } from "../../utils/error/custom-error";

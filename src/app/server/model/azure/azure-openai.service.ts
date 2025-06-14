@@ -1,9 +1,5 @@
 import { AzureOpenAIEmbeddings, AzureChatOpenAI } from "@langchain/openai";
 
-
-
-
-
 const AZURE_CONFIG = {
   apiKey: process.env.AZURE_OPENAI_API_KEY!,
   apiVersion: "2024-08-01-preview",
@@ -14,7 +10,8 @@ const AZURE_CONFIG = {
   embeddingsApiVersion: "2024-04-01-preview",
 };
 
-export const createOpenAIClient = () => new AzureChatOpenAI({
+export const createOpenAIClient = () =>
+  new AzureChatOpenAI({
     modelName: AZURE_CONFIG.chatDeployment,
     temperature: 0.7,
     azureOpenAIApiKey: AZURE_CONFIG.apiKey,
@@ -23,7 +20,8 @@ export const createOpenAIClient = () => new AzureChatOpenAI({
     azureOpenAIApiVersion: AZURE_CONFIG.apiVersion,
   });
 
-export const createEmbeddingClient = () => new AzureOpenAIEmbeddings({
+export const createEmbeddingClient = () =>
+  new AzureOpenAIEmbeddings({
     azureOpenAIApiKey: AZURE_CONFIG.apiKey,
     azureOpenAIApiInstanceName: AZURE_CONFIG.instanceName,
     azureOpenAIApiEmbeddingsDeploymentName: AZURE_CONFIG.embeddingsDeployment,

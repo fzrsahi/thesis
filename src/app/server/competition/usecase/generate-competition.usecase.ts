@@ -129,12 +129,18 @@ const extractTextFromPdfBuffer = async (
   const finalEndPage = endPage ?? totalPages;
   const texts: string[] = [];
 
+  const pagePromises = [];
   for (let pageNum = startPage; pageNum <= finalEndPage; pageNum += 1) {
-    const page = await pdf.getPage(pageNum);
-    const content = await page.getTextContent();
-    const pageText = content.items.map((item) => ("str" in item ? item.str : "")).join(" ");
-    texts.push(pageText);
+    pagePromises.push(
+      pdf.getPage(pageNum).then(async (page) => {
+        const content = await page.getTextContent();
+        return content.items.map((item) => ("str" in item ? item.str : "")).join(" ");
+      })
+    );
   }
+
+  const pageTexts = await Promise.all(pagePromises);
+  texts.push(...pageTexts);
 
   return texts.join("\n\n");
 };
