@@ -21,7 +21,8 @@ import "@ungap/with-resolvers";
 
 export const createRecommendationUsecase = async (userId: number) => {
   const studentProfile = await validateStudentProfile(userId);
-  await generateRecommendation(studentProfile);
+  const result = await generateRecommendation(studentProfile);
+  return result;
 };
 
 const validateStudentProfile = async (userId: number) => {
@@ -73,31 +74,31 @@ const validateCompetition = async () => {
   }
 };
 
-const saveRecommendation = async (
-  studentId: number,
-  prompt: string,
-  recommendation: RecommendationResponse,
-  finalCompetitions: { id: number }[]
-) => {
-  await createOrUpdateRecomendation(studentId, prompt, recommendation);
+// const saveRecommendation = async (
+//   studentId: number,
+//   prompt: string,
+//   recommendation: RecommendationResponse,
+//   finalCompetitions: { id: number }[]
+// ) => {
+//   await createOrUpdateRecomendation(studentId, prompt, recommendation);
 
-  const validRecommendations = recommendation.recommendations
-    .filter((r) => r.id > 0 && r.id <= finalCompetitions.length)
-    .map((r) => ({
-      competitionId: finalCompetitions[r.id - 1].id,
-      matchScore: r.matchScore,
-      feedback: r.reason,
-    }));
+//   const validRecommendations = recommendation.recommendations
+//     .filter((r) => r.id > 0 && r.id <= finalCompetitions.length)
+//     .map((r) => ({
+//       competitionId: finalCompetitions[r.id - 1].id,
+//       matchScore: r.matchScore,
+//       feedback: r.reason,
+//     }));
 
-  if (validRecommendations.length > 0) {
-    await createStudentCompetition(
-      studentId,
-      validRecommendations.map((r) => r.competitionId),
-      validRecommendations.map((r) => r.matchScore),
-      validRecommendations.map((r) => r.feedback)
-    );
-  }
-};
+//   if (validRecommendations.length > 0) {
+//     await createStudentCompetition(
+//       studentId,
+//       validRecommendations.map((r) => r.competitionId),
+//       validRecommendations.map((r) => r.matchScore),
+//       validRecommendations.map((r) => r.feedback)
+//     );
+//   }
+// };
 
 const generateRecommendation = async (
   studentProfile: Prisma.StudentGetPayload<{
@@ -109,18 +110,26 @@ const generateRecommendation = async (
   }>
 ): Promise<RecommendationResponse> => {
   const profileText = `
-    IPK: ${studentProfile.gpa}
-    Minat: ${studentProfile.interests.join(", ")}
-    Prestasi: ${studentProfile.achievements
-      .map((a) => `${a.title} (${a.date.getFullYear()}) - ${a.description}`)
-      .join(", ")}
-    Pengalaman: ${studentProfile.experiences
-      .map(
-        (e) =>
-          `${e.organization} - ${e.position} (${e.startDate.getFullYear()} - ${e.endDate ? e.endDate.getFullYear() : "Sekarang"}) - ${e.description}`
-      )
-      .join(", ")}
-    Transkrip Nilai: ${studentProfile.transcript[0].transcriptText}
+    IPK: ${studentProfile.gpa || "Tidak Ada Informasi"}
+    Minat: ${studentProfile.interests?.length ? studentProfile.interests.join(", ") : "Tidak Ada Informasi"}
+    Prestasi: ${
+      studentProfile.achievements?.length
+        ? studentProfile.achievements
+            .map((a) => `${a.title} (${a.date.getFullYear()}) - ${a.description}`)
+            .join(", ")
+        : "Tidak Ada Informasi"
+    }
+    Pengalaman: ${
+      studentProfile.experiences?.length
+        ? studentProfile.experiences
+            .map(
+              (e) =>
+                `${e.organization} - ${e.position} (${e.startDate.getFullYear()} - ${e.endDate ? e.endDate.getFullYear() : "Sekarang"}) - ${e.description}`
+            )
+            .join(", ")
+        : "Tidak Ada Informasi"
+    }
+    Transkrip Nilai: ${studentProfile.transcript?.[0]?.transcriptText || "Tidak Ada Informasi"}
   `;
 
   const similarCompetitionEmbeddings = await findSimilarCompetitions(profileText);
@@ -151,6 +160,6 @@ const generateRecommendation = async (
     finalCompetitions
   );
 
-  await saveRecommendation(studentProfile.id, prompt, result, finalCompetitions);
+  // await saveRecommendation(studentProfile.id, prompt, result, finalCompetitions);
   return result;
 };

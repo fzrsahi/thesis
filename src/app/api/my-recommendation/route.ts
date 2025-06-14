@@ -14,9 +14,10 @@ import { ROLES } from "@/app/shared/const/role";
 export const POST = withAuth(
   async (_request: NextRequest, session) => {
     try {
-      await createRecommendationUsecase(Number(session.user.id));
+      const result = await createRecommendationUsecase(Number(session.user.id));
       return NextResponse.json({
         success: true,
+        data: result,
       });
     } catch (error) {
       if (isCustomError(error)) {

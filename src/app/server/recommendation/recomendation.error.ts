@@ -7,6 +7,10 @@ export const RECOMMENDATION_ERROR_RESPONSE = {
     code: "REC_002",
     message: "Recommendation not found",
   },
+  NO_RESPONSE_CONTENT: {
+    code: "REC_003",
+    message: "No response content from OpenAI",
+  },
 };
 
 export const RECOMMENDATION_ERROR_LOG = {
