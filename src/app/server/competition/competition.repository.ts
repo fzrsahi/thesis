@@ -1,4 +1,4 @@
-import { competitions } from "@prisma/client";
+import { competitions, Prisma } from "@prisma/client";
 import { InputJsonValue } from "@prisma/client/runtime/library";
 
 import { CreateCompetitionPayload } from "@/app/shared/schema/competition/CompetitionSchema";
@@ -46,13 +46,17 @@ export const createCompetition = async (
 
 export const getCompetitions = async () => prisma.competitions.findMany();
 
-export const findManyCompetitionsByIds = async (ids: number[]) =>
+export const findManyCompetitionsByIds = async (
+  ids: number[],
+  select?: Prisma.competitionsSelect
+) =>
   prisma.competitions.findMany({
     where: {
       id: {
         in: ids,
       },
     },
+    select,
   });
 
 export const findRandomCompetitions = async (limit: number) =>

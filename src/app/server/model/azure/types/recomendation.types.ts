@@ -167,3 +167,11 @@ export const RecommendationResponseSchema = z.object({
 });
 
 export type RecommendationResponse = z.infer<typeof RecommendationResponseSchema>;
+
+export type SkillsProfileKey = keyof z.infer<typeof SkillsProfileSchema>;
+
+export type SkillsProfileEntry = {
+  skillName: SkillsProfileKey;
+  score: number;
+  breakdown: string;
+};
