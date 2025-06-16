@@ -76,19 +76,11 @@ export const createRecommendationUsecase = async (userId: number) => {
     relevantCompetitions
   );
 
-  await saveRecommendation(recommendation, studentProfile, RECOMMENDATION_PROMPT_TEMPLATE);
-};
-
-const saveRecommendation = async (
-  recommendation: RecommendationResponse,
-  studentProfile: StudentWithRelations,
-  prompt: string
-) => {
-  const competitionIds = recommendation.recommendations.map((r) => r.id);
-  await createRecommendation(
-    { studentId: studentProfile.id, competitionIds },
-    { prompt, recommendation }
-  );
+  await createRecommendation({
+    studentId: studentProfile.id,
+    prompt: RECOMMENDATION_PROMPT_TEMPLATE,
+    recommendation,
+  });
 };
 
 const validateStudentProfile = async (userId: number): Promise<StudentWithRelations> => {
@@ -215,8 +207,17 @@ const generateRecommendation = async (
 
   const chain = prompt.pipe(structuredModel);
 
-  return chain.invoke({
+  const result = await chain.invoke({
     studentProfile: generateStudentProfileText(studentProfile),
     competitions: competitionContext,
   });
+
+  // Update competition IDs to match database IDs
+  const competitionMap = new Map(competitionsData.map(comp => [comp.title, comp.id]));
+  result.recommendations = result.recommendations.map(rec => ({
+    ...rec,
+    id: competitionMap.get(rec.competitionName) || rec.id,
+  }));
+
+  return result;
 };

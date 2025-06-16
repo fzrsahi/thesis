@@ -25,6 +25,7 @@ export const getStudentRecomendationUsecase = async (userId: number) => {
       HttpStatusCode.NotFound
     );
   }
+
   const recommendation = await findRecommendationByStudentId(student.id);
   if (!recommendation) {
     throw customError(
@@ -34,30 +35,55 @@ export const getStudentRecomendationUsecase = async (userId: number) => {
     );
   }
 
-  const parsedResponse = JSON.parse(recommendation.response as string) as RecommendationResponse;
+  // Get competition details for additional information
   const competitions = await findManyCompetitionsByIds(
-    parsedResponse.recommendations.map((r) => r.id)
+    recommendation.competitionRecommendations.map((r) => r.competitionId)
   );
 
   const competitionMap = new Map(competitions.map(comp => [comp.id, comp]));
 
-  const updatedRecommendations = parsedResponse.recommendations.map(rec => {
-    const competition = competitionMap.get(rec.id);
-    return {
-      ...rec,
-      id: competition?.id || rec.id,
-      competitionName: competition?.title || rec.competitionName,
-    };
-  });
+  // Transform the data into the expected RecommendationResponse format
+  const response: RecommendationResponse = {
+    studentSummary: recommendation.studentSummary || "",
+    skillsProfile: Object.fromEntries(
+      recommendation.skillsProfiles.map(profile => [
+        profile.skillName,
+        {
+          score: profile.score,
+          breakdown: profile.breakdown
+        }
+      ])
+    ) as any, // Type assertion needed due to dynamic keys
+    overallAssessment: JSON.parse(recommendation.overallAssessment || "{}"),
+    recommendations: recommendation.competitionRecommendations.map(rec => {
+      const competition = competitionMap.get(rec.competitionId);
+      return {
+        id: rec.competitionId,
+        competitionName: competition?.title || rec.competitionName,
+        rank: rec.rank,
+        matchScore: {
+          score: rec.matchScore,
+          reason: rec.matchReason || ""
+        },
+        skillRequirements: JSON.parse(rec.skillRequirements || "{}"),
+        reasoning: JSON.parse(rec.reasoning || "{}"),
+        keyFactors: rec.keyFactors ? JSON.parse(rec.keyFactors) : null,
+        preparationTips: rec.preparationTips ? JSON.parse(rec.preparationTips) : null
+      };
+    }),
+    developmentSuggestions: recommendation.developmentSuggestions.map(suggestion => ({
+      type: suggestion.type,
+      title: suggestion.title,
+      link: suggestion.link,
+      reason: suggestion.reason
+    }))
+  };
 
   return {
     student: {
       name: student.user.name,
       email: student.user.email,
     },
-    result: {
-      ...parsedResponse,
-      recommendations: updatedRecommendations,
-    },
+    result: response,
   };
 };
