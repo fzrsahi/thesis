@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 import { paths } from "@/app/shared/types/api";
 
@@ -9,19 +9,6 @@ export type RecommendationResponse =
 
 export interface SkillsProfileBreakdown {
   [key: string]: string;
-}
-
-export interface CategoryDistribution {
-  [key: string]: number;
-}
-
-export interface PerformanceMetrics {
-  participation_rate: number;
-  avg_match_score: number;
-  competition_success_rate: number;
-  skill_growth: {
-    [key: string]: string;
-  };
 }
 
 export interface CompetitionRecommendation {
@@ -67,7 +54,8 @@ export interface SpiderChartDataPoint {
   type?: "student" | "competition";
 }
 
-export const formatDate = (dateString: string) => {
+export const formatDate = (dateString: string | null) => {
+  if (!dateString) return "TBD";
   const date = new Date(dateString);
   return new Intl.DateTimeFormat("en-US", {
     year: "numeric",
@@ -85,26 +73,115 @@ export const getMatchScoreColor = (score: number) => {
 const useMyRecomendation = () => {
   const { data: apiData, isLoading: apiLoading, error: apiError } = useQueryGetMyRecomendation();
   const [selectedCompetition, setSelectedCompetition] = useState<
-    RecommendationResponse["recommendations"][number] | null
+    RecommendationResponse["result"]["recommendations"][number] | null
   >(null);
 
-  const studentSkillsData: SpiderChartDataPoint[] = apiData?.skillsProfile
-    ? Object.entries(apiData.skillsProfile).map(([skill, value]) => ({
-        label: skill.replace("_", " "),
-        value,
-        type: "student",
-      }))
-    : [];
+  const studentSkillsData = useMemo<SpiderChartDataPoint[]>(() => {
+    if (!apiData?.result.skillsProfile) return [];
+    return Object.entries(apiData.result.skillsProfile).map(([skill, { score }]) => ({
+      label: skill.replace(/_/g, " "),
+      value: score * 10, // Convert to 0-10 scale
+      type: "student",
+    }));
+  }, [apiData?.result.skillsProfile]);
 
-  const competitionSkillsData: SpiderChartDataPoint[] = selectedCompetition
-    ? Object.entries(selectedCompetition.skillDistribution).map(([skill, value]) => ({
-        label: skill.replace("_", " "),
-        value,
-        type: "competition",
-      }))
-    : [];
+  const competitionSkillsData = useMemo<SpiderChartDataPoint[]>(() => {
+    if (!selectedCompetition?.skillRequirements) return [];
+    return Object.entries(selectedCompetition.skillRequirements).map(([skill, { weight }]) => ({
+      label: skill.replace(/_/g, " "),
+      value: weight * 10, // Convert to 0-10 scale
+      type: "competition",
+    }));
+  }, [selectedCompetition?.skillRequirements]);
 
-  const handleStartAnalysis = () => {};
+  const performanceMetrics = useMemo(() => {
+    if (!apiData?.result) {
+      return {
+        participationRate: 0,
+        averageMatchScore: 0,
+        competitionSuccessRate: 0,
+        skillGrowth: {},
+      };
+    }
+
+    const recommendations = apiData.result.recommendations;
+    const totalRecommendations = recommendations.length;
+    const totalMatchScore = recommendations.reduce((sum, rec) => sum + rec.matchScore.score, 0);
+    const averageMatchScore = totalRecommendations > 0 ? totalMatchScore / totalRecommendations : 0;
+
+    // Calculate skill growth from recommendations
+    const skillGrowth: Record<string, number> = {};
+    recommendations.forEach((rec) => {
+      Object.entries(rec.skillRequirements).forEach(([skill, { weight }]) => {
+        if (!skillGrowth[skill]) {
+          skillGrowth[skill] = 0;
+        }
+        skillGrowth[skill] += weight;
+      });
+    });
+
+    // Normalize skill growth values
+    Object.keys(skillGrowth).forEach((skill) => {
+      skillGrowth[skill] = (skillGrowth[skill] / totalRecommendations) * 10;
+    });
+
+    return {
+      participationRate: 0.75, // Placeholder - should be calculated from actual data
+      averageMatchScore,
+      competitionSuccessRate: 0.65, // Placeholder - should be calculated from actual data
+      skillGrowth,
+    };
+  }, [apiData?.result]);
+
+  const profileStrength = useMemo(() => {
+    if (!apiData?.result) {
+      return {
+        score: 0,
+        calculationExplanation: "Based on your skills profile and competition performance",
+        strengths: [],
+        weaknesses: [],
+      };
+    }
+
+    const { overallAssessment, skillsProfile } = apiData.result;
+    const skillScores = Object.values(skillsProfile).map(({ score }) => score);
+    const averageScore = skillScores.reduce((sum, score) => sum + score, 0) / skillScores.length;
+
+    return {
+      score: averageScore,
+      calculationExplanation: "Based on your skills profile and competition performance",
+      strengths: overallAssessment.strengths,
+      weaknesses: overallAssessment.weaknesses,
+    };
+  }, [apiData?.result]);
+
+  const categoryDistribution = useMemo(() => {
+    if (!apiData?.result.recommendations) {
+      return {
+        categories: [],
+        values: [],
+      };
+    }
+
+    const categories = new Map<string, number>();
+    apiData.result.recommendations.forEach((rec) => {
+      if (rec.competition?.field) {
+        rec.competition.field.forEach((field) => {
+          const count = categories.get(field) || 0;
+          categories.set(field, count + 1);
+        });
+      }
+    });
+
+    return {
+      categories: Array.from(categories.keys()),
+      values: Array.from(categories.values()),
+    };
+  }, [apiData?.result.recommendations]);
+
+  const handleStartAnalysis = () => {
+    // TODO: Implement analysis start logic
+  };
 
   return {
     data: apiData,
@@ -114,6 +191,9 @@ const useMyRecomendation = () => {
     setSelectedCompetition,
     studentSkillsData,
     competitionSkillsData,
+    performanceMetrics,
+    profileStrength,
+    categoryDistribution,
     handleStartAnalysis,
   };
 };
