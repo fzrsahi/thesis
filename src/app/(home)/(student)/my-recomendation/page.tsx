@@ -648,29 +648,35 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
             </Card>
 
             {/* Profil Keterampilan */}
-            <Card className="border-zinc-800 bg-zinc-900">
+            <Card className="border-white bg-zinc-900">
               <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Brain className="h-5 w-5" />
-                    <span className="text-white">Profil Keterampilan</span>
+                <CardTitle className="space-y-2">
+                  {/* Judul */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Brain className="h-5 w-5 text-white" />
+                      <span className="text-white">Profil Keterampilan</span>
+                    </div>
                   </div>
-                  <div className="flex items-center space-x-4">
+
+                  {/* Penjelasan Score */}
+                  <div className="flex flex-wrap items-center justify-start gap-x-6 gap-y-2">
                     <div className="flex items-center space-x-2">
                       <div className="h-3 w-3 rounded-full bg-green-500" />
-                      <span className="text-xs text-zinc-400">Tinggi (8-10)</span>
+                      <span className="text-xs text-zinc-400">Tinggi (8–10)</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <div className="h-3 w-3 rounded-full bg-blue-500" />
-                      <span className="text-xs text-zinc-400">Sedang (6-7.9)</span>
+                      <span className="text-xs text-zinc-400">Sedang (6–7.9)</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <div className="h-3 w-3 rounded-full bg-orange-500" />
-                      <span className="text-xs text-zinc-400">Rendah (0-5.9)</span>
+                      <span className="text-xs text-zinc-400">Rendah (0–5.9)</span>
                     </div>
                   </div>
                 </CardTitle>
               </CardHeader>
+
               <CardContent>
                 <div className="space-y-6">
                   <div className="grid gap-4 md:grid-cols-2">
