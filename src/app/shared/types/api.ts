@@ -4,931 +4,904 @@
  */
 
 export interface paths {
-  "/auth/session": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
+    "/auth/session": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get session information
+         * @description Retrieve session information for the authenticated user
+         */
+        get: operations["getSession"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /**
-     * Get session information
-     * @description Retrieve session information for the authenticated user
-     */
-    get: operations["getSession"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/my-recommendation": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * Get personalized competition recommendations
-     * @description Fetches personalized recommendations for the logged-in student, processed in the background using LLM and RAG.
-     */
-    get: operations["getMyRecommendations"];
-    put?: never;
-    /**
-     * Generate student recommendation
-     * @description Generate a new recommendation for the student
-     */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Recommendation generated successfully */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              /** @example true */
-              success?: boolean;
+    "/my-recommendation": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get personalized competition recommendations
+         * @description Fetches personalized recommendations for the logged-in student, processed in the background using LLM and RAG.
+         */
+        get: operations["getMyRecommendations"];
+        put?: never;
+        /**
+         * Generate student recommendation
+         * @description Generate a new recommendation for the student
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
             };
-          };
-        };
-      };
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/students/personal-data": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * Get student personal data
-     * @description Retrieve current student's personal profile information
-     */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Student personal data retrieved successfully */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              /** @example true */
-              success?: boolean;
-              data?: {
-                name?: string;
-                email?: string;
-                studentId?: string;
-              };
+            requestBody?: never;
+            responses: {
+                /** @description Recommendation generated successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @example true */
+                            success?: boolean;
+                        };
+                    };
+                };
             };
-          };
         };
-      };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    /**
-     * Update student personal data
-     * @description Update student's personal profile information
-     */
-    put: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["StudentPersonalDataUpdate"];
+    "/students/personal-data": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description Student personal data updated successfully */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              /** @example true */
-              success?: boolean;
-              data?: components["schemas"]["StudentPersonalData"];
+        /**
+         * Get student personal data
+         * @description Retrieve current student's personal profile information
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
             };
-          };
-        };
-      };
-    };
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/students/academic-data": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * Get student academic data
-     * @description Retrieve all academic information for the current student including achievements and memberships
-     */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Student academic data retrieved successfully */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              /** @example true */
-              success?: boolean;
-              data?: components["schemas"]["StudentAcademicData"];
+            requestBody?: never;
+            responses: {
+                /** @description Student personal data retrieved successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @example true */
+                            success?: boolean;
+                            data?: {
+                                name?: string;
+                                email?: string;
+                                studentId?: string;
+                            };
+                        };
+                    };
+                };
             };
-          };
         };
-      };
-    };
-    /**
-     * Update student academic data
-     * @description Update student's academic information including achievements and memberships
-     */
-    put: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["StudentAcademicDataUpdate"];
-        };
-      };
-      responses: {
-        /** @description Student academic data updated successfully */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              /** @example true */
-              success?: boolean;
-              data?: components["schemas"]["StudentAcademicData"];
+        /**
+         * Update student personal data
+         * @description Update student's personal profile information
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
             };
-          };
-        };
-      };
-    };
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/students/transcript": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * Get student transcripts
-     * @description Get all transcripts for the current student
-     */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Successfully retrieved transcripts */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              success?: boolean;
-              data?: {
-                id?: number;
-                semester?: string;
-                fileUrl?: string;
-              }[];
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["StudentPersonalDataUpdate"];
+                };
             };
-          };
-        };
-      };
-    };
-    put?: never;
-    /**
-     * Upload student transcript
-     * @description Upload student's transcript file
-     */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "multipart/form-data": {
-            /**
-             * Format: binary
-             * @description Transcript file upload (PDF format)
-             */
-            transcript?: string;
-            /** @description Semester of the transcript */
-            semester?: string;
-          };
-        };
-      };
-      responses: never;
-    };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/students/transcript/{id}": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
-    /**
-     * Delete student transcript
-     * @description Delete a transcript for the current student
-     */
-    delete: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: number;
-        };
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Transcript deleted successfully */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/competitions": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    /**
-     * Get competition list
-     * @description Get all competitions
-     */
-    get: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody?: never;
-      responses: {
-        /** @description Competition list retrieved successfully */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content?: never;
-        };
-      };
-    };
-    put?: never;
-    /**
-     * Create competition
-     * @description Create a new competition
-     */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["GenerateCompetitionResponse"];
-        };
-      };
-      responses: {
-        /** @description Competition created successfully */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              /** @example true */
-              success?: boolean;
+            responses: {
+                /** @description Student personal data updated successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @example true */
+                            success?: boolean;
+                            data?: components["schemas"]["StudentPersonalData"];
+                        };
+                    };
+                };
             };
-          };
         };
-      };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/competitions/generate": {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    /**
-     * Generate competition
-     * @description Generate a new competition
-     */
-    post: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path?: never;
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "multipart/form-data": {
-            title: string;
-            description: string;
-            website: string;
-            additionalDetails?: string;
-            /**
-             * Format: binary
-             * @description Optional file upload
-             */
-            file?: string;
-            /** @description Starting page number (optional, only if file is provided) */
-            startPage?: number;
-            /** @description Ending page number (optional, only if file is provided) */
-            endPage?: number;
-          };
+    "/students/academic-data": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-      };
-      responses: {
-        /** @description Competition generated successfully */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              /** @example true */
-              success: boolean;
-              data: components["schemas"]["GenerateCompetitionResponse"];
+        /**
+         * Get student academic data
+         * @description Retrieve all academic information for the current student including achievements and memberships
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
             };
-          };
+            requestBody?: never;
+            responses: {
+                /** @description Student academic data retrieved successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @example true */
+                            success?: boolean;
+                            data?: components["schemas"]["StudentAcademicData"];
+                        };
+                    };
+                };
+            };
         };
-      };
+        /**
+         * Update student academic data
+         * @description Update student's academic information including achievements and memberships
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["StudentAcademicDataUpdate"];
+                };
+            };
+            responses: {
+                /** @description Student academic data updated successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @example true */
+                            success?: boolean;
+                            data?: components["schemas"]["StudentAcademicData"];
+                        };
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
     };
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
+    "/students/transcript": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get student transcripts
+         * @description Get all transcripts for the current student
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Successfully retrieved transcripts */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            success?: boolean;
+                            data?: {
+                                id?: number;
+                                semester?: string;
+                                fileUrl?: string;
+                            }[];
+                        };
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Upload student transcript
+         * @description Upload student's transcript file
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        /**
+                         * Format: binary
+                         * @description Transcript file upload (PDF format)
+                         */
+                        transcript?: string;
+                        /** @description Semester of the transcript */
+                        semester?: string;
+                    };
+                };
+            };
+            responses: never;
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/students/transcript/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /**
+         * Delete student transcript
+         * @description Delete a transcript for the current student
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Transcript deleted successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/competitions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get competition list
+         * @description Get all competitions
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Competition list retrieved successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Create competition
+         * @description Create a new competition
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["GenerateCompetitionResponse"];
+                };
+            };
+            responses: {
+                /** @description Competition created successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @example true */
+                            success?: boolean;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/competitions/generate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Generate competition
+         * @description Generate a new competition
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        title: string;
+                        description: string;
+                        website: string;
+                        additionalDetails?: string;
+                        /**
+                         * Format: binary
+                         * @description Optional file upload
+                         */
+                        file?: string;
+                        /** @description Starting page number (optional, only if file is provided) */
+                        startPage?: number;
+                        /** @description Ending page number (optional, only if file is provided) */
+                        endPage?: number;
+                    };
+                };
+            };
+            responses: {
+                /** @description Competition generated successfully */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            /** @example true */
+                            success: boolean;
+                            data: components["schemas"]["GenerateCompetitionResponse"];
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
-  schemas: {
-    SuccessResponse: {
-      /** @example true */
-      success: boolean;
-      data: components["schemas"]["RecommendationResponse"];
-    };
-    GenerateCompetitionResponse: {
-      /**
-       * @description The exact name of the competition
-       * @example LIDM 2025 - Inovasi Teknologi Digital Pendidikan (Divisi1)
-       */
-      title: string;
-      /** @description A brief overview of the competition's purpose and scope */
-      description: string;
-      /**
-       * @description The primary domain(s) of the competition
-       * @example [
-       *       "Educational Technology",
-       *       "Software Development"
-       *     ]
-       */
-      field: string[];
-      /** @description Indicates whether participants compete solo or in groups */
-      type: string | null;
-      /** @description Minimum GPA requirement for eligibility, if specified; otherwise, null */
-      minGPA: string | null;
-      requirements: {
-        /**
-         * @description Details on team size and composition
-         * @example 3-5 students from the same university
-         */
-        teamComposition: string | null;
-        /**
-         * @description Rules about the originality of submissions
-         * @example Work must be original
-         */
-        originality: string | null;
-        /**
-         * @description Additional eligibility criteria
-         * @example Must submit a proposal
-         */
-        other: string | null;
-      };
-      /**
-       * @description The competition's start or registration date (YYYY-MM-DD format)
-       * @example 2025-01-01
-       */
-      startDate: string | null;
-      /**
-       * @description The competition's end or final date (YYYY-MM-DD format)
-       * @example 2025-01-01
-       */
-      endDate: string | null;
-      /** @description The event's location, e.g., 'Online' or a specific city/university; null if unspecified */
-      location: string | null;
-      /**
-       * @description The organizing entity
-       * @example Ministry of Education
-       */
-      organizer: string | null;
-      evaluationCriteria: {
-        /**
-         * @description Criteria for initial judging
-         * @example Originality: 30%, Impact: 30%
-         */
-        preliminaryRound: string | null;
-        /**
-         * @description Criteria for final judging
-         * @example Presentation and functionality
-         */
-        finalRound: string | null;
-        /** @description Other evaluation criteria */
-        other: string | null;
-      };
-      competitionStatistics: {
-        /** @description A brief overview of historical participation data, including years and sources */
-        summary: string | null;
-        totalApplicantsPastYear: {
-          /** @description Number of teams or individuals who applied in the specified year */
-          count: number | null;
-          /**
-           * @description The year of the applicant data
-           * @example 2023
-           */
-          year: string | null;
-        }[];
-        pastUngParticipants: {
-          /** @description Year of participation */
-          year: string;
-          /** @description Name of the participant from UNG */
-          name: string;
-          /** @description Number of team members or 1 if individual */
-          count: number;
-        }[];
-      };
-      /** @description The primary website or document URL for the competition */
-      sourceUrl: string;
-      /**
-       * @description Academic courses directly relevant to the competition's technical or non-technical focus
-       * @example [
-       *       "Software Engineering",
-       *       "Instructional Design"
-       *     ]
-       */
-      relevantCourses: string[];
-      /**
-       * @description Skills directly relevant to the competition's technical or non-technical requirements
-       * @example [
-       *       "Python",
-       *       "Instructional Design"
-       *     ]
-       */
-      relevantSkills: string[];
-    };
-    RecommendationResponse: {
-      /**
-       * @description Overall skill profile for the radar chart
-       * @example {
-       *       "technicalExpertise": 0.85,
-       *       "scientificWriting": 0.65,
-       *       "problemSolving": 0.83,
-       *       "creativityInnovation": 0.72,
-       *       "communication": 0.55,
-       *       "teamworkCollaboration": 0.78,
-       *       "projectManagement": 0.7,
-       *       "businessAcumen": 0.5,
-       *       "designThinking": 0.6,
-       *       "selfLearning": 0.9
-       *     }
-       */
-      skillsProfile: {
-        [key: string]: number;
-      };
-      /**
-       * @description Detailed breakdown of skill profile scores
-       * @example {
-       *       "technicalExpertise": "Dibangun dari IPK tinggi (3.66), pengalaman dalam pengembangan backend, optimasi API, integrasi OpenAI, dan kontribusi pada proyek perangkat lunak kompetisi nasional.",
-       *       "scientificWriting": "Nilai mata kuliah metodologi penelitian (3.7) menunjukkan kemampuan dokumentasi akademis yang cukup baik, meskipun pengalaman menulis paper/jurnal masih bisa ditingkatkan."
-       *     }
-       */
-      skillsProfileBreakdown: {
-        [key: string]: string;
-      };
-      /**
-       * @description Category distribution for the pie chart
-       * @example {
-       *       "Teknologi": 0.75,
-       *       "Data Science": 0.15,
-       *       "Bisnis": 0.1
-       *     }
-       */
-      categoryDistribution: {
-        [key: string]: number;
-      };
-      performanceMetrics: {
-        /**
-         * Format: float
-         * @description Participation rate of students
-         * @example 0.75
-         */
-        participationRate: number;
-        /**
-         * Format: float
-         * @description Average match score
-         * @example 0.78
-         */
-        avgMatchScore: number;
-        /**
-         * Format: float
-         * @description Success rate in competitions
-         * @example 0.33
-         */
-        competitionSuccessRate: number;
-        /**
-         * @description Skill growth indicators
-         * @example {
-         *       "technicalExpertise": "+0.15 (dari proyek di 80&Co dan kompetisi IT nasional)",
-         *       "problemSolving": "+0.1 (dari pengalaman optimasi database dan AI-integrated project)"
-         *     }
-         */
-        skillGrowth: {
-          [key: string]: string;
+    schemas: {
+        SuccessResponse: {
+            /** @example true */
+            success: boolean;
+            data: components["schemas"]["RecommendationResponse"];
         };
-      };
-      recommendations: {
-        /**
-         * @description Unique identifier for the competition
-         * @example 1
-         */
-        id: number;
-        /**
-         * @description Name of the competition
-         * @example IT FEST 2025 - Software Development
-         */
-        competition: string;
-        /**
-         * Format: float
-         * @description Match score (0.0 - 1.0)
-         * @example 0.92
-         */
-        matchScore: number;
-        /**
-         * @description Detailed breakdown of how the match score was calculated
-         * @example Technical skills (0.85 * 0.3 = 0.255), Problem solving (0.83 * 0.25 = 0.2075), Creativity (0.72 * 0.2 = 0.144), Teamwork (0.78 * 0.15 = 0.117), Communication (0.55 * 0.1 = 0.055). Total = 0.92.
-         */
-        matchScoreBreakdown: string;
-        /**
-         * @description Skill distribution for the competition
-         * @example {
-         *       "technicalExpertise": 0.9,
-         *       "scientificWriting": 0.4,
-         *       "problemSolving": 0.8,
-         *       "creativityInnovation": 0.7,
-         *       "communication": 0.4,
-         *       "teamworkCollaboration": 0.7,
-         *       "projectManagement": 0.5,
-         *       "businessAcumen": 0.3,
-         *       "designThinking": 0.6,
-         *       "selfLearning": 0.8
-         *     }
-         */
-        skillDistribution: {
-          [key: string]: number;
+        GenerateCompetitionResponse: {
+            /**
+             * @description The exact name of the competition
+             * @example LIDM 2025 - Inovasi Teknologi Digital Pendidikan (Divisi1)
+             */
+            title: string;
+            /** @description A brief overview of the competition's purpose and scope */
+            description: string;
+            /**
+             * @description The primary domain(s) of the competition
+             * @example [
+             *       "Educational Technology",
+             *       "Software Development"
+             *     ]
+             */
+            field: string[];
+            /** @description Indicates whether participants compete solo or in groups */
+            type: string | null;
+            /** @description Minimum GPA requirement for eligibility, if specified; otherwise, null */
+            minGPA: string | null;
+            requirements: {
+                /**
+                 * @description Details on team size and composition
+                 * @example 3-5 students from the same university
+                 */
+                teamComposition: string | null;
+                /**
+                 * @description Rules about the originality of submissions
+                 * @example Work must be original
+                 */
+                originality: string | null;
+                /**
+                 * @description Additional eligibility criteria
+                 * @example Must submit a proposal
+                 */
+                other: string | null;
+            };
+            /**
+             * @description The competition's start or registration date (YYYY-MM-DD format)
+             * @example 2025-01-01
+             */
+            startDate: string | null;
+            /**
+             * @description The competition's end or final date (YYYY-MM-DD format)
+             * @example 2025-01-01
+             */
+            endDate: string | null;
+            /** @description The event's location, e.g., 'Online' or a specific city/university; null if unspecified */
+            location: string | null;
+            /**
+             * @description The organizing entity
+             * @example Ministry of Education
+             */
+            organizer: string | null;
+            evaluationCriteria: {
+                /**
+                 * @description Criteria for initial judging
+                 * @example Originality: 30%, Impact: 30%
+                 */
+                preliminaryRound: string | null;
+                /**
+                 * @description Criteria for final judging
+                 * @example Presentation and functionality
+                 */
+                finalRound: string | null;
+                /** @description Other evaluation criteria */
+                other: string | null;
+            };
+            competitionStatistics: {
+                /** @description A brief overview of historical participation data, including years and sources */
+                summary: string | null;
+                totalApplicantsPastYear: {
+                    /** @description Number of teams or individuals who applied in the specified year */
+                    count: number | null;
+                    /**
+                     * @description The year of the applicant data
+                     * @example 2023
+                     */
+                    year: string | null;
+                }[];
+                pastUngParticipants: {
+                    /** @description Year of participation */
+                    year: string;
+                    /** @description Name of the participant from UNG */
+                    name: string;
+                    /** @description Number of team members or 1 if individual */
+                    count: number;
+                }[];
+            };
+            /** @description The primary website or document URL for the competition */
+            sourceUrl: string;
+            /**
+             * @description Academic courses directly relevant to the competition's technical or non-technical focus
+             * @example [
+             *       "Software Engineering",
+             *       "Instructional Design"
+             *     ]
+             */
+            relevantCourses: string[];
+            /**
+             * @description Skills directly relevant to the competition's technical or non-technical requirements
+             * @example [
+             *       "Python",
+             *       "Instructional Design"
+             *     ]
+             */
+            relevantSkills: string[];
         };
-        /**
-         * @description Explanation of skill distribution for the competition
-         * @example {
-         *       "technicalExpertise": "Bobot sangat tinggi karena kompetisi berfokus pada pengembangan perangkat lunak inovatif.",
-         *       "scientificWriting": "Bobot rendah karena dokumentasi akademis tidak menjadi fokus utama."
-         *     }
-         */
-        skillDistributionBreakdown: {
-          [key: string]: string;
+        RecommendationResponse: {
+            /** @description Basic student information */
+            student: {
+                /** @example student */
+                name: string;
+                /** @example student@gmail.com */
+                email: string;
+            };
+            result: {
+                /**
+                 * @description Comprehensive summary of the student's academic and professional background
+                 * @example Mahasiswa Teknik Informatika dengan IPK 3.66, menonjol dalam penguasaan pemrograman, pengelolaan sistem, dan teknologi berbasis data. Berpengalaman sebagai Software Developer di Jepang dan beberapa magang sebelumnya. Memiliki minat utama di bidang Programming, Backend Development, dan Software Engineering.
+                 */
+                studentSummary: string;
+                /**
+                 * @description Detailed skill profile with scores and explanations
+                 * @example {
+                 *       "technicalExpertise": {
+                 *         "score": 0.85,
+                 *         "breakdown": "Memiliki pengalaman kerja nyata sebagai Software Developer di Jepang dan magang di Ditjen Diktiristek serta Thinkspedia. Berhasil mengembangkan backend sistem kompleks dan meningkatkan performa unit testing hingga 90%."
+                 *       },
+                 *       "scientificWriting": {
+                 *         "score": 0.5,
+                 *         "breakdown": "Belum ada pengalaman dalam publikasi ilmiah atau proposal yang didanai. Namun, mampu menyusun laporan kerja praktik dengan baik."
+                 *       }
+                 *     }
+                 */
+                skillsProfile: {
+                    [key: string]: {
+                        /** Format: float */
+                        score: number;
+                        breakdown: string;
+                    };
+                };
+                /** @description Overall assessment of student's profile */
+                overallAssessment: {
+                    /** @example [
+                     *       "Kemampuan teknis yang sangat baik dalam pengembangan backend.",
+                     *       "Kemandirian belajar sangat tinggi.",
+                     *       "Kemampuan problem solving yang solid dalam konteks teknis."
+                     *     ] */
+                    strengths: string[];
+                    /** @example [
+                     *       "Minim pengalaman dalam penulisan ilmiah.",
+                     *       "Kurangnya paparan dalam design thinking.",
+                     *       "Belum ada pengalaman dalam kewirausahaan dan bisnis."
+                     *     ] */
+                    weaknesses: string[];
+                };
+                /** @description List of recommended competitions */
+                recommendations: {
+                    /** @example 5 */
+                    id: number;
+                    /** @example Program Kreativitas Mahasiswa bidang Karsa Cipta */
+                    competitionName: string;
+                    /** @example 1 */
+                    rank: number;
+                    matchScore: {
+                        /**
+                         * Format: float
+                         * @example 0.78
+                         */
+                        score: number;
+                        /** @example Mahasiswa memiliki kemampuan teknis yang kuat dan pengalaman dalam pengembangan prototipe yang mendukung kesuksesan di kompetisi ini. Namun, perlu meningkatkan kreativitas dan kemampuan menulis ilmiah untuk mendukung laporan. */
+                        reason: string;
+                    };
+                    /** @example {
+                     *       "technicalExpertise": {
+                     *         "weight": 0.8,
+                     *         "breakdown": "Kompetisi ini memerlukan kemampuan teknis tinggi untuk merancang dan membangun prototipe yang inovatif."
+                     *       }
+                     *     } */
+                    skillRequirements: {
+                        [key: string]: {
+                            /** Format: float */
+                            weight: number;
+                            breakdown: string;
+                        };
+                    };
+                    reasoning: {
+                        /** @example Kompetisi ini sesuai dengan kekuatan teknis mahasiswa dan memberikan peluang untuk mengasah kreativitas serta kemampuan ilmiah. */
+                        summary: string;
+                        /** @example [
+                         *       "Kemampuan teknis mahasiswa mendukung pembangunan prototipe.",
+                         *       "Pengalaman dalam tim relevan dengan kebutuhan kerja sama kompetisi."
+                         *     ] */
+                        pros: string[];
+                        /** @example [
+                         *       "Kurangnya pengalaman dalam kreativitas tingkat tinggi.",
+                         *       "Minimnya pengalaman dalam penulisan laporan ilmiah."
+                         *     ] */
+                        cons: string[];
+                    };
+                    /** @example [
+                     *       "Kemampuan teknis dalam prototyping.",
+                     *       "Kreativitas dalam menghasilkan ide inovatif.",
+                     *       "Kemampuan menyusun laporan akhir yang berkualitas."
+                     *     ] */
+                    keyFactors: string[];
+                    /** @example [
+                     *       "Ikuti pelatihan penulisan ilmiah untuk meningkatkan kualitas laporan.",
+                     *       "Latih brainstorming untuk meningkatkan kreativitas ide.",
+                     *       "Perkuat kerja sama tim dengan simulasi proyek bersama."
+                     *     ] */
+                    preparationTips: string[];
+                    competition: {
+                        /** @example PKM KC adalah singkatan dari Program Kreativitas Mahasiswa bidang Karsa Cipta. Ini adalah salah satu jenis Program Kreativitas Mahasiswa (PKM) yang diselenggarakan oleh Direktorat Pembelajaran dan Kemahasiswaan, Direktorat Jenderal Pendidikan Tinggi, Kementerian Pendidikan dan Kebudayaan (Kemendikbud) Republik Indonesia. */
+                        description: string;
+                        /** @example [
+                         *       "Semua bidang keilmuan"
+                         *     ] */
+                        field: string[];
+                        /** @example Rancang Bangun Prototipe */
+                        type: string;
+                        /** @example  */
+                        minGPA: string;
+                        /** @example Daring dan Luring (Hybrid) */
+                        location: string;
+                        /** @example Direktorat Pembelajaran dan Kemahasiswaan, Direktorat Jenderal Pendidikan Tinggi, Kementerian Pendidikan dan Kebudayaan (Kemendikbud) Republik Indonesia */
+                        organizer: string;
+                        /**
+                         * Format: date-time
+                         * @example null
+                         */
+                        startDate: string | null;
+                        /**
+                         * Format: date-time
+                         * @example null
+                         */
+                        endDate: string | null;
+                        /** @example simbelmawa.kemdikbud.go.id */
+                        sourceUrl: string;
+                        /** @example [
+                         *       "Kewirausahaan",
+                         *       "Teknik Mesin",
+                         *       "Teknik Elektro",
+                         *       "Teknik Informatika"
+                         *     ] */
+                        relevantCourses: string[];
+                        /** @example [
+                         *       "Rancang Bangun",
+                         *       "Problem Solving",
+                         *       "Kreativitas",
+                         *       "Kerja Tim"
+                         *     ] */
+                        relevantSkills: string[];
+                        /** @example {
+                         *       "other": null,
+                         *       "originality": null,
+                         *       "teamComposition": null
+                         *     } */
+                        requirements: Record<string, never> | null;
+                        /** @example {
+                         *       "other": "Kelengkapan laporan akhir.",
+                         *       "finalRound": "Kualitas prototipe, penguasaan materi, dan presentasi.",
+                         *       "preliminaryRound": "Kreativitas, keaslian ide, dan potensi implementasi."
+                         *     } */
+                        evaluationCriteria: Record<string, never> | null;
+                        competitionStats: {
+                            /** @description A brief overview of historical participation data, including years and sources */
+                            summary?: string | null;
+                            totalApplicantsPastYear: {
+                                /** @description Number of teams or individuals who applied in the specified year */
+                                count: number | null;
+                                /**
+                                 * @description The year of the applicant data
+                                 * @example 2023
+                                 */
+                                year: string | null;
+                            }[];
+                            pastUngParticipants: {
+                                /** @description Year of participation */
+                                year: string | null;
+                                /** @description Name of the participant from UNG */
+                                name: string | null;
+                                /** @description Number of team members or 1 if individual */
+                                count: number | null;
+                            }[];
+                        };
+                    };
+                }[];
+                /** @description Development suggestions for skill improvement */
+                developmentSuggestions: {
+                    /**
+                     * @example course
+                     * @enum {string}
+                     */
+                    type: "course" | "practice" | "certification";
+                    /** @example Introduction to Scientific Writing */
+                    title: string;
+                    /**
+                     * Format: uri
+                     * @example https://www.coursera.org/learn/scientific-writing
+                     */
+                    link: string;
+                    /** @example Untuk meningkatkan kemampuan mahasiswa dalam menyusun laporan akhir yang berkualitas. */
+                    reason: string;
+                }[];
+            };
         };
-        /**
-         * @description Rank based on match score
-         * @example 1
-         */
-        rank: number;
-        /**
-         * @description AI-generated explanation for why this competition is recommended
-         * @example Kompetisi ini sangat cocok karena mahasiswa memiliki kekuatan di bidang software development, dengan pengalaman proyek nyata di AI dan backend. GPA memenuhi syarat minimum, dan keterlibatan dalam kompetisi serupa sebelumnya memberikan advantage.
-         */
-        reason: string;
-        details: {
-          /**
-           * Format: date
-           * @example 2025-05-20
-           */
-          startDate?: string;
-          /**
-           * Format: date
-           * @example 2025-08-25
-           */
-          endDate?: string;
-          /** @example Online */
-          location?: string;
-          /** @example itfestmicroipb */
-          organizer?: string;
-          /**
-           * Format: date
-           * @example 2025-05-01
-           */
-          registrationDeadline?: string;
-          /** @example https://itfestmicroipb.com */
-          website?: string;
+        StudentPersonalData: {
+            id?: number;
+            name?: string;
+            email?: string;
+            studentId?: string;
+            major?: string;
+            interests?: string[];
         };
-        /**
-         * @description Whether the student has applied to this competition
-         * @example false
-         */
-        applied: boolean;
-        /**
-         * @description Personalized preparation tips for the competition
-         * @example [
-         *       "Latihan pengembangan aplikasi berbasis AI dengan framework populer seperti TensorFlow atau PyTorch.",
-         *       "Fokus pada proposal yang kuat dengan solusi inovatif, termasuk demo teknis yang menarik.",
-         *       "Pelajari pola pemenang kompetisi sebelumnya untuk memahami strategi dan inovasi.",
-         *       "Latihan pitching dengan focus pada storytelling dan penjelasan teknis yang jelas."
-         *     ]
-         */
-        preparationTips: string[];
-      }[];
-      developmentSuggestions: {
-        /**
-         * @description Type of development suggestion (course, practice, etc.)
-         * @example course
-         */
-        type: string;
-        /**
-         * @description Title of the development resource
-         * @example IoT Foundations: Prototyping and Programming
-         */
-        title: string;
-        /**
-         * @description Platform where the resource is available
-         * @example Coursera
-         */
-        platform: string;
-        /**
-         * @description Link to the resource
-         * @example https://www.coursera.org/learn/iot
-         */
-        link: string;
-        /**
-         * @description Reason why this resource is recommended
-         * @example Untuk meningkatkan kemampuan pengembangan IoT dan prototyping yang relevan dengan kompetisi GEMASTIK Divisi IX.
-         */
-        reason: string;
-      }[];
-      profileStrength: {
-        /**
-         * Format: float
-         * @description Overall profile strength score
-         * @example 0.82
-         */
-        score: number;
-        /**
-         * @description Detailed explanation of how the profile strength score was calculated
-         * @example IPK (3.66/4.0 * 0.25 = 0.23), Technical Skills (0.85 * 0.3 = 0.255), Experience Quality (0.8 * 0.2 = 0.16), Achievements (0.33 * 0.15 = 0.0495), Growth Potential (0.9 * 0.1 = 0.09). Total = 0.82.
-         */
-        calculationExplanation: string;
-        /**
-         * @description List of profile strengths
-         * @example [
-         *       "Kuat di bidang teknis dengan bukti dari proyek backend dan AI-integrated.",
-         *       "Prestasi kompetisi nasional menunjukkan kemampuan bersaing.",
-         *       "Kemampuan belajar mandiri sangat tinggi dengan adaptasi teknologi baru."
-         *     ]
-         */
-        strengths: string[];
-        /**
-         * @description List of areas for improvement
-         * @example [
-         *       "Keterampilan komunikasi perlu ditingkatkan untuk pitching kompetisi.",
-         *       "Pemahaman bisnis masih terbatas untuk kompetisi dengan aspek kewirausahaan."
-         *     ]
-         */
-        weaknesses: string[];
-      };
+        StudentPersonalDataUpdate: {
+            name?: string;
+            email?: string;
+            studentId?: string;
+        };
+        StudentAcademicData: {
+            gpa?: string;
+            interests?: string[];
+            skills?: string[];
+            achievements?: components["schemas"]["Achievement"][];
+            experiences?: components["schemas"]["Experience"][];
+        };
+        StudentAcademicDataUpdate: {
+            gpa?: string;
+            interests?: string[];
+            achievements?: components["schemas"]["AchievementCreate"][];
+            experiences?: components["schemas"]["ExperienceCreate"][];
+        };
+        Achievement: {
+            id?: number;
+            title?: string;
+            description?: string;
+            /** Format: date */
+            date?: string;
+        };
+        AchievementCreate: {
+            title: string;
+            description: string;
+            /** Format: date */
+            date: string;
+        };
+        Experience: {
+            id?: number;
+            organization?: string;
+            description?: string;
+            position?: string;
+            /** Format: date-time */
+            startDate?: string;
+            /** Format: date-time */
+            endDate?: string;
+        };
+        ExperienceCreate: {
+            organization: string;
+            position: string;
+            description: string;
+            /** Format: date-time */
+            startDate: string;
+            /** Format: date-time */
+            endDate?: string;
+        };
+        ErrorResponse: {
+            error?: string;
+            message?: string;
+        };
     };
-    StudentPersonalData: {
-      id?: number;
-      name?: string;
-      email?: string;
-      studentId?: string;
-      major?: string;
-      interests?: string[];
-    };
-    StudentPersonalDataUpdate: {
-      name?: string;
-      email?: string;
-      studentId?: string;
-    };
-    StudentAcademicData: {
-      gpa?: string;
-      interests?: string[];
-      skills?: string[];
-      achievements?: components["schemas"]["Achievement"][];
-      experiences?: components["schemas"]["Experience"][];
-    };
-    StudentAcademicDataUpdate: {
-      gpa?: string;
-      interests?: string[];
-      achievements?: components["schemas"]["AchievementCreate"][];
-      experiences?: components["schemas"]["ExperienceCreate"][];
-    };
-    Achievement: {
-      id?: number;
-      title?: string;
-      description?: string;
-      /** Format: date */
-      date?: string;
-    };
-    AchievementCreate: {
-      title: string;
-      description: string;
-      /** Format: date */
-      date: string;
-    };
-    Experience: {
-      id?: number;
-      organization?: string;
-      description?: string;
-      position?: string;
-      /** Format: date-time */
-      startDate?: string;
-      /** Format: date-time */
-      endDate?: string;
-    };
-    ExperienceCreate: {
-      organization: string;
-      position: string;
-      description: string;
-      /** Format: date-time */
-      startDate: string;
-      /** Format: date-time */
-      endDate?: string;
-    };
-    ErrorResponse: {
-      error?: string;
-      message?: string;
-    };
-  };
-  responses: never;
-  parameters: never;
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+    responses: never;
+    parameters: never;
+    requestBodies: never;
+    headers: never;
+    pathItems: never;
 }
 export type $defs = Record<string, never>;
 export interface operations {
-  getSession: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Successfully retrieved session information */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    getSession: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content: {
-          "application/json": {
-            user: {
-              /** @example student */
-              name: string;
-              /** @example student@gmail.com */
-              email: string;
-              /** @example 1 */
-              id: string;
-              /** @example student */
-              role: string;
+        requestBody?: never;
+        responses: {
+            /** @description Successfully retrieved session information */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        user: {
+                            /** @example student */
+                            name: string;
+                            /** @example student@gmail.com */
+                            email: string;
+                            /** @example 1 */
+                            id: string;
+                            /** @example student */
+                            role: string;
+                        };
+                        /**
+                         * Format: date-time
+                         * @example 2025-07-03T14:08:10.770Z
+                         */
+                        expires: string;
+                    };
+                };
             };
-            /**
-             * Format: date-time
-             * @example 2025-07-03T14:08:10.770Z
-             */
-            expires: string;
-          };
         };
-      };
     };
-  };
-  getMyRecommendations: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Successfully retrieved recommendations */
-      200: {
-        headers: {
-          [name: string]: unknown;
+    getMyRecommendations: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
         };
-        content: {
-          "application/json": components["schemas"]["SuccessResponse"];
+        requestBody?: never;
+        responses: {
+            /** @description Successfully retrieved recommendations */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SuccessResponse"];
+                };
+            };
         };
-      };
     };
-  };
 }

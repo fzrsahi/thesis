@@ -742,7 +742,7 @@
               "studentSummary": {
                 "type": "string",
                 "description": "Comprehensive summary of the student's academic and professional background",
-                "example": "Mahasiswa dengan IPK 3.66, menunjukkan keunggulan akademik di bidang Teknik Informatika. Memiliki minat utama pada Programming, Backend Development, dan Software Engineering."
+                "example": "Mahasiswa Teknik Informatika dengan IPK 3.66, menonjol dalam penguasaan pemrograman, pengelolaan sistem, dan teknologi berbasis data. Berpengalaman sebagai Software Developer di Jepang dan beberapa magang sebelumnya. Memiliki minat utama di bidang Programming, Backend Development, dan Software Engineering."
               },
               "skillsProfile": {
                 "type": "object",
@@ -763,12 +763,12 @@
                 },
                 "example": {
                   "technicalExpertise": {
-                    "score": 0.92,
-                    "breakdown": "Mahasiswa memiliki pengalaman teknis yang sangat kuat: peran sebagai Software Developer di Jepang dengan kontribusi pada pengembangan sistem AI dan LMS menggunakan NestJS."
+                    "score": 0.85,
+                    "breakdown": "Memiliki pengalaman kerja nyata sebagai Software Developer di Jepang dan magang di Ditjen Diktiristek serta Thinkspedia. Berhasil mengembangkan backend sistem kompleks dan meningkatkan performa unit testing hingga 90%."
                   },
                   "scientificWriting": {
-                    "score": 0.65,
-                    "breakdown": "Mahasiswa mampu menyusun laporan teknis yang baik, terbukti dari pengalaman kerja di berbagai proyek backend dan dokumentasi API."
+                    "score": 0.5,
+                    "breakdown": "Belum ada pengalaman dalam publikasi ilmiah atau proposal yang didanai. Namun, mampu menyusun laporan kerja praktik dengan baik."
                   }
                 },
                 "description": "Detailed skill profile with scores and explanations"
@@ -782,8 +782,9 @@
                       "type": "string"
                     },
                     "example": [
-                      "Penguasaan teknis backend dan pengembangan API yang sangat baik",
-                      "Kemampuan problem solving yang kuat dalam konteks proyek nyata"
+                      "Kemampuan teknis yang sangat baik dalam pengembangan backend.",
+                      "Kemandirian belajar sangat tinggi.",
+                      "Kemampuan problem solving yang solid dalam konteks teknis."
                     ]
                   },
                   "weaknesses": {
@@ -792,8 +793,9 @@
                       "type": "string"
                     },
                     "example": [
-                      "Kurangnya pengalaman dalam penulisan karya ilmiah formal",
-                      "Belum ada bukti pencapaian signifikan dalam bisnis atau kewirausahaan"
+                      "Minim pengalaman dalam penulisan ilmiah.",
+                      "Kurangnya paparan dalam design thinking.",
+                      "Belum ada pengalaman dalam kewirausahaan dan bisnis."
                     ]
                   }
                 },
@@ -807,11 +809,11 @@
                   "properties": {
                     "id": {
                       "type": "integer",
-                      "example": 1
+                      "example": 5
                     },
                     "competitionName": {
                       "type": "string",
-                      "example": "PKM-KC"
+                      "example": "Program Kreativitas Mahasiswa bidang Karsa Cipta"
                     },
                     "rank": {
                       "type": "integer",
@@ -825,11 +827,11 @@
                           "format": "float",
                           "minimum": 0,
                           "maximum": 1,
-                          "example": 0.82
+                          "example": 0.78
                         },
                         "reason": {
                           "type": "string",
-                          "example": "Mahasiswa memiliki keahlian teknis dan problem solving yang relevan untuk menciptakan prototipe inovatif."
+                          "example": "Mahasiswa memiliki kemampuan teknis yang kuat dan pengalaman dalam pengembangan prototipe yang mendukung kesuksesan di kompetisi ini. Namun, perlu meningkatkan kreativitas dan kemampuan menulis ilmiah untuk mendukung laporan."
                         }
                       },
                       "required": ["score", "reason"]
@@ -854,7 +856,7 @@
                       "example": {
                         "technicalExpertise": {
                           "weight": 0.8,
-                          "breakdown": "Keahlian teknis sangat penting untuk mengembangkan prototipe berkualitas tinggi."
+                          "breakdown": "Kompetisi ini memerlukan kemampuan teknis tinggi untuk merancang dan membangun prototipe yang inovatif."
                         }
                       }
                     },
@@ -863,7 +865,7 @@
                       "properties": {
                         "summary": {
                           "type": "string",
-                          "example": "Kompetisi ini cocok untuk mahasiswa karena memanfaatkan keahlian teknis dan kemampuan problem solving yang dimilikinya."
+                          "example": "Kompetisi ini sesuai dengan kekuatan teknis mahasiswa dan memberikan peluang untuk mengasah kreativitas serta kemampuan ilmiah."
                         },
                         "pros": {
                           "type": "array",
@@ -871,7 +873,8 @@
                             "type": "string"
                           },
                           "example": [
-                            "Keahlian teknis mahasiswa sangat sesuai dengan kebutuhan kompetisi"
+                            "Kemampuan teknis mahasiswa mendukung pembangunan prototipe.",
+                            "Pengalaman dalam tim relevan dengan kebutuhan kerja sama kompetisi."
                           ]
                         },
                         "cons": {
@@ -880,7 +883,8 @@
                             "type": "string"
                           },
                           "example": [
-                            "Kurangnya pengalaman penulisan ilmiah dapat menjadi tantangan"
+                            "Kurangnya pengalaman dalam kreativitas tingkat tinggi.",
+                            "Minimnya pengalaman dalam penulisan laporan ilmiah."
                           ]
                         }
                       },
@@ -892,8 +896,9 @@
                         "type": "string"
                       },
                       "example": [
-                        "Keahlian teknis dalam pengembangan prototipe",
-                        "Kemampuan problem solving yang relevan"
+                        "Kemampuan teknis dalam prototyping.",
+                        "Kreativitas dalam menghasilkan ide inovatif.",
+                        "Kemampuan menyusun laporan akhir yang berkualitas."
                       ]
                     },
                     "preparationTips": {
@@ -902,8 +907,170 @@
                         "type": "string"
                       },
                       "example": [
-                        "Perbaiki keterampilan penulisan ilmiah untuk mendukung dokumentasi ide",
-                        "Latih presentasi untuk meningkatkan komunikasi selama kompetisi"
+                        "Ikuti pelatihan penulisan ilmiah untuk meningkatkan kualitas laporan.",
+                        "Latih brainstorming untuk meningkatkan kreativitas ide.",
+                        "Perkuat kerja sama tim dengan simulasi proyek bersama."
+                      ]
+                    },
+                    "competition": {
+                      "type": "object",
+                      "properties": {
+                        "description": {
+                          "type": "string",
+                          "example": "PKM KC adalah singkatan dari Program Kreativitas Mahasiswa bidang Karsa Cipta. Ini adalah salah satu jenis Program Kreativitas Mahasiswa (PKM) yang diselenggarakan oleh Direktorat Pembelajaran dan Kemahasiswaan, Direktorat Jenderal Pendidikan Tinggi, Kementerian Pendidikan dan Kebudayaan (Kemendikbud) Republik Indonesia."
+                        },
+                        "field": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "example": ["Semua bidang keilmuan"]
+                        },
+                        "type": {
+                          "type": "string",
+                          "example": "Rancang Bangun Prototipe"
+                        },
+                        "minGPA": {
+                          "type": "string",
+                          "example": ""
+                        },
+                        "location": {
+                          "type": "string",
+                          "example": "Daring dan Luring (Hybrid)"
+                        },
+                        "organizer": {
+                          "type": "string",
+                          "example": "Direktorat Pembelajaran dan Kemahasiswaan, Direktorat Jenderal Pendidikan Tinggi, Kementerian Pendidikan dan Kebudayaan (Kemendikbud) Republik Indonesia"
+                        },
+                        "startDate": {
+                          "type": "string",
+                          "format": "date-time",
+                          "nullable": true,
+                          "example": null
+                        },
+                        "endDate": {
+                          "type": "string",
+                          "format": "date-time",
+                          "nullable": true,
+                          "example": null
+                        },
+                        "sourceUrl": {
+                          "type": "string",
+                          "example": "simbelmawa.kemdikbud.go.id"
+                        },
+                        "relevantCourses": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "example": [
+                            "Kewirausahaan",
+                            "Teknik Mesin",
+                            "Teknik Elektro",
+                            "Teknik Informatika"
+                          ]
+                        },
+                        "relevantSkills": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "example": [
+                            "Rancang Bangun",
+                            "Problem Solving",
+                            "Kreativitas",
+                            "Kerja Tim"
+                          ]
+                        },
+                        "requirements": {
+                          "type": "object",
+                          "nullable": true,
+                          "example": {
+                            "other": null,
+                            "originality": null,
+                            "teamComposition": null
+                          }
+                        },
+                        "evaluationCriteria": {
+                          "type": "object",
+                          "nullable": true,
+                          "example": {
+                            "other": "Kelengkapan laporan akhir.",
+                            "finalRound": "Kualitas prototipe, penguasaan materi, dan presentasi.",
+                            "preliminaryRound": "Kreativitas, keaslian ide, dan potensi implementasi."
+                          }
+                        },
+                        "competitionStats": {
+                          "type": "object",
+                          "properties": {
+                            "summary": {
+                              "type": "string",
+                              "nullable": true,
+                              "description": "A brief overview of historical participation data, including years and sources"
+                            },
+                            "totalApplicantsPastYear": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "count": {
+                                    "type": "integer",
+                                    "nullable": true,
+                                    "description": "Number of teams or individuals who applied in the specified year"
+                                  },
+                                  "year": {
+                                    "type": "string",
+                                    "nullable": true,
+                                    "description": "The year of the applicant data",
+                                    "example": "2023"
+                                  }
+                                },
+                                "required": ["count", "year"]
+                              }
+                            },
+                            "pastUngParticipants": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "year": {
+                                    "type": "string",
+                                    "nullable": true,
+                                    "description": "Year of participation"
+                                  },
+                                  "name": {
+                                    "type": "string",
+                                    "nullable": true,
+                                    "description": "Name of the participant from UNG"
+                                  },
+                                  "count": {
+                                    "type": "integer",
+                                    "nullable": true,
+                                    "description": "Number of team members or 1 if individual"
+                                  }
+                                },
+                                "required": ["year", "name", "count"]
+                              }
+                            }
+                          },
+                          "required": ["totalApplicantsPastYear", "pastUngParticipants"]
+                        }
+                      },
+                      "required": [
+                        "description",
+                        "field",
+                        "type",
+                        "minGPA",
+                        "location",
+                        "organizer",
+                        "startDate",
+                        "endDate",
+                        "sourceUrl",
+                        "relevantCourses",
+                        "relevantSkills",
+                        "requirements",
+                        "evaluationCriteria",
+                        "competitionStats"
                       ]
                     }
                   },
@@ -915,7 +1082,8 @@
                     "skillRequirements",
                     "reasoning",
                     "keyFactors",
-                    "preparationTips"
+                    "preparationTips",
+                    "competition"
                   ]
                 },
                 "description": "List of recommended competitions"
@@ -932,16 +1100,16 @@
                     },
                     "title": {
                       "type": "string",
-                      "example": "Scientific Writing Essentials"
+                      "example": "Introduction to Scientific Writing"
                     },
                     "link": {
                       "type": "string",
                       "format": "uri",
-                      "example": "https://www.coursera.org/learn/sciwrite"
+                      "example": "https://www.coursera.org/learn/scientific-writing"
                     },
                     "reason": {
                       "type": "string",
-                      "example": "Kursus ini akan membantu mahasiswa memperkuat kemampuan penulisan ilmiah yang dibutuhkan untuk kompetisi."
+                      "example": "Untuk meningkatkan kemampuan mahasiswa dalam menyusun laporan akhir yang berkualitas."
                     }
                   },
                   "required": ["type", "title", "link", "reason"]
