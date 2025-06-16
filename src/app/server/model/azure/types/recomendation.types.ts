@@ -131,9 +131,11 @@ export const RecommendationSchema = z.object({
   reasoning: ReasoningSchema.describe("Analisis mendalam mengapa kompetisi ini direkomendasikan"),
   keyFactors: z
     .array(z.string())
+    .nullable()
     .describe("Faktor-faktor kunci yang menentukan kesuksesan di kompetisi ini"),
   preparationTips: z
     .array(z.string())
+    .nullable()
     .describe("Tips konkret untuk mempersiapkan diri mengikuti kompetisi"),
 });
 

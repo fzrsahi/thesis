@@ -19,13 +19,7 @@ export const getStudentRecomendationUsecase = async (userId: number) => {
     );
   }
 
-  const existingRecommendation = await findRecommendationByStudentId(student.id);
-  if (!existingRecommendation) {
-    throw customError(
-      RECOMMENDATION_ERROR_RESPONSE.NOT_FOUND.code,
-      RECOMMENDATION_ERROR_RESPONSE.NOT_FOUND.message,
-      HttpStatusCode.NotFound
-    );
-  }
+  const recomendation = findRecommendationByStudentId();
+
   return JSON.parse(existingRecommendation.response as string) as RecommendationResponse;
 };

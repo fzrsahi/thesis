@@ -20,45 +20,28 @@ export const findRecommendationByStudentId = async (
     select,
   });
 
-export const createOrUpdateRecomendation = async (
-  studentId: number,
-  prompt: string,
-  recommendation: RecommendationResponse
-) =>
-  prisma.recommendation.upsert({
-    create: {
-      studentId,
-      prompt,
-      response: JSON.stringify(recommendation),
-    },
-    update: {
-      prompt,
-      response: JSON.stringify(recommendation),
-    },
-    where: {
-      studentId,
-      id: 0,
-    },
-  });
+type CreateRecommendationArgs = {
+  studentId: number;
+  competitionIds: number[];
+};
 
-export const createStudentCompetition = async (
-  studentId: number,
-  competitionIds: number[],
-  matchScores: number[],
-  feedbacks: string[]
+type RecommendationMetadata = {
+  prompt: string;
+  recommendation: RecommendationResponse;
+};
+
+export const createRecommendation = async (
+  { studentId, competitionIds }: CreateRecommendationArgs,
+  { prompt, recommendation }: RecommendationMetadata,
+  matchScore: number
 ) => {
-  await prisma.studentCompetition.deleteMany({
-    where: {
-      studentId,
-    },
-  });
-
-  prisma.studentCompetition.createMany({
-    data: competitionIds.map((competitionId, index) => ({
+  return prisma.recommendation.createMany({
+    data: competitionIds.map((competitionId) => ({
       studentId,
       competitionId,
-      matchScore: matchScores[index],
-      feedback: feedbacks[index],
+      prompt,
+      response: JSON.stringify(recommendation),
+      matchScore,
     })),
   });
 };

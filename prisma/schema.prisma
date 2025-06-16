@@ -49,7 +49,6 @@ model Student {
   achievements    Achievement[]
   experiences     Experience[]
   recommendations Recommendation[]
-  competitions    StudentCompetition[]
   chatSessions    LLMChatSession[]
   transcript      Transcript[]
 
@@ -109,7 +108,6 @@ model Experience {
   @@map("experiences")
 }
 
-/// Competitions Catalog
 model competitions {
   id                 Int       @id @default(autoincrement())
   title              String // Judul lomba, misalnya: "Program Kreativitas Mahasiswa Karsa Cipta"
@@ -128,14 +126,13 @@ model competitions {
   relevantSkills     String[] // Keterampilan yang relevan
   fileId             String? // File dokumen lomba
 
-  vector    Unsupported("vector")?
-  content     String?
-  createdAt   DateTime               @default(now())
-  updatedAt   DateTime               @default(now())
+  vector         Unsupported("vector")?
+  content        String?
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @default(now())
   documentChunks documentChunks[]
 
-  participants             StudentCompetition[]
-  competitionStats         CompetitionStats?
+  competitionStats CompetitionStats?
 }
 
 model CompetitionStats {
@@ -152,9 +149,9 @@ model CompetitionStats {
 }
 
 model documentChunks {
-  id        String   @id @default(uuid()) // Kunci utama UUID
-  content   String   @db.Text
-  vector    Unsupported("vector")?
+  id      String                 @id @default(uuid()) // Kunci utama UUID
+  content String                 @db.Text
+  vector  Unsupported("vector")?
 
   competitionId Int
   createdAt     DateTime @default(now())
@@ -186,40 +183,26 @@ model TotalApplicantsPastYear {
   @@map("totalApplicantsPastYear")
 }
 
-/// Matching Results
-model StudentCompetition {
-  id            Int      @id @default(autoincrement())
-  studentId     Int
-  competitionId Int
-  matchScore    Float    @default(0.0) // 0.0–1.0: skor kecocokan AI (driven by RAG)
-  feedback      String? // Komentar / feedback user
-  createdAt     DateTime @default(now())
-
-  student     Student?     @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  competition competitions @relation(fields: [competitionId], references: [id], onDelete: Cascade)
-
-  @@unique([studentId, competitionId])
-  @@map("studentCompetitions")
-}
-
-/// Recommendation Logs
 model Recommendation {
-  id        Int      @id @default(autoincrement())
-  studentId Int
-  prompt    String // Prompt yang dikirim ke LLM (termasuk konteks RAG)
-  response  Json // Output LLM dalam format JSON
-  createdAt DateTime @default(now())
+  id             Int      @id @default(autoincrement())
+  studentId      Int
+  competitionId  Int
+  prompt         String
+  response       Json
+  matchScore     Float    @default(0.0)
+  feedbackScore  Float    @default(0.0)
+  feedbackReason String?
+  createdAt      DateTime @default(now())
 
   student Student? @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@map("recommendations")
 }
 
-/// Chat Sessions & Messages
 model LLMChatSession {
   id        Int      @id @default(autoincrement())
   studentId Int
-  title     String? // Judul sesi opsional
+  title     String?
   createdAt DateTime @default(now())
 
   student  Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
