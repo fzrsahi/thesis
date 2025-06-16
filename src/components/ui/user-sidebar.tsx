@@ -88,7 +88,7 @@ export const UserSidebar = () => {
           )}
         >
           {!collapsed ? (
-            <div className="text-2xl font-bold tracking-wide">Student Menu</div>
+            <div className="text-2xl font-bold tracking-wide">Menu Mahasiswa</div>
           ) : (
             <div className="text-2xl font-bold tracking-wide">
               <span className="text-white">U</span>

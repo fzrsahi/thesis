@@ -16,6 +16,8 @@ import {
   BookOpen,
   Lightbulb,
   ArrowRight,
+  Loader2,
+  AlertCircle,
 } from "lucide-react";
 import { useEffect, useRef, useMemo } from "react";
 
@@ -65,12 +67,10 @@ const EmptyState = ({
 }) => (
   <div className="flex h-[calc(100vh-4rem)] flex-col items-center justify-center space-y-6 text-center">
     <div className="space-y-2">
-      <TypographyH1 className="text-4xl md:text-5xl">
-        Your Competition Journey Starts Here
-      </TypographyH1>
+      <TypographyH1 className="text-4xl md:text-5xl">Mulai Perjalanan Kompetisi Anda</TypographyH1>
       <TypographyP className="mx-auto max-w-2xl text-lg text-zinc-400">
-        Get personalized competition recommendations based on your skills, interests, and academic
-        profile. We'll analyze your profile and suggest the best competitions for you.
+        Dapatkan rekomendasi kompetisi yang disesuaikan dengan keterampilan, minat, dan profil
+        akademik Anda. Kami akan menganalisis profil Anda dan memberikan saran kompetisi terbaik.
       </TypographyP>
     </div>
     <Button
@@ -82,11 +82,11 @@ const EmptyState = ({
       {isCreating ? (
         <>
           <Activity className="mr-2 h-5 w-5 animate-spin" />
-          Analyzing Your Profile...
+          Menganalisis Profil Anda...
         </>
       ) : (
         <>
-          Start Analysis <ArrowRight className="ml-2 h-5 w-5" />
+          Mulai Analisis <ArrowRight className="ml-2 h-5 w-5" />
         </>
       )}
     </Button>
@@ -136,7 +136,7 @@ const PerformanceMetricsCard = ({
       <div className="flex items-center space-x-2">
         <Users className="h-5 w-5 text-blue-500" />
         <div>
-          <TypographyMuted>Participation Rate</TypographyMuted>
+          <TypographyMuted>Tingkat Partisipasi</TypographyMuted>
           <TypographyLarge className="text-white">
             {(metrics.participationRate * 10).toFixed(1)}/10
           </TypographyLarge>
@@ -148,7 +148,7 @@ const PerformanceMetricsCard = ({
       <div className="flex items-center space-x-2">
         <Target className="h-5 w-5 text-purple-500" />
         <div>
-          <TypographyMuted>Avg Match Score</TypographyMuted>
+          <TypographyMuted>Rata-rata Kecocokan</TypographyMuted>
           <TypographyLarge className="text-white">
             {(metrics.averageMatchScore * 10).toFixed(1)}/10
           </TypographyLarge>
@@ -160,7 +160,7 @@ const PerformanceMetricsCard = ({
       <div className="flex items-center space-x-2">
         <Trophy className="h-5 w-5 text-yellow-500" />
         <div>
-          <TypographyMuted>Success Rate</TypographyMuted>
+          <TypographyMuted>Tingkat Keberhasilan</TypographyMuted>
           <TypographyLarge className="text-white">
             {(metrics.competitionSuccessRate * 10).toFixed(1)}/10
           </TypographyLarge>
@@ -181,25 +181,25 @@ const ComparisonSpiderChart = ({
   size?: number;
   showOnlyStudent?: boolean;
 }) => {
-  // Prepare data for the radar chart
+  // Persiapkan data untuk grafik radar
   const chartData = useMemo(() => {
     if (!studentData.length) return [];
 
-    // Get all unique skills from both datasets
+    // Ambil semua keterampilan unik dari kedua dataset
     const allSkills = new Set([
       ...studentData.map((item) => item.label),
       ...(competitionData?.map((item) => item.label) || []),
     ]);
 
-    // Create a map of student skills for quick lookup
+    // Buat peta keterampilan mahasiswa untuk pencarian cepat
     const studentSkillMap = new Map(studentData.map((item) => [item.label, item.value]));
 
-    // Create a map of competition skills for quick lookup
+    // Buat peta keterampilan kompetisi untuk pencarian cepat
     const competitionSkillMap = new Map(
       competitionData?.map((item) => [item.label, item.value]) || []
     );
 
-    // Create the chart data with all skills
+    // Buat data grafik dengan semua keterampilan
     return Array.from(allSkills)
       .sort()
       .map((skill) => ({
@@ -212,7 +212,7 @@ const ComparisonSpiderChart = ({
   if (chartData.length === 0) {
     return (
       <div className="flex h-[300px] items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900">
-        <TypographyP className="text-zinc-400">No data available</TypographyP>
+        <TypographyP className="text-zinc-400">Tidak ada data tersedia</TypographyP>
       </div>
     );
   }
@@ -240,7 +240,7 @@ const ComparisonSpiderChart = ({
             stroke="rgba(255, 255, 255, 0.1)"
           />
           <RadarChartComponent
-            name="Your Skills"
+            name="Keterampilan Anda"
             dataKey="student"
             stroke="#3b82f6"
             fill="#3b82f6"
@@ -248,7 +248,7 @@ const ComparisonSpiderChart = ({
           />
           {!showOnlyStudent && competitionData && competitionData.length > 0 && (
             <RadarChartComponent
-              name="Required Skills"
+              name="Keterampilan yang Dibutuhkan"
               dataKey="competition"
               stroke="#f59e0b"
               fill="#f59e0b"
@@ -264,7 +264,7 @@ const ComparisonSpiderChart = ({
             }}
             formatter={(value: number, name: string) => [
               `${value.toFixed(1)}/10`,
-              name === "student" ? "Your Skills" : "Required Skills",
+              name === "student" ? "Keterampilan Anda" : "Keterampilan yang Dibutuhkan",
             ]}
           />
         </RadarChart>
@@ -298,19 +298,19 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
         <div className="flex items-center justify-between">
           <div>
             <TypographyH1 className="text-3xl md:text-4xl">
-              Your Competition{" "}
+              Rekomendasi{" "}
               <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-blue-500 bg-clip-text text-transparent">
-                Recommendations
+                Kompetisi
               </span>
             </TypographyH1>
             <TypographyP className="mt-2">
-              Personalized recommendations based on your{" "}
-              <TypographyEmphasis>skills, interests, and goals</TypographyEmphasis>
+              Rekomendasi yang disesuaikan dengan{" "}
+              <TypographyEmphasis>keterampilan, minat, dan tujuan</TypographyEmphasis> Anda
             </TypographyP>
           </div>
           <Button className="border border-zinc-700 bg-zinc-800 text-white hover:bg-zinc-700">
             <Activity className="mr-2 h-4 w-4" />
-            Refresh Analysis
+            Perbarui Analisis
           </Button>
         </div>
 
@@ -319,7 +319,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
           <CardHeader>
             <CardTitle className="flex items-center space-x-2 text-white">
               <Users className="h-5 w-5" />
-              <span>Student Profile</span>
+              <span>Profil Mahasiswa</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -327,12 +327,12 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
           </CardContent>
         </Card>
 
-        {/* Main Content Grid */}
+        {/* Grid Konten Utama */}
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-          {/* Recommendations List */}
+          {/* Daftar Rekomendasi */}
           <div className="space-y-6 lg:col-span-2" ref={recommendationsRef}>
             <div>
-              <TypographyH3 className="mb-4">Top Recommendations for You</TypographyH3>
+              <TypographyH3 className="mb-4">Rekomendasi Terbaik untuk Anda</TypographyH3>
               <div className="space-y-4">
                 {data.result.recommendations.map((rec) => (
                   <Card
@@ -348,7 +348,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                           <div className="flex items-center space-x-2">
                             <CardTitle className="text-white">{rec.competitionName}</CardTitle>
                             <Badge variant="outline" className="text-xs">
-                              Rank #{rec.rank}
+                              Peringkat #{rec.rank}
                             </Badge>
                           </div>
                           <CardDescription className="text-zinc-400">
@@ -358,7 +358,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                         <Badge
                           className={`ml-4 text-white ${getMatchScoreColor(rec.matchScore.score)}`}
                         >
-                          {(rec.matchScore.score * 10).toFixed(1)}/10 Match
+                          {(rec.matchScore.score * 10).toFixed(1)}/10 Kecocokan
                         </Badge>
                       </div>
                     </CardHeader>
@@ -368,7 +368,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                           <AccordionTrigger className="text-white hover:no-underline">
                             <div className="flex items-center space-x-2">
                               <BarChart3 className="h-5 w-5" />
-                              <span>Match Score Breakdown</span>
+                              <span>Penjelasan Kecocokan</span>
                             </div>
                           </AccordionTrigger>
                           <AccordionContent>
@@ -379,7 +379,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                               <div className="mt-4 space-y-4">
                                 <div>
                                   <TypographyH3 className="mb-2 text-sm text-white">
-                                    Pros
+                                    Kelebihan
                                   </TypographyH3>
                                   <ul className="space-y-2">
                                     {rec.reasoning.pros.map((pro) => (
@@ -394,7 +394,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                                 </div>
                                 <div>
                                   <TypographyH3 className="mb-2 text-sm text-white">
-                                    Cons
+                                    Kekurangan
                                   </TypographyH3>
                                   <ul className="space-y-2">
                                     {rec.reasoning.cons.map((con) => (
@@ -416,7 +416,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                           <AccordionTrigger className="text-white hover:no-underline">
                             <div className="flex items-center space-x-2">
                               <RadarIcon className="h-5 w-5" />
-                              <span>Skill Requirements</span>
+                              <span>Kebutuhan Keterampilan</span>
                             </div>
                           </AccordionTrigger>
                           <AccordionContent>
@@ -446,7 +446,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                           <AccordionTrigger className="text-white hover:no-underline">
                             <div className="flex items-center space-x-2">
                               <Calendar className="h-5 w-5" />
-                              <span>Competition Details</span>
+                              <span>Detail Kompetisi</span>
                             </div>
                           </AccordionTrigger>
                           <AccordionContent>
@@ -460,189 +460,27 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                                   <div className="flex items-center space-x-2">
                                     <Calendar className="h-4 w-4 text-zinc-400" />
                                     <span className="text-zinc-300">
-                                      Start: {formatDate(rec.competition.startDate)}
+                                      Mulai: {formatDate(rec.competition.startDate)}
                                     </span>
                                   </div>
                                   <div className="flex items-center space-x-2">
                                     <Calendar className="h-4 w-4 text-zinc-400" />
                                     <span className="text-zinc-300">
-                                      End: {formatDate(rec.competition.endDate)}
+                                      Selesai: {formatDate(rec.competition.endDate)}
                                     </span>
                                   </div>
                                   <div className="flex items-center space-x-2">
                                     <MapPin className="h-4 w-4 text-zinc-400" />
                                     <span className="text-zinc-300">
-                                      {rec.competition.location || "Online"}
+                                      {rec.competition.location || "Daring"}
                                     </span>
                                   </div>
                                   <div className="flex items-center space-x-2">
                                     <Users className="h-4 w-4 text-zinc-400" />
                                     <span className="text-zinc-300">
-                                      by {rec.competition.organizer}
+                                      oleh {rec.competition.organizer}
                                     </span>
                                   </div>
-                                </div>
-
-                                <div className="space-y-4">
-                                  <div>
-                                    <TypographyH3 className="mb-2 text-sm text-white">
-                                      Fields
-                                    </TypographyH3>
-                                    <div className="flex flex-wrap gap-2">
-                                      {rec.competition.field.map((field) => (
-                                        <Badge key={field} variant="secondary" className="text-xs">
-                                          {field}
-                                        </Badge>
-                                      ))}
-                                    </div>
-                                  </div>
-
-                                  <div>
-                                    <TypographyH3 className="mb-2 text-sm text-white">
-                                      Type
-                                    </TypographyH3>
-                                    <Badge variant="secondary" className="text-xs">
-                                      {rec.competition.type}
-                                    </Badge>
-                                  </div>
-
-                                  {rec.competition.minGPA && (
-                                    <div>
-                                      <TypographyH3 className="mb-2 text-sm text-white">
-                                        Minimum GPA
-                                      </TypographyH3>
-                                      <TypographyP className="text-sm text-zinc-300">
-                                        {rec.competition.minGPA}
-                                      </TypographyP>
-                                    </div>
-                                  )}
-
-                                  <div>
-                                    <TypographyH3 className="mb-2 text-sm text-white">
-                                      Relevant Courses
-                                    </TypographyH3>
-                                    <div className="flex flex-wrap gap-2">
-                                      {rec.competition.relevantCourses.map((course) => (
-                                        <Badge key={course} variant="secondary" className="text-xs">
-                                          {course}
-                                        </Badge>
-                                      ))}
-                                    </div>
-                                  </div>
-
-                                  <div>
-                                    <TypographyH3 className="mb-2 text-sm text-white">
-                                      Relevant Skills
-                                    </TypographyH3>
-                                    <div className="flex flex-wrap gap-2">
-                                      {rec.competition.relevantSkills.map((skill) => (
-                                        <Badge key={skill} variant="secondary" className="text-xs">
-                                          {skill}
-                                        </Badge>
-                                      ))}
-                                    </div>
-                                  </div>
-
-                                  {rec.competition.evaluationCriteria && (
-                                    <div>
-                                      <TypographyH3 className="mb-2 text-sm text-white">
-                                        Evaluation Criteria
-                                      </TypographyH3>
-                                      <div className="space-y-2">
-                                        {rec.competition.evaluationCriteria.preliminaryRound && (
-                                          <div>
-                                            <TypographyP className="text-xs text-zinc-400">
-                                              Preliminary Round
-                                            </TypographyP>
-                                            <TypographyP className="text-sm text-zinc-300">
-                                              {rec.competition.evaluationCriteria.preliminaryRound}
-                                            </TypographyP>
-                                          </div>
-                                        )}
-                                        {rec.competition.evaluationCriteria.finalRound && (
-                                          <div>
-                                            <TypographyP className="text-xs text-zinc-400">
-                                              Final Round
-                                            </TypographyP>
-                                            <TypographyP className="text-sm text-zinc-300">
-                                              {rec.competition.evaluationCriteria.finalRound}
-                                            </TypographyP>
-                                          </div>
-                                        )}
-                                        {rec.competition.evaluationCriteria.other && (
-                                          <div>
-                                            <TypographyP className="text-xs text-zinc-400">
-                                              Other
-                                            </TypographyP>
-                                            <TypographyP className="text-sm text-zinc-300">
-                                              {rec.competition.evaluationCriteria.other}
-                                            </TypographyP>
-                                          </div>
-                                        )}
-                                      </div>
-                                    </div>
-                                  )}
-
-                                  {rec.competition.competitionStats && (
-                                    <div>
-                                      <TypographyH3 className="mb-2 text-sm text-white">
-                                        Competition Statistics
-                                      </TypographyH3>
-                                      {rec.competition.competitionStats.summary && (
-                                        <TypographyP className="mb-2 text-sm text-zinc-300">
-                                          {rec.competition.competitionStats.summary}
-                                        </TypographyP>
-                                      )}
-                                      {rec.competition.competitionStats.totalApplicantsPastYear
-                                        .length > 0 && (
-                                        <div className="mt-2">
-                                          <TypographyP className="mb-2 text-xs text-zinc-400">
-                                            Past Year Applicants
-                                          </TypographyP>
-                                          <div className="space-y-2">
-                                            {rec.competition.competitionStats.totalApplicantsPastYear.map(
-                                              (stat) => (
-                                                <div
-                                                  key={stat.year}
-                                                  className="flex justify-between text-sm"
-                                                >
-                                                  <span className="text-zinc-300">{stat.year}</span>
-                                                  <span className="text-zinc-300">
-                                                    {stat.count} applicants
-                                                  </span>
-                                                </div>
-                                              )
-                                            )}
-                                          </div>
-                                        </div>
-                                      )}
-                                      {rec.competition.competitionStats.pastUngParticipants.length >
-                                        0 && (
-                                        <div className="mt-2">
-                                          <TypographyP className="mb-2 text-xs text-zinc-400">
-                                            Past UNG Participants
-                                          </TypographyP>
-                                          <div className="space-y-2">
-                                            {rec.competition.competitionStats.pastUngParticipants.map(
-                                              (participant) => (
-                                                <div
-                                                  key={`${participant.year}-${participant.name}`}
-                                                  className="flex justify-between text-sm"
-                                                >
-                                                  <span className="text-zinc-300">
-                                                    {participant.name}
-                                                  </span>
-                                                  <span className="text-zinc-300">
-                                                    {participant.year} ({participant.count} members)
-                                                  </span>
-                                                </div>
-                                              )
-                                            )}
-                                          </div>
-                                        </div>
-                                      )}
-                                    </div>
-                                  )}
                                 </div>
 
                                 {rec.competition.sourceUrl && (
@@ -654,7 +492,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                                       rel="noopener noreferrer"
                                       className="text-blue-400 hover:underline"
                                     >
-                                      Visit Website
+                                      Kunjungi Website
                                     </a>
                                   </div>
                                 )}
@@ -667,7 +505,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                           <AccordionTrigger className="text-white hover:no-underline">
                             <div className="flex items-center space-x-2">
                               <Target className="h-5 w-5" />
-                              <span>Key Success Factors</span>
+                              <span>Faktor Kunci Keberhasilan</span>
                             </div>
                           </AccordionTrigger>
                           <AccordionContent>
@@ -688,7 +526,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                           <AccordionTrigger className="text-white hover:no-underline">
                             <div className="flex items-center space-x-2">
                               <BookOpen className="h-5 w-5" />
-                              <span>Preparation Tips</span>
+                              <span>Tips Persiapan</span>
                             </div>
                           </AccordionTrigger>
                           <AccordionContent>
@@ -710,31 +548,28 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
             </div>
           </div>
 
-          {/* Sidebar - Analytics */}
+          {/* Sidebar - Analitik */}
           <div className="space-y-6">
-            {/* Skills Comparison Chart */}
+            {/* Grafik Perbandingan Keterampilan */}
             <Card className="border-zinc-800 bg-zinc-900">
               <CardHeader>
-                <CardTitle className="flex items-center justify-between text-white">
-                  <div className="flex items-center space-x-2">
-                    <RadarIcon className="h-5 w-5" />
-                    <span>Skills Comparison</span>
-                  </div>
+                <CardTitle className="flex items-center justify-between">
+                  <span>Perbandingan Keterampilan</span>
                   {selectedCompetition && (
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-xs text-zinc-400 hover:text-white"
                       onClick={() => setSelectedCompetition(null)}
+                      className="text-xs"
                     >
-                      Reset View
+                      Reset Tampilan
                     </Button>
                   )}
                 </CardTitle>
-                <CardDescription className="text-zinc-400">
+                <CardDescription>
                   {selectedCompetition
-                    ? `Comparing your skills with ${selectedCompetition.competitionName} requirements`
-                    : "Your current skills profile"}
+                    ? `Perbandingan keterampilan Anda dengan ${selectedCompetition.competitionName}`
+                    : "Pilih kompetisi untuk melihat perbandingan keterampilan"}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -742,17 +577,16 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                   studentData={studentSkillsData}
                   competitionData={selectedCompetition ? competitionSkillsData : undefined}
                   size={300}
-                  showOnlyStudent={!selectedCompetition}
                 />
               </CardContent>
             </Card>
 
-            {/* Skills Profile */}
+            {/* Profil Keterampilan */}
             <Card className="border-zinc-800 bg-zinc-900">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2 text-white">
                   <Brain className="h-5 w-5" />
-                  <span>Skills Profile</span>
+                  <span>Profil Keterampilan</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -776,18 +610,18 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
               </CardContent>
             </Card>
 
-            {/* Profile Strength */}
+            {/* Kekuatan Profil */}
             <Card className="border-zinc-800 bg-zinc-900">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2 text-white">
                   <Target className="h-5 w-5" />
-                  <span>Profile Strength</span>
+                  <span>Kekuatan Profil</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <div>
-                    <TypographyH3 className="mb-2 text-sm text-white">Strengths</TypographyH3>
+                    <TypographyH3 className="mb-2 text-sm text-white">Kelebihan</TypographyH3>
                     <div className="space-y-2">
                       {data.result.overallAssessment.strengths.map((strength) => (
                         <div key={strength} className="flex items-start space-x-2">
@@ -800,7 +634,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
 
                   <div>
                     <TypographyH3 className="mb-2 text-sm text-white">
-                      Areas for Improvement
+                      Area Pengembangan
                     </TypographyH3>
                     <div className="space-y-2">
                       {data.result.overallAssessment.weaknesses.map((weakness) => (
@@ -815,12 +649,12 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
               </CardContent>
             </Card>
 
-            {/* Development Resources */}
+            {/* Sumber Pengembangan */}
             <Card className="border-zinc-800 bg-zinc-900">
               <CardHeader>
                 <CardTitle className="flex items-center space-x-2 text-white">
                   <Lightbulb className="h-5 w-5" />
-                  <span>Development Resources</span>
+                  <span>Sumber Pengembangan</span>
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -858,7 +692,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                           rel="noopener noreferrer"
                           className="mt-2 inline-flex items-center text-xs text-blue-400 hover:underline"
                         >
-                          Visit Resource
+                          Kunjungi Sumber
                           <ExternalLink className="ml-1 h-3 w-3" />
                         </a>
                       </div>
@@ -884,10 +718,10 @@ const MyRecommendationPage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex h-[calc(100vh-4rem)] items-center justify-center">
+      <div className="flex h-[50vh] items-center justify-center">
         <div className="text-center">
-          <Activity className="mx-auto h-8 w-8 animate-spin text-blue-500" />
-          <TypographyP className="mt-4 text-zinc-400">Loading your recommendations...</TypographyP>
+          <Loader2 className="mx-auto h-8 w-8 animate-spin text-zinc-400" />
+          <p className="mt-4 text-sm text-zinc-400">Memuat rekomendasi Anda...</p>
         </div>
       </div>
     );
@@ -895,14 +729,15 @@ const MyRecommendationPage = () => {
 
   if (error) {
     return (
-      <div className="flex h-[calc(100vh-4rem)] items-center justify-center">
+      <div className="flex h-[50vh] items-center justify-center">
         <div className="text-center">
-          <TypographyH1 className="text-red-500">Error Loading Recommendations</TypographyH1>
-          <TypographyP className="mt-2 text-zinc-400">
-            {error instanceof Error ? error.message : "An unexpected error occurred"}
-          </TypographyP>
-          <Button className="mt-4" onClick={() => window.location.reload()}>
-            Try Again
+          <AlertCircle className="mx-auto h-8 w-8 text-red-500" />
+          <h3 className="mt-4 text-lg font-semibold text-zinc-100">Gagal Memuat Rekomendasi</h3>
+          <p className="mt-2 text-sm text-zinc-400">
+            {error instanceof Error ? error.message : "Terjadi kesalahan yang tidak terduga"}
+          </p>
+          <Button variant="outline" className="mt-4" onClick={() => window.location.reload()}>
+            Coba Lagi
           </Button>
         </div>
       </div>

@@ -132,8 +132,8 @@ const UserProfilePage = () => {
       {/* Header with Navigation */}
       <div className="space-y-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">User Profile</h1>
-          <p className="text-zinc-400">Manage your personal and academic information</p>
+          <h1 className="text-2xl font-bold text-white">Profil Mahasiswa</h1>
+          <p className="text-zinc-400">Mengelola informasi pribadi dan akademik Anda</p>
         </div>
 
         {/* Tab Navigation */}
@@ -254,12 +254,12 @@ const UserProfilePage = () => {
             <div className="space-y-2">
               <Separator className="bg-zinc-800" />
               <div className="text-sm">
-                <p className="text-zinc-400">Major</p>
-                <p>Informatics Engineering</p>
+                <p className="text-zinc-400">Jurusan</p>
+                <p>Teknik Informatika</p>
               </div>
               <div className="text-sm">
-                <p className="text-zinc-400">Faculty</p>
-                <p>Engineering</p>
+                <p className="text-zinc-400">Fakultas</p>
+                <p>Teknik</p>
               </div>
             </div>
           </CardContent>
@@ -273,10 +273,10 @@ const UserProfilePage = () => {
                 <div>
                   <CardTitle className="flex items-center gap-2">
                     <User className="h-5 w-5" />
-                    Personal Data
+                    Data Pribadi
                   </CardTitle>
                   <CardDescription className="text-zinc-400">
-                    Your personal information
+                    Informasi pribadi Anda
                   </CardDescription>
                 </div>
               </CardHeader>
@@ -295,13 +295,13 @@ const UserProfilePage = () => {
                         name="name"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-zinc-300">Full Name</FormLabel>
+                            <FormLabel className="text-zinc-300">Nama Lengkap</FormLabel>
                             <FormControl>
                               {isLoadingPersonal ? (
                                 <Skeleton className="h-10 w-full" />
                               ) : (
                                 <Input
-                                  placeholder="Full name"
+                                  placeholder="Nama Lengkap"
                                   {...field}
                                   className="border-zinc-700 bg-zinc-800 text-white"
                                 />
@@ -316,13 +316,13 @@ const UserProfilePage = () => {
                         name="student_id"
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel className="text-zinc-300">Student ID</FormLabel>
+                            <FormLabel className="text-zinc-300">NIM</FormLabel>
                             <FormControl>
                               {isLoadingPersonal ? (
                                 <Skeleton className="h-10 w-full" />
                               ) : (
                                 <Input
-                                  placeholder="Student identification number"
+                                  placeholder="NIM"
                                   {...field}
                                   className="border-zinc-700 bg-zinc-800 text-white"
                                 />
@@ -365,7 +365,7 @@ const UserProfilePage = () => {
                       disabled={isSubmittingPersonal}
                       className="bg-white text-black hover:bg-zinc-200 disabled:opacity-50"
                     >
-                      {isSubmittingPersonal ? "Updating..." : "Update Personal Data"}
+                      {isSubmittingPersonal ? "Memperbarui..." : "Perbarui"}
                     </Button>
                   </form>
                 </Form>
@@ -379,10 +379,10 @@ const UserProfilePage = () => {
                 <div>
                   <CardTitle className="flex items-center gap-2">
                     <GraduationCap className="h-5 w-5" />
-                    Academic Data
+                    Data Akademik
                   </CardTitle>
                   <CardDescription className="text-zinc-400">
-                    Your academic information and achievements
+                    Informasi akademik dan pencapaian Anda
                   </CardDescription>
                 </div>
               </CardHeader>
@@ -401,13 +401,13 @@ const UserProfilePage = () => {
                       name="gpa"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-zinc-300">GPA</FormLabel>
+                          <FormLabel className="text-zinc-300">IPK</FormLabel>
                           <FormControl>
                             {isLoadingAcademic ? (
                               <Skeleton className="h-10 w-full" />
                             ) : (
                               <Input
-                                placeholder="GPA"
+                                placeholder="IPK"
                                 {...field}
                                 className="border-zinc-700 bg-zinc-800 text-white"
                               />
@@ -423,7 +423,7 @@ const UserProfilePage = () => {
 
                     {/* Interests Section - Multi Select Tags */}
                     <div className="space-y-4">
-                      <FormLabel className="text-zinc-300">Interests</FormLabel>
+                      <FormLabel className="text-zinc-300">Minat</FormLabel>
 
                       {/* Display existing interests as tags */}
                       <div className="flex flex-wrap gap-2">
@@ -447,7 +447,7 @@ const UserProfilePage = () => {
                       {/* Input for adding new interests */}
                       <div className="space-y-2">
                         <Input
-                          placeholder="Type an interest and press Enter (e.g., Programming, AI, Design)"
+                          placeholder="Ketik minat dan tekan Enter (contoh: Programming, AI, Design, dll.)"
                           value={interestInput}
                           onChange={(e) => setInterestInput(e.target.value)}
                           onKeyDown={handleAddInterest}
@@ -461,7 +461,7 @@ const UserProfilePage = () => {
 
                     {/* Skills Section - Multi Select Tags */}
                     <div className="space-y-4">
-                      <FormLabel className="text-zinc-300">Skills</FormLabel>
+                      <FormLabel className="text-zinc-300">Keterampilan</FormLabel>
 
                       {/* Display existing interests as tags */}
                       <div className="flex flex-wrap gap-2">
@@ -485,7 +485,7 @@ const UserProfilePage = () => {
                       {/* Input for adding new interests */}
                       <div className="space-y-2">
                         <Input
-                          placeholder="Type an skill and press Enter (e.g., Programming, Node JS, React JS, Design, etc.)"
+                          placeholder="Ketik keterampilan dan tekan Enter (contoh: Programming, Node JS, React JS, Design, dll.)"
                           value={skillInput}
                           onChange={(e) => setSkillInput(e.target.value)}
                           onKeyDown={handleAddSkill}
@@ -499,7 +499,7 @@ const UserProfilePage = () => {
                     {/* Achievements Section */}
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
-                        <FormLabel className="text-zinc-300">Achievements</FormLabel>
+                        <FormLabel className="text-zinc-300">Pencapaian</FormLabel>
                         <Button
                           type="button"
                           variant="outline"
@@ -513,14 +513,14 @@ const UserProfilePage = () => {
                           }
                           className="flex items-center gap-1 bg-white text-black hover:bg-zinc-200"
                         >
-                          <Plus className="h-3 w-3" /> Add Achievement
+                          <Plus className="h-3 w-3" /> Tambah Pencapaian
                         </Button>
                       </div>
 
                       {achievementFields.length === 0 ? (
                         <div className="rounded-lg border border-dashed border-zinc-700 p-8 text-center">
                           <TypographyP className="text-zinc-400">
-                            No achievements added yet. Click the button above to add one.
+                            Belum ada pencapaian yang ditambahkan. Klik tombol di atas untuk
                           </TypographyP>
                         </div>
                       ) : (
@@ -536,11 +536,11 @@ const UserProfilePage = () => {
                                 render={({ field }) => (
                                   <FormItem className="flex-1">
                                     <FormLabel className="text-zinc-300">
-                                      Achievement Title
+                                      Judul Pencapaian
                                     </FormLabel>
                                     <FormControl>
                                       <Input
-                                        placeholder="Achievement title"
+                                        placeholder="Judul Pencapaian"
                                         {...field}
                                         className="border-zinc-700 bg-zinc-800 text-white"
                                       />
@@ -555,7 +555,7 @@ const UserProfilePage = () => {
                                   name={`achievements.${index}.date`}
                                   render={({ field }) => (
                                     <FormItem>
-                                      <FormLabel className="text-zinc-300">Date</FormLabel>
+                                      <FormLabel className="text-zinc-300">Tanggal</FormLabel>
                                       <FormControl>
                                         <Input
                                           type="month"
@@ -587,10 +587,10 @@ const UserProfilePage = () => {
                               name={`achievements.${index}.description`}
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel className="text-zinc-300">Description</FormLabel>
+                                  <FormLabel className="text-zinc-300">Deskripsi</FormLabel>
                                   <FormControl>
                                     <Textarea
-                                      placeholder="Achievement description"
+                                      placeholder="Deskripsi Pencapaian"
                                       {...field}
                                       className="min-h-[100px] resize-y border-zinc-700 bg-zinc-800 text-white"
                                     />
@@ -607,7 +607,7 @@ const UserProfilePage = () => {
                     {/* Experiences Section */}
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
-                        <FormLabel className="text-zinc-300">Experiences</FormLabel>
+                        <FormLabel className="text-zinc-300">Pengalaman</FormLabel>
                         <Button
                           type="button"
                           variant="outline"
@@ -623,14 +623,14 @@ const UserProfilePage = () => {
                           }
                           className="flex items-center gap-1 bg-white text-black hover:bg-zinc-200"
                         >
-                          <Plus className="h-3 w-3" /> Add Experience
+                          <Plus className="h-3 w-3" /> Tambah Pengalaman
                         </Button>
                       </div>
 
                       {experienceFields.length === 0 ? (
                         <div className="rounded-lg border border-dashed border-zinc-700 p-8 text-center">
                           <TypographyP className="text-zinc-400">
-                            No experiences added yet. Click the button above to add one.
+                            Belum ada pengalaman yang ditambahkan. Klik tombol di atas untuk
                           </TypographyP>
                         </div>
                       ) : (
@@ -645,10 +645,12 @@ const UserProfilePage = () => {
                                 name={`experiences.${index}.organization`}
                                 render={({ field }) => (
                                   <FormItem className="flex-1">
-                                    <FormLabel className="text-zinc-300">Organization</FormLabel>
+                                    <FormLabel className="text-zinc-300">
+                                      Organisasi / Perusahaan
+                                    </FormLabel>
                                     <FormControl>
                                       <Input
-                                        placeholder="Organization name"
+                                        placeholder="Nama Organisasi / Perusahaan"
                                         {...field}
                                         className="border-zinc-700 bg-zinc-800 text-white"
                                       />
@@ -674,10 +676,10 @@ const UserProfilePage = () => {
                                 name={`experiences.${index}.position`}
                                 render={({ field }) => (
                                   <FormItem>
-                                    <FormLabel className="text-zinc-300">Position</FormLabel>
+                                    <FormLabel className="text-zinc-300">Posisi</FormLabel>
                                     <FormControl>
                                       <Input
-                                        placeholder="Position"
+                                        placeholder="Posisi"
                                         {...field}
                                         className="border-zinc-700 bg-zinc-800 text-white"
                                       />
@@ -691,7 +693,7 @@ const UserProfilePage = () => {
                                 name={`experiences.${index}.startDate`}
                                 render={({ field }) => (
                                   <FormItem>
-                                    <FormLabel className="text-zinc-300">Start Date</FormLabel>
+                                    <FormLabel className="text-zinc-300">Tanggal Mulai</FormLabel>
                                     <FormControl>
                                       <Input
                                         type="month"
@@ -713,7 +715,7 @@ const UserProfilePage = () => {
                                 render={({ field }) => (
                                   <FormItem>
                                     <FormLabel className="text-zinc-300">
-                                      End Date (Optional)
+                                      Tanggal Selesai (Opsional)
                                     </FormLabel>
                                     <FormControl>
                                       <Input
@@ -741,10 +743,10 @@ const UserProfilePage = () => {
                               name={`experiences.${index}.description`}
                               render={({ field }) => (
                                 <FormItem>
-                                  <FormLabel className="text-zinc-300">Description</FormLabel>
+                                  <FormLabel className="text-zinc-300">Deskripsi</FormLabel>
                                   <FormControl>
                                     <Textarea
-                                      placeholder="Experience description"
+                                      placeholder="Deskripsi Pengalaman"
                                       {...field}
                                       className="min-h-[100px] resize-y border-zinc-700 bg-zinc-800 text-white"
                                     />
@@ -767,7 +769,7 @@ const UserProfilePage = () => {
                       disabled={isSubmittingAcademic}
                       className="bg-white text-black hover:bg-zinc-200 disabled:opacity-50"
                     >
-                      {isSubmittingAcademic ? "Updating..." : "Update Academic Data"}
+                      {isSubmittingAcademic ? "Memperbarui..." : "Perbarui "}
                     </Button>
                   </form>
                 </Form>
