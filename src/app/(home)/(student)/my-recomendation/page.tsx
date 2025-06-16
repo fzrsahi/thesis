@@ -7,7 +7,6 @@ import {
   Calendar,
   Target,
   BarChart3,
-  PieChart,
   Activity,
   MapPin,
   ExternalLink,
@@ -20,6 +19,21 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { useEffect, useRef, useMemo } from "react";
+import {
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  ResponsiveContainer,
+  Tooltip,
+  Radar as RadarChartComponent,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Cell,
+} from "recharts";
 
 import {
   Accordion,
@@ -30,15 +44,11 @@ import {
 import { Badge } from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import {
   TypographyH1,
-  TypographyH2,
   TypographyH3,
   TypographyP,
   TypographyEmphasis,
-  TypographyMuted,
-  TypographyLarge,
 } from "@/components/ui/typography";
 
 import {
@@ -48,15 +58,19 @@ import {
   type RecommendationResponse,
 } from "./hooks/useMyRecomendation";
 import { usePostMyRecomendation } from "./hooks/usePostMyRecomendation";
-import {
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  ResponsiveContainer,
-  Tooltip,
-  Radar as RadarChartComponent,
-} from "recharts";
+
+const skillNameMapping: Record<string, string> = {
+  technicalExpertise: "Keahlian Teknis",
+  scientificWriting: "Penulisan Ilmiah",
+  problemSolving: "Pemecahan Masalah",
+  creativityInnovation: "Kreativitas & Inovasi",
+  communication: "Komunikasi",
+  teamworkCollaboration: "Kerja Tim & Kolaborasi",
+  projectManagement: "Manajemen Proyek",
+  businessAcumen: "Pemahaman Bisnis",
+  designThinking: "Design Thinking",
+  selfLearning: "Pembelajaran Mandiri",
+};
 
 const EmptyState = ({
   onStartAnalysis,
@@ -93,92 +107,13 @@ const EmptyState = ({
   </div>
 );
 
-const CategoryDistributionChart = ({
-  data,
-}: {
-  data: { categories: string[]; values: number[] };
-}) => {
-  const total = data.values.reduce((sum, val) => sum + val, 0);
-  const maxValue = Math.max(...data.values);
-
-  return (
-    <div className="space-y-4">
-      {data.categories.map((category, index) => {
-        const percentage = (data.values[index] / total) * 100;
-        const width = (data.values[index] / maxValue) * 100;
-
-        return (
-          <div key={category} className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-zinc-300">{category}</span>
-              <span className="text-zinc-400">{percentage.toFixed(1)}%</span>
-            </div>
-            <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-800">
-              <div
-                className="h-full rounded-full bg-blue-500 transition-all"
-                style={{ width: `${width}%` }}
-              />
-            </div>
-          </div>
-        );
-      })}
-    </div>
-  );
-};
-
-const PerformanceMetricsCard = ({
-  metrics,
-}: {
-  metrics: ReturnType<typeof useMyRecomendation>["performanceMetrics"];
-}) => (
-  <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-    <div className="rounded-lg bg-zinc-800 p-4">
-      <div className="flex items-center space-x-2">
-        <Users className="h-5 w-5 text-blue-500" />
-        <div>
-          <TypographyMuted>Tingkat Partisipasi</TypographyMuted>
-          <TypographyLarge className="text-white">
-            {(metrics.participationRate * 10).toFixed(1)}/10
-          </TypographyLarge>
-        </div>
-      </div>
-    </div>
-
-    <div className="rounded-lg bg-zinc-800 p-4">
-      <div className="flex items-center space-x-2">
-        <Target className="h-5 w-5 text-purple-500" />
-        <div>
-          <TypographyMuted>Rata-rata Kecocokan</TypographyMuted>
-          <TypographyLarge className="text-white">
-            {(metrics.averageMatchScore * 10).toFixed(1)}/10
-          </TypographyLarge>
-        </div>
-      </div>
-    </div>
-
-    <div className="rounded-lg bg-zinc-800 p-4">
-      <div className="flex items-center space-x-2">
-        <Trophy className="h-5 w-5 text-yellow-500" />
-        <div>
-          <TypographyMuted>Tingkat Keberhasilan</TypographyMuted>
-          <TypographyLarge className="text-white">
-            {(metrics.competitionSuccessRate * 10).toFixed(1)}/10
-          </TypographyLarge>
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
 const ComparisonSpiderChart = ({
   studentData,
   competitionData,
-  size = 300,
   showOnlyStudent = false,
 }: {
   studentData: ReturnType<typeof useMyRecomendation>["studentSkillsData"];
   competitionData?: ReturnType<typeof useMyRecomendation>["competitionSkillsData"];
-  size?: number;
   showOnlyStudent?: boolean;
 }) => {
   // Persiapkan data untuk grafik radar
@@ -203,7 +138,7 @@ const ComparisonSpiderChart = ({
     return Array.from(allSkills)
       .sort()
       .map((skill) => ({
-        skill,
+        skill: skillNameMapping[skill] || skill,
         student: studentSkillMap.get(skill) || 0,
         competition: competitionSkillMap.get(skill) || 0,
       }));
@@ -269,6 +204,116 @@ const ComparisonSpiderChart = ({
           />
         </RadarChart>
       </ResponsiveContainer>
+    </div>
+  );
+};
+
+interface TooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    value: number;
+    payload: {
+      breakdown: string;
+    };
+  }>;
+  label?: string;
+}
+
+const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="rounded-lg border border-zinc-700 bg-zinc-900 p-3 shadow-lg">
+        <p className="mb-1 font-medium text-white">{label}</p>
+        <p className="text-sm text-zinc-300">
+          <span className="font-medium text-blue-400">{payload[0].value.toFixed(1)}/10</span>{" "}
+          tingkat kepentingan
+        </p>
+        <p className="mt-2 text-xs text-zinc-400">{payload[0].payload.breakdown}</p>
+      </div>
+    );
+  }
+  return null;
+};
+
+// Helper function untuk menentukan warna berdasarkan nilai
+const getSkillColor = (value: number): string => {
+  if (value >= 0.8) return "#22c55e";
+  if (value >= 0.6) return "#3b82f6";
+  return "#f59e0b";
+};
+
+const SkillRequirementsChart = ({
+  requirements,
+}: {
+  requirements: Record<string, { weight: number; breakdown: string }>;
+}) => {
+  const chartData = useMemo(
+    () =>
+      Object.entries(requirements)
+        .map(([skill, { weight }]) => ({
+          name: skillNameMapping[skill] || skill,
+          value: weight * 10,
+          breakdown: requirements[skill].breakdown,
+          color: getSkillColor(weight),
+        }))
+        .sort((a, b) => b.value - a.value),
+    [requirements]
+  );
+
+  return (
+    <div className="relative">
+      <div className="absolute top-0 -left-2 h-full w-1 rounded-full bg-gradient-to-b from-blue-500 via-purple-500 to-blue-500" />
+      <div className="h-[400px] w-full pl-4">
+        <ResponsiveContainer width="100%" height="100%">
+          <BarChart
+            data={chartData}
+            layout="vertical"
+            margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            barSize={24}
+          >
+            <defs>
+              <linearGradient id="barGradient" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.8} />
+                <stop offset="100%" stopColor="#8b5cf6" stopOpacity={0.8} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke="rgba(255, 255, 255, 0.05)"
+              horizontal={false}
+            />
+            <XAxis
+              type="number"
+              domain={[0, 10]}
+              tick={{ fill: "#a1a1aa", fontSize: 12 }}
+              stroke="rgba(255, 255, 255, 0.1)"
+              tickLine={{ stroke: "rgba(255, 255, 255, 0.1)" }}
+            />
+            <YAxis
+              type="category"
+              dataKey="name"
+              tick={{ fill: "#a1a1aa", fontSize: 12 }}
+              stroke="rgba(255, 255, 255, 0.1)"
+              width={180}
+              tickLine={false}
+            />
+            <Tooltip content={<CustomTooltip />} />
+            <Bar
+              dataKey="value"
+              radius={12}
+              background={{ fill: "rgba(255, 255, 255, 0.05)", radius: 12 }}
+            >
+              {chartData.map((entry) => (
+                <Cell
+                  key={`cell-${entry.name}`}
+                  fill={entry.color}
+                  className="transition-all duration-300 hover:opacity-80"
+                />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 };
@@ -383,7 +428,10 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                                   </TypographyH3>
                                   <ul className="space-y-2">
                                     {rec.reasoning.pros.map((pro) => (
-                                      <li key={pro} className="flex items-start space-x-2">
+                                      <li
+                                        key={`pro-${pro.slice(0, 20)}`}
+                                        className="flex items-start space-x-2"
+                                      >
                                         <div className="mt-1 h-1.5 w-1.5 rounded-full bg-green-500" />
                                         <TypographyP className="text-sm text-zinc-300">
                                           {pro}
@@ -398,7 +446,10 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                                   </TypographyH3>
                                   <ul className="space-y-2">
                                     {rec.reasoning.cons.map((con) => (
-                                      <li key={con} className="flex items-start space-x-2">
+                                      <li
+                                        key={`con-${con.slice(0, 20)}`}
+                                        className="flex items-start space-x-2"
+                                      >
                                         <div className="mt-1 h-1.5 w-1.5 rounded-full bg-yellow-500" />
                                         <TypographyP className="text-sm text-zinc-300">
                                           {con}
@@ -420,24 +471,34 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                             </div>
                           </AccordionTrigger>
                           <AccordionContent>
-                            <div className="space-y-3 pl-7">
-                              {Object.entries(rec.skillRequirements).map(
-                                ([skill, { weight, breakdown }]) => (
-                                  <div key={skill} className="rounded-lg bg-zinc-800 p-3">
-                                    <div className="mb-2 flex items-center justify-between">
-                                      <span className="font-medium text-white">
-                                        {skill.replace(/_/g, " ")}
-                                      </span>
-                                      <span className="text-blue-400">
-                                        {(weight * 10).toFixed(1)}/10
-                                      </span>
-                                    </div>
-                                    <TypographyP className="text-sm text-zinc-400">
-                                      {breakdown}
+                            <div className="space-y-6 pl-7">
+                              <div className="overflow-hidden rounded-lg bg-zinc-800/50 p-6 backdrop-blur-sm">
+                                <div className="mb-6 flex items-center justify-between">
+                                  <div>
+                                    <TypographyH3 className="text-lg text-white">
+                                      Tingkat Kepentingan Keterampilan
+                                    </TypographyH3>
+                                    <TypographyP className="mt-1 text-sm text-zinc-400">
+                                      Visualisasi kebutuhan keterampilan untuk kompetisi ini
                                     </TypographyP>
                                   </div>
-                                )
-                              )}
+                                  <div className="flex items-center space-x-4">
+                                    <div className="flex items-center space-x-2">
+                                      <div className="h-3 w-3 rounded-full bg-green-500" />
+                                      <span className="text-xs text-zinc-400">Tinggi (8-10)</span>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                      <div className="h-3 w-3 rounded-full bg-blue-500" />
+                                      <span className="text-xs text-zinc-400">Sedang (6-7.9)</span>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                      <div className="h-3 w-3 rounded-full bg-orange-500" />
+                                      <span className="text-xs text-zinc-400">Rendah (0-5.9)</span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <SkillRequirementsChart requirements={rec.skillRequirements} />
+                              </div>
                             </div>
                           </AccordionContent>
                         </AccordionItem>
@@ -511,7 +572,10 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                           <AccordionContent>
                             <div className="space-y-3 pl-7">
                               {rec.keyFactors.map((factor) => (
-                                <div key={factor} className="flex items-start space-x-2">
+                                <div
+                                  key={`factor-${factor.slice(0, 20)}`}
+                                  className="flex items-start space-x-2"
+                                >
                                   <div className="mt-1 h-1.5 w-1.5 rounded-full bg-blue-500" />
                                   <TypographyP className="text-sm text-zinc-300">
                                     {factor}
@@ -532,7 +596,10 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                           <AccordionContent>
                             <div className="space-y-3 pl-7">
                               {rec.preparationTips.map((tip) => (
-                                <div key={tip} className="flex items-start space-x-2">
+                                <div
+                                  key={`tip-${tip.slice(0, 20)}`}
+                                  className="flex items-start space-x-2"
+                                >
                                   <ArrowRight className="mt-1 h-4 w-4 text-blue-500" />
                                   <TypographyP className="text-sm text-zinc-300">{tip}</TypographyP>
                                 </div>
@@ -554,13 +621,13 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
             <Card className="border-zinc-800 bg-zinc-900">
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
-                  <span>Perbandingan Keterampilan</span>
+                  <span className="text-white">Perbandingan Keterampilan</span>
                   {selectedCompetition && (
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => setSelectedCompetition(null)}
-                      className="text-xs"
+                      className="bg-zinc-800 text-xs text-white"
                     >
                       Reset Tampilan
                     </Button>
@@ -576,7 +643,6 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                 <ComparisonSpiderChart
                   studentData={studentSkillsData}
                   competitionData={selectedCompetition ? competitionSkillsData : undefined}
-                  size={300}
                 />
               </CardContent>
             </Card>
@@ -584,28 +650,64 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
             {/* Profil Keterampilan */}
             <Card className="border-zinc-800 bg-zinc-900">
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2 text-white">
-                  <Brain className="h-5 w-5" />
-                  <span>Profil Keterampilan</span>
+                <CardTitle className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Brain className="h-5 w-5" />
+                    <span className="text-white">Profil Keterampilan</span>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-2">
+                      <div className="h-3 w-3 rounded-full bg-green-500" />
+                      <span className="text-xs text-zinc-400">Tinggi (8-10)</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="h-3 w-3 rounded-full bg-blue-500" />
+                      <span className="text-xs text-zinc-400">Sedang (6-7.9)</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="h-3 w-3 rounded-full bg-orange-500" />
+                      <span className="text-xs text-zinc-400">Rendah (0-5.9)</span>
+                    </div>
+                  </div>
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {Object.entries(data.result.skillsProfile).map(
-                    ([skill, { score, breakdown }]) => (
-                      <div key={skill} className="rounded-lg bg-zinc-800 p-3">
-                        <div className="mb-2 flex items-center justify-between">
-                          <span className="text-sm font-medium text-white">
-                            {skill.replace(/_/g, " ")}
-                          </span>
-                          <span className="font-medium text-blue-400">
-                            {(score * 10).toFixed(1)}/10
-                          </span>
+                <div className="space-y-6">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    {Object.entries(data.result.skillsProfile).map(
+                      ([skill, { score, breakdown }]) => (
+                        <div
+                          key={skill}
+                          className="group relative overflow-hidden rounded-lg bg-zinc-800/50 p-4 backdrop-blur-sm transition-all hover:bg-zinc-800/70"
+                        >
+                          <div className="absolute -top-4 -right-4 h-24 w-24 rounded-full bg-gradient-to-br from-blue-500/10 to-purple-500/10 blur-2xl transition-all group-hover:from-blue-500/20 group-hover:to-purple-500/20" />
+                          <div className="relative space-y-3">
+                            {/* Skill Name */}
+                            <div>
+                              <span className="truncate font-medium text-white">
+                                {skillNameMapping[skill] || skill}
+                              </span>
+                            </div>
+
+                            {/* Breakdown */}
+                            <TypographyP className="text-sm text-zinc-400">{breakdown}</TypographyP>
+                            {/* Score (Progress Bar & Value) */}
+                            <div className="flex items-center gap-2">
+                              <div className="relative h-2 flex-1 overflow-hidden rounded-full bg-zinc-700/50">
+                                <div
+                                  className="absolute top-0 left-0 h-full rounded-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all"
+                                  style={{ width: `${score * 100}%` }}
+                                />
+                              </div>
+                              <span className="shrink-0 text-sm font-medium whitespace-nowrap text-blue-400">
+                                {(score * 10).toFixed(1)}/10
+                              </span>
+                            </div>
+                          </div>
                         </div>
-                        <TypographyP className="text-xs text-zinc-400">{breakdown}</TypographyP>
-                      </div>
-                    )
-                  )}
+                      )
+                    )}
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -624,7 +726,10 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                     <TypographyH3 className="mb-2 text-sm text-white">Kelebihan</TypographyH3>
                     <div className="space-y-2">
                       {data.result.overallAssessment.strengths.map((strength) => (
-                        <div key={strength} className="flex items-start space-x-2">
+                        <div
+                          key={`strength-${strength.slice(0, 20)}`}
+                          className="flex items-start space-x-2"
+                        >
                           <div className="mt-1 h-1.5 w-1.5 rounded-full bg-green-500" />
                           <TypographyP className="text-sm text-zinc-300">{strength}</TypographyP>
                         </div>
@@ -638,7 +743,10 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                     </TypographyH3>
                     <div className="space-y-2">
                       {data.result.overallAssessment.weaknesses.map((weakness) => (
-                        <div key={weakness} className="flex items-start space-x-2">
+                        <div
+                          key={`weakness-${weakness.slice(0, 20)}`}
+                          className="flex items-start space-x-2"
+                        >
                           <div className="mt-1 h-1.5 w-1.5 rounded-full bg-yellow-500" />
                           <TypographyP className="text-sm text-zinc-300">{weakness}</TypographyP>
                         </div>
@@ -676,7 +784,10 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                     }
 
                     return (
-                      <div key={suggestion.title} className="rounded-lg bg-zinc-800 p-3">
+                      <div
+                        key={`suggestion-${suggestion.title}`}
+                        className="rounded-lg bg-zinc-800 p-3"
+                      >
                         <div className="flex items-center space-x-2">
                           {icon}
                           <TypographyH3 className="text-sm text-white">

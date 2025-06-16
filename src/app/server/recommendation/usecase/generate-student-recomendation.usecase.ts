@@ -213,8 +213,8 @@ const generateRecommendation = async (
   });
 
   // Update competition IDs to match database IDs
-  const competitionMap = new Map(competitionsData.map(comp => [comp.title, comp.id]));
-  result.recommendations = result.recommendations.map(rec => ({
+  const competitionMap = new Map(competitionsData.map((comp) => [comp.title, comp.id]));
+  result.recommendations = result.recommendations.map((rec) => ({
     ...rec,
     id: competitionMap.get(rec.competitionName) || rec.id,
   }));

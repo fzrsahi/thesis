@@ -62,8 +62,8 @@ export const createRecommendation = async ({
   studentId,
   prompt,
   recommendation,
-}: CreateRecommendationArgs) => {
-  return prisma.$transaction(async (tx) => {
+}: CreateRecommendationArgs) =>
+  prisma.$transaction(async (tx) => {
     // Create main recommendation record
     const mainRecommendation = await tx.recommendation.create({
       data: {
@@ -113,4 +113,3 @@ export const createRecommendation = async ({
 
     return mainRecommendation;
   });
-};

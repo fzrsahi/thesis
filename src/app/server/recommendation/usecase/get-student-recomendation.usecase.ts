@@ -1,5 +1,6 @@
 import { HttpStatusCode } from "axios";
 
+import { findManyCompetitionsByIds } from "../../competition/competition.repository";
 import {
   RecommendationResponse,
   SkillsProfileKey,
@@ -10,7 +11,6 @@ import { findStudentByUserId } from "../../student/student.repository";
 import { customError } from "../../utils/error/custom-error";
 import { RECOMMENDATION_ERROR_RESPONSE } from "../recomendation.error";
 import { findRecommendationByStudentId } from "../recomendation.repository";
-import { findManyCompetitionsByIds } from "../../competition/competition.repository";
 
 type ExtendedCompetitionData = {
   id: number;

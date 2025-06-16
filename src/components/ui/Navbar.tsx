@@ -272,7 +272,7 @@ const Navbar = () => {
                 href="#about"
                 className="group relative flex items-center gap-2 px-3 py-2 transition-all hover:text-zinc-300"
               >
-                About
+                Teknologi
                 <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-gradient-to-r from-zinc-400 to-zinc-600 transition-all duration-300 group-hover:w-full" />
               </a>
             </li>
@@ -281,16 +281,7 @@ const Navbar = () => {
                 href="#pricing"
                 className="group relative flex items-center gap-2 px-3 py-2 transition-all hover:text-zinc-300"
               >
-                Pricing
-                <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-gradient-to-r from-zinc-400 to-zinc-600 transition-all duration-300 group-hover:w-full" />
-              </a>
-            </li>
-            <li>
-              <a
-                href="#faq"
-                className="group relative flex items-center gap-2 px-3 py-2 transition-all hover:text-zinc-300"
-              >
-                FAQ
+                Teknologi
                 <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-gradient-to-r from-zinc-400 to-zinc-600 transition-all duration-300 group-hover:w-full" />
               </a>
             </li>
@@ -328,7 +319,7 @@ const Navbar = () => {
                 className="block rounded-lg px-4 py-3 transition-all hover:bg-zinc-800/50"
                 onClick={handleMobileMenuClick}
               >
-                Features
+                Fitur
               </a>
             </li>
             <li>
@@ -337,7 +328,7 @@ const Navbar = () => {
                 className="block rounded-lg px-4 py-3 transition-all hover:bg-zinc-800/50"
                 onClick={handleMobileMenuClick}
               >
-                About
+                Teknologi
               </a>
             </li>
             <li>
@@ -346,16 +337,7 @@ const Navbar = () => {
                 className="block rounded-lg px-4 py-3 transition-all hover:bg-zinc-800/50"
                 onClick={handleMobileMenuClick}
               >
-                Pricing
-              </a>
-            </li>
-            <li>
-              <a
-                href="#faq"
-                className="block rounded-lg px-4 py-3 transition-all hover:bg-zinc-800/50"
-                onClick={handleMobileMenuClick}
-              >
-                FAQ
+                Tentang
               </a>
             </li>
           </ul>

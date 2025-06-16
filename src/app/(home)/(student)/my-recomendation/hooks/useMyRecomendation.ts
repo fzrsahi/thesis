@@ -108,7 +108,7 @@ const useMyRecomendation = () => {
       };
     }
 
-    const recommendations = apiData.result.recommendations;
+    const { recommendations } = apiData.result;
     const totalRecommendations = recommendations.length;
     const totalMatchScore = recommendations.reduce((sum, rec) => sum + rec.matchScore.score, 0);
     const averageMatchScore = totalRecommendations > 0 ? totalMatchScore / totalRecommendations : 0;
