@@ -78,20 +78,24 @@ const useMyRecomendation = () => {
 
   const studentSkillsData = useMemo<SpiderChartDataPoint[]>(() => {
     if (!apiData?.result.skillsProfile) return [];
-    return Object.entries(apiData.result.skillsProfile).map(([skill, { score }]) => ({
-      label: skill.replace(/_/g, " "),
-      value: score * 10, // Convert to 0-10 scale
-      type: "student",
-    }));
+    return Object.entries(apiData.result.skillsProfile)
+      .map(([skill, { score }]) => ({
+        label: skill.replace(/_/g, " "),
+        value: score * 10, // Convert to 0-10 scale
+        type: "student" as const,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically for consistent display
   }, [apiData?.result.skillsProfile]);
 
   const competitionSkillsData = useMemo<SpiderChartDataPoint[]>(() => {
     if (!selectedCompetition?.skillRequirements) return [];
-    return Object.entries(selectedCompetition.skillRequirements).map(([skill, { weight }]) => ({
-      label: skill.replace(/_/g, " "),
-      value: weight * 10, // Convert to 0-10 scale
-      type: "competition",
-    }));
+    return Object.entries(selectedCompetition.skillRequirements)
+      .map(([skill, { weight }]) => ({
+        label: skill.replace(/_/g, " "),
+        value: weight * 10, // Convert to 0-10 scale
+        type: "competition" as const,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label)); // Sort alphabetically for consistent display
   }, [selectedCompetition?.skillRequirements]);
 
   const performanceMetrics = useMemo(() => {
