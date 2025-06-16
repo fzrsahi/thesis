@@ -184,19 +184,65 @@ model TotalApplicantsPastYear {
 }
 
 model Recommendation {
-  id             Int      @id @default(autoincrement())
-  studentId      Int
-  competitionId  Int
-  prompt         String
-  response       Json
-  matchScore     Float    @default(0.0)
-  feedbackScore  Float    @default(0.0)
-  feedbackReason String?
-  createdAt      DateTime @default(now())
+  id                Int      @id @default(autoincrement())
+  studentId         Int
+  prompt            String   @db.Text
+  studentSummary    String?  @db.Text
+  overallAssessment String?  @db.Text
+  createdAt         DateTime @default(now())
 
-  student Student? @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  student                    Student?                              @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  skillsProfiles             RecommendationSkillProfile[]
+  competitionRecommendations RecommendationCompetition[]
+  developmentSuggestions     RecommendationDevelopmentSuggestion[]
 
   @@map("recommendations")
+}
+
+model RecommendationSkillProfile {
+  id               Int    @id @default(autoincrement())
+  recommendationId Int
+  skillName        String
+  score            Float
+  breakdown        String @db.Text
+
+  recommendation Recommendation @relation(fields: [recommendationId], references: [id], onDelete: Cascade)
+
+  @@map("recommendationSkillProfiles")
+}
+
+model RecommendationCompetition {
+  id                Int      @id @default(autoincrement())
+  recommendationId  Int
+  competitionId     Int
+  competitionName   String
+  rank              Int
+  matchScore        Float
+  matchReason       String?  @db.Text
+  reasoning         String?  @db.Text
+  keyFactors        String?  @db.Text
+  preparationTips   String?  @db.Text
+  skillRequirements String?  @db.Text
+  feedbackScore     Float?   @default(0.0)
+  feedbackReason    String?
+  createdAt         DateTime @default(now())
+
+  recommendation Recommendation @relation(fields: [recommendationId], references: [id], onDelete: Cascade)
+
+  @@map("recommendationCompetitions")
+}
+
+model RecommendationDevelopmentSuggestion {
+  id               Int    @id @default(autoincrement())
+  recommendationId Int
+  type             String // "course", "practice", "certification"
+  title            String
+  link             String
+  reason           String @db.Text
+
+  recommendation Recommendation @relation(fields: [recommendationId], references: [id], onDelete: Cascade)
+
+  @@map("recommendationDevelopmentSuggestions")
 }
 
 model LLMChatSession {

@@ -76,27 +76,19 @@ export const createRecommendationUsecase = async (userId: number) => {
     relevantCompetitions
   );
 
-  const validateRecommendation = await validateRecommendation(recommendation);
-
   await saveRecommendation(recommendation, studentProfile, RECOMMENDATION_PROMPT_TEMPLATE);
 };
 
 const saveRecommendation = async (
   recommendation: RecommendationResponse,
   studentProfile: StudentWithRelations,
-  prompt: string,
-  matchScore: number
+  prompt: string
 ) => {
   const competitionIds = recommendation.recommendations.map((r) => r.id);
   await createRecommendation(
     { studentId: studentProfile.id, competitionIds },
-    { prompt, recommendation },
+    { prompt, recommendation }
   );
-};
-
-const validateRecommendation = async (recommendation: RecommendationResponse) => {
-  const matchScore = recommendation.recommendations.reduce((acc, curr) => acc + curr.matchScore, 0);
-  return matchScore;
 };
 
 const validateStudentProfile = async (userId: number): Promise<StudentWithRelations> => {

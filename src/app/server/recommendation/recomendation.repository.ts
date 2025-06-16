@@ -32,8 +32,7 @@ type RecommendationMetadata = {
 
 export const createRecommendation = async (
   { studentId, competitionIds }: CreateRecommendationArgs,
-  { prompt, recommendation }: RecommendationMetadata,
-  matchScore: number
+  { prompt, recommendation }: RecommendationMetadata
 ) => {
   return prisma.recommendation.createMany({
     data: competitionIds.map((competitionId) => ({
@@ -41,7 +40,6 @@ export const createRecommendation = async (
       competitionId,
       prompt,
       response: JSON.stringify(recommendation),
-      matchScore,
     })),
   });
 };

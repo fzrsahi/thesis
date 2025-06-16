@@ -721,303 +721,244 @@
       "RecommendationResponse": {
         "type": "object",
         "properties": {
-          "skillsProfile": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "number",
-              "format": "float"
-            },
-            "example": {
-              "technicalExpertise": 0.85,
-              "scientificWriting": 0.65,
-              "problemSolving": 0.83,
-              "creativityInnovation": 0.72,
-              "communication": 0.55,
-              "teamworkCollaboration": 0.78,
-              "projectManagement": 0.7,
-              "businessAcumen": 0.5,
-              "designThinking": 0.6,
-              "selfLearning": 0.9
-            },
-            "description": "Overall skill profile for the radar chart"
-          },
-          "skillsProfileBreakdown": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "string"
-            },
-            "example": {
-              "technicalExpertise": "Dibangun dari IPK tinggi (3.66), pengalaman dalam pengembangan backend, optimasi API, integrasi OpenAI, dan kontribusi pada proyek perangkat lunak kompetisi nasional.",
-              "scientificWriting": "Nilai mata kuliah metodologi penelitian (3.7) menunjukkan kemampuan dokumentasi akademis yang cukup baik, meskipun pengalaman menulis paper/jurnal masih bisa ditingkatkan."
-            },
-            "description": "Detailed breakdown of skill profile scores"
-          },
-          "categoryDistribution": {
-            "type": "object",
-            "additionalProperties": {
-              "type": "number",
-              "format": "float"
-            },
-            "example": { "Teknologi": 0.75, "Data Science": 0.15, "Bisnis": 0.1 },
-            "description": "Category distribution for the pie chart"
-          },
-          "performanceMetrics": {
+          "student": {
             "type": "object",
             "properties": {
-              "participationRate": {
-                "type": "number",
-                "format": "float",
-                "example": 0.75,
-                "description": "Participation rate of students"
+              "name": {
+                "type": "string",
+                "example": "student"
               },
-              "avgMatchScore": {
-                "type": "number",
-                "format": "float",
-                "example": 0.78,
-                "description": "Average match score"
+              "email": {
+                "type": "string",
+                "example": "student@gmail.com"
+              }
+            },
+            "required": ["name", "email"],
+            "description": "Basic student information"
+          },
+          "result": {
+            "type": "object",
+            "properties": {
+              "studentSummary": {
+                "type": "string",
+                "description": "Comprehensive summary of the student's academic and professional background",
+                "example": "Mahasiswa dengan IPK 3.66, menunjukkan keunggulan akademik di bidang Teknik Informatika. Memiliki minat utama pada Programming, Backend Development, dan Software Engineering."
               },
-              "competitionSuccessRate": {
-                "type": "number",
-                "format": "float",
-                "example": 0.33,
-                "description": "Success rate in competitions"
-              },
-              "skillGrowth": {
+              "skillsProfile": {
                 "type": "object",
                 "additionalProperties": {
-                  "type": "string"
+                  "type": "object",
+                  "properties": {
+                    "score": {
+                      "type": "number",
+                      "format": "float",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "breakdown": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["score", "breakdown"]
                 },
                 "example": {
-                  "technicalExpertise": "+0.15 (dari proyek di 80&Co dan kompetisi IT nasional)",
-                  "problemSolving": "+0.1 (dari pengalaman optimasi database dan AI-integrated project)"
+                  "technicalExpertise": {
+                    "score": 0.92,
+                    "breakdown": "Mahasiswa memiliki pengalaman teknis yang sangat kuat: peran sebagai Software Developer di Jepang dengan kontribusi pada pengembangan sistem AI dan LMS menggunakan NestJS."
+                  },
+                  "scientificWriting": {
+                    "score": 0.65,
+                    "breakdown": "Mahasiswa mampu menyusun laporan teknis yang baik, terbukti dari pengalaman kerja di berbagai proyek backend dan dokumentasi API."
+                  }
                 },
-                "description": "Skill growth indicators"
+                "description": "Detailed skill profile with scores and explanations"
+              },
+              "overallAssessment": {
+                "type": "object",
+                "properties": {
+                  "strengths": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": [
+                      "Penguasaan teknis backend dan pengembangan API yang sangat baik",
+                      "Kemampuan problem solving yang kuat dalam konteks proyek nyata"
+                    ]
+                  },
+                  "weaknesses": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "example": [
+                      "Kurangnya pengalaman dalam penulisan karya ilmiah formal",
+                      "Belum ada bukti pencapaian signifikan dalam bisnis atau kewirausahaan"
+                    ]
+                  }
+                },
+                "required": ["strengths", "weaknesses"],
+                "description": "Overall assessment of student's profile"
+              },
+              "recommendations": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "competitionName": {
+                      "type": "string",
+                      "example": "PKM-KC"
+                    },
+                    "rank": {
+                      "type": "integer",
+                      "example": 1
+                    },
+                    "matchScore": {
+                      "type": "object",
+                      "properties": {
+                        "score": {
+                          "type": "number",
+                          "format": "float",
+                          "minimum": 0,
+                          "maximum": 1,
+                          "example": 0.82
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "Mahasiswa memiliki keahlian teknis dan problem solving yang relevan untuk menciptakan prototipe inovatif."
+                        }
+                      },
+                      "required": ["score", "reason"]
+                    },
+                    "skillRequirements": {
+                      "type": "object",
+                      "additionalProperties": {
+                        "type": "object",
+                        "properties": {
+                          "weight": {
+                            "type": "number",
+                            "format": "float",
+                            "minimum": 0,
+                            "maximum": 1
+                          },
+                          "breakdown": {
+                            "type": "string"
+                          }
+                        },
+                        "required": ["weight", "breakdown"]
+                      },
+                      "example": {
+                        "technicalExpertise": {
+                          "weight": 0.8,
+                          "breakdown": "Keahlian teknis sangat penting untuk mengembangkan prototipe berkualitas tinggi."
+                        }
+                      }
+                    },
+                    "reasoning": {
+                      "type": "object",
+                      "properties": {
+                        "summary": {
+                          "type": "string",
+                          "example": "Kompetisi ini cocok untuk mahasiswa karena memanfaatkan keahlian teknis dan kemampuan problem solving yang dimilikinya."
+                        },
+                        "pros": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "example": [
+                            "Keahlian teknis mahasiswa sangat sesuai dengan kebutuhan kompetisi"
+                          ]
+                        },
+                        "cons": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "example": [
+                            "Kurangnya pengalaman penulisan ilmiah dapat menjadi tantangan"
+                          ]
+                        }
+                      },
+                      "required": ["summary", "pros", "cons"]
+                    },
+                    "keyFactors": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "Keahlian teknis dalam pengembangan prototipe",
+                        "Kemampuan problem solving yang relevan"
+                      ]
+                    },
+                    "preparationTips": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "example": [
+                        "Perbaiki keterampilan penulisan ilmiah untuk mendukung dokumentasi ide",
+                        "Latih presentasi untuk meningkatkan komunikasi selama kompetisi"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "competitionName",
+                    "rank",
+                    "matchScore",
+                    "skillRequirements",
+                    "reasoning",
+                    "keyFactors",
+                    "preparationTips"
+                  ]
+                },
+                "description": "List of recommended competitions"
+              },
+              "developmentSuggestions": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": ["course", "practice", "certification"],
+                      "example": "course"
+                    },
+                    "title": {
+                      "type": "string",
+                      "example": "Scientific Writing Essentials"
+                    },
+                    "link": {
+                      "type": "string",
+                      "format": "uri",
+                      "example": "https://www.coursera.org/learn/sciwrite"
+                    },
+                    "reason": {
+                      "type": "string",
+                      "example": "Kursus ini akan membantu mahasiswa memperkuat kemampuan penulisan ilmiah yang dibutuhkan untuk kompetisi."
+                    }
+                  },
+                  "required": ["type", "title", "link", "reason"]
+                },
+                "description": "Development suggestions for skill improvement"
               }
             },
             "required": [
-              "participationRate",
-              "avgMatchScore",
-              "competitionSuccessRate",
-              "skillGrowth"
+              "studentSummary",
+              "skillsProfile",
+              "overallAssessment",
+              "recommendations",
+              "developmentSuggestions"
             ]
-          },
-          "recommendations": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "id": {
-                  "type": "integer",
-                  "example": 1,
-                  "description": "Unique identifier for the competition"
-                },
-                "competition": {
-                  "type": "string",
-                  "example": "IT FEST 2025 - Software Development",
-                  "description": "Name of the competition"
-                },
-                "matchScore": {
-                  "type": "number",
-                  "format": "float",
-                  "example": 0.92,
-                  "description": "Match score (0.0 - 1.0)"
-                },
-                "matchScoreBreakdown": {
-                  "type": "string",
-                  "example": "Technical skills (0.85 * 0.3 = 0.255), Problem solving (0.83 * 0.25 = 0.2075), Creativity (0.72 * 0.2 = 0.144), Teamwork (0.78 * 0.15 = 0.117), Communication (0.55 * 0.1 = 0.055). Total = 0.92.",
-                  "description": "Detailed breakdown of how the match score was calculated"
-                },
-                "skillDistribution": {
-                  "type": "object",
-                  "additionalProperties": {
-                    "type": "number",
-                    "format": "float"
-                  },
-                  "example": {
-                    "technicalExpertise": 0.9,
-                    "scientificWriting": 0.4,
-                    "problemSolving": 0.8,
-                    "creativityInnovation": 0.7,
-                    "communication": 0.4,
-                    "teamworkCollaboration": 0.7,
-                    "projectManagement": 0.5,
-                    "businessAcumen": 0.3,
-                    "designThinking": 0.6,
-                    "selfLearning": 0.8
-                  },
-                  "description": "Skill distribution for the competition"
-                },
-                "skillDistributionBreakdown": {
-                  "type": "object",
-                  "additionalProperties": {
-                    "type": "string"
-                  },
-                  "example": {
-                    "technicalExpertise": "Bobot sangat tinggi karena kompetisi berfokus pada pengembangan perangkat lunak inovatif.",
-                    "scientificWriting": "Bobot rendah karena dokumentasi akademis tidak menjadi fokus utama."
-                  },
-                  "description": "Explanation of skill distribution for the competition"
-                },
-                "rank": {
-                  "type": "integer",
-                  "example": 1,
-                  "description": "Rank based on match score"
-                },
-                "reason": {
-                  "type": "string",
-                  "example": "Kompetisi ini sangat cocok karena mahasiswa memiliki kekuatan di bidang software development, dengan pengalaman proyek nyata di AI dan backend. GPA memenuhi syarat minimum, dan keterlibatan dalam kompetisi serupa sebelumnya memberikan advantage.",
-                  "description": "AI-generated explanation for why this competition is recommended"
-                },
-                "details": {
-                  "type": "object",
-                  "properties": {
-                    "startDate": {
-                      "type": "string",
-                      "format": "date",
-                      "example": "2025-05-20"
-                    },
-                    "endDate": {
-                      "type": "string",
-                      "format": "date",
-                      "example": "2025-08-25"
-                    },
-                    "location": {
-                      "type": "string",
-                      "example": "Online"
-                    },
-                    "organizer": {
-                      "type": "string",
-                      "example": "itfestmicroipb"
-                    },
-                    "registrationDeadline": {
-                      "type": "string",
-                      "format": "date",
-                      "example": "2025-05-01"
-                    },
-                    "website": {
-                      "type": "string",
-                      "example": "https://itfestmicroipb.com"
-                    }
-                  }
-                },
-                "applied": {
-                  "type": "boolean",
-                  "example": false,
-                  "description": "Whether the student has applied to this competition"
-                },
-                "preparationTips": {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  },
-                  "example": [
-                    "Latihan pengembangan aplikasi berbasis AI dengan framework populer seperti TensorFlow atau PyTorch.",
-                    "Fokus pada proposal yang kuat dengan solusi inovatif, termasuk demo teknis yang menarik.",
-                    "Pelajari pola pemenang kompetisi sebelumnya untuk memahami strategi dan inovasi.",
-                    "Latihan pitching dengan focus pada storytelling dan penjelasan teknis yang jelas."
-                  ],
-                  "description": "Personalized preparation tips for the competition"
-                }
-              },
-              "required": [
-                "id",
-                "competition",
-                "matchScore",
-                "matchScoreBreakdown",
-                "skillDistribution",
-                "skillDistributionBreakdown",
-                "rank",
-                "reason",
-                "details",
-                "applied",
-                "preparationTips"
-              ]
-            }
-          },
-          "developmentSuggestions": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "type": {
-                  "type": "string",
-                  "example": "course",
-                  "description": "Type of development suggestion (course, practice, etc.)"
-                },
-                "title": {
-                  "type": "string",
-                  "example": "IoT Foundations: Prototyping and Programming",
-                  "description": "Title of the development resource"
-                },
-                "platform": {
-                  "type": "string",
-                  "example": "Coursera",
-                  "description": "Platform where the resource is available"
-                },
-                "link": {
-                  "type": "string",
-                  "example": "https://www.coursera.org/learn/iot",
-                  "description": "Link to the resource"
-                },
-                "reason": {
-                  "type": "string",
-                  "example": "Untuk meningkatkan kemampuan pengembangan IoT dan prototyping yang relevan dengan kompetisi GEMASTIK Divisi IX.",
-                  "description": "Reason why this resource is recommended"
-                }
-              },
-              "required": ["type", "title", "platform", "link", "reason"]
-            }
-          },
-          "profileStrength": {
-            "type": "object",
-            "properties": {
-              "score": {
-                "type": "number",
-                "format": "float",
-                "example": 0.82,
-                "description": "Overall profile strength score"
-              },
-              "calculationExplanation": {
-                "type": "string",
-                "example": "IPK (3.66/4.0 * 0.25 = 0.23), Technical Skills (0.85 * 0.3 = 0.255), Experience Quality (0.8 * 0.2 = 0.16), Achievements (0.33 * 0.15 = 0.0495), Growth Potential (0.9 * 0.1 = 0.09). Total = 0.82.",
-                "description": "Detailed explanation of how the profile strength score was calculated"
-              },
-              "strengths": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "example": [
-                  "Kuat di bidang teknis dengan bukti dari proyek backend dan AI-integrated.",
-                  "Prestasi kompetisi nasional menunjukkan kemampuan bersaing.",
-                  "Kemampuan belajar mandiri sangat tinggi dengan adaptasi teknologi baru."
-                ],
-                "description": "List of profile strengths"
-              },
-              "weaknesses": {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                },
-                "example": [
-                  "Keterampilan komunikasi perlu ditingkatkan untuk pitching kompetisi.",
-                  "Pemahaman bisnis masih terbatas untuk kompetisi dengan aspek kewirausahaan."
-                ],
-                "description": "List of areas for improvement"
-              }
-            },
-            "required": ["score", "calculationExplanation", "strengths", "weaknesses"]
           }
         },
-        "required": [
-          "skillsProfile",
-          "skillsProfileBreakdown",
-          "categoryDistribution",
-          "performanceMetrics",
-          "recommendations",
-          "developmentSuggestions",
-          "profileStrength"
-        ]
+        "required": ["student", "result"]
       },
       "StudentPersonalData": {
         "type": "object",
