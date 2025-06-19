@@ -17,7 +17,7 @@ const DashboardContent = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="flex">
       <Sidebar />
-      <main className="min-h-screen flex-1 bg-gray-100 p-6">
+      <main className="min-h-screen flex-1 bg-gray-300 p-6 text-zinc-100">
         <div className="mb-4">
           <BreadcrumbNav items={breadcrumbItems} isHome={isHome} />
         </div>

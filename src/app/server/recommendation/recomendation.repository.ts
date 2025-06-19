@@ -100,7 +100,6 @@ export const createRecommendation = async ({
       })),
     });
 
-    // Create development suggestions
     await tx.recommendationDevelopmentSuggestion.createMany({
       data: recommendation.developmentSuggestions.map((suggestion) => ({
         recommendationId: mainRecommendation.id,

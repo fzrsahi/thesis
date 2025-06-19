@@ -212,7 +212,6 @@ const generateRecommendation = async (
     competitions: competitionContext,
   });
 
-  // Update competition IDs to match database IDs
   const competitionMap = new Map(competitionsData.map((comp) => [comp.title, comp.id]));
   result.recommendations = result.recommendations.map((rec) => ({
     ...rec,
