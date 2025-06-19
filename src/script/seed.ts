@@ -76,7 +76,7 @@ const seedCompetitions = async () => {
 
   try {
     for (const competition of competitions) {
-      await prisma.competition.create({
+      await prisma.competitions.create({
         data: competition,
       });
     }
