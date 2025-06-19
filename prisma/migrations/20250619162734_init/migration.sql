@@ -156,26 +156,58 @@ CREATE TABLE "totalApplicantsPastYear" (
 );
 
 -- CreateTable
-CREATE TABLE "studentCompetitions" (
-    "id" SERIAL NOT NULL,
-    "studentId" INTEGER NOT NULL,
-    "competitionId" INTEGER NOT NULL,
-    "matchScore" DOUBLE PRECISION NOT NULL DEFAULT 0.0,
-    "feedback" TEXT,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT "studentCompetitions_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "recommendations" (
     "id" SERIAL NOT NULL,
     "studentId" INTEGER NOT NULL,
     "prompt" TEXT NOT NULL,
-    "response" JSONB NOT NULL,
+    "studentSummary" TEXT,
+    "overallAssessment" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "recommendations_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "recommendationSkillProfiles" (
+    "id" SERIAL NOT NULL,
+    "recommendationId" INTEGER NOT NULL,
+    "skillName" TEXT NOT NULL,
+    "score" DOUBLE PRECISION NOT NULL,
+    "breakdown" TEXT NOT NULL,
+
+    CONSTRAINT "recommendationSkillProfiles_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "recommendationCompetitions" (
+    "id" SERIAL NOT NULL,
+    "recommendationId" INTEGER NOT NULL,
+    "competitionId" INTEGER NOT NULL,
+    "competitionName" TEXT NOT NULL,
+    "rank" INTEGER NOT NULL,
+    "matchScore" DOUBLE PRECISION NOT NULL,
+    "matchReason" TEXT,
+    "reasoning" TEXT,
+    "keyFactors" TEXT,
+    "preparationTips" TEXT,
+    "skillRequirements" TEXT,
+    "feedbackScore" DOUBLE PRECISION DEFAULT 0.0,
+    "feedbackReason" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "recommendationCompetitions_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "recommendationDevelopmentSuggestions" (
+    "id" SERIAL NOT NULL,
+    "recommendationId" INTEGER NOT NULL,
+    "type" TEXT NOT NULL,
+    "title" TEXT NOT NULL,
+    "link" TEXT NOT NULL,
+    "reason" TEXT NOT NULL,
+
+    CONSTRAINT "recommendationDevelopmentSuggestions_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -214,9 +246,6 @@ CREATE UNIQUE INDEX "advisors_userId_key" ON "advisors"("userId");
 -- CreateIndex
 CREATE UNIQUE INDEX "competitionStats_competitionId_key" ON "competitionStats"("competitionId");
 
--- CreateIndex
-CREATE UNIQUE INDEX "studentCompetitions_studentId_competitionId_key" ON "studentCompetitions"("studentId", "competitionId");
-
 -- AddForeignKey
 ALTER TABLE "admins" ADD CONSTRAINT "admins_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -248,13 +277,16 @@ ALTER TABLE "pastUngParticipants" ADD CONSTRAINT "pastUngParticipants_competitio
 ALTER TABLE "totalApplicantsPastYear" ADD CONSTRAINT "totalApplicantsPastYear_competitionStatsId_fkey" FOREIGN KEY ("competitionStatsId") REFERENCES "competitionStats"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "studentCompetitions" ADD CONSTRAINT "studentCompetitions_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "students"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "studentCompetitions" ADD CONSTRAINT "studentCompetitions_competitionId_fkey" FOREIGN KEY ("competitionId") REFERENCES "competitions"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "recommendations" ADD CONSTRAINT "recommendations_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "students"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "recommendationSkillProfiles" ADD CONSTRAINT "recommendationSkillProfiles_recommendationId_fkey" FOREIGN KEY ("recommendationId") REFERENCES "recommendations"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "recommendationCompetitions" ADD CONSTRAINT "recommendationCompetitions_recommendationId_fkey" FOREIGN KEY ("recommendationId") REFERENCES "recommendations"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "recommendationDevelopmentSuggestions" ADD CONSTRAINT "recommendationDevelopmentSuggestions_recommendationId_fkey" FOREIGN KEY ("recommendationId") REFERENCES "recommendations"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "llmChatSessions" ADD CONSTRAINT "llmChatSessions_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "students"("id") ON DELETE CASCADE ON UPDATE CASCADE;
