@@ -2,7 +2,7 @@ import { Document } from "@langchain/core/documents";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { competitions } from "@prisma/client";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
-import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
+import { getDocument } from "pdfjs-serverless";
 
 import { prisma } from "@/app/server/prisma/prisma";
 import { CreateCompetitionGeneratePayload } from "@/app/shared/schema/competition/CompetitionGenerateSchema";
@@ -121,8 +121,6 @@ const extractTextFromPdfBuffer = async (
   endPage?: number,
   startPage: number = 1
 ): Promise<string> => {
-  await import("pdfjs-dist/legacy/build/pdf.worker.mjs");
-
   const arrayBuffer = await fileBuffer.arrayBuffer();
   const pdfDataAsUint8Array = new Uint8Array(arrayBuffer);
   const loadingTask = getDocument({ data: pdfDataAsUint8Array });

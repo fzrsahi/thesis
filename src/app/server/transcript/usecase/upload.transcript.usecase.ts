@@ -1,6 +1,6 @@
 import { HttpStatusCode } from "axios";
-import * as pdfjs from "pdfjs-dist/legacy/build/pdf.mjs";
 import { TextItem } from "pdfjs-dist/types/src/display/api";
+import { getDocument } from "pdfjs-serverless";
 
 import { UploadTranscriptPayload } from "@/app/shared/schema/student/profile/TranscriptSchema";
 
@@ -11,8 +11,6 @@ import { STUDENT_ERROR_RESPONSE } from "../../user/student.error";
 import { customError } from "../../utils/error/custom-error";
 import { TRANSCRIPT_ERROR_RESPONSE } from "../transcript.error";
 import { createTranscript } from "../transcript.repository";
-
-import "@ungap/with-resolvers";
 
 export const uploadTranscript = async (userId: number, payload: UploadTranscriptPayload) => {
   const student = await findStudentByUserId(userId);
@@ -46,12 +44,10 @@ export const uploadTranscript = async (userId: number, payload: UploadTranscript
 };
 
 const extractTranscriptToText = async (transcript: File) => {
-  await import("pdfjs-dist/legacy/build/pdf.worker.mjs");
-
   const arrayBuffer = await transcript.arrayBuffer();
   const pdfDataAsUint8Array = new Uint8Array(arrayBuffer);
 
-  const pdfDocument = await pdfjs.getDocument({ data: pdfDataAsUint8Array }).promise;
+  const pdfDocument = await getDocument({ data: pdfDataAsUint8Array }).promise;
 
   let extractedText = "";
 
