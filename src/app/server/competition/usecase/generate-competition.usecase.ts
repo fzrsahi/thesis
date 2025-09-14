@@ -8,6 +8,7 @@ import { prisma } from "@/app/server/prisma/prisma";
 import { CreateCompetitionGeneratePayload } from "@/app/shared/schema/competition/CompetitionGenerateSchema";
 import { CreateCompetitionPayload } from "@/app/shared/schema/competition/CompetitionSchema";
 
+import { uploadFile } from "../../google-storage/google-storage.service";
 import { createOpenAIClient } from "../../model/azure/azure-openai.service";
 import {
   generateCompetitionResponseSchema,
@@ -19,7 +20,6 @@ import {
 } from "../../vector/pgvector.service";
 import { createCompetition, updateCompetitionById } from "../competition.repository";
 import { generateCompetitionText, storeToVectorStore } from "../helper/competition.helper";
-import { uploadFile } from "../../google-storage/google-storage.service";
 
 import "@ungap/with-resolvers";
 

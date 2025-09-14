@@ -14,15 +14,15 @@ export const uploadFile = async (file: File) => {
   });
 
   const bucket = storage.bucket(BUCKET_NAME);
-  
+
   const timestamp = Date.now();
   const fileName = `${timestamp}-${file.name}`;
-  
+
   const fileUpload = bucket.file(fileName);
-  
+
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
-  
+
   await fileUpload.save(buffer, {
     metadata: {
       contentType: file.type,
@@ -30,7 +30,7 @@ export const uploadFile = async (file: File) => {
   });
 
   const [signedUrl] = await fileUpload.getSignedUrl({
-    action: 'read',
+    action: "read",
     expires: Date.now() + 365 * 24 * 60 * 60 * 1000, // 1 year
   });
 
@@ -48,12 +48,12 @@ export const getFileUrl = async (fileName: string) => {
 
   const bucket = storage.bucket(BUCKET_NAME);
   const file = bucket.file(fileName);
-  
+
   const [signedUrl] = await file.getSignedUrl({
-    action: 'read',
+    action: "read",
     expires: Date.now() + 365 * 24 * 60 * 60 * 1000, // 1 year
   });
-  
+
   return signedUrl;
 };
 
@@ -65,7 +65,7 @@ export const getFileById = async (fileName: string) => {
 
   const bucket = storage.bucket(BUCKET_NAME);
   const file = bucket.file(fileName);
-  
+
   const [buffer] = await file.download();
   return {
     data: buffer,
