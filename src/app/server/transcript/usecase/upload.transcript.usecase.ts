@@ -4,7 +4,7 @@ import { getDocument } from "pdfjs-serverless";
 
 import { UploadTranscriptPayload } from "@/app/shared/schema/student/profile/TranscriptSchema";
 
-import { uploadFile } from "../../google-drive/google-drive.service";
+import { uploadFile } from "../../google-storage/google-storage.service";
 import { sendChatCompletion } from "../../model/azure/azure-openai.service";
 import { findStudentByUserId } from "../../student/student.repository";
 import { STUDENT_ERROR_RESPONSE } from "../../user/student.error";

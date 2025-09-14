@@ -1,6 +1,6 @@
 import { HttpStatusCode } from "axios";
 
-import { getFileUrl } from "../../google-drive/google-drive.service";
+import { getFileUrl } from "../../google-storage/google-storage.service";
 import { STUDENT_ERROR_RESPONSE } from "../../student/student.error";
 import { findStudentByUserId } from "../../student/student.repository";
 import { customError } from "../../utils/error/custom-error";
