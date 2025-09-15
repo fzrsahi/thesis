@@ -8,9 +8,9 @@ const OPENAI_CONFIG = {
   baseURL: "https://openrouter.ai/api/v1",
 };
 
-export const createOpenAIClient = (modelName: string) => {
-  return new ChatOpenAI({
-    modelName: modelName,
+export const createOpenAIClient = (modelName: string) =>
+  new ChatOpenAI({
+    modelName,
     temperature: OPENAI_CONFIG.temperature,
     maxTokens: OPENAI_CONFIG.maxTokens,
     apiKey: OPENAI_CONFIG.apiKey,
@@ -19,7 +19,6 @@ export const createOpenAIClient = (modelName: string) => {
       baseURL: OPENAI_CONFIG.baseURL,
     },
   });
-};
 
 export const createEmbeddingClient = () =>
   new OpenAIEmbeddings({
@@ -34,9 +33,18 @@ export const sendChatCompletion = async (prompt: string, modelName: string) => {
   const model = createOpenAIClient(modelName);
   const response = await model.invoke(prompt);
 
-  return Array.isArray(response.content)
-    ? response.content
-        .map((c: any) => (typeof c === "string" ? c : c?.text ?? ""))
-        .join("")
-    : (response.content as string);
+  if (Array.isArray(response.content)) {
+    return response.content
+      .map((c) => {
+        if (typeof c === "string") {
+          return c;
+        }
+        if (c && "text" in c) {
+          return c.text;
+        }
+        return "";
+      })
+      .join("");
+  }
+  return response.content;
 };

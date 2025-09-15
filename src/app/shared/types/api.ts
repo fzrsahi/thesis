@@ -70,6 +70,156 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/students": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get student list with filter
+     * @description Get all students, optionally filtered by query parameters such as name, email, or studentId
+     */
+    get: {
+      parameters: {
+        query?: {
+          /** @description Page number (1-based) */
+          page?: components["parameters"]["PageParam"];
+          /** @description Items per page */
+          limit?: components["parameters"]["LimitParam"];
+          /** @description Free-text search keywords */
+          keywords?: components["parameters"]["KeywordsParam"];
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description List of students retrieved successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": {
+              /** @example true */
+              success?: boolean;
+              data?: {
+                id?: number;
+                name?: string;
+                email?: string;
+                studentId?: string;
+              }[];
+              pagination?: components["schemas"]["Pagination"];
+            };
+          };
+        };
+      };
+    };
+    put?: never;
+    /**
+     * Create student
+     * @description Create a new student
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            name: string;
+            email: string;
+            studentId: string;
+          };
+        };
+      };
+      responses: {
+        /** @description Student created successfully */
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": {
+              /** @example true */
+              success?: boolean;
+              data?: {
+                name?: string;
+                email?: string;
+                studentId?: string;
+              };
+            };
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/students/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get student
+     * @description Get a student
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: never;
+    };
+    /**
+     * Update student
+     * @description Update a student
+     */
+    put: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: never;
+    };
+    post?: never;
+    /**
+     * Delete student
+     * @description Delete a student
+     */
+    delete: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: never;
+    };
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/students/personal-data": {
     parameters: {
       query?: never;
@@ -460,10 +610,192 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/advisors": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get advisor list
+     * @description Get all advisors with optional pagination and keyword search
+     */
+    get: {
+      parameters: {
+        query?: {
+          /** @description Page number (1-based) */
+          page?: components["parameters"]["PageParam"];
+          /** @description Items per page */
+          limit?: components["parameters"]["LimitParam"];
+          /** @description Free-text search keywords */
+          keywords?: components["parameters"]["KeywordsParam"];
+        };
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Advisor list retrieved successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": {
+              /** @example true */
+              success?: boolean;
+              data?: components["schemas"]["Advisor"][];
+              pagination?: components["schemas"]["Pagination"];
+            };
+          };
+        };
+      };
+    };
+    put?: never;
+    /**
+     * Create advisor
+     * @description Create a new advisor
+     */
+    post: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["AdvisorCreate"];
+        };
+      };
+      responses: {
+        /** @description Advisor created successfully */
+        201: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": {
+              /** @example true */
+              success?: boolean;
+            };
+          };
+        };
+      };
+    };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/advisors/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    get?: never;
+    /**
+     * Update advisor
+     * @description Update an advisor by ID
+     */
+    put: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: number;
+        };
+        cookie?: never;
+      };
+      requestBody: {
+        content: {
+          "application/json": components["schemas"]["AdvisorUpdate"];
+        };
+      };
+      responses: {
+        /** @description Advisor updated successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": {
+              /** @example true */
+              success?: boolean;
+              data?: components["schemas"]["Advisor"];
+            };
+          };
+        };
+      };
+    };
+    post?: never;
+    /**
+     * Delete advisor
+     * @description Delete an advisor by ID
+     */
+    delete: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path: {
+          id: number;
+        };
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Advisor deleted successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
+    };
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
+    Pagination: {
+      /** @example 100 */
+      total: number;
+      /** @example 1 */
+      page: number;
+      /** @example 10 */
+      limit: number;
+      /** @example 10 */
+      totalPages: number;
+      /** @example true */
+      hasNextPage: boolean;
+      /** @example false */
+      hasPrevPage: boolean;
+    };
+    Advisor: {
+      id: number;
+      userId: number;
+      /** Format: date-time */
+      createdAt: string;
+      /** Format: date-time */
+      updatedAt: string;
+    };
+    AdvisorCreate: {
+      name?: string;
+      email?: string;
+    };
+    AdvisorUpdate: {
+      userId?: number;
+    };
     SuccessResponse: {
       /** @example true */
       success: boolean;
@@ -841,7 +1173,14 @@ export interface components {
     };
   };
   responses: never;
-  parameters: never;
+  parameters: {
+    /** @description Page number (1-based) */
+    PageParam: number;
+    /** @description Items per page */
+    LimitParam: number;
+    /** @description Free-text search keywords */
+    KeywordsParam: string;
+  };
   requestBodies: never;
   headers: never;
   pathItems: never;

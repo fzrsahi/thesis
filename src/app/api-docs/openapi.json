@@ -123,6 +123,113 @@
         }
       }
     },
+    "/students": {
+      "get": {
+        "tags": ["Student"],
+        "summary": "Get student list with filter",
+        "description": "Get all students, optionally filtered by query parameters such as name, email, or studentId",
+        "parameters": [
+          { "$ref": "#/components/parameters/PageParam" },
+          { "$ref": "#/components/parameters/LimitParam" },
+          { "$ref": "#/components/parameters/KeywordsParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of students retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "number" },
+                          "name": { "type": "string" },
+                          "email": { "type": "string" },
+                          "studentId": { "type": "string" }
+                        }
+                      }
+                    },
+                    "pagination": { "$ref": "#/components/schemas/Pagination" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Student"],
+        "summary": "Create student",
+        "description": "Create a new student",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "email": { "type": "string" },
+                  "studentId": { "type": "string" }
+                },
+                "required": ["name", "email", "studentId"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Student created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "name": { "type": "string" },
+                        "email": { "type": "string" },
+                        "studentId": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/students/{id}": {
+      "get": {
+        "tags": ["Student"],
+        "summary": "Get student",
+        "description": "Get a student"
+      },
+      "put": {
+        "tags": ["Student"],
+        "summary": "Update student",
+        "description": "Update a student"
+      },
+      "delete": {
+        "tags": ["Student"],
+        "summary": "Delete student",
+        "description": "Delete a student"
+      }
+    },
     "/students/personal-data": {
       "get": {
         "tags": ["Student"],
@@ -497,10 +604,159 @@
           }
         }
       }
+    },
+    "/advisors": {
+      "get": {
+        "tags": ["Advisor"],
+        "summary": "Get advisor list",
+        "description": "Get all advisors with optional pagination and keyword search",
+        "parameters": [
+          { "$ref": "#/components/parameters/PageParam" },
+          { "$ref": "#/components/parameters/LimitParam" },
+          { "$ref": "#/components/parameters/KeywordsParam" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Advisor list retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Advisor" }
+                    },
+                    "pagination": { "$ref": "#/components/schemas/Pagination" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Advisor"],
+        "summary": "Create advisor",
+        "description": "Create a new advisor",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AdvisorCreate" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Advisor created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/advisors/{id}": {
+      "put": {
+        "tags": ["Advisor"],
+        "summary": "Update advisor",
+        "description": "Update an advisor by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AdvisorUpdate" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Advisor updated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "data": { "$ref": "#/components/schemas/Advisor" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Advisor"],
+        "summary": "Delete advisor",
+        "description": "Delete an advisor by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Advisor deleted successfully" }
+        }
+      }
     }
   },
 
   "components": {
+    "parameters": {
+      "PageParam": {
+        "name": "page",
+        "in": "query",
+        "description": "Page number (1-based)",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "default": 1
+        }
+      },
+      "LimitParam": {
+        "name": "limit",
+        "in": "query",
+        "description": "Items per page",
+        "required": false,
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100,
+          "default": 10
+        }
+      },
+      "KeywordsParam": {
+        "name": "keywords",
+        "in": "query",
+        "description": "Free-text search keywords",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
     "securitySchemes": {
       "bearerAuth": {
         "type": "http",
@@ -509,6 +765,42 @@
       }
     },
     "schemas": {
+      "Pagination": {
+        "type": "object",
+        "properties": {
+          "total": { "type": "integer", "example": 100 },
+          "page": { "type": "integer", "example": 1 },
+          "limit": { "type": "integer", "example": 10 },
+          "totalPages": { "type": "integer", "example": 10 },
+          "hasNextPage": { "type": "boolean", "example": true },
+          "hasPrevPage": { "type": "boolean", "example": false }
+        },
+        "required": ["total", "page", "limit", "totalPages", "hasNextPage", "hasPrevPage"]
+      },
+      "Advisor": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "userId": { "type": "integer" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        },
+        "required": ["id", "userId", "createdAt", "updatedAt"]
+      },
+      "AdvisorCreate": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "email": { "type": "string" }
+        },
+        "required": ["userId"]
+      },
+      "AdvisorUpdate": {
+        "type": "object",
+        "properties": {
+          "userId": { "type": "integer" }
+        }
+      },
       "SuccessResponse": {
         "type": "object",
         "properties": {

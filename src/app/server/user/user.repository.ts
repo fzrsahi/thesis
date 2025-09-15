@@ -1,6 +1,8 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, User } from "@prisma/client";
 
 import { prisma } from "../prisma/prisma";
+
+type userCreate = Omit<User, "id" | "createdAt" | "updatedAt">;
 
 export const findUserByEmail = (
   email: string,
@@ -30,4 +32,13 @@ export const findUserById = (
   prisma.user.findUnique({
     where: { id },
     select: fields,
+  });
+
+export const createUser = (user: userCreate) =>
+  prisma.user.create({
+    data: {
+      email: user.email,
+      password: user.password,
+      name: user.name,
+    },
   });

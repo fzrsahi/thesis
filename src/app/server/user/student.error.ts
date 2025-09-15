@@ -11,6 +11,10 @@ export const STUDENT_ERROR_RESPONSE = {
     code: "STUDENT_003",
     message: "Internal server error.",
   },
+  BAD_REQUEST: {
+    code: "STUDENT_004",
+    message: "Bad request.",
+  },
 };
 
 export const STUDENT_ERROR_LOG_MESSAGE = {

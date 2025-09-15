@@ -5,15 +5,12 @@ import { getDocument } from "pdfjs-serverless";
 import { UploadTranscriptPayload } from "@/app/shared/schema/student/profile/TranscriptSchema";
 
 import { uploadFile } from "../../google-storage/google-storage.service";
-import { sendChatCompletion } from "../../model/openai/openai.service";
+import { sendChatCompletion } from "../../model/azure/azure-openai.service";
 import { findStudentByUserId } from "../../student/student.repository";
 import { STUDENT_ERROR_RESPONSE } from "../../user/student.error";
 import { customError } from "../../utils/error/custom-error";
 import { TRANSCRIPT_ERROR_RESPONSE } from "../transcript.error";
 import { createTranscript } from "../transcript.repository";
-
-const TRANSCRIPT_MODEL = "gpt-4o-mini";
-
 
 export const uploadTranscript = async (userId: number, payload: UploadTranscriptPayload) => {
   const student = await findStudentByUserId(userId);
@@ -104,7 +101,8 @@ const extractTranscriptToText = async (transcript: File) => {
 };
 
 const transcriptTextToSummary = async (transcriptText: string) =>
-  sendChatCompletion(TRANSCRIPT_MODEL, `
+  sendChatCompletion(
+    `
     Anda adalah seorang analis akademik yang ahli dalam mengidentifikasi potensi mahasiswa berdasarkan transkrip nilai.
     Tugas Anda adalah membuat ringkasan naratif dari transkrip nilai seorang mahasiswa Teknik Informatika.
     Konteks Penting: Ringkasan ini akan diubah menjadi vector embedding untuk mencocokkan mahasiswa dengan kompetisi IT yang relevan. Oleh karena itu, ringkasan harus padat dengan informasi yang menyoroti keahlian dan kekuatan mahasiswa.
@@ -113,4 +111,5 @@ const transcriptTextToSummary = async (transcriptText: string) =>
     2.  **Sintesis Keahlian**: Jangan hanya mendaftar mata kuliah. Simpulkan menjadi sebuah paragraf yang menjelaskan kekuatan dan potensi keahlian mahasiswa. Contoh: "Mahasiswa ini menunjukkan keunggulan di bidang pengembangan perangkat lunak, terbukti dari nilai A pada mata kuliah Algoritma dan Pemrograman Lanjut."
     3.  **Abaikan yang Tidak Relevan**: Abaikan sepenuhnya mata kuliah umum dan non-teknis (seperti Pendidikan Agama, Kewarganegaraan, Bahasa Indonesia) karena tidak relevan untuk pencocokan kompetisi IT.
     4.  **Format**: Respons harus berupa satu paragraf ringkas dalam format teks biasa (plain text) dan dalam bahasa Indonesia.
-    Berikut adalah teks transkripnya: ${transcriptText}`);
+    Berikut adalah teks transkripnya: ${transcriptText}`
+  );

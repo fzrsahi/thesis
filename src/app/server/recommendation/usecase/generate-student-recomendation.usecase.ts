@@ -7,7 +7,7 @@ import {
   getCompetitions,
   findManyCompetitionsByIds,
 } from "../../competition/competition.repository";
-import { createOpenAIClient } from "../../model/openai/openai.service";
+import { createOpenAIClient } from "../../model/azure/azure-openai.service";
 import {
   RecommendationResponse,
   RecommendationResponseSchema,
@@ -19,7 +19,6 @@ import { getCompetitionRetriever } from "../../vector/pgvector.service";
 import { createRecommendation } from "../recomendation.repository";
 
 const TOP_K_COMPETITIONS = 5;
-const RECOMMENDATION_MODEL = "gpt-4o";
 const RECOMMENDATION_PROMPT_TEMPLATE = `
     Anda adalah Konselor Akademik dan Kompetisi berbasis AI, sebuah aplikasi Large Language Model (LLM) yang dikembangkan berdasarkan penelitian "Penerapan Large Language Model (LLM) dalam Seleksi Peserta Kompetisi Mahasiswa Teknik Informatika Universitas Negeri Gorontalo".
 
@@ -175,7 +174,7 @@ const generateRecommendation = async (
   studentProfile: StudentWithRelations,
   competitionsData: competitions[]
 ): Promise<RecommendationResponse> => {
-  const model = createOpenAIClient(RECOMMENDATION_MODEL);
+  const model = createOpenAIClient();
   const structuredModel = model.withStructuredOutput<RecommendationResponse>(
     RecommendationResponseSchema
   );
