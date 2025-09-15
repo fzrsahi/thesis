@@ -457,7 +457,8 @@
                           }
                         }
                       }
-                    }
+                    },
+                    "pagination": { "$ref": "#/components/schemas/Pagination" }
                   }
                 }
               }
@@ -530,10 +531,30 @@
       "get": {
         "tags": ["Competition"],
         "summary": "Get competition list",
+        "parameters": [
+          { "$ref": "#/components/parameters/PageParam" },
+          { "$ref": "#/components/parameters/LimitParam" },
+          { "$ref": "#/components/parameters/KeywordsParam" }
+        ],
         "description": "Get all competitions",
         "responses": {
           "200": {
-            "description": "Competition list retrieved successfully"
+            "description": "Competition list retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "data": {
+                      "type": "array",
+                      "items": { "$ref": "#/components/schemas/Competition" }
+                    },
+                    "pagination": { "$ref": "#/components/schemas/Pagination" }
+                  }
+                }
+              }
+            }
           }
         }
       }

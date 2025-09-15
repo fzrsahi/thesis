@@ -4,7 +4,15 @@ import { InputJsonValue } from "@prisma/client/runtime/library";
 import { CreateCompetitionPayload } from "@/app/shared/schema/competition/CompetitionSchema";
 
 import { prisma } from "../prisma/prisma";
+import { paginate } from "../utils/pagination/paginate";
+import { PaginatedResult, PaginationParams } from "../utils/pagination/pagination.types";
 
+export type competitionsListItem = {
+  id: number;
+  title: string;
+  description: string;
+  organizer: string;
+};
 export const createCompetition = async (
   payload: CreateCompetitionPayload,
   competitionText?: string
@@ -44,7 +52,48 @@ export const createCompetition = async (
     },
   });
 
-export const getCompetitions = async () => prisma.competitions.findMany();
+export const getCompetitions = async (
+  pagination?: PaginationParams
+): Promise<PaginatedResult<competitionsListItem>> => {
+  let where: Prisma.competitionsWhereInput | undefined;
+
+  if (pagination?.keywords) {
+    const keyword = pagination.keywords;
+    where = {
+      OR: [
+        { title: { contains: keyword as string, mode: "insensitive" } },
+        { description: { contains: keyword as string, mode: "insensitive" } },
+        { organizer: { contains: keyword as string, mode: "insensitive" } },
+        { type: { contains: keyword as string, mode: "insensitive" } },
+      ],
+    };
+  }
+
+  return paginate<competitionsListItem, Prisma.competitionsWhereInput>(
+    {
+      count: (args) => prisma.competitions.count({ where: args.where }),
+      findMany: (args) =>
+        prisma.competitions.findMany({
+          where: args.where,
+          orderBy: { id: "asc" },
+          skip: args.skip,
+          take: args.take,
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            organizer: true,
+            field: true,
+            type: true,
+            startDate: true,
+            endDate: true,
+          },
+        }) as unknown as Promise<competitionsListItem[]>,
+    },
+    pagination,
+    { where }
+  );
+};
 
 export const findManyCompetitionsByIds = async (
   ids: number[],

@@ -7,7 +7,10 @@ import {
   COMPETITION_ERROR_RESPONSE,
 } from "@/app/server/competition/competition.error";
 import { createCompetitionUsecase } from "@/app/server/competition/usecase/create-competition.usecase";
+import { getCompetitionsUsecase } from "@/app/server/competition/usecase/get-competitions.usecase";
 import { isCustomError, customErrorToResponse } from "@/app/server/utils/error/custom-error";
+import { internalServerError } from "@/app/server/utils/error/internal-server-error";
+import { getPaginationParams } from "@/app/server/utils/pagination/get-pagination-params";
 import { ROLES } from "@/app/shared/const/role";
 import {
   CreateCompetitionPayload,
@@ -47,4 +50,24 @@ export const POST = withAuth(
     }
   },
   [ROLES.STUDENT, ROLES.ADMIN]
+);
+
+export const GET = withAuth(
+  async (request: NextRequest) => {
+    try {
+      const pagination = getPaginationParams(request);
+      const result = await getCompetitionsUsecase(pagination);
+      return NextResponse.json({
+        success: true,
+        data: result.data,
+        pagination: result.pagination,
+      });
+    } catch (error) {
+      return internalServerError(error, {
+        errorLogMessage: COMPETITION_ERROR_LOG.INTERNAL_SERVER_ERROR,
+        errorResponse: COMPETITION_ERROR_RESPONSE.INTERNAL_SERVER_ERROR,
+      });
+    }
+  },
+  [ROLES.STUDENT, ROLES.ADMIN, ROLES.ADVISOR]
 );

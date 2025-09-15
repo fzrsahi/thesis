@@ -123,7 +123,7 @@ const validateStudentProfile = async (userId: number): Promise<StudentWithRelati
 const validateCompetition = async () => {
   const competition = await getCompetitions();
 
-  if (!competition.length) {
+  if (!competition.data.length) {
     throw customError(
       COMPETITION_ERROR_RESPONSE.NOT_FOUND.code,
       COMPETITION_ERROR_RESPONSE.NOT_FOUND.message,
