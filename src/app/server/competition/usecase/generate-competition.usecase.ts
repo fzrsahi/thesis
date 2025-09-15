@@ -9,11 +9,11 @@ import { CreateCompetitionGeneratePayload } from "@/app/shared/schema/competitio
 import { CreateCompetitionPayload } from "@/app/shared/schema/competition/CompetitionSchema";
 
 import { uploadFile } from "../../google-storage/google-storage.service";
-import { createOpenAIClient } from "../../model/azure/azure-openai.service";
+import { createOpenAIClient } from "../../model/openai/openai.service";
 import {
   generateCompetitionResponseSchema,
   GenerateCompetitionResponse,
-} from "../../model/azure/types/generate-competition.types";
+} from "../../model/types/generate-competition.types";
 import {
   getDocumentChunksRetriever,
   getDocumentChunksVectorStore,
@@ -26,7 +26,7 @@ import "@ungap/with-resolvers";
 const CHUNK_SIZE = 1000;
 const CHUNK_OVERLAP = 200;
 const TOP_K_CHUNKS = 10;
-
+const COMPETITION_MODEL = "gpt-4o-mini";
 const COMPETITION_PROMPT_TEMPLATE = `Anda adalah Asisten Ahli untuk Ekstraksi Data Kompetisi. Tugas utama Anda adalah membaca dengan teliti KONTEKS yang disediakan dari dokumen panduan kompetisi, lalu mengekstrak informasi secara akurat untuk mengisi setiap field dalam skema JSON yang telah ditentukan.
 
 PERAN DAN TUGAS:
@@ -191,7 +191,7 @@ const generateCompetitionData = async (
   payload: CreateCompetitionGeneratePayload,
   contextText: string
 ): Promise<GenerateCompetitionResponse> => {
-  const model = createOpenAIClient();
+  const model = createOpenAIClient(COMPETITION_MODEL);
   const structuredModel = model.withStructuredOutput<GenerateCompetitionResponse>(
     generateCompetitionResponseSchema
   );

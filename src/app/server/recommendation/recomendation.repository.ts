@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 
-import { RecommendationResponse } from "../model/azure/types/recomendation.types";
+import { RecommendationResponse } from "../model/types/recomendation.types";
 import { prisma } from "../prisma/prisma";
 
 export const findRecommendationByStudentId = async (

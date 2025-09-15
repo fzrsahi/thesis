@@ -5,12 +5,15 @@ import { getDocument } from "pdfjs-serverless";
 import { UploadTranscriptPayload } from "@/app/shared/schema/student/profile/TranscriptSchema";
 
 import { uploadFile } from "../../google-storage/google-storage.service";
-import { sendChatCompletion } from "../../model/azure/azure-openai.service";
+import { sendChatCompletion } from "../../model/openai/openai.service";
 import { findStudentByUserId } from "../../student/student.repository";
 import { STUDENT_ERROR_RESPONSE } from "../../user/student.error";
 import { customError } from "../../utils/error/custom-error";
 import { TRANSCRIPT_ERROR_RESPONSE } from "../transcript.error";
 import { createTranscript } from "../transcript.repository";
+
+const TRANSCRIPT_MODEL = "gpt-4o-mini";
+
 
 export const uploadTranscript = async (userId: number, payload: UploadTranscriptPayload) => {
   const student = await findStudentByUserId(userId);
@@ -101,7 +104,7 @@ const extractTranscriptToText = async (transcript: File) => {
 };
 
 const transcriptTextToSummary = async (transcriptText: string) =>
-  sendChatCompletion(`
+  sendChatCompletion(TRANSCRIPT_MODEL, `
     Anda adalah seorang analis akademik yang ahli dalam mengidentifikasi potensi mahasiswa berdasarkan transkrip nilai.
     Tugas Anda adalah membuat ringkasan naratif dari transkrip nilai seorang mahasiswa Teknik Informatika.
     Konteks Penting: Ringkasan ini akan diubah menjadi vector embedding untuk mencocokkan mahasiswa dengan kompetisi IT yang relevan. Oleh karena itu, ringkasan harus padat dengan informasi yang menyoroti keahlian dan kekuatan mahasiswa.
