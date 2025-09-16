@@ -844,24 +844,34 @@ const MyRecommendationPage = () => {
     );
   }
 
-  if (error) {
-    return (
-      <div className="flex h-[50vh] items-center justify-center">
-        <div className="text-center">
-          <AlertCircle className="mx-auto h-8 w-8 text-red-500" />
-          <h3 className="mt-4 text-lg font-semibold text-zinc-100">Gagal Memuat Rekomendasi</h3>
-          <p className="mt-2 text-sm text-zinc-400">
-            {error instanceof Error ? error.message : "Terjadi kesalahan yang tidak terduga"}
-          </p>
-          <Button variant="outline" className="mt-4" onClick={() => window.location.reload()}>
-            Coba Lagi
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
   if (!data) {
+    if (error) {
+      const maybeAxios = error as unknown as {
+        response?: { data?: { code?: string; message?: string } };
+      };
+      const errCode = maybeAxios?.response?.data?.code;
+      const errMessage =
+        maybeAxios?.response?.data?.message ||
+        (error as Error).message ||
+        "Terjadi kesalahan yang tidak terduga";
+
+      if (errCode === "REC_002") {
+        return <EmptyState onStartAnalysis={handleStartAnalysis} isCreating={isCreating} />;
+      }
+
+      return (
+        <div className="flex h-[50vh] items-center justify-center">
+          <div className="text-center">
+            <AlertCircle className="mx-auto h-8 w-8 text-red-500" />
+            <h3 className="mt-4 text-lg font-semibold text-zinc-100">Gagal Memuat Rekomendasi</h3>
+            <p className="mt-2 text-sm text-zinc-400">{errMessage}</p>
+            <Button variant="outline" className="mt-4" onClick={() => window.location.reload()}>
+              Coba Lagi
+            </Button>
+          </div>
+        </div>
+      );
+    }
     return <EmptyState onStartAnalysis={handleStartAnalysis} isCreating={isCreating} />;
   }
 

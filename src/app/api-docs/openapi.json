@@ -740,9 +740,57 @@
           "200": { "description": "Advisor deleted successfully" }
         }
       }
+    },
+    "/chat": {
+      "post": {
+        "tags": ["Chat"],
+        "summary": "Chat with LLM (streaming)",
+        "description": "Chat with advisor. The response is streamed via Server-Sent Events (SSE).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ChatRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "SSE stream of chat messages. Each event contains incremental assistant output.",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string",
+                  "example": "event: message\ndata: {\"id\":\"msg_1\",\"content\":\"Halo!\"}\n\n"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
     }
   },
-
   "components": {
     "parameters": {
       "PageParam": {
@@ -820,6 +868,22 @@
         "type": "object",
         "properties": {
           "userId": { "type": "integer" }
+        }
+      },
+      "Competition": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "organizer": { "type": "string", "nullable": true },
+          "field": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "type": { "type": "string", "nullable": true },
+          "startDate": { "type": "string", "format": "date-time", "nullable": true },
+          "endDate": { "type": "string", "format": "date-time", "nullable": true }
         }
       },
       "SuccessResponse": {
@@ -1510,6 +1574,22 @@
             "items": {
               "$ref": "#/components/schemas/Experience"
             }
+          }
+        }
+      },
+      "ChatRequest": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "ChatResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
           }
         }
       },
