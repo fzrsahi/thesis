@@ -7,9 +7,9 @@ type CreateCompetitionRequest =
   paths["/competitions"]["post"]["requestBody"]["content"]["application/json"];
 
 export const createCompetitionSchema = z.object({
-  title: z.string().min(1),
-  description: z.string().min(1),
-  field: z.array(z.string()).min(1),
+  title: z.string().min(1, { message: "Judul harus diisi" }),
+  description: z.string().min(1, { message: "Deskripsi harus diisi" }),
+  field: z.array(z.string()).min(1, { message: "Minimal satu bidang harus dipilih" }),
   type: z.string().nullable(),
   minGPA: z.string().nullable(),
   requirements: z.object({
@@ -42,7 +42,7 @@ export const createCompetitionSchema = z.object({
       })
     ),
   }),
-  sourceUrl: z.string().min(1),
+  sourceUrl: z.string().min(1, { message: "Sumber URL harus diisi" }),
   relevantCourses: z.array(z.string()),
   relevantSkills: z.array(z.string()),
 } satisfies InferZodMap<CreateCompetitionRequest>);

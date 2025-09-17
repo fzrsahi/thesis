@@ -1,6 +1,7 @@
 "use client";
 
-import { Settings, ChevronLeft, ChevronRight, Menu, LayoutDashboard } from "lucide-react";
+import { Settings, ChevronLeft, ChevronRight, Menu } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -32,7 +33,7 @@ export const Sidebar = () => {
       <aside className="flex h-screen w-72 flex-col border-r border-zinc-800/50 bg-black text-white shadow-[5px_0_30px_rgba(0,0,0,0.2)] backdrop-blur-lg transition-all duration-300 ease-in-out">
         <div className="flex items-center border-b border-zinc-800/50 p-6">
           <div className="text-2xl font-bold tracking-wide">
-            <span className="text-white">C</span>
+            <span className="text-white">Scout</span>
           </div>
         </div>
         <nav className="flex-1 space-y-2 overflow-y-auto p-4">
@@ -82,16 +83,23 @@ export const Sidebar = () => {
             collapsed ? "justify-center p-5" : "p-6"
           )}
         >
-          {!collapsed ? (
-            <div className="text-2xl font-bold tracking-wide">
-              <LayoutDashboard className="mr-2 inline-block text-white" size={24} /> Chill
-              <span className="text-white">LLMs</span>
+          {/* Show only icon when collapsed, show icon + text when expanded */}
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 shrink-0">
+              <Image
+                src="/images/logo.png"
+                alt="Scout"
+                width={40}
+                height={40}
+                className="h-10 w-10"
+                priority
+              />
             </div>
-          ) : (
-            <div className="text-2xl font-bold tracking-wide">
-              <span className="text-white">C</span>
-            </div>
-          )}
+            {/* Only show text when not collapsed */}
+            {!collapsed && (
+              <span className="text-xl font-semibold tracking-wide text-white">Scout</span>
+            )}
+          </div>
 
           {!isMobile && (
             <button

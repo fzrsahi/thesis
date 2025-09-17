@@ -564,6 +564,26 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/competitions/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get competition by ID
+     * @description Retrieve a single competition in detail by its ID.
+     */
+    get: operations["getCompetitionById"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/competitions/generate": {
     parameters: {
       query?: never;
@@ -883,6 +903,35 @@ export interface components {
       startDate?: string | null;
       /** Format: date-time */
       endDate?: string | null;
+    };
+    CompetitionDetail: {
+      id: number;
+      title: string;
+      description: string;
+      field: string[];
+      type?: string | null;
+      minGPA?: string | null;
+      requirements?: {
+        [key: string]: unknown;
+      } | null;
+      /** Format: date-time */
+      startDate?: string | null;
+      /** Format: date-time */
+      endDate?: string | null;
+      location?: string | null;
+      organizer?: string | null;
+      evaluationCriteria?: {
+        [key: string]: unknown;
+      } | null;
+      sourceUrl?: string | null;
+      relevantCourses?: string[];
+      relevantSkills?: string[];
+      fileId?: string | null;
+      content?: string | null;
+      /** Format: date-time */
+      createdAt: string;
+      /** Format: date-time */
+      updatedAt: string;
     };
     SuccessResponse: {
       /** @example true */
@@ -1333,6 +1382,51 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["SuccessResponse"];
+        };
+      };
+    };
+  };
+  getCompetitionById: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Competition ID */
+        id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Competition retrieved successfully */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @example true */
+            success: boolean;
+            data: components["schemas"]["CompetitionDetail"];
+          };
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Competition not found */
+      404: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
         };
       };
     };

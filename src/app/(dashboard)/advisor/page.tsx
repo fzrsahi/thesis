@@ -1,6 +1,6 @@
 "use client";
 
-import { Users } from "lucide-react";
+import { UserCheck } from "lucide-react";
 
 import Button from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
@@ -9,21 +9,22 @@ import Input from "@/components/ui/input";
 import Pagination from "@/components/ui/pagination";
 import { TypographyH2, TypographyP } from "@/components/ui/typography";
 
-import { useStudentList } from "./hooks/useStudentList";
+import { useAdvisorList } from "./hooks/useAdvisorList";
 
-const StudentPage = () => {
+const AdvisorPage = () => {
+  // Using custom hook for advisor list logic
   const { search, setSearch, tableRef, tableData, columns, pagination, handlePageChange } =
-    useStudentList();
+    useAdvisorList();
 
   return (
     <div className="w-full">
       <div className="mb-6">
         <TypographyH2 className="flex items-center gap-2 truncate text-zinc-900">
-          <Users className="h-10 w-10 font-extrabold" />
-          Daftar Mahasiswa
+          <UserCheck className="h-10 w-10 font-extrabold" />
+          Daftar Dosen Pembimbing
         </TypographyH2>
         <TypographyP className="border-b border-gray-300 pb-4 text-zinc-900">
-          Kelola data mahasiswa dengan mudah dan efisien.
+          Kelola data dosen pembimbing dengan mudah dan efisien.
         </TypographyP>
         <div className="mb-6 border-t border-gray-500" />
       </div>
@@ -33,7 +34,7 @@ const StudentPage = () => {
           <CardHeader className="flex flex-col gap-4 border-b border-zinc-700 bg-zinc-900 pb-4 md:flex-row md:items-center md:justify-between">
             <div className="flex gap-2">
               <Input
-                placeholder="Cari mahasiswa..."
+                placeholder="Cari dosen pembimbing..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full md:w-56"
@@ -49,7 +50,7 @@ const StudentPage = () => {
               variant="outline"
               className="border-gray-600 bg-gray-600 text-white hover:border-gray-700 hover:bg-gray-700 hover:text-white"
             >
-              + Tambah Mahasiswa
+              + Tambah Dosen Pembimbing
             </Button>
           </CardHeader>
           <CardContent ref={tableRef} className="bg-zinc-900 p-0 md:p-4">
@@ -64,4 +65,4 @@ const StudentPage = () => {
   );
 };
 
-export default StudentPage;
+export default AdvisorPage;

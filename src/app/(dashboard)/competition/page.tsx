@@ -1,33 +1,24 @@
 "use client";
 
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
-import { BookOpen } from "lucide-react";
+import { BookOpen, Eye, Pencil, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState, useMemo, useRef, useEffect } from "react";
-import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
+import { getCompetitions, type GetCompetitionsResponse } from "@/client/api/competitions";
 import Button from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogClose,
-} from "@/components/ui/dialog";
-import {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-} from "@/components/ui/form";
+import { DataTable } from "@/components/ui/data-table";
+import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import Input from "@/components/ui/input";
+import Pagination from "@/components/ui/pagination";
 import { TypographyH2, TypographyP } from "@/components/ui/typography";
+import { formatDate } from "@/lib/utils";
 
-import { DataTable } from "./components/data-table";
+import { CompetitionAddModal } from "./components/competition-add-modal";
+import { useGenerateCompetition } from "./hooks/useGenerateCompetition";
 
 export type Competition = {
   id: number;
@@ -42,66 +33,118 @@ export type Competition = {
   sourceUrl?: string;
 };
 
-const initialData: Competition[] = [
-  {
-    id: 1,
-    title: "Program Kreativitas Mahasiswa Karsa Cipta",
-    description: "Kompetisi inovasi mahasiswa tingkat nasional.",
-    field: ["Kecerdasan Buatan", "Aplikasi Mobile"],
-    type: "Team",
-    minGPA: "3.0",
-    startDate: "2024-07-01",
-    endDate: "2024-08-01",
-    organizer: "Kemdikbud",
-    sourceUrl: "https://pkm.kemdikbud.go.id",
-  },
-  {
-    id: 2,
-    title: "Kompetisi Sains Nasional",
-    description: "Kompetisi sains untuk mahasiswa seluruh Indonesia.",
-    field: ["Fisika", "Matematika"],
-    type: "Individual",
-    minGPA: "2.75",
-    startDate: "2024-09-10",
-    endDate: "2024-10-10",
-    organizer: "Pusat Prestasi Nasional",
-    sourceUrl: "https://ksn.puspresnas.id",
-  },
-];
+// Move the CompetitionActions component out of CompetitionPage to avoid defining components during render
+type CompetitionActionsProps = {
+  item: Competition;
+  onView: (item: Competition) => void;
+  onEdit: (item: Competition) => void;
+  onDelete: (item: Competition) => void;
+};
 
-const columns: ColumnDef<Competition>[] = [
+const CompetitionActions = ({ item, onView, onEdit, onDelete }: CompetitionActionsProps) => (
+  <div className="flex items-center gap-2">
+    <Button
+      variant="outline"
+      size="sm"
+      className="border-zinc-700 bg-zinc-900 p-2 text-white hover:bg-zinc-800"
+      onClick={() => onView(item)}
+      aria-label="Detail"
+    >
+      <Eye className="h-4 w-4" />
+    </Button>
+    <Button
+      variant="outline"
+      size="sm"
+      className="border-zinc-700 bg-zinc-900 p-2 text-white hover:bg-zinc-800"
+      onClick={() => onEdit(item)}
+      aria-label="Edit"
+    >
+      <Pencil className="h-4 w-4" />
+    </Button>
+    <Button
+      variant="outline"
+      size="sm"
+      className="border-zinc-700 bg-zinc-900 p-2 text-red-400 hover:bg-zinc-800"
+      onClick={() => onDelete(item)}
+      aria-label="Hapus"
+    >
+      <Trash2 className="h-4 w-4" />
+    </Button>
+  </div>
+);
+
+const columnsDef = (
+  handleView: (item: Competition) => void,
+  handleEdit: (item: Competition) => void,
+  handleDelete: (item: Competition) => void
+): ColumnDef<Competition>[] => [
   { header: "Judul", accessorKey: "title" },
-  { header: "Bidang", accessorKey: "field" },
-  { header: "Tipe", accessorKey: "type" },
-  { header: "Mulai", accessorKey: "startDate" },
-  { header: "Selesai", accessorKey: "endDate" },
-  { header: "Penyelenggara", accessorKey: "organizer" },
-  { header: "Aksi", accessorKey: "aksi" },
+  {
+    header: "Mulai",
+    accessorKey: "startDate",
+    cell: ({ row }) => formatDate(row.original.startDate),
+  },
+  {
+    header: "Selesai",
+    accessorKey: "endDate",
+    cell: ({ row }) => formatDate(row.original.endDate),
+  },
+  {
+    header: "Aksi",
+    accessorKey: "actions",
+    cell: ({ row }) => (
+      <CompetitionActions
+        item={row.original}
+        onView={handleView}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
+    ),
+  },
 ];
 
 const CompetitionPage = () => {
-  const [data, setData] = useState<Competition[]>(initialData);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [page, setPage] = useState(1);
   const pageSize = 10;
   const tableRef = useRef<HTMLDivElement>(null);
+  const queryClient = useQueryClient();
+  const router = useRouter();
 
-  const filteredData = useMemo(() => {
-    if (!search) return data;
-    return data.filter(
-      (item) =>
-        item.title.toLowerCase().includes(search.toLowerCase()) ||
-        item.field.some((f) => f.toLowerCase().includes(search.toLowerCase())) ||
-        (item.organizer?.toLowerCase().includes(search.toLowerCase()) ?? false)
-    );
-  }, [search, data]);
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(search), 400);
+    return () => clearTimeout(t);
+  }, [search]);
 
-  const totalPage = Math.max(1, Math.ceil(filteredData.length / pageSize));
-  const pagedData = useMemo(() => {
-    const start = (page - 1) * pageSize;
-    return filteredData.slice(start, start + pageSize);
-  }, [filteredData, page, pageSize]);
+  const { data } = useQuery<GetCompetitionsResponse>({
+    queryKey: ["competitions", { page, limit: pageSize, keywords: debouncedSearch }],
+    queryFn: async () => {
+      const res = await getCompetitions({
+        page,
+        limit: pageSize,
+        keywords: debouncedSearch || undefined,
+      });
+      return res;
+    },
+  });
+
+  const tableData: Competition[] = useMemo(() => {
+    const list = data?.data ?? [];
+    return list.map((item, idx) => ({
+      id: item.id ?? idx + 1,
+      title: item.title ?? "-",
+      description: item.description ?? "",
+      field: item.field ?? [],
+      type: item.type ?? undefined,
+      minGPA: undefined,
+      startDate: item.startDate ?? undefined,
+      endDate: item.endDate ?? undefined,
+      organizer: item.organizer ?? undefined,
+      sourceUrl: undefined,
+    }));
+  }, [data]);
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
@@ -112,28 +155,49 @@ const CompetitionPage = () => {
 
   useEffect(() => {
     setPage(1);
-  }, [search, filteredData.length]);
+  }, [debouncedSearch]);
 
-  const form = useForm<Competition>({
-    defaultValues: {
-      id: data.length + 1,
-      title: "",
-      description: "",
-      field: [],
-      type: "",
-      minGPA: "",
-      startDate: "",
-      endDate: "",
-      organizer: "",
-      sourceUrl: "",
-    },
-  });
+  const { handleGenerate } = useGenerateCompetition();
 
-  const onSubmit = (values: Competition) => {
-    setData((prev) => [...prev, { ...values, id: prev.length + 1 }]);
-    setOpen(false);
-    form.reset();
+  const onGenerate = async (values: {
+    title: string;
+    description: string;
+    website: string;
+    additionalDetails?: string;
+    file?: File;
+    startPage?: number;
+    endPage?: number;
+  }): Promise<boolean> => {
+    try {
+      const ok = await handleGenerate(values);
+      if (ok) {
+        toast.success("Kompetisi berhasil ditambahkan");
+        queryClient.invalidateQueries({ queryKey: ["competitions"] });
+      }
+      return ok;
+    } catch (e: unknown) {
+      const maybe = e as { response?: { data?: { message?: string } }; message?: string };
+      const message =
+        maybe?.response?.data?.message ?? maybe?.message ?? "Gagal Menambahkan kompetisi";
+      toast.error(message);
+      throw new Error(message);
+    }
   };
+
+  const handleView = (item: Competition) => {
+    router.push(`/competition/${item.id}`);
+  };
+
+  const handleEdit = (_item: Competition) => {};
+
+  const handleDelete = (_item: Competition) => {};
+
+  // Use columnsDef factory to avoid defining components during render
+  const columns = useMemo(
+    () => columnsDef(handleView, handleEdit, handleDelete),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   return (
     <div className="w-full">
@@ -174,199 +238,24 @@ const CompetitionPage = () => {
                   + Tambah Kompetisi
                 </Button>
               </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Tambah Kompetisi</DialogTitle>
-                </DialogHeader>
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    <FormField
-                      control={form.control}
-                      name="title"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Judul</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Judul kompetisi" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="description"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Deskripsi</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Deskripsi singkat" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="field"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Bidang (pisahkan dengan koma)</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Contoh: AI, Mobile, Data Science"
-                              value={field.value?.join(", ")}
-                              onChange={(e) =>
-                                field.onChange(
-                                  e.target.value
-                                    .split(",")
-                                    .map((s) => s.trim())
-                                    .filter(Boolean)
-                                )
-                              }
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <div className="grid grid-cols-2 gap-2">
-                      <FormField
-                        control={form.control}
-                        name="type"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Tipe</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Individual/Team" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="minGPA"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Min. IPK</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Contoh: 3.0" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      <FormField
-                        control={form.control}
-                        name="startDate"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Mulai</FormLabel>
-                            <FormControl>
-                              <Input type="date" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="endDate"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Selesai</FormLabel>
-                            <FormControl>
-                              <Input type="date" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <FormField
-                      control={form.control}
-                      name="organizer"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Penyelenggara</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Nama penyelenggara" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="sourceUrl"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>URL</FormLabel>
-                          <FormControl>
-                            <Input placeholder="https://..." {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <DialogFooter>
-                      <Button type="submit">Simpan</Button>
-                      <DialogClose asChild>
-                        <Button type="button" variant="ghost">
-                          Batal
-                        </Button>
-                      </DialogClose>
-                    </DialogFooter>
-                  </form>
-                </Form>
-              </DialogContent>
+              <CompetitionAddModal open={open} onOpenChange={setOpen} onSubmit={onGenerate} />
             </Dialog>
           </CardHeader>
           <CardContent ref={tableRef} className="bg-zinc-900 p-0 md:p-4">
             <div className="w-full">
-              <DataTable columns={columns} data={pagedData} />
+              <DataTable columns={columns} data={tableData} />
             </div>
-            {/* Pagination */}
-            <div className="mt-6 flex flex-col gap-4 px-2 pb-2 md:flex-row md:items-center md:justify-between">
-              <div className="text-muted-foreground text-sm">
-                Menampilkan {pagedData.length ? (page - 1) * pageSize + 1 : 0} -{" "}
-                {(page - 1) * pageSize + pagedData.length} dari {filteredData.length} kompetisi
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handlePageChange(page - 1)}
-                  disabled={page === 1}
-                  className={
-                    page === 1
-                      ? "cursor-not-allowed border-zinc-800 bg-zinc-900 text-zinc-600"
-                      : "border-zinc-700 bg-gradient-to-r from-zinc-800 to-zinc-900 text-white hover:bg-zinc-700 hover:ring-2 hover:ring-blue-400"
-                  }
-                >
-                  Sebelumnya
-                </Button>
-                <span className="text-sm font-medium">
-                  Halaman {page} dari {totalPage}
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handlePageChange(page + 1)}
-                  disabled={page === totalPage}
-                  className={
-                    page === totalPage
-                      ? "cursor-not-allowed border-zinc-800 bg-zinc-900 text-zinc-600"
-                      : "border-zinc-700 bg-gradient-to-r from-zinc-800 to-zinc-900 text-white hover:bg-zinc-700 hover:ring-2 hover:ring-blue-400"
-                  }
-                >
-                  Berikutnya
-                </Button>
-              </div>
-            </div>
+            <Pagination
+              pagination={{
+                total: data?.pagination?.total ?? 0,
+                page: data?.pagination?.page ?? page,
+                limit: data?.pagination?.limit ?? pageSize,
+                totalPages: data?.pagination?.totalPages ?? 1,
+                hasNextPage: data?.pagination?.hasNextPage ?? false,
+                hasPrevPage: data?.pagination?.hasPrevPage ?? false,
+              }}
+              onPageChange={handlePageChange}
+            />
           </CardContent>
         </Card>
       </div>

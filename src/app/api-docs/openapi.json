@@ -559,6 +559,57 @@
         }
       }
     },
+    "/competitions/{id}": {
+      "get": {
+        "tags": ["Competition"],
+        "summary": "Get competition by ID",
+        "description": "Retrieve a single competition in detail by its ID.",
+        "operationId": "getCompetitionById",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "minimum": 1 },
+            "description": "Competition ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Competition retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "data": { "$ref": "#/components/schemas/CompetitionDetail" }
+                  },
+                  "required": ["success", "data"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Competition not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
     "/competitions/generate": {
       "post": {
         "tags": ["Competition"],
@@ -885,6 +936,35 @@
           "startDate": { "type": "string", "format": "date-time", "nullable": true },
           "endDate": { "type": "string", "format": "date-time", "nullable": true }
         }
+      },
+      "CompetitionDetail": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "field": { "type": "array", "items": { "type": "string" } },
+          "type": { "type": "string", "nullable": true },
+          "minGPA": { "type": "string", "nullable": true },
+          "requirements": { "type": "object", "nullable": true, "additionalProperties": true },
+          "startDate": { "type": "string", "format": "date-time", "nullable": true },
+          "endDate": { "type": "string", "format": "date-time", "nullable": true },
+          "location": { "type": "string", "nullable": true },
+          "organizer": { "type": "string", "nullable": true },
+          "evaluationCriteria": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": true
+          },
+          "sourceUrl": { "type": "string", "nullable": true },
+          "relevantCourses": { "type": "array", "items": { "type": "string" } },
+          "relevantSkills": { "type": "array", "items": { "type": "string" } },
+          "fileId": { "type": "string", "nullable": true },
+          "content": { "type": "string", "nullable": true },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        },
+        "required": ["id", "title", "description", "field", "createdAt", "updatedAt"]
       },
       "SuccessResponse": {
         "type": "object",

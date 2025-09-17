@@ -135,3 +135,8 @@ export const updateCompetitionById = async (id: number, payload: competitions) =
       updatedAt: payload.updatedAt,
     },
   });
+
+export const findCompetitionById = async (id: number) =>
+  prisma.competitions.findUnique({
+    where: { id },
+  });

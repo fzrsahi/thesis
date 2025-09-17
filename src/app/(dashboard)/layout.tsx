@@ -5,6 +5,7 @@ import { SessionProvider, useSession } from "next-auth/react";
 
 import { BreadcrumbNav } from "@/components/layout/breadcrumb-nav";
 import { UserAvatar } from "@/components/layout/user-avatar";
+import QueryProvider from "@/components/providers/QueryProvider";
 import { Sidebar } from "@/components/ui/sidebar";
 import { getBreadcrumbItems } from "@/lib/breadcrumb";
 
@@ -17,7 +18,7 @@ const DashboardContent = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="flex">
       <Sidebar />
-      <main className="min-h-screen flex-1 bg-gray-300 p-6 text-zinc-100">
+      <main className="min-h-screen flex-1 bg-gray-300 p-6 text-zinc-900">
         <div className="mb-4">
           <BreadcrumbNav items={breadcrumbItems} isHome={isHome} />
         </div>
@@ -36,7 +37,9 @@ const DashboardContent = ({ children }: { children: React.ReactNode }) => {
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => (
   <SessionProvider>
-    <DashboardContent>{children}</DashboardContent>
+    <QueryProvider>
+      <DashboardContent>{children}</DashboardContent>
+    </QueryProvider>
   </SessionProvider>
 );
 

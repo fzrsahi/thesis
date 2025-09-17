@@ -29,7 +29,6 @@ export const POST = withAuth(
       }
 
       await createCompetitionUsecase(result.data);
-
       return NextResponse.json({
         success: true,
       });

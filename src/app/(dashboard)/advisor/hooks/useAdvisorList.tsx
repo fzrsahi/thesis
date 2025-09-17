@@ -1,0 +1,138 @@
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
+import { ColumnDef } from "@tanstack/react-table";
+import { Eye, Pencil, Trash2 } from "lucide-react";
+import { useState, useMemo, useRef, useEffect } from "react";
+
+import { getAdvisors, type GetAdvisorsResponse } from "@/client/api/advisors";
+import Button from "@/components/ui/button";
+
+export type Advisor = {
+  id: number;
+  name: string;
+  email: string;
+  phone?: string;
+  specialization?: string[];
+  department?: string;
+  title?: string;
+};
+
+export const useAdvisorList = () => {
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const pageSize = 10;
+  const tableRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(search), 400);
+    return () => clearTimeout(t);
+  }, [search]);
+
+  const { data, isLoading } = useQuery<GetAdvisorsResponse>({
+    queryKey: ["advisors", { page, limit: pageSize, keywords: debouncedSearch }],
+    queryFn: async () => {
+      const res = await getAdvisors({
+        page,
+        limit: pageSize,
+        keywords: debouncedSearch || undefined,
+      });
+      return res;
+    },
+  });
+
+  type ApiAdvisorListItem = {
+    id?: number;
+    user?: { name?: string; email?: string };
+  };
+
+  const tableData: Advisor[] = useMemo(() => {
+    const list = (data?.data ?? []) as ApiAdvisorListItem[];
+    return list.map((item, idx) => ({
+      id: item.id ?? idx + 1,
+      name: item.user?.name ?? "-",
+      email: item.user?.email ?? "-",
+      phone: undefined,
+      specialization: [],
+      department: undefined,
+      title: undefined,
+    }));
+  }, [data]);
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+    setTimeout(() => {
+      tableRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+  };
+
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch]);
+
+  const handleView = (_item: Advisor) => {};
+  const handleEdit = (_item: Advisor) => {};
+  const handleDelete = (_item: Advisor) => {};
+
+  const columns: ColumnDef<Advisor>[] = [
+    { header: "Nama", accessorKey: "name" },
+    { header: "Email", accessorKey: "email" },
+    {
+      header: "Aksi",
+      accessorKey: "actions",
+      cell: ({ row }) => (
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-zinc-700 bg-zinc-900 p-2 text-white hover:bg-zinc-800"
+            onClick={() => handleView(row.original)}
+            aria-label="Detail"
+          >
+            <Eye className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-zinc-700 bg-zinc-900 p-2 text-white hover:bg-zinc-800"
+            onClick={() => handleEdit(row.original)}
+            aria-label="Edit"
+          >
+            <Pencil className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-zinc-700 bg-zinc-900 p-2 text-red-400 hover:bg-zinc-800"
+            onClick={() => handleDelete(row.original)}
+            aria-label="Hapus"
+          >
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </div>
+      ),
+    },
+  ];
+
+  const pagination = {
+    total: data?.pagination?.total ?? 0,
+    page: data?.pagination?.page ?? page,
+    limit: data?.pagination?.limit ?? pageSize,
+    totalPages: data?.pagination?.totalPages ?? 1,
+    hasNextPage: data?.pagination?.hasNextPage ?? false,
+    hasPrevPage: data?.pagination?.hasPrevPage ?? false,
+  };
+
+  return {
+    search,
+    setSearch,
+    page,
+    tableRef,
+    tableData,
+    columns,
+    pagination,
+    isLoading,
+    handlePageChange,
+  };
+};
