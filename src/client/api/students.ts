@@ -2,7 +2,7 @@ import { components } from "@/app/shared/types/api";
 
 import apiClient from "./apiClient";
 
-export type StudentItem = components["schemas"]["Student"];
+export type StudentItem = components["schemas"]["StudentPersonalData"];
 export type PaginationMeta = components["schemas"]["Pagination"];
 
 export type GetStudentsParams = {
