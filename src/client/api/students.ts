@@ -27,3 +27,20 @@ export const getStudents = async (params: GetStudentsParams): Promise<GetStudent
   });
   return response as unknown as GetStudentsResponse;
 };
+
+export type CreateStudentRequest = {
+  name: string;
+  email: string;
+  studentId: string;
+};
+
+export type CreateStudentResponse = {
+  success: boolean;
+};
+
+export const createStudent = async (
+  payload: CreateStudentRequest
+): Promise<CreateStudentResponse> => {
+  const response = await apiClient.request("post", "/students", undefined, payload);
+  return response as unknown as CreateStudentResponse;
+};

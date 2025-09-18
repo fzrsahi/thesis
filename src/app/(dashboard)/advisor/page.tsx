@@ -1,7 +1,11 @@
 "use client";
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { UserCheck } from "lucide-react";
+import { useState } from "react";
 
+import { AdvisorSchema, type AdvisorPayload } from "@/app/shared/schema/advisor/AdvisorSchema";
+import { createAdvisor } from "@/client/api/advisors";
 import Button from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/data-table";
@@ -9,12 +13,30 @@ import Input from "@/components/ui/input";
 import Pagination from "@/components/ui/pagination";
 import { TypographyH2, TypographyP } from "@/components/ui/typography";
 
+import { AdvisorAddModal } from "./components/AdvisorAddModal";
 import { useAdvisorList } from "./hooks/useAdvisorList";
 
 const AdvisorPage = () => {
-  // Using custom hook for advisor list logic
   const { search, setSearch, tableRef, tableData, columns, pagination, handlePageChange } =
     useAdvisorList();
+
+  const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
+
+  const { mutateAsync: doCreate, isPending } = useMutation({
+    mutationFn: async (payload: AdvisorPayload) => {
+      const parsed = AdvisorSchema.parse(payload);
+      return createAdvisor(parsed);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["advisors"] });
+    },
+  });
+
+  const handleCreate = async (values: AdvisorPayload) => {
+    const res = await doCreate(values);
+    return res?.success === true;
+  };
 
   return (
     <div className="w-full">
@@ -49,6 +71,7 @@ const AdvisorPage = () => {
             <Button
               variant="outline"
               className="border-gray-600 bg-gray-600 text-white hover:border-gray-700 hover:bg-gray-700 hover:text-white"
+              onClick={() => setOpen(true)}
             >
               + Tambah Dosen Pembimbing
             </Button>
@@ -61,6 +84,12 @@ const AdvisorPage = () => {
           </CardContent>
         </Card>
       </div>
+      <AdvisorAddModal
+        open={open}
+        onOpenChange={setOpen}
+        onSubmit={handleCreate}
+        submitText={isPending ? "Menyimpan..." : "Tambah"}
+      />
     </div>
   );
 };

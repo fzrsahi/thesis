@@ -1,7 +1,11 @@
 "use client";
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Users } from "lucide-react";
+import { useState } from "react";
 
+import { StudentSchema, type StudentPayload } from "@/app/shared/schema/student/StudentSchema";
+import { createStudent } from "@/client/api/students";
 import Button from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/data-table";
@@ -9,11 +13,31 @@ import Input from "@/components/ui/input";
 import Pagination from "@/components/ui/pagination";
 import { TypographyH2, TypographyP } from "@/components/ui/typography";
 
+import { StudentAddModal } from "./components/StudentAddModal";
 import { useStudentList } from "./hooks/useStudentList";
 
 const StudentPage = () => {
   const { search, setSearch, tableRef, tableData, columns, pagination, handlePageChange } =
     useStudentList();
+
+  const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
+
+  const { mutateAsync: doCreate, isPending } = useMutation({
+    mutationFn: async (payload: StudentPayload) => {
+      // Ensure payload matches schema
+      const parsed = StudentSchema.parse(payload);
+      return createStudent(parsed);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["students"] });
+    },
+  });
+
+  const handleCreate = async (values: StudentPayload) => {
+    const res = await doCreate(values);
+    return res?.success === true;
+  };
 
   return (
     <div className="w-full">
@@ -48,6 +72,7 @@ const StudentPage = () => {
             <Button
               variant="outline"
               className="border-gray-600 bg-gray-600 text-white hover:border-gray-700 hover:bg-gray-700 hover:text-white"
+              onClick={() => setOpen(true)}
             >
               + Tambah Mahasiswa
             </Button>
@@ -60,6 +85,12 @@ const StudentPage = () => {
           </CardContent>
         </Card>
       </div>
+      <StudentAddModal
+        open={open}
+        onOpenChange={setOpen}
+        onSubmit={handleCreate}
+        submitText={isPending ? "Menyimpan..." : "Tambah"}
+      />
     </div>
   );
 };

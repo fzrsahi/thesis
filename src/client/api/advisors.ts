@@ -27,3 +27,19 @@ export const getAdvisors = async (params: GetAdvisorsParams): Promise<GetAdvisor
   });
   return response as unknown as GetAdvisorsResponse;
 };
+
+export type CreateAdvisorRequest = {
+  name: string;
+  email: string;
+};
+
+export type CreateAdvisorResponse = {
+  success: boolean;
+};
+
+export const createAdvisor = async (
+  payload: CreateAdvisorRequest
+): Promise<CreateAdvisorResponse> => {
+  const response = await apiClient.request("post", "/advisors", undefined, payload);
+  return response as unknown as CreateAdvisorResponse;
+};

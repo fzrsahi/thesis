@@ -13,8 +13,8 @@ export const createAdvisorUsecase = async (body: AdvisorPayload) => {
 
   if (user) {
     throw customError(
-      USER_ERROR_RESPONSE.EMAIL_ALREADY_EXISTS.message,
       USER_ERROR_RESPONSE.EMAIL_ALREADY_EXISTS.code,
+      USER_ERROR_RESPONSE.EMAIL_ALREADY_EXISTS.message,
       HttpStatusCode.Conflict
     );
   }

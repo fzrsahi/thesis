@@ -46,9 +46,12 @@ export const POST = withAuth(
 
       await createStudentUsecase(result.data);
 
-      return NextResponse.json({
-        success: true,
-      });
+      return NextResponse.json(
+        {
+          success: true,
+        },
+        { status: HttpStatusCode.Created }
+      );
     } catch (error) {
       return internalServerError(error, {
         errorLogMessage: STUDENT_ERROR_LOG_MESSAGE.INTERNAL_SERVER_ERROR,

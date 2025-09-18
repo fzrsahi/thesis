@@ -2,6 +2,7 @@ import { HttpStatusCode } from "axios";
 
 import { StudentPayload } from "@/app/shared/schema/student/StudentSchema";
 
+import { USER_ERROR_RESPONSE } from "../../user/user.error";
 import { createUser, findUserByEmail } from "../../user/user.repository";
 import { generateHash } from "../../utils/bcrypt/bcrypt";
 import { customError } from "../../utils/error/custom-error";
@@ -13,8 +14,8 @@ export const createStudentUsecase = async (payload: StudentPayload) => {
 
   if (user) {
     throw customError(
-      STUDENT_ERROR_RESPONSE.STUDENT_ALREADY_EXISTS.message,
-      STUDENT_ERROR_RESPONSE.STUDENT_ALREADY_EXISTS.code,
+      USER_ERROR_RESPONSE.EMAIL_ALREADY_EXISTS.code,
+      USER_ERROR_RESPONSE.EMAIL_ALREADY_EXISTS.message,
       HttpStatusCode.Conflict
     );
   }
@@ -25,8 +26,8 @@ export const createStudentUsecase = async (payload: StudentPayload) => {
 
   if (isStudentIdExists) {
     throw customError(
-      STUDENT_ERROR_RESPONSE.STUDENT_ID_ALREADY_EXISTS.message,
       STUDENT_ERROR_RESPONSE.STUDENT_ID_ALREADY_EXISTS.code,
+      STUDENT_ERROR_RESPONSE.STUDENT_ID_ALREADY_EXISTS.message,
       HttpStatusCode.Conflict
     );
   }
