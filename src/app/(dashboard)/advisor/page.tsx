@@ -5,7 +5,7 @@ import { UserCheck } from "lucide-react";
 import { useState } from "react";
 
 import { AdvisorSchema, type AdvisorPayload } from "@/app/shared/schema/advisor/AdvisorSchema";
-import { createAdvisor } from "@/client/api/advisors";
+import { createAdvisor, deleteAdvisor } from "@/client/api/advisors";
 import Button from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/data-table";
@@ -14,14 +14,22 @@ import Pagination from "@/components/ui/pagination";
 import { TypographyH2, TypographyP } from "@/components/ui/typography";
 
 import { AdvisorAddModal } from "./components/AdvisorAddModal";
+import { AdvisorDeleteModal } from "./components/AdvisorDeleteModal";
 import { useAdvisorList } from "./hooks/useAdvisorList";
 
 const AdvisorPage = () => {
-  const { search, setSearch, tableRef, tableData, columns, pagination, handlePageChange } =
-    useAdvisorList();
-
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+
+  const { search, setSearch, tableRef, tableData, columns, pagination, handlePageChange } =
+    useAdvisorList({
+      onDelete: (id: number) => {
+        setSelectedId(id);
+        setDeleteOpen(true);
+      },
+    });
 
   const { mutateAsync: doCreate, isPending } = useMutation({
     mutationFn: async (payload: AdvisorPayload) => {
@@ -38,15 +46,28 @@ const AdvisorPage = () => {
     return res?.success === true;
   };
 
+  const { mutateAsync: doDelete } = useMutation({
+    mutationFn: async (id: number) => deleteAdvisor(id),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["advisors"] });
+    },
+  });
+
+  const handleConfirmDelete = async () => {
+    if (selectedId == null) return false;
+    const res = await doDelete(selectedId);
+    return res?.success === true;
+  };
+
   return (
     <div className="w-full">
       <div className="mb-6">
         <TypographyH2 className="flex items-center gap-2 truncate text-zinc-900">
           <UserCheck className="h-10 w-10 font-extrabold" />
-          Daftar Dosen Pembimbing
+          Daftar Dosen
         </TypographyH2>
         <TypographyP className="border-b border-gray-300 pb-4 text-zinc-900">
-          Kelola data dosen pembimbing dengan mudah dan efisien.
+          Kelola data dosen dengan mudah dan efisien.
         </TypographyP>
         <div className="mb-6 border-t border-gray-500" />
       </div>
@@ -56,7 +77,7 @@ const AdvisorPage = () => {
           <CardHeader className="flex flex-col gap-4 border-b border-zinc-700 bg-zinc-900 pb-4 md:flex-row md:items-center md:justify-between">
             <div className="flex gap-2">
               <Input
-                placeholder="Cari dosen pembimbing..."
+                placeholder="Cari dosen..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full md:w-56"
@@ -73,7 +94,7 @@ const AdvisorPage = () => {
               className="border-gray-600 bg-gray-600 text-white hover:border-gray-700 hover:bg-gray-700 hover:text-white"
               onClick={() => setOpen(true)}
             >
-              + Tambah Dosen Pembimbing
+              + Tambah Dosen
             </Button>
           </CardHeader>
           <CardContent ref={tableRef} className="bg-zinc-900 p-0 md:p-4">
@@ -89,6 +110,15 @@ const AdvisorPage = () => {
         onOpenChange={setOpen}
         onSubmit={handleCreate}
         submitText={isPending ? "Menyimpan..." : "Tambah"}
+      />
+      <AdvisorDeleteModal
+        open={deleteOpen}
+        onOpenChange={(v) => {
+          setDeleteOpen(v);
+          if (!v) setSelectedId(null);
+        }}
+        onConfirm={handleConfirmDelete}
+        confirmText="Hapus"
       />
     </div>
   );

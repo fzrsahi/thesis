@@ -17,7 +17,7 @@ export const getBreadcrumbItems = (path: string): BreadcrumbItem[] => {
         label = "Mahasiswa";
         break;
       case "advisor":
-        label = "Dosen Pembimbing";
+        label = "Dosen";
         break;
       case "recomendation":
         label = "Rekomendasi";

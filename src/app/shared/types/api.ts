@@ -825,40 +825,7 @@ export interface paths {
       cookie?: never;
     };
     get?: never;
-    /**
-     * Update advisor
-     * @description Update an advisor by ID
-     */
-    put: {
-      parameters: {
-        query?: never;
-        header?: never;
-        path: {
-          id: number;
-        };
-        cookie?: never;
-      };
-      requestBody: {
-        content: {
-          "application/json": components["schemas"]["AdvisorUpdate"];
-        };
-      };
-      responses: {
-        /** @description Advisor updated successfully */
-        200: {
-          headers: {
-            [name: string]: unknown;
-          };
-          content: {
-            "application/json": {
-              /** @example true */
-              success?: boolean;
-              data?: components["schemas"]["Advisor"];
-            };
-          };
-        };
-      };
-    };
+    put?: never;
     post?: never;
     /**
      * Delete advisor
@@ -880,7 +847,21 @@ export interface paths {
           headers: {
             [name: string]: unknown;
           };
-          content?: never;
+          content: {
+            "application/json": {
+              /** @example true */
+              success?: boolean;
+            };
+          };
+        };
+        /** @description Advisor not found */
+        404: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["ErrorResponse"];
+          };
         };
       };
     };

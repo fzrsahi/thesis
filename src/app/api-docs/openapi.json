@@ -916,43 +916,6 @@
       }
     },
     "/advisors/{id}": {
-      "put": {
-        "tags": ["Advisor"],
-        "summary": "Update advisor",
-        "description": "Update an advisor by ID",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": { "type": "integer" }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/AdvisorUpdate" }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Advisor updated successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "success": { "type": "boolean", "example": true },
-                    "data": { "$ref": "#/components/schemas/Advisor" }
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
       "delete": {
         "tags": ["Advisor"],
         "summary": "Delete advisor",
@@ -966,7 +929,27 @@
           }
         ],
         "responses": {
-          "200": { "description": "Advisor deleted successfully" }
+          "200": {
+            "description": "Advisor deleted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Advisor not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
         }
       }
     },

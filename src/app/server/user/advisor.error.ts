@@ -11,6 +11,10 @@ export const ADVISOR_ERROR_RESPONSE = {
     code: "ADVISOR_003",
     message: "Advisor already exists.",
   },
+  ADVISOR_NOT_FOUND: {
+    code: "ADVISOR_004",
+    message: "Advisor not found.",
+  },
 };
 
 export const ADVISOR_ERROR_LOG_MESSAGE = {

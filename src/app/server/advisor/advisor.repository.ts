@@ -70,3 +70,7 @@ export const getAdvisors = async (
 };
 
 export const createAdvisor = async (userId: number) => prisma.advisor.create({ data: { userId } });
+
+export const findAdvisorById = async (id: number) => prisma.advisor.findUnique({ where: { id } });
+
+export const deleteAdvisorById = async (id: number) => prisma.advisor.delete({ where: { id } });

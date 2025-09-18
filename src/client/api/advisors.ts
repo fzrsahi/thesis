@@ -43,3 +43,15 @@ export const createAdvisor = async (
   const response = await apiClient.request("post", "/advisors", undefined, payload);
   return response as unknown as CreateAdvisorResponse;
 };
+
+export type DeleteAdvisorResponse = {
+  success: boolean;
+};
+
+type ApiClientRequest = (method: string, url: string, ...args: unknown[]) => Promise<unknown>;
+
+export const deleteAdvisor = async (id: number): Promise<DeleteAdvisorResponse> => {
+  const api = apiClient as unknown as { request: ApiClientRequest };
+  const response = await api.request("delete", `/advisors/${id}`);
+  return response as unknown as DeleteAdvisorResponse;
+};

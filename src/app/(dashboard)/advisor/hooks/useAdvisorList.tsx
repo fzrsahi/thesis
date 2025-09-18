@@ -18,7 +18,11 @@ export type Advisor = {
   title?: string;
 };
 
-export const useAdvisorList = () => {
+type UseAdvisorListOptions = {
+  onDelete?: (id: number) => void;
+};
+
+export const useAdvisorList = (options?: UseAdvisorListOptions) => {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -73,7 +77,10 @@ export const useAdvisorList = () => {
 
   const handleView = (_item: Advisor) => {};
   const handleEdit = (_item: Advisor) => {};
-  const handleDelete = (_item: Advisor) => {};
+  const handleDelete = (item: Advisor) => {
+    const { id } = item;
+    if (typeof id === "number") options?.onDelete?.(id);
+  };
 
   const columns: ColumnDef<Advisor>[] = [
     { header: "Nama", accessorKey: "name" },

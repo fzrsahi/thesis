@@ -1,7 +1,19 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { BookOpen, Calendar, Globe, MapPin, Tag, Building2 } from "lucide-react";
+import {
+  BookOpen,
+  Calendar,
+  Globe,
+  MapPin,
+  Tag,
+  Building2,
+  Award,
+  Target,
+  Users,
+  Star,
+  ExternalLink,
+} from "lucide-react";
 import { useParams } from "next/navigation";
 
 import { getCompetitionDetail, type CompetitionItem } from "@/client/api/competitions";
@@ -25,7 +37,11 @@ const Pills = ({ items }: { items?: string[] }) => (
   <div className="flex flex-wrap gap-2">
     {(items ?? []).length === 0 ? <span className="text-sm text-zinc-500">-</span> : null}
     {(items ?? []).map((it) => (
-      <Badge key={it} variant="secondary" className="border-zinc-700 bg-zinc-800 text-zinc-100">
+      <Badge
+        key={it}
+        variant="secondary"
+        className="border border-zinc-600/50 bg-gradient-to-r from-zinc-800/50 to-zinc-700/50 text-zinc-100 backdrop-blur-sm transition-all hover:from-zinc-700/50 hover:to-zinc-600/50"
+      >
         {it}
       </Badge>
     ))}
@@ -76,85 +92,95 @@ const CompetitionDetailPage = () => {
       </div>
 
       <div className="flex justify-center">
-        <div className="w-full space-y-6 lg:max-h-[78vh] lg:overflow-y-auto lg:pr-3 lg:pb-2">
+        <div className="w-full space-y-8 lg:max-h-[78vh] lg:overflow-y-auto lg:pr-3 lg:pb-2">
           {/* Header */}
-          <Card className="border-2 border-zinc-700 bg-zinc-900 text-white">
-            <CardHeader className="border-b border-zinc-700">
+          <Card className="border border-zinc-600/50 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 text-white shadow-xl backdrop-blur-sm">
+            <CardHeader className="border-b border-zinc-600/30 bg-gradient-to-r from-zinc-800/50 to-zinc-700/30">
               {isLoading ? (
-                <div className="space-y-2">
-                  <Skeleton className="h-7 w-2/3" />
-                  <Skeleton className="h-4 w-4/5" />
+                <div className="space-y-3">
+                  <Skeleton className="h-8 w-2/3 bg-zinc-700" />
+                  <Skeleton className="h-5 w-4/5 bg-zinc-700" />
                 </div>
               ) : (
-                <div className="flex items-start justify-between gap-4">
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-semibold">{item?.title ?? "-"}</h3>
-                    <TypographyP className="text-zinc-400">{item?.description ?? "-"}</TypographyP>
+                <div className="space-y-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="space-y-3">
+                      <h3 className="flex items-center gap-3 text-2xl font-bold text-white">
+                        <div className="rounded-full bg-gradient-to-r from-blue-500 to-purple-600 p-2">
+                          <BookOpen className="h-6 w-6 text-white" />
+                        </div>
+                        {item?.title ?? "-"}
+                      </h3>
+                      <TypographyP className="text-lg text-zinc-300">
+                        {item?.description ?? "-"}
+                      </TypographyP>
+                    </div>
+                    {item?.sourceUrl && (
+                      <a
+                        href={item.sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-2 rounded-full bg-zinc-900/60 px-4 py-2 text-sm text-blue-300 ring-1 ring-zinc-600/40 transition-all hover:bg-zinc-800/60 hover:text-blue-200"
+                      >
+                        <Globe className="h-4 w-4" />
+                        Website
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
+                    )}
                   </div>
-                  {item?.sourceUrl && (
-                    <a
-                      href={item.sourceUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white hover:bg-zinc-700"
-                    >
-                      <Globe className="h-4 w-4" /> Website
-                    </a>
-                  )}
                 </div>
               )}
             </CardHeader>
-            <CardContent className="grid gap-6 py-6 md:grid-cols-2">
+            <CardContent className="grid gap-8 py-8 md:grid-cols-2">
               {isLoading ? (
                 <>
-                  <Skeleton className="h-5 w-2/3" />
-                  <Skeleton className="h-5 w-1/2" />
-                  <Skeleton className="h-5 w-3/5" />
-                  <Skeleton className="h-5 w-1/4" />
+                  <Skeleton className="h-6 w-2/3 bg-zinc-700" />
+                  <Skeleton className="h-6 w-1/2 bg-zinc-700" />
+                  <Skeleton className="h-6 w-3/5 bg-zinc-700" />
+                  <Skeleton className="h-6 w-1/4 bg-zinc-700" />
                 </>
               ) : (
                 <>
-                  <div className="space-y-1">
-                    <Label>Penyelenggara</Label>
-                    <Field className="flex items-center gap-2">
-                      <Building2 className="h-4 w-4 text-zinc-400" />
+                  <div className="space-y-2 rounded-lg bg-zinc-800/30 p-4 backdrop-blur-sm">
+                    <Label className="text-zinc-300">Penyelenggara</Label>
+                    <Field className="flex items-center gap-2 text-zinc-100">
+                      <Building2 className="h-4 w-4 text-blue-400" />
                       {item?.organizer ?? "-"}
                     </Field>
                   </div>
-                  <div className="space-y-1">
-                    <Label>Lokasi</Label>
-                    <Field className="flex items-center gap-2">
-                      <MapPin className="h-4 w-4 text-zinc-400" />
+                  <div className="space-y-2 rounded-lg bg-zinc-800/30 p-4 backdrop-blur-sm">
+                    <Label className="text-zinc-300">Lokasi</Label>
+                    <Field className="flex items-center gap-2 text-zinc-100">
+                      <MapPin className="h-4 w-4 text-green-400" />
                       {item?.location ?? "-"}
                     </Field>
                   </div>
-                  <div className="space-y-1">
-                    <Label>Bidang</Label>
+                  <div className="space-y-2 rounded-lg bg-zinc-800/30 p-4 backdrop-blur-sm">
+                    <Label className="text-zinc-300">Bidang</Label>
                     <Pills items={item?.field} />
                   </div>
-                  <div className="space-y-1">
-                    <Label>Periode</Label>
-                    <Field className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-zinc-400" />
+                  <div className="space-y-2 rounded-lg bg-zinc-800/30 p-4 backdrop-blur-sm">
+                    <Label className="text-zinc-300">Periode</Label>
+                    <Field className="flex items-center gap-2 text-zinc-100">
+                      <Calendar className="h-4 w-4 text-purple-400" />
                       <span>{item?.startDate ? formatDate(item.startDate) : "-"}</span>
                       <span className="text-zinc-500">s/d</span>
                       <span>{item?.endDate ? formatDate(item.endDate) : "-"}</span>
                     </Field>
                   </div>
-                  <div className="space-y-1">
-                    <Label>Tipe</Label>
-                    <Field className="flex items-center gap-2">
-                      <Tag className="h-4 w-4 text-zinc-400" />
+                  <div className="space-y-2 rounded-lg bg-zinc-800/30 p-4 backdrop-blur-sm">
+                    <Label className="text-zinc-300">Tipe</Label>
+                    <Field className="flex items-center gap-2 text-zinc-100">
+                      <Tag className="h-4 w-4 text-yellow-400" />
                       {item?.type ?? "-"}
                     </Field>
                   </div>
-                  <div className="space-y-1">
-                    <Label>Minimal GPA</Label>
-                    <Field>{item?.minGPA ? item.minGPA : "-"}</Field>
-                  </div>
-                  <div className="space-y-1">
-                    <Label>ID</Label>
-                    <Field>{item?.id?.toString() ?? "-"}</Field>
+                  <div className="space-y-2 rounded-lg bg-zinc-800/30 p-4 backdrop-blur-sm">
+                    <Label className="text-zinc-300">Minimal GPA</Label>
+                    <Field className="flex items-center gap-2 text-zinc-100">
+                      <Star className="h-4 w-4 text-orange-400" />
+                      {item?.minGPA ? item.minGPA : "-"}
+                    </Field>
                   </div>
                 </>
               )}
@@ -162,29 +188,44 @@ const CompetitionDetailPage = () => {
           </Card>
 
           {/* Requirements */}
-          <Card className="border-2 border-zinc-700 bg-zinc-900 text-white">
-            <CardHeader className="border-b border-zinc-700">
-              <h4 className="text-lg font-semibold">Persyaratan</h4>
+          <Card className="border border-zinc-600/50 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 text-white shadow-xl backdrop-blur-sm">
+            <CardHeader className="border-b border-zinc-600/30 bg-gradient-to-r from-zinc-800/50 to-zinc-700/30">
+              <h4 className="flex items-center gap-3 text-xl font-bold">
+                <div className="rounded-full bg-gradient-to-r from-green-500 to-emerald-600 p-2">
+                  <Users className="h-5 w-5 text-white" />
+                </div>
+                Persyaratan
+              </h4>
             </CardHeader>
-            <CardContent className="space-y-3 py-4">
+            <CardContent className="space-y-6 py-6">
               {isLoading ? (
                 <>
-                  <Skeleton className="h-5 w-2/3" />
-                  <Skeleton className="h-5 w-1/2" />
+                  <Skeleton className="h-6 w-2/3 bg-zinc-700" />
+                  <Skeleton className="h-6 w-1/2 bg-zinc-700" />
                 </>
               ) : (
-                <div className="space-y-3">
-                  <div>
-                    <Label>Originalitas</Label>
-                    <Field>{item?.requirements?.originality ?? "-"}</Field>
+                <div className="space-y-6">
+                  <div className="rounded-lg border border-zinc-600/20 bg-zinc-800/30 p-6 backdrop-blur-sm">
+                    <div className="space-y-2">
+                      <Label className="text-zinc-300">Originalitas</Label>
+                      <Field className="text-zinc-100">
+                        {item?.requirements?.originality ?? "-"}
+                      </Field>
+                    </div>
                   </div>
-                  <div>
-                    <Label>Komposisi Tim</Label>
-                    <Field>{item?.requirements?.teamComposition ?? "-"}</Field>
+                  <div className="rounded-lg border border-zinc-600/20 bg-zinc-800/30 p-6 backdrop-blur-sm">
+                    <div className="space-y-2">
+                      <Label className="text-zinc-300">Komposisi Tim</Label>
+                      <Field className="text-zinc-100">
+                        {item?.requirements?.teamComposition ?? "-"}
+                      </Field>
+                    </div>
                   </div>
-                  <div>
-                    <Label>Lainnya</Label>
-                    <Field>{item?.requirements?.other ?? "-"}</Field>
+                  <div className="rounded-lg border border-zinc-600/20 bg-zinc-800/30 p-6 backdrop-blur-sm">
+                    <div className="space-y-2">
+                      <Label className="text-zinc-300">Lainnya</Label>
+                      <Field className="text-zinc-100">{item?.requirements?.other ?? "-"}</Field>
+                    </div>
                   </div>
                 </div>
               )}
@@ -192,29 +233,46 @@ const CompetitionDetailPage = () => {
           </Card>
 
           {/* Evaluation Criteria */}
-          <Card className="border-2 border-zinc-700 bg-zinc-900 text-white">
-            <CardHeader className="border-b border-zinc-700">
-              <h4 className="text-lg font-semibold">Kriteria Penilaian</h4>
+          <Card className="border border-zinc-600/50 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 text-white shadow-xl backdrop-blur-sm">
+            <CardHeader className="border-b border-zinc-600/30 bg-gradient-to-r from-zinc-800/50 to-zinc-700/30">
+              <h4 className="flex items-center gap-3 text-xl font-bold">
+                <div className="rounded-full bg-gradient-to-r from-yellow-500 to-orange-600 p-2">
+                  <Target className="h-5 w-5 text-white" />
+                </div>
+                Kriteria Penilaian
+              </h4>
             </CardHeader>
-            <CardContent className="space-y-4 py-4">
+            <CardContent className="space-y-6 py-6">
               {isLoading ? (
                 <>
-                  <Skeleton className="h-5 w-3/5" />
-                  <Skeleton className="h-5 w-4/5" />
+                  <Skeleton className="h-6 w-3/5 bg-zinc-700" />
+                  <Skeleton className="h-6 w-4/5 bg-zinc-700" />
                 </>
               ) : (
-                <div className="space-y-4">
-                  <div>
-                    <Label>Babak Penyisihan</Label>
-                    <Field>{item?.evaluationCriteria?.preliminaryRound ?? "-"}</Field>
+                <div className="space-y-6">
+                  <div className="rounded-lg border border-zinc-600/20 bg-zinc-800/30 p-6 backdrop-blur-sm">
+                    <div className="space-y-2">
+                      <Label className="text-zinc-300">Babak Penyisihan</Label>
+                      <Field className="text-zinc-100">
+                        {item?.evaluationCriteria?.preliminaryRound ?? "-"}
+                      </Field>
+                    </div>
                   </div>
-                  <div>
-                    <Label>Babak Final</Label>
-                    <Field>{item?.evaluationCriteria?.finalRound ?? "-"}</Field>
+                  <div className="rounded-lg border border-zinc-600/20 bg-zinc-800/30 p-6 backdrop-blur-sm">
+                    <div className="space-y-2">
+                      <Label className="text-zinc-300">Babak Final</Label>
+                      <Field className="text-zinc-100">
+                        {item?.evaluationCriteria?.finalRound ?? "-"}
+                      </Field>
+                    </div>
                   </div>
-                  <div>
-                    <Label>Lainnya</Label>
-                    <Field>{item?.evaluationCriteria?.other ?? "-"}</Field>
+                  <div className="rounded-lg border border-zinc-600/20 bg-zinc-800/30 p-6 backdrop-blur-sm">
+                    <div className="space-y-2">
+                      <Label className="text-zinc-300">Lainnya</Label>
+                      <Field className="text-zinc-100">
+                        {item?.evaluationCriteria?.other ?? "-"}
+                      </Field>
+                    </div>
                   </div>
                 </div>
               )}
@@ -222,24 +280,29 @@ const CompetitionDetailPage = () => {
           </Card>
 
           {/* Relevansi */}
-          <Card className="border-2 border-zinc-700 bg-zinc-900 text-white">
-            <CardHeader className="border-b border-zinc-700">
-              <h4 className="text-lg font-semibold">Relevansi</h4>
+          <Card className="border border-zinc-600/50 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 text-white shadow-xl backdrop-blur-sm">
+            <CardHeader className="border-b border-zinc-600/30 bg-gradient-to-r from-zinc-800/50 to-zinc-700/30">
+              <h4 className="flex items-center gap-3 text-xl font-bold">
+                <div className="rounded-full bg-gradient-to-r from-purple-500 to-pink-600 p-2">
+                  <Award className="h-5 w-5 text-white" />
+                </div>
+                Relevansi
+              </h4>
             </CardHeader>
-            <CardContent className="grid gap-6 py-4 md:grid-cols-2">
+            <CardContent className="grid gap-8 py-6 md:grid-cols-2">
               {isLoading ? (
                 <>
-                  <Skeleton className="h-5 w-2/3" />
-                  <Skeleton className="h-5 w-1/2" />
+                  <Skeleton className="h-6 w-2/3 bg-zinc-700" />
+                  <Skeleton className="h-6 w-1/2 bg-zinc-700" />
                 </>
               ) : (
                 <>
-                  <div className="space-y-2">
-                    <Label>Mata Kuliah Terkait</Label>
+                  <div className="space-y-3 rounded-lg bg-zinc-800/30 p-6 backdrop-blur-sm">
+                    <Label className="text-zinc-300">Mata Kuliah Terkait</Label>
                     <Pills items={item?.relevantCourses} />
                   </div>
-                  <div className="space-y-2">
-                    <Label>Keterampilan Terkait</Label>
+                  <div className="space-y-3 rounded-lg bg-zinc-800/30 p-6 backdrop-blur-sm">
+                    <Label className="text-zinc-300">Keterampilan Terkait</Label>
                     <Pills items={item?.relevantSkills} />
                   </div>
                 </>

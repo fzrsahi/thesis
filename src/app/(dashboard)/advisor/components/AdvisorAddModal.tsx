@@ -63,7 +63,7 @@ export const AdvisorAddModal = ({
   onOpenChange,
   onSubmit,
   defaultValues,
-  title = "Tambah Dosen Pembimbing",
+  title = "Tambah Dosen",
   submitText = "Tambah",
 }: AdvisorAddModalProps) => {
   const resolver = useMemo(() => zodResolver(AdvisorSchema), []);
