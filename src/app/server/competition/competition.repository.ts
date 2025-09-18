@@ -140,3 +140,8 @@ export const findCompetitionById = async (id: number) =>
   prisma.competitions.findUnique({
     where: { id },
   });
+
+export const deleteCompetitionById = async (id: number) =>
+  prisma.competitions.delete({
+    where: { id },
+  });

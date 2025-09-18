@@ -76,7 +76,7 @@ const CompetitionDetailPage = () => {
       </div>
 
       <div className="flex justify-center">
-        <div className="w-full max-w-5xl space-y-6 lg:max-h-[78vh] lg:overflow-y-auto lg:pr-3 lg:pb-2">
+        <div className="w-full space-y-6 lg:max-h-[78vh] lg:overflow-y-auto lg:pr-3 lg:pb-2">
           {/* Header */}
           <Card className="border-2 border-zinc-700 bg-zinc-900 text-white">
             <CardHeader className="border-b border-zinc-700">

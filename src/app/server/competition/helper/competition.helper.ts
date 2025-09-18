@@ -9,11 +9,11 @@ export const generateCompetitionText = (competitionData: CreateCompetitionPayloa
   const competitionTextParts = [
     `Title: ${competitionData.title}`,
     `Description: ${competitionData.description}`,
-    `Fields: ${competitionData.field.join(", ")}`,
+    `Fields: ${Array.isArray(competitionData.field) ? competitionData.field.join(", ") : ""}`,
     `Type: ${competitionData.type}`,
     `Source URL: ${competitionData.sourceUrl}`,
-    `Relevant Courses: ${competitionData.relevantCourses.join(", ")}`,
-    `Relevant Skills: ${competitionData.relevantSkills.join(", ")}`,
+    `Relevant Courses: ${Array.isArray(competitionData.relevantCourses) ? competitionData.relevantCourses.join(", ") : ""}`,
+    `Relevant Skills: ${Array.isArray(competitionData.relevantSkills) ? competitionData.relevantSkills.join(", ") : ""}`,
   ];
 
   if (competitionData.minGPA) {

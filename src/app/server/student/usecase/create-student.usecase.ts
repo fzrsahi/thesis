@@ -1,5 +1,6 @@
 import { HttpStatusCode } from "axios";
 
+import { getLogger } from "@/app/server/utils/pino.helper";
 import { StudentPayload } from "@/app/shared/schema/student/StudentSchema";
 
 import { USER_ERROR_RESPONSE } from "../../user/user.error";
@@ -10,6 +11,8 @@ import { STUDENT_ERROR_RESPONSE } from "../student.error";
 import { createStudent, findStudentByStudentId } from "../student.repository";
 
 export const createStudentUsecase = async (payload: StudentPayload) => {
+  const logger = getLogger({ module: "usecase/create-student" });
+  logger.debug({ email: payload.email, studentId: payload.studentId }, "Creating student - start");
   const user = await findUserByEmail(payload.email);
 
   if (user) {
@@ -42,4 +45,5 @@ export const createStudentUsecase = async (payload: StudentPayload) => {
     userId: newUser.id,
     studentId: payload.studentId as string,
   });
+  logger.info({ userId: newUser.id, studentId: payload.studentId }, "Creating student - success");
 };

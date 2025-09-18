@@ -132,12 +132,17 @@ export const CompetitionAddModal = ({
   type DetailPair = { id: string; key: string; value: string };
   const parseDefaultDetails = (): DetailPair[] => {
     const raw = defaultValues?.additionalDetails;
-    if (!raw) return [];
+    if (!raw) return [{ id: "default", key: "", value: "" }]; // Always start with at least 1 field
     try {
       const obj = JSON.parse(raw as string) as Record<string, string>;
-      return Object.entries(obj).map(([k, v], idx) => ({ id: `${idx}`, key: k, value: v ?? "" }));
+      const pairs = Object.entries(obj).map(([k, v], idx) => ({
+        id: `${idx}`,
+        key: k,
+        value: v ?? "",
+      }));
+      return pairs.length > 0 ? pairs : [{ id: "default", key: "", value: "" }];
     } catch {
-      return [];
+      return [{ id: "default", key: "", value: "" }];
     }
   };
   const [detailPairs, setDetailPairs] = useState<DetailPair[]>(parseDefaultDetails());
@@ -159,7 +164,11 @@ export const CompetitionAddModal = ({
 
   const addPair = () =>
     setDetailPairs((prev) => [...prev, { id: `${Date.now()}`, key: "", value: "" }]);
-  const removePair = (id: string) => setDetailPairs((prev) => prev.filter((p) => p.id !== id));
+  const removePair = (id: string) => {
+    // Don't allow removing if it's the last field
+    if (detailPairs.length <= 1) return;
+    setDetailPairs((prev) => prev.filter((p) => p.id !== id));
+  };
   const updatePair = (id: string, patch: Partial<DetailPair>) =>
     setDetailPairs((prev) => prev.map((p) => (p.id === id ? { ...p, ...patch } : p)));
 
@@ -210,9 +219,9 @@ export const CompetitionAddModal = ({
                 <FormItem>
                   <FormLabel className="text-zinc-200">Deskripsi</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Deskripsi singkat"
-                      className="border-zinc-700 bg-zinc-900 text-zinc-100 placeholder:text-zinc-400"
+                    <textarea
+                      placeholder="Deskripsi singkat kompetisi..."
+                      className="min-h-[100px] w-full rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100 placeholder:text-zinc-400 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                       {...field}
                     />
                   </FormControl>
@@ -240,7 +249,12 @@ export const CompetitionAddModal = ({
             {/* Dynamic Additional Details (Key-Value) */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <FormLabel className="text-zinc-200">Detail Tambahan (opsional)</FormLabel>
+                <div>
+                  <FormLabel className="text-zinc-200">Detail Tambahan</FormLabel>
+                  <p className="mt-1 text-xs text-zinc-400">
+                    Contoh: Penilaian, Kriteria, Biaya Pendaftaran, Kontak, dll.
+                  </p>
+                </div>
                 <Button
                   type="button"
                   variant="outline"
@@ -252,11 +266,6 @@ export const CompetitionAddModal = ({
                 </Button>
               </div>
               <div className="space-y-2">
-                {detailPairs.length === 0 && (
-                  <div className="rounded-md border border-dashed border-zinc-700 p-3 text-sm text-zinc-400">
-                    Belum ada detail tambahan. Klik &quot;Tambah Field&quot; untuk menambahkan.
-                  </div>
-                )}
                 {detailPairs.map((pair) => (
                   <div key={pair.id} className="grid grid-cols-1 gap-2 md:grid-cols-12">
                     <div className="md:col-span-4">
@@ -280,7 +289,8 @@ export const CompetitionAddModal = ({
                           size="sm"
                           variant="ghost"
                           onClick={() => removePair(pair.id)}
-                          className="min-w-[72px] shrink-0 px-2 text-red-400 hover:bg-red-900/20 hover:text-red-300"
+                          disabled={detailPairs.length <= 1}
+                          className="min-w-[72px] shrink-0 px-2 text-red-400 hover:bg-red-900/20 hover:text-red-300 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           <span className="hidden sm:inline">Hapus</span>
                           <X className="h-4 w-4 sm:ml-1" />
@@ -372,7 +382,14 @@ export const CompetitionAddModal = ({
                 disabled={isSubmitting}
                 className="bg-white text-black hover:bg-zinc-200 disabled:opacity-60"
               >
-                {submitText}
+                {isSubmitting ? (
+                  <div className="flex items-center gap-2">
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600" />
+                    <span>Menyimpan...</span>
+                  </div>
+                ) : (
+                  submitText
+                )}
               </Button>
               <DarkModal.Close asChild>
                 <Button

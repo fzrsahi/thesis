@@ -1,11 +1,11 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Users } from "lucide-react";
 import { useState } from "react";
 
 import { StudentSchema, type StudentPayload } from "@/app/shared/schema/student/StudentSchema";
-import { createStudent } from "@/client/api/students";
+import { createStudent, deleteStudent, getStudentDetail } from "@/client/api/students";
 import Button from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/data-table";
@@ -14,14 +14,34 @@ import Pagination from "@/components/ui/pagination";
 import { TypographyH2, TypographyP } from "@/components/ui/typography";
 
 import { StudentAddModal } from "./components/StudentAddModal";
+import { StudentDeleteModal } from "./components/StudentDeleteModal";
+import { StudentDetailModal } from "./components/StudentDetailModal";
 import { useStudentList } from "./hooks/useStudentList";
 
 const StudentPage = () => {
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const { search, setSearch, tableRef, tableData, columns, pagination, handlePageChange } =
-    useStudentList();
+    useStudentList({
+      onDelete: (id: number) => {
+        setSelectedId(id);
+        setDeleteOpen(true);
+      },
+    });
 
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState<number | null>(null);
+
+  const { data: detailData, isLoading: isDetailLoading } = useQuery({
+    queryKey: ["student-detail", selectedId],
+    queryFn: async () => {
+      if (selectedId == null) return null;
+      const res = await getStudentDetail(selectedId);
+      return res?.data ?? null;
+    },
+    enabled: selectedId != null && detailOpen,
+  });
 
   const { mutateAsync: doCreate, isPending } = useMutation({
     mutationFn: async (payload: StudentPayload) => {
@@ -34,8 +54,21 @@ const StudentPage = () => {
     },
   });
 
+  const { mutateAsync: doDelete, isPending: isDeleting } = useMutation({
+    mutationFn: async (id: number) => deleteStudent(id),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["students"] });
+    },
+  });
+
   const handleCreate = async (values: StudentPayload) => {
     const res = await doCreate(values);
+    return res?.success === true;
+  };
+
+  const handleConfirmDelete = async () => {
+    if (selectedId == null) return false;
+    const res = await doDelete(selectedId);
     return res?.success === true;
   };
 
@@ -90,6 +123,24 @@ const StudentPage = () => {
         onOpenChange={setOpen}
         onSubmit={handleCreate}
         submitText={isPending ? "Menyimpan..." : "Tambah"}
+      />
+      <StudentDetailModal
+        open={detailOpen}
+        onOpenChange={(v) => {
+          setDetailOpen(v);
+          if (!v) setSelectedId(null);
+        }}
+        data={detailData ?? null}
+        isLoading={isDetailLoading}
+      />
+      <StudentDeleteModal
+        open={deleteOpen}
+        onOpenChange={(v) => {
+          setDeleteOpen(v);
+          if (!v) setSelectedId(null);
+        }}
+        onConfirm={handleConfirmDelete}
+        confirmText={isDeleting ? "Menghapus..." : "Hapus"}
       />
     </div>
   );

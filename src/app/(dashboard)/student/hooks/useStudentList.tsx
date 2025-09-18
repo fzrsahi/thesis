@@ -3,6 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
 import { Eye, Pencil, Trash2 } from "lucide-react";
+import Link from "next/link";
 import { useState, useMemo, useRef, useEffect } from "react";
 
 import { getStudents, type GetStudentsResponse } from "@/client/api/students";
@@ -11,7 +12,11 @@ import Button from "@/components/ui/button";
 import { Student } from "../types";
 
 // eslint-disable-next-line no-empty-pattern
-export const useStudentList = () => {
+type UseStudentListOptions = {
+  onDelete?: (id: number) => void;
+};
+
+export const useStudentList = (options?: UseStudentListOptions) => {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -90,17 +95,15 @@ export const useStudentList = () => {
       header: "Aksi",
       accessorKey: "actions",
       // eslint-disable-next-line no-empty-pattern
-      cell: ({}) => (
+      cell: ({ row }) => (
         <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="border-zinc-700 bg-zinc-900 p-2 text-white hover:bg-zinc-800"
-            onClick={() => {}}
+          <Link
+            href={`/student/${row.original.id}`}
+            className="inline-flex items-center rounded-md border border-zinc-700 bg-zinc-900 p-2 text-white hover:bg-zinc-800"
             aria-label="Detail"
           >
             <Eye className="h-4 w-4" />
-          </Button>
+          </Link>
           <Button
             variant="outline"
             size="sm"
@@ -114,7 +117,10 @@ export const useStudentList = () => {
             variant="outline"
             size="sm"
             className="border-zinc-700 bg-zinc-900 p-2 text-red-400 hover:bg-zinc-800"
-            onClick={() => {}}
+            onClick={() => {
+              const { id } = row.original;
+              if (typeof id === "number") options?.onDelete?.(id);
+            }}
             aria-label="Hapus"
           >
             <Trash2 className="h-4 w-4" />

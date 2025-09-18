@@ -217,7 +217,143 @@
       "get": {
         "tags": ["Student"],
         "summary": "Get student",
-        "description": "Get a student"
+        "description": "Get a student",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "minimum": 1 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Student retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "integer" },
+                        "user": {
+                          "type": "object",
+                          "properties": {
+                            "name": { "type": "string" },
+                            "email": { "type": "string" }
+                          }
+                        },
+                        "studentId": { "type": ["string", "null"] },
+                        "transcript": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": { "type": "integer" },
+                              "fileId": { "type": "string" },
+                              "semester": { "type": "string" },
+                              "transcriptText": { "type": "string" },
+                              "fileUrl": { "type": "string" }
+                            }
+                          }
+                        },
+                        "achievements": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": { "type": "integer" },
+                              "studentId": { "type": "integer" },
+                              "title": { "type": "string" },
+                              "description": { "type": "string" },
+                              "date": { "type": "string", "format": "date-time" },
+                              "createdAt": { "type": "string", "format": "date-time" }
+                            }
+                          }
+                        },
+                        "experiences": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": { "type": "integer" },
+                              "organization": { "type": "string" },
+                              "position": { "type": "string" },
+                              "startDate": { "type": "string", "format": "date-time" },
+                              "endDate": { "type": "string", "format": "date-time" },
+                              "description": { "type": "string" }
+                            }
+                          }
+                        },
+                        "gpa": { "type": "string" },
+                        "interests": {
+                          "type": "array",
+                          "items": { "type": "string" }
+                        },
+                        "skills": {
+                          "type": "array",
+                          "items": { "type": "string" }
+                        },
+                        "createdAt": { "type": "string", "format": "date-time" },
+                        "updatedAt": { "type": "string", "format": "date-time" },
+                        "recommendations": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": { "type": "integer" },
+                              "studentId": { "type": "integer" },
+                              "prompt": { "type": "string" },
+                              "studentSummary": { "type": "string" },
+                              "overallAssessment": { "type": "string" },
+                              "competitionRecommendations": {
+                                "type": "array",
+                                "items": { "type": "object" }
+                              },
+                              "developmentSuggestions": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": { "type": "integer" },
+                                    "type": { "type": "string" },
+                                    "title": { "type": "string" },
+                                    "link": { "type": "string" },
+                                    "reason": { "type": "string" }
+                                  }
+                                }
+                              },
+                              "skillsProfiles": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": { "type": "integer" },
+                                    "skillName": { "type": "string" },
+                                    "score": { "type": "number" },
+                                    "breakdown": { "type": "string" }
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       },
       "put": {
         "tags": ["Student"],
@@ -227,7 +363,20 @@
       "delete": {
         "tags": ["Student"],
         "summary": "Delete student",
-        "description": "Delete a student"
+        "description": "Delete a student",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "minimum": 1 }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Student deleted successfully"
+          }
+        }
       }
     },
     "/students/personal-data": {
@@ -560,6 +709,35 @@
       }
     },
     "/competitions/{id}": {
+      "delete": {
+        "tags": ["Competition"],
+        "summary": "Delete competition by ID",
+        "description": "Delete a competition by its ID.",
+        "operationId": "deleteCompetitionById",
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer", "minimum": 1 },
+            "description": "Competition ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": { "success": { "type": "boolean", "example": true } }
+                }
+              }
+            },
+            "description": "Competition deleted successfully"
+          }
+        }
+      },
       "get": {
         "tags": ["Competition"],
         "summary": "Get competition by ID",

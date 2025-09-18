@@ -25,6 +25,19 @@ export const findStudentByUserId = (
     select: fields,
   });
 
+export const findStudentById = (
+  id: number,
+  fields: Prisma.StudentSelect = {
+    id: true,
+    userId: true,
+    createdAt: true,
+    updatedAt: true,
+  }
+) =>
+  prisma.student.findFirst({
+    where: { id },
+    select: fields,
+  });
 export const updateStudentPersonalData = (userId: number, data: PersonalDataPayload) =>
   prisma.user.update({
     where: { id: userId },
@@ -155,3 +168,8 @@ export const getStudents = async (
     { where }
   );
 };
+
+export const deleteStudentByUserId = (userId: number) =>
+  prisma.student.delete({
+    where: { userId },
+  });

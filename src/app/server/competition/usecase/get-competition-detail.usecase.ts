@@ -1,8 +1,8 @@
 import { HttpStatusCode } from "axios";
 
-import { COMPETITION_ERROR_RESPONSE } from "./competition.error";
-import { findCompetitionById } from "./competition.repository";
-import { customError } from "../utils/error/custom-error";
+import { customError } from "../../utils/error/custom-error";
+import { COMPETITION_ERROR_RESPONSE } from "../competition.error";
+import { findCompetitionById } from "../competition.repository";
 
 export const getCompetitionDetailUsecase = async (id: number) => {
   const competition = await findCompetitionById(id);

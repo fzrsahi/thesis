@@ -180,11 +180,88 @@ export interface paths {
       parameters: {
         query?: never;
         header?: never;
-        path?: never;
+        path: {
+          id: number;
+        };
         cookie?: never;
       };
       requestBody?: never;
-      responses: never;
+      responses: {
+        /** @description Student retrieved successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": {
+              success?: boolean;
+              data?: {
+                id?: number;
+                user?: {
+                  name?: string;
+                  email?: string;
+                };
+                studentId?: string | null;
+                transcript?: {
+                  id?: number;
+                  fileId?: string;
+                  semester?: string;
+                  transcriptText?: string;
+                  fileUrl?: string;
+                }[];
+                achievements?: {
+                  id?: number;
+                  studentId?: number;
+                  title?: string;
+                  description?: string;
+                  /** Format: date-time */
+                  date?: string;
+                  /** Format: date-time */
+                  createdAt?: string;
+                }[];
+                experiences?: {
+                  id?: number;
+                  organization?: string;
+                  position?: string;
+                  /** Format: date-time */
+                  startDate?: string;
+                  /** Format: date-time */
+                  endDate?: string;
+                  description?: string;
+                }[];
+                gpa?: string;
+                interests?: string[];
+                skills?: string[];
+                /** Format: date-time */
+                createdAt?: string;
+                /** Format: date-time */
+                updatedAt?: string;
+                recommendations?: {
+                  id?: number;
+                  studentId?: number;
+                  prompt?: string;
+                  studentSummary?: string;
+                  overallAssessment?: string;
+                  competitionRecommendations?: Record<string, never>[];
+                  developmentSuggestions?: {
+                    id?: number;
+                    type?: string;
+                    title?: string;
+                    link?: string;
+                    reason?: string;
+                  }[];
+                  skillsProfiles?: {
+                    id?: number;
+                    skillName?: string;
+                    score?: number;
+                    breakdown?: string;
+                  }[];
+                }[];
+              };
+            };
+          };
+        };
+      };
     };
     /**
      * Update student
@@ -209,11 +286,21 @@ export interface paths {
       parameters: {
         query?: never;
         header?: never;
-        path?: never;
+        path: {
+          id: number;
+        };
         cookie?: never;
       };
       requestBody?: never;
-      responses: never;
+      responses: {
+        /** @description Student deleted successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content?: never;
+        };
+      };
     };
     options?: never;
     head?: never;
@@ -578,7 +665,11 @@ export interface paths {
     get: operations["getCompetitionById"];
     put?: never;
     post?: never;
-    delete?: never;
+    /**
+     * Delete competition by ID
+     * @description Delete a competition by its ID.
+     */
+    delete: operations["deleteCompetitionById"];
     options?: never;
     head?: never;
     patch?: never;
@@ -1427,6 +1518,32 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  deleteCompetitionById: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Competition ID */
+        id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Competition deleted successfully */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @example true */
+            success?: boolean;
+          };
         };
       };
     };

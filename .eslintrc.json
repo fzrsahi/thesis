@@ -85,7 +85,9 @@
     ],
     "@typescript-eslint/no-empty-function": "off",
     "@typescript-eslint/no-explicit-any": "error",
-    "no-underscore-dangle": ["error", { "allow": ["_def"] }]
+    "no-underscore-dangle": ["error", { "allow": ["_def"] }],
+    "no-unneeded-ternary": "off",
+    "no-nested-ternary": "off"
   },
   "root": true
 }

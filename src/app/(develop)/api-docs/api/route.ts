@@ -2,7 +2,9 @@ import { NextResponse } from "next/server";
 
 import openapi from "@/app/api-docs/openapi.json";
 
-const isDev = process.env.NEXT_PUBLIC_ENV_NAME === "development";
+const isDev =
+  process.env.NEXT_PUBLIC_ENV_NAME === "development" ||
+  process.env.NEXT_PUBLIC_ENV_NAME === "local";
 
 export const GET = async () => {
   if (!isDev) {

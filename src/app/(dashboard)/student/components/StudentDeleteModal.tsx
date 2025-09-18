@@ -13,30 +13,23 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 
-type CompetitionLike = {
-  id: number;
-  title?: string;
-};
-
-interface CompetitionDeleteModalProps {
+type StudentDeleteModalProps = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onConfirm: () => Promise<boolean>;
-  data: CompetitionLike | null;
+  onConfirm: () => Promise<boolean> | boolean | void;
   title?: string;
   description?: string;
   confirmText?: string;
-}
+};
 
-export const CompetitionDeleteModal = ({
+export const StudentDeleteModal = ({
   open,
   onOpenChange,
   onConfirm,
-  data,
-  title = "Hapus Kompetisi",
-  description,
+  title = "Hapus Mahasiswa",
+  description = "Tindakan ini tidak dapat dibatalkan. Data mahasiswa akan dihapus permanen.",
   confirmText = "Hapus",
-}: CompetitionDeleteModalProps) => {
+}: StudentDeleteModalProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -86,15 +79,7 @@ export const CompetitionDeleteModal = ({
           <div className="py-4 text-center text-zinc-100">
             <div className="flex items-start gap-3 rounded-md border border-zinc-700 bg-zinc-800 p-4 text-zinc-100">
               <AlertTriangle className="mt-0.5 h-5 w-5 text-yellow-400" />
-              <p className="text-sm leading-6">
-                {description ?? (
-                  <>
-                    Tindakan ini tidak dapat dibatalkan. Kompetisi{" "}
-                    <span className="font-bold text-red-400">{data?.title}</span> akan dihapus
-                    permanen.
-                  </>
-                )}
-              </p>
+              <p className="text-sm leading-6">{description}</p>
             </div>
           </div>
         </div>
@@ -123,4 +108,4 @@ export const CompetitionDeleteModal = ({
   );
 };
 
-export default CompetitionDeleteModal;
+export default StudentDeleteModal;

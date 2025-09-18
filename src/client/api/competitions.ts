@@ -66,3 +66,11 @@ export const getCompetitionDetail = async (id: number): Promise<GetCompetitionDe
   const response = await api.request("get", `/competitions/${id}`);
   return response as unknown as GetCompetitionDetailResponse;
 };
+
+export type DeleteCompetitionResponse = { success: boolean };
+
+export const deleteCompetition = async (id: number): Promise<DeleteCompetitionResponse> => {
+  const api = apiClient as unknown as { request: ApiClientRequest };
+  const response = await api.request("delete", `/competitions/${id}`);
+  return response as unknown as DeleteCompetitionResponse;
+};

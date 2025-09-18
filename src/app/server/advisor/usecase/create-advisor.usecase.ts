@@ -1,5 +1,6 @@
 import { HttpStatusCode } from "axios";
 
+import { getLogger } from "@/app/server/utils/pino.helper";
 import { AdvisorPayload } from "@/app/shared/schema/advisor/AdvisorSchema";
 
 import { USER_ERROR_RESPONSE } from "../../user/user.error";
@@ -9,6 +10,8 @@ import { customError } from "../../utils/error/custom-error";
 import { createAdvisor } from "../advisor.repository";
 
 export const createAdvisorUsecase = async (body: AdvisorPayload) => {
+  const logger = getLogger({ module: "usecase/create-advisor" });
+  logger.debug({ email: body.email }, "Creating advisor - start");
   const user = await findUserByEmail(body.email);
 
   if (user) {
@@ -25,4 +28,5 @@ export const createAdvisorUsecase = async (body: AdvisorPayload) => {
   });
 
   await createAdvisor(newUser.id);
+  logger.info({ userId: newUser.id }, "Creating advisor - success");
 };

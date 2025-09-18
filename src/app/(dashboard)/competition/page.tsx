@@ -1,13 +1,17 @@
 "use client";
 
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
 import { BookOpen, Eye, Pencil, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useMemo, useRef, useEffect } from "react";
 import { toast } from "sonner";
 
-import { getCompetitions, type GetCompetitionsResponse } from "@/client/api/competitions";
+import {
+  deleteCompetition,
+  getCompetitions,
+  type GetCompetitionsResponse,
+} from "@/client/api/competitions";
 import Button from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/data-table";
@@ -18,6 +22,7 @@ import { TypographyH2, TypographyP } from "@/components/ui/typography";
 import { formatDate } from "@/lib/utils";
 
 import { CompetitionAddModal } from "./components/competition-add-modal";
+import { CompetitionDeleteModal } from "./components/competition-delete-modal";
 import { useGenerateCompetition } from "./hooks/useGenerateCompetition";
 
 export type Competition = {
@@ -107,6 +112,8 @@ const CompetitionPage = () => {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [open, setOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<Competition | null>(null);
   const [page, setPage] = useState(1);
   const pageSize = 10;
   const tableRef = useRef<HTMLDivElement>(null);
@@ -190,7 +197,10 @@ const CompetitionPage = () => {
 
   const handleEdit = (_item: Competition) => {};
 
-  const handleDelete = (_item: Competition) => {};
+  const handleDelete = (item: Competition) => {
+    setSelectedItem(item);
+    setDeleteOpen(true);
+  };
 
   // Use columnsDef factory to avoid defining components during render
   const columns = useMemo(
@@ -199,67 +209,97 @@ const CompetitionPage = () => {
     []
   );
 
-  return (
-    <div className="w-full">
-      <div className="mb-6">
-        <TypographyH2 className="flex items-center gap-2 truncate text-zinc-900">
-          <BookOpen className="h-10 w-10 font-extrabold" />
-          Daftar Kompetisi
-        </TypographyH2>
-        <TypographyP className="border-b border-gray-300 pb-4 text-zinc-900">
-          Temukan dan kelola berbagai kompetisi untuk mahasiswa secara mudah.
-        </TypographyP>
-        <div className="mb-6 border-t border-gray-500" />
-      </div>
+  const { mutateAsync: doDelete } = useMutation({
+    mutationFn: async (id: number) => deleteCompetition(id),
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["competitions"] });
+    },
+  });
 
-      <div className="flex justify-center">
-        <Card className="w-full border-2 border-zinc-700 bg-zinc-900 text-zinc-100 shadow-lg">
-          <CardHeader className="flex flex-col gap-4 border-b border-zinc-700 bg-zinc-900 pb-4 md:flex-row md:items-center md:justify-between">
-            <div className="flex gap-2">
-              <Input
-                placeholder="Cari kompetisi..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full md:w-56"
-              />
-              <Button
-                variant="outline"
-                className="border-zinc-700 bg-gradient-to-r from-zinc-800 to-zinc-900 text-white hover:bg-zinc-700 hover:ring-2 hover:ring-blue-400"
-              >
-                Cari
-              </Button>
-            </div>
-            <Dialog open={open} onOpenChange={setOpen}>
-              <DialogTrigger asChild>
+  const onConfirmDelete = async () => {
+    if (!selectedItem?.id) return;
+    const res = await doDelete(selectedItem.id);
+    if (res?.success) {
+      setDeleteOpen(false);
+      setSelectedItem(null);
+    }
+  };
+
+  return (
+    <>
+      <div className="w-full">
+        <div className="mb-6">
+          <TypographyH2 className="flex items-center gap-2 truncate text-zinc-900">
+            <BookOpen className="h-10 w-10 font-extrabold" />
+            Daftar Kompetisi
+          </TypographyH2>
+          <TypographyP className="border-b border-gray-300 pb-4 text-zinc-900">
+            Temukan dan kelola berbagai kompetisi untuk mahasiswa secara mudah.
+          </TypographyP>
+          <div className="mb-6 border-t border-gray-500" />
+        </div>
+
+        <div className="flex justify-center">
+          <Card className="w-full border-2 border-zinc-700 bg-zinc-900 text-zinc-100 shadow-lg">
+            <CardHeader className="flex flex-col gap-4 border-b border-zinc-700 bg-zinc-900 pb-4 md:flex-row md:items-center md:justify-between">
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Cari kompetisi..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full md:w-56"
+                />
                 <Button
                   variant="outline"
-                  className="border-gray-600 bg-gray-600 text-white hover:border-gray-700 hover:bg-gray-700 hover:text-white"
+                  className="border-zinc-700 bg-gradient-to-r from-zinc-800 to-zinc-900 text-white hover:bg-zinc-700 hover:ring-2 hover:ring-blue-400"
                 >
-                  + Tambah Kompetisi
+                  Cari
                 </Button>
-              </DialogTrigger>
-              <CompetitionAddModal open={open} onOpenChange={setOpen} onSubmit={onGenerate} />
-            </Dialog>
-          </CardHeader>
-          <CardContent ref={tableRef} className="bg-zinc-900 p-0 md:p-4">
-            <div className="w-full">
-              <DataTable columns={columns} data={tableData} />
-            </div>
-            <Pagination
-              pagination={{
-                total: data?.pagination?.total ?? 0,
-                page: data?.pagination?.page ?? page,
-                limit: data?.pagination?.limit ?? pageSize,
-                totalPages: data?.pagination?.totalPages ?? 1,
-                hasNextPage: data?.pagination?.hasNextPage ?? false,
-                hasPrevPage: data?.pagination?.hasPrevPage ?? false,
-              }}
-              onPageChange={handlePageChange}
-            />
-          </CardContent>
-        </Card>
+              </div>
+              <Dialog open={open} onOpenChange={setOpen}>
+                <DialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="border-gray-600 bg-gray-600 text-white hover:border-gray-700 hover:bg-gray-700 hover:text-white"
+                  >
+                    + Tambah Kompetisi
+                  </Button>
+                </DialogTrigger>
+                <CompetitionAddModal open={open} onOpenChange={setOpen} onSubmit={onGenerate} />
+              </Dialog>
+            </CardHeader>
+            <CardContent ref={tableRef} className="bg-zinc-900 p-0 md:p-4">
+              <div className="w-full">
+                <DataTable columns={columns} data={tableData} />
+              </div>
+              <Pagination
+                pagination={{
+                  total: data?.pagination?.total ?? 0,
+                  page: data?.pagination?.page ?? page,
+                  limit: data?.pagination?.limit ?? pageSize,
+                  totalPages: data?.pagination?.totalPages ?? 1,
+                  hasNextPage: data?.pagination?.hasNextPage ?? false,
+                  hasPrevPage: data?.pagination?.hasPrevPage ?? false,
+                }}
+                onPageChange={handlePageChange}
+              />
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </div>
+      <CompetitionDeleteModal
+        open={deleteOpen}
+        onOpenChange={(v) => {
+          setDeleteOpen(v);
+          if (!v) setSelectedItem(null);
+        }}
+        onConfirm={async () => {
+          await onConfirmDelete();
+          return true;
+        }}
+        data={selectedItem}
+      />
+    </>
   );
 };
 

@@ -1,9 +1,11 @@
-import { components } from "@/app/shared/types/api";
+import { components, paths } from "@/app/shared/types/api";
 
 import apiClient from "./apiClient";
 
 export type StudentItem = components["schemas"]["StudentPersonalData"];
 export type PaginationMeta = components["schemas"]["Pagination"];
+export type StudentDetail =
+  paths["/students/{id}"]["get"]["responses"][200]["content"]["application/json"]["data"];
 
 export type GetStudentsParams = {
   page?: number;
@@ -43,4 +45,27 @@ export const createStudent = async (
 ): Promise<CreateStudentResponse> => {
   const response = await apiClient.request("post", "/students", undefined, payload);
   return response as unknown as CreateStudentResponse;
+};
+
+export type GetStudentDetailResponse = {
+  success?: boolean;
+  data?: StudentDetail;
+};
+
+type ApiClientRequest = (method: string, url: string, ...args: unknown[]) => Promise<unknown>;
+
+export const getStudentDetail = async (id: number): Promise<GetStudentDetailResponse> => {
+  const api = apiClient as unknown as { request: ApiClientRequest };
+  const response = await api.request("get", `/students/${id}`);
+  return response as unknown as GetStudentDetailResponse;
+};
+
+export type DeleteStudentResponse = {
+  success: boolean;
+};
+
+export const deleteStudent = async (id: number): Promise<DeleteStudentResponse> => {
+  const api = apiClient as unknown as { request: ApiClientRequest };
+  const response = await api.request("delete", `/students/${id}`);
+  return response as unknown as DeleteStudentResponse;
 };

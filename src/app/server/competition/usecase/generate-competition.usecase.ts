@@ -5,6 +5,7 @@ import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { getDocument } from "pdfjs-serverless";
 
 import { prisma } from "@/app/server/prisma/prisma";
+import { getLogger } from "@/app/server/utils/pino.helper";
 import { CreateCompetitionGeneratePayload } from "@/app/shared/schema/competition/CompetitionGenerateSchema";
 import { CreateCompetitionPayload } from "@/app/shared/schema/competition/CompetitionSchema";
 
@@ -55,9 +56,15 @@ PETUNJUK TAMBAHAN:
 export const generateCompetitionUsecase = async (
   payload: CreateCompetitionGeneratePayload
 ): Promise<GenerateCompetitionResponse | undefined> => {
+  const logger = getLogger({ module: "usecase/generate-competition" });
+  logger.debug(
+    { hasFile: Boolean(payload.file), title: payload.title },
+    "Generate competition - start"
+  );
   const { file, title, startPage, endPage } = payload;
 
   if (!file) {
+    logger.info("No file provided; returning undefined");
     return undefined;
   }
 
@@ -65,11 +72,15 @@ export const generateCompetitionUsecase = async (
     uploadFile(file),
     extractTextFromPdfBuffer(file, startPage, endPage),
   ]);
+  logger.debug({ fileId }, "Uploaded file and extracted text");
   const competition = await createCompetition(createInitialCompetitionData(payload));
+  logger.debug({ competitionId: competition.id }, "Created initial competition record");
   const chunks = await splitTextIntoChunks(pdfText);
   await saveChunksToPostgres(chunks, competition.id);
+  logger.debug({ totalChunks: chunks.length }, "Saved chunks to Postgres and vector store");
   const contextText = await getContextText(title, competition.id);
   const result = await generateCompetitionData(payload, contextText);
+  logger.info({ competitionId: competition.id }, "Generated competition data with model");
 
   const competitionUpdateData = buildCompetitionUpdateData(
     payload,
@@ -82,6 +93,7 @@ export const generateCompetitionUsecase = async (
   await updateCompetitionById(competition.id, competitionUpdateData);
   const competitionText = generateCompetitionText(result as CreateCompetitionPayload);
   await storeToVectorStore(competition, competitionText);
+  logger.info({ competitionId: competition.id }, "Stored competition text to vector store");
   return result;
 };
 

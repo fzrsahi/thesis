@@ -115,5 +115,7 @@ export const authOptions: NextAuthOptions = {
     signIn: "/auth/login",
     signOut: "/auth/logout",
   },
-  debug: process.env.NEXT_PUBLIC_ENV_NAME === "development",
+  debug:
+    process.env.NEXT_PUBLIC_ENV_NAME === "development" ||
+    process.env.NEXT_PUBLIC_ENV_NAME === "local",
 };
