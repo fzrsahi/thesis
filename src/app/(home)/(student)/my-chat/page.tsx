@@ -54,8 +54,10 @@ const MyChatPage = () => {
 
   return (
     <div>
-      <h1 className="mb-2 text-2xl font-bold">My Chat</h1>
-      <p className="mb-6 text-zinc-400">Chat sederhana dengan respons streaming dan efek ketik.</p>
+      <h1 className="mb-2 text-2xl font-bold">Mengobrol Dengan Asisten AI</h1>
+      <p className="mb-6 text-zinc-400">
+        Mengobrol Tentang Kompetisi, Rekomendasi Kompetisi, dan Informasi Lainnya.
+      </p>
 
       <div className="max-h-[60vh] space-y-4 overflow-y-auto pr-2">
         {messages.map((m) => (

@@ -1,5 +1,6 @@
 import { HttpStatusCode } from "axios";
 
+import { getFileUrl } from "../../google-storage/google-storage.service";
 import { customError } from "../../utils/error/custom-error";
 import { COMPETITION_ERROR_RESPONSE } from "../competition.error";
 import { findCompetitionById } from "../competition.repository";
@@ -13,5 +14,8 @@ export const getCompetitionDetailUsecase = async (id: number) => {
       HttpStatusCode.NotFound
     );
   }
-  return competition;
+  return {
+    ...competition,
+    fileId: competition.fileId ? await getFileUrl(competition.fileId) : competition.fileId,
+  };
 };

@@ -1,9 +1,4 @@
-import {
-  UserCircleIcon,
-  ChatBubbleLeftRightIcon,
-  Bars3Icon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
+import { UserCircleIcon, Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,7 +6,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
-import { Home } from "lucide-react";
+import { Home, Sparkles, Brain, Zap } from "lucide-react";
 import { Orbitron } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
@@ -74,9 +69,13 @@ const Navbar = () => {
       return (
         <Link
           href="/auth/login"
-          className="rounded-full border border-zinc-500/50 bg-gradient-to-r from-zinc-700 to-zinc-900 px-4 py-2 text-sm font-semibold text-white transition-all hover:shadow-lg hover:shadow-zinc-500/30 sm:px-6"
+          className="group relative overflow-hidden rounded-full border border-zinc-700/50 bg-gradient-to-r from-zinc-800/50 to-zinc-900/50 px-6 py-2 text-sm font-semibold text-white backdrop-blur-sm transition-all hover:border-zinc-600/50 hover:from-zinc-700/50 hover:to-zinc-800/50 hover:shadow-lg hover:shadow-blue-500/25"
         >
-          Login
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 transition-opacity group-hover:opacity-100" />
+          <div className="relative flex items-center space-x-2">
+            <Sparkles className="h-4 w-4" />
+            <span>Login</span>
+          </div>
         </Link>
       );
     }
@@ -91,38 +90,42 @@ const Navbar = () => {
         {(isAdmin || isAdvisor) && (
           <Link
             href="/dashboard"
-            className={`hidden items-center gap-2 px-4 py-2 text-sm font-medium transition-all md:flex ${
+            className={`group relative hidden items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all md:flex ${
               pathname === "/dashboard"
-                ? "rounded-lg bg-zinc-800/50 text-zinc-200"
-                : "text-white hover:text-zinc-300"
+                ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-white backdrop-blur-sm"
+                : "text-white hover:bg-zinc-800/50 hover:text-zinc-300"
             }`}
           >
-            <Home className="h-5 w-5" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg">
+              <Home className="h-4 w-4 text-white" />
+            </div>
             <span>Dashboard</span>
             {pathname === "/dashboard" && (
-              <span className="absolute bottom-0 left-0 h-[2px] w-full bg-gradient-to-r from-zinc-400 to-zinc-600" />
+              <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-blue-500/10 to-purple-500/10" />
             )}
           </Link>
         )}
 
         {isStudent && (
           <Link
-            href="/student/profile"
-            className={`relative hidden items-center gap-2 px-4 py-2 text-sm font-medium transition-all md:flex ${
+            href="/my-recomendation"
+            className={`group relative hidden items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all md:flex ${
               routes.some(
                 (route) => route.roles.includes(ROLES.STUDENT) && pathname === route.href
-              ) || pathname === "/dashboard"
-                ? "rounded-lg bg-zinc-800/50 text-zinc-200"
-                : "text-white hover:text-zinc-300"
+              ) || pathname === "/my-recomendation"
+                ? "bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-white backdrop-blur-sm"
+                : "text-white hover:bg-zinc-800/50 hover:text-zinc-300"
             }`}
           >
-            <Home className="h-5 w-5" />
-            <span>Dashboard</span>
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-pink-600 shadow-lg">
+              <Brain className="h-4 w-4 text-white" />
+            </div>
+            <span>Rekomendasi</span>
             {(routes.some(
               (route) => route.roles.includes(ROLES.STUDENT) && pathname === route.href
             ) ||
-              pathname === "/dashboard") && (
-              <span className="absolute bottom-0 left-0 h-[2px] w-full bg-gradient-to-r from-zinc-400 to-zinc-600" />
+              pathname === "/my-recomendation") && (
+              <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/10 to-pink-500/10" />
             )}
           </Link>
         )}
@@ -132,36 +135,51 @@ const Navbar = () => {
             <DropdownMenuTrigger asChild>
               <button
                 type="button"
-                className="flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900/60 px-4 py-2 text-sm font-medium text-white transition-all hover:bg-zinc-800 hover:text-zinc-300"
+                className="group relative flex items-center gap-2 rounded-lg border border-zinc-700/50 bg-gradient-to-r from-zinc-800/50 to-zinc-900/50 px-4 py-2 text-sm font-medium text-white backdrop-blur-sm transition-all hover:border-zinc-600/50 hover:from-zinc-700/50 hover:to-zinc-800/50 hover:shadow-lg hover:shadow-blue-500/25"
               >
-                <UserCircleIcon className="h-5 w-5" />
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 transition-opacity group-hover:opacity-100" />
+                <div className="relative flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg">
+                  <UserCircleIcon className="h-4 w-4 text-white" />
+                </div>
                 {isAdvisor && <span>Profile</span>}
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="mt-3 w-64 rounded-2xl border border-zinc-700 bg-black/90 shadow-lg"
+              className="mt-3 w-64 rounded-2xl border border-zinc-700/50 bg-black/95 shadow-2xl backdrop-blur-xl"
             >
-              <div className="border-b border-zinc-700 p-3">
-                <p className="font-bold text-white">{session?.user?.name || "FAZRUL SAMI"}</p>
-                <p className="text-xs text-zinc-400">
-                  {session?.user?.email || "fazrul_s1sisfo@mahasiswa.ung.ac.id"}
-                </p>
+              <div className="border-b border-zinc-700/50 p-4">
+                <div className="flex items-center space-x-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg">
+                    <UserCircleIcon className="h-5 w-5 text-white" />
+                  </div>
+                  <div>
+                    <p className="font-bold text-white">{session?.user?.name || "FAZRUL SAMI"}</p>
+                    <p className="text-xs text-zinc-400">
+                      {session?.user?.email || "fazrul_s1sisfo@mahasiswa.ung.ac.id"}
+                    </p>
+                  </div>
+                </div>
               </div>
               <div className="p-2">
                 <DropdownMenuItem
                   onClick={handleAccountSettings}
-                  className="cursor-pointer px-3 py-2 text-white hover:bg-zinc-800"
+                  className="group cursor-pointer rounded-lg px-3 py-2 text-white transition-all hover:bg-gradient-to-r hover:from-blue-500/10 hover:to-purple-500/10"
                 >
-                  <span>ACCOUNT SETTINGS</span>
+                  <div className="flex items-center space-x-2">
+                    <Zap className="h-4 w-4 text-blue-400" />
+                    <span>ACCOUNT SETTINGS</span>
+                  </div>
                 </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-zinc-700" />
+                <DropdownMenuSeparator className="bg-zinc-700/50" />
                 <DropdownMenuItem
-                  className="cursor-pointer px-3 py-2 text-white hover:bg-zinc-800"
+                  className="group cursor-pointer rounded-lg px-3 py-2 text-red-400 transition-all hover:bg-gradient-to-r hover:from-red-500/10 hover:to-orange-500/10"
                   onClick={() => signOut()}
                 >
-                  <span>LOG OUT</span>
-                  <span className="ml-auto text-xs">{"->"}</span>
+                  <div className="flex items-center space-x-2">
+                    <span>LOG OUT</span>
+                    <span className="ml-auto text-xs">{"->"}</span>
+                  </div>
                 </DropdownMenuItem>
               </div>
             </DropdownMenuContent>
@@ -184,30 +202,40 @@ const Navbar = () => {
         {(isAdmin || isAdvisor) && (
           <Link
             href="/dashboard"
-            className={`flex items-center gap-2 rounded-lg px-4 py-3 transition-all ${
+            className={`group relative flex items-center gap-3 rounded-lg px-4 py-3 transition-all ${
               pathname === "/dashboard"
-                ? "bg-zinc-800/70 text-zinc-200"
+                ? "bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-white backdrop-blur-sm"
                 : "text-white hover:bg-zinc-800/50"
             }`}
             onClick={handleMobileMenuClick}
           >
-            <Home className="h-5 w-5" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg">
+              <Home className="h-4 w-4 text-white" />
+            </div>
             <span>Dashboard</span>
+            {pathname === "/dashboard" && (
+              <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-blue-500/10 to-purple-500/10" />
+            )}
           </Link>
         )}
 
         {isStudent && (
           <Link
             href="/my-recomendation"
-            className={`flex items-center gap-2 rounded-lg px-4 py-3 transition-all ${
+            className={`group relative flex items-center gap-3 rounded-lg px-4 py-3 transition-all ${
               pathname === "/my-recomendation"
-                ? "bg-zinc-800/70 text-zinc-200"
+                ? "bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-white backdrop-blur-sm"
                 : "text-white hover:bg-zinc-800/50"
             }`}
             onClick={handleMobileMenuClick}
           >
-            <ChatBubbleLeftRightIcon className="h-5 w-5" />
-            <span>Recomendation</span>
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-pink-600 shadow-lg">
+              <Brain className="h-4 w-4 text-white" />
+            </div>
+            <span>Rekomendasi</span>
+            {pathname === "/my-recomendation" && (
+              <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/10 to-pink-500/10" />
+            )}
           </Link>
         )}
 
@@ -217,16 +245,21 @@ const Navbar = () => {
             handleAccountSettings();
             handleMobileMenuClick();
           }}
-          className="mt-2 flex w-full items-center gap-2 rounded-lg px-4 py-3 text-white transition-all hover:bg-zinc-800/50"
+          className="group relative mt-2 flex w-full items-center gap-3 rounded-lg px-4 py-3 text-white transition-all hover:bg-gradient-to-r hover:from-blue-500/10 hover:to-purple-500/10"
         >
-          <UserCircleIcon className="h-5 w-5" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg">
+            <Zap className="h-4 w-4 text-white" />
+          </div>
           <span>Account Settings</span>
         </button>
         <button
           type="button"
           onClick={() => signOut()}
-          className="mt-2 flex w-full items-center gap-2 rounded-lg px-4 py-3 text-red-500 transition-all hover:bg-zinc-800/50"
+          className="group relative mt-2 flex w-full items-center gap-3 rounded-lg px-4 py-3 text-red-400 transition-all hover:bg-gradient-to-r hover:from-red-500/10 hover:to-orange-500/10"
         >
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-red-500 to-orange-600 shadow-lg">
+            <span className="text-xs font-bold">!</span>
+          </div>
           <span>Log Out</span>
           <span className="ml-auto text-xs">{"->"}</span>
         </button>
@@ -239,8 +272,8 @@ const Navbar = () => {
       <nav
         className={`fixed top-4 right-0 left-0 z-50 mx-auto w-[90%] rounded-full transition-all duration-300 will-change-transform ${
           scrolled
-            ? "border border-zinc-700/50 bg-black/80 px-3 py-2 shadow-lg shadow-zinc-500/10 backdrop-blur-md sm:px-6"
-            : "bg-gradient-to-r from-black/70 to-zinc-900/70 px-3 py-3 backdrop-blur-sm sm:px-6"
+            ? "border border-zinc-700/50 bg-black/90 px-3 py-2 shadow-2xl shadow-blue-500/10 backdrop-blur-xl sm:px-6"
+            : "bg-gradient-to-r from-black/80 to-zinc-900/80 px-3 py-3 backdrop-blur-sm sm:px-6"
         }`}
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between">
@@ -249,7 +282,7 @@ const Navbar = () => {
               <div className="flex items-center gap-3">
                 <Image src="/images/logo.png" alt="Scout" width={40} height={40} />
                 <span
-                  className={`${orbitron.className} animate-text bg-gradient-to-r from-zinc-400 via-white to-zinc-500 bg-clip-text text-lg font-bold text-transparent`}
+                  className={`${orbitron.className} animate-pulse bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-lg font-bold text-transparent`}
                 >
                   Scout
                 </span>
@@ -257,32 +290,35 @@ const Navbar = () => {
             </Link>
           </div>
 
-          <ul className="hidden gap-10 text-sm font-medium text-white lg:flex">
+          <ul className="hidden gap-8 text-sm font-medium text-white lg:flex">
             <li>
               <a
                 href="#features"
-                className="group relative flex items-center gap-2 px-3 py-2 transition-all hover:text-zinc-300"
+                className="group relative flex items-center gap-2 rounded-lg px-4 py-2 transition-all hover:bg-gradient-to-r hover:from-blue-500/10 hover:to-purple-500/10 hover:text-zinc-300"
               >
-                Features
-                <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-gradient-to-r from-zinc-400 to-zinc-600 transition-all duration-300 group-hover:w-full" />
+                <Brain className="h-4 w-4 text-blue-400" />
+                <span>Features</span>
+                <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
               </a>
             </li>
             <li>
               <a
                 href="#about"
-                className="group relative flex items-center gap-2 px-3 py-2 transition-all hover:text-zinc-300"
+                className="group relative flex items-center gap-2 rounded-lg px-4 py-2 transition-all hover:bg-gradient-to-r hover:from-purple-500/10 hover:to-pink-500/10 hover:text-zinc-300"
               >
-                Teknologi
-                <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-gradient-to-r from-zinc-400 to-zinc-600 transition-all duration-300 group-hover:w-full" />
+                <Zap className="h-4 w-4 text-purple-400" />
+                <span>Teknologi</span>
+                <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/5 to-pink-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
               </a>
             </li>
             <li>
               <a
                 href="#pricing"
-                className="group relative flex items-center gap-2 px-3 py-2 transition-all hover:text-zinc-300"
+                className="group relative flex items-center gap-2 rounded-lg px-4 py-2 transition-all hover:bg-gradient-to-r hover:from-pink-500/10 hover:to-red-500/10 hover:text-zinc-300"
               >
-                Teknologi
-                <span className="absolute bottom-0 left-0 h-[2px] w-0 bg-gradient-to-r from-zinc-400 to-zinc-600 transition-all duration-300 group-hover:w-full" />
+                <Sparkles className="h-4 w-4 text-pink-400" />
+                <span>Tentang</span>
+                <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-pink-500/5 to-red-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
               </a>
             </li>
           </ul>
@@ -293,13 +329,16 @@ const Navbar = () => {
             <button
               type="button"
               onClick={toggleMobileMenu}
-              className="ml-2 rounded-full p-2 text-white hover:bg-zinc-800/50 lg:hidden"
+              className="group relative ml-2 rounded-full p-2 text-white transition-all hover:bg-gradient-to-r hover:from-blue-500/10 hover:to-purple-500/10 lg:hidden"
             >
-              {mobileMenuOpen ? (
-                <XMarkIcon className="h-6 w-6" />
-              ) : (
-                <Bars3Icon className="h-6 w-6" />
-              )}
+              <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
+              <div className="relative">
+                {mobileMenuOpen ? (
+                  <XMarkIcon className="h-6 w-6" />
+                ) : (
+                  <Bars3Icon className="h-6 w-6" />
+                )}
+              </div>
             </button>
           </div>
         </div>
@@ -307,37 +346,49 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       <div
-        className={`fixed inset-0 z-40 mt-20 bg-black/95 backdrop-blur-md transition-all duration-300 lg:hidden ${
+        className={`fixed inset-0 z-40 mt-20 bg-black/95 backdrop-blur-xl transition-all duration-300 lg:hidden ${
           mobileMenuOpen ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0"
         }`}
       >
         <div className="flex flex-col p-6">
-          <ul className="flex flex-col gap-4 text-base font-medium text-white">
+          <ul className="flex flex-col gap-2 text-base font-medium text-white">
             <li>
               <a
                 href="#features"
-                className="block rounded-lg px-4 py-3 transition-all hover:bg-zinc-800/50"
+                className="group relative flex items-center gap-3 rounded-lg px-4 py-3 transition-all hover:bg-gradient-to-r hover:from-blue-500/10 hover:to-purple-500/10"
                 onClick={handleMobileMenuClick}
               >
-                Fitur
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg">
+                  <Brain className="h-4 w-4 text-white" />
+                </div>
+                <span>Fitur</span>
+                <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
               </a>
             </li>
             <li>
               <a
                 href="#about"
-                className="block rounded-lg px-4 py-3 transition-all hover:bg-zinc-800/50"
+                className="group relative flex items-center gap-3 rounded-lg px-4 py-3 transition-all hover:bg-gradient-to-r hover:from-purple-500/10 hover:to-pink-500/10"
                 onClick={handleMobileMenuClick}
               >
-                Teknologi
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-pink-600 shadow-lg">
+                  <Zap className="h-4 w-4 text-white" />
+                </div>
+                <span>Teknologi</span>
+                <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/5 to-pink-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
               </a>
             </li>
             <li>
               <a
                 href="#pricing"
-                className="block rounded-lg px-4 py-3 transition-all hover:bg-zinc-800/50"
+                className="group relative flex items-center gap-3 rounded-lg px-4 py-3 transition-all hover:bg-gradient-to-r hover:from-pink-500/10 hover:to-red-500/10"
                 onClick={handleMobileMenuClick}
               >
-                Tentang
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-pink-500 to-red-600 shadow-lg">
+                  <Sparkles className="h-4 w-4 text-white" />
+                </div>
+                <span>Tentang</span>
+                <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-pink-500/5 to-red-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
               </a>
             </li>
           </ul>

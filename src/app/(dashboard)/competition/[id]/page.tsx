@@ -4,7 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 import {
   BookOpen,
   Calendar,
-  Globe,
   MapPin,
   Tag,
   Building2,
@@ -13,6 +12,7 @@ import {
   Users,
   Star,
   ExternalLink,
+  BookAIcon,
 } from "lucide-react";
 import { useParams } from "next/navigation";
 
@@ -74,6 +74,7 @@ const CompetitionDetailPage = () => {
     } | null;
     relevantCourses?: string[];
     relevantSkills?: string[];
+    fileId?: string;
   };
 
   const item = data?.data as CompetitionDetail | undefined;
@@ -115,15 +116,15 @@ const CompetitionDetailPage = () => {
                         {item?.description ?? "-"}
                       </TypographyP>
                     </div>
-                    {item?.sourceUrl && (
+                    {item?.fileId && (
                       <a
-                        href={item.sourceUrl}
+                        href={item.fileId}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="inline-flex items-center gap-2 rounded-full bg-zinc-900/60 px-4 py-2 text-sm text-blue-300 ring-1 ring-zinc-600/40 transition-all hover:bg-zinc-800/60 hover:text-blue-200"
                       >
-                        <Globe className="h-4 w-4" />
-                        Website
+                        <BookAIcon className="h-4 w-4" />
+                        Panduan
                         <ExternalLink className="h-3 w-3" />
                       </a>
                     )}

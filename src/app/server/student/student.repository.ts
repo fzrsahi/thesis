@@ -157,6 +157,7 @@ export const getStudents = async (
             studentId: true,
             createdAt: true,
             updatedAt: true,
+            gpa: true,
             user: { select: { name: true, email: true } },
           },
           orderBy: { id: "asc" },

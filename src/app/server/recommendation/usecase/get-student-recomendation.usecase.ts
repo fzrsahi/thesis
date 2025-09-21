@@ -107,40 +107,42 @@ export const getStudentRecomendationUsecase = async (userId: number) => {
     studentSummary: recommendation.studentSummary || "",
     skillsProfile,
     overallAssessment: JSON.parse(recommendation.overallAssessment || "{}"),
-    recommendations: recommendation.competitionRecommendations.map((rec) => {
-      const competition = competitionMap.get(rec.competitionId);
-      return {
-        id: rec.competitionId,
-        competitionName: competition?.title || rec.competitionName,
-        rank: rec.rank,
-        matchScore: {
-          score: rec.matchScore,
-          reason: rec.matchReason || "",
-        },
-        skillRequirements: JSON.parse(rec.skillRequirements || "{}"),
-        reasoning: JSON.parse(rec.reasoning || "{}"),
-        keyFactors: rec.keyFactors ? JSON.parse(rec.keyFactors) : null,
-        preparationTips: rec.preparationTips ? JSON.parse(rec.preparationTips) : null,
-        competition: competition
-          ? {
-              description: competition.description,
-              field: competition.field,
-              type: competition.type,
-              minGPA: competition.minGPA,
-              location: competition.location,
-              organizer: competition.organizer,
-              startDate: competition.startDate,
-              endDate: competition.endDate,
-              sourceUrl: competition.sourceUrl,
-              relevantCourses: competition.relevantCourses,
-              relevantSkills: competition.relevantSkills,
-              requirements: competition.requirements,
-              evaluationCriteria: competition.evaluationCriteria,
-              competitionStats: competition.competitionStats,
-            }
-          : null,
-      };
-    }),
+    recommendations: recommendation.competitionRecommendations
+      .map((rec) => {
+        const competition = competitionMap.get(rec.competitionId);
+        return {
+          id: rec.competitionId,
+          competitionName: competition?.title || rec.competitionName,
+          rank: rec.rank,
+          matchScore: {
+            score: rec.matchScore,
+            reason: rec.matchReason || "",
+          },
+          skillRequirements: JSON.parse(rec.skillRequirements || "{}"),
+          reasoning: JSON.parse(rec.reasoning || "{}"),
+          keyFactors: rec.keyFactors ? JSON.parse(rec.keyFactors) : null,
+          preparationTips: rec.preparationTips ? JSON.parse(rec.preparationTips) : null,
+          competition: competition
+            ? {
+                description: competition.description,
+                field: competition.field,
+                type: competition.type,
+                minGPA: competition.minGPA,
+                location: competition.location,
+                organizer: competition.organizer,
+                startDate: competition.startDate,
+                endDate: competition.endDate,
+                sourceUrl: competition.sourceUrl,
+                relevantCourses: competition.relevantCourses,
+                relevantSkills: competition.relevantSkills,
+                requirements: competition.requirements,
+                evaluationCriteria: competition.evaluationCriteria,
+                competitionStats: competition.competitionStats,
+              }
+            : null,
+        };
+      })
+      .sort((a, b) => b.matchScore.score - a.matchScore.score),
     developmentSuggestions: recommendation.developmentSuggestions.map((suggestion) => ({
       type: suggestion.type,
       title: suggestion.title,
