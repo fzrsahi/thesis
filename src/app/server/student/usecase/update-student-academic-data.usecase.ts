@@ -5,6 +5,7 @@ import { AcademicDataPayload } from "@/app/shared/schema/student/profile/Profile
 import { customError } from "../../utils/error/custom-error";
 import { STUDENT_ERROR_RESPONSE } from "../student.error";
 import { findStudentByUserId, updateStudentAcademicData } from "../student.repository";
+import { rebuildStudentVector } from "../student.vector";
 
 export const updateStudentAcademicDataUsecase = async (
   userId: number,
@@ -21,4 +22,5 @@ export const updateStudentAcademicDataUsecase = async (
   }
 
   await updateStudentAcademicData(student.id, data);
+  await rebuildStudentVector(userId);
 };

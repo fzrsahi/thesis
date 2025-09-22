@@ -8,6 +8,7 @@ import { findUserById } from "../../user/user.repository";
 import { customError, isCustomError } from "../../utils/error/custom-error";
 import { STUDENT_ERROR_RESPONSE } from "../student.error";
 import { updateStudentPersonalData } from "../student.repository";
+import { rebuildStudentVector } from "../student.vector";
 
 export const updatePersonalData = async (userId: number, data: PersonalDataPayload) => {
   try {
@@ -22,6 +23,7 @@ export const updatePersonalData = async (userId: number, data: PersonalDataPaylo
     }
 
     await updateStudentPersonalData(user.id, data);
+    await rebuildStudentVector(userId);
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
       throw customError(

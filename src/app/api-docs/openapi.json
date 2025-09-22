@@ -1000,6 +1000,65 @@
             }
           }
         }
+      },
+      "get": {
+        "tags": ["Chat"],
+        "summary": "Get last chat messages",
+        "description": "Get the last 10 chat messages for the current user (from the latest session).",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of last chat messages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "messages": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "string", "example": "m_123" },
+                          "role": { "type": "string", "enum": ["user", "ai"], "example": "user" },
+                          "content": {
+                            "type": "string",
+                            "example": "Halo, ada yang bisa saya bantu?"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2024-06-01T12:00:00.000Z"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
       }
     }
   },

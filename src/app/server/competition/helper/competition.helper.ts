@@ -1,8 +1,9 @@
-import { Document } from "@langchain/core/documents";
 import { competitions } from "@prisma/client";
 
 import { CreateCompetitionPayload } from "@/app/shared/schema/competition/CompetitionSchema";
 
+import { prisma } from "../../prisma/prisma";
+import { getLogger } from "../../utils/pino.helper";
 import { getCompetitionVectorStore } from "../../vector/pgvector.service";
 
 export const generateCompetitionText = (competitionData: CreateCompetitionPayload) => {
@@ -106,10 +107,37 @@ export const generateCompetitionText = (competitionData: CreateCompetitionPayloa
 
 export const storeToVectorStore = async (competition: competitions, competitionText: string) => {
   const vectorStore = getCompetitionVectorStore();
-  const document = new Document({
-    pageContent: competitionText,
-    metadata: competition,
-  });
+  const logger = getLogger({ module: "competition/helper/storeToVectorStore" });
+  logger.info(
+    { competitionId: competition.id, readyToEmbed: 1 },
+    "Embedding start (competition summary)"
+  );
+  const t0 = Date.now();
+  await vectorStore.addModels([
+    {
+      id: competition.id,
+      content: competitionText,
+    },
+  ] as unknown as competitions[]);
+  const t1 = Date.now();
+  logger.info(
+    { competitionId: competition.id, embeddedPoints: 1, ms: t1 - t0 },
+    "Embedding completed (competition summary)"
+  );
 
-  await vectorStore.addDocuments([document]);
+  try {
+    const [{ count: vectorCount }] = await prisma.$queryRawUnsafe<{ count: number }[]>(
+      'SELECT COUNT(*)::int as count FROM "competitions" WHERE id = $1 AND vector IS NOT NULL',
+      competition.id
+    );
+    logger.info(
+      { competitionId: competition.id, vectorCount },
+      "competitions with non-null vector (summary)"
+    );
+  } catch (e) {
+    logger.warn(
+      { competitionId: competition.id, err: String(e) },
+      "Failed to verify competitions.vector"
+    );
+  }
 };

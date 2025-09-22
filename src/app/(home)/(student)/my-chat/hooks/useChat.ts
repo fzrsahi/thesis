@@ -9,13 +9,7 @@ export type ChatMessage = {
 };
 
 export const useChat = () => {
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: `init_${Date.now()}`,
-      role: "ai",
-      content: "Halo, bagaimana saya bisa membantu Anda hari ini?",
-    },
-  ]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [isSending, setIsSending] = useState(false);
 
@@ -75,6 +69,44 @@ export const useChat = () => {
     clearTyping();
     setIsSending(false);
   }, [clearTyping]);
+
+  // Load last 10 messages on mount
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const res = await fetch("/api/chat", { method: "GET" });
+        if (!res.ok) throw new Error("Failed to load messages");
+        const data = (await res.json()) as {
+          messages: { id: string; role: "ai" | "user"; content: string }[];
+        };
+        if (!mounted) return;
+        if (data.messages && data.messages.length > 0) {
+          setMessages(data.messages);
+        } else {
+          setMessages([
+            {
+              id: `init_${Date.now()}`,
+              role: "ai",
+              content: "Halo, bagaimana saya bisa membantu Anda hari ini?",
+            },
+          ]);
+        }
+      } catch {
+        if (!mounted) return;
+        setMessages([
+          {
+            id: `init_${Date.now()}`,
+            role: "ai",
+            content: "Halo, bagaimana saya bisa membantu Anda hari ini?",
+          },
+        ]);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const sendMessage = useCallback(async () => {
     if (!input.trim() || isSending) return;

@@ -22,6 +22,8 @@ model User {
   Student Student?
   Advisor Advisor?
 
+  LLMChatSession LLMChatSession[]
+
   @@map("users")
 }
 
@@ -49,8 +51,8 @@ model Student {
   achievements    Achievement[]
   experiences     Experience[]
   recommendations Recommendation[]
-  chatSessions    LLMChatSession[]
   transcript      Transcript[]
+  studentDocumentChunks StudentDocumentChunk[]
 
   @@map("students")
 }
@@ -247,11 +249,11 @@ model RecommendationDevelopmentSuggestion {
 
 model LLMChatSession {
   id        Int      @id @default(autoincrement())
-  studentId Int
+  userId Int
   title     String?
   createdAt DateTime @default(now())
 
-  student  Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  user  User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   messages LLMChatMessage[]
 
   @@map("llmChatSessions")
@@ -267,4 +269,17 @@ model LLMChatMessage {
   session LLMChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 
   @@map("llmChatMessages")
+}
+
+/// Student-specific vectorized knowledge base
+model StudentDocumentChunk {
+  id        String   @id @default(uuid())
+  studentId Int
+  content   String   @db.Text
+  vector    Unsupported("vector")?
+  createdAt DateTime @default(now())
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@map("studentDocumentChunks")
 }

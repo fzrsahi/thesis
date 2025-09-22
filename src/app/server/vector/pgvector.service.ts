@@ -1,5 +1,5 @@
 import { PrismaVectorStore } from "@langchain/community/vectorstores/prisma";
-import { Prisma, competitions, documentChunks } from "@prisma/client";
+import { Prisma, competitions, documentChunks, StudentDocumentChunk } from "@prisma/client";
 
 import { prisma } from "@/app/server/prisma/prisma";
 
@@ -37,6 +37,26 @@ export const getDocumentChunksRetriever = (competitionId: number, k: number = 5)
   return vectorStore.asRetriever(k, {
     competitionId: {
       in: [competitionId],
+    },
+  });
+};
+
+export const getStudentDocumentChunksVectorStore = () =>
+  PrismaVectorStore.withModel<StudentDocumentChunk>(prisma).create(createEmbeddingClient(), {
+    prisma: Prisma,
+    tableName: "studentDocumentChunks",
+    vectorColumnName: "vector",
+    columns: {
+      id: PrismaVectorStore.IdColumn,
+      content: PrismaVectorStore.ContentColumn,
+    },
+  } as never);
+
+export const getStudentDocumentRetriever = (studentId: number, k: number = 5) => {
+  const vectorStore = getStudentDocumentChunksVectorStore();
+  return vectorStore.asRetriever(k, {
+    studentId: {
+      in: [studentId],
     },
   });
 };

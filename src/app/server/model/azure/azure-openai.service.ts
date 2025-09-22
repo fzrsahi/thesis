@@ -31,5 +31,23 @@ export const createEmbeddingClient = () =>
 export const sendChatCompletion = async (prompt: string) => {
   const model = createOpenAIClient();
   const response = await model.invoke(prompt);
-  return response.content;
+  const content = response.content as unknown;
+  if (typeof content === "string") return content;
+  if (Array.isArray(content)) {
+    return content
+      .map((part: string | { type?: string; text?: string }) => {
+        if (typeof part === "string") return part;
+        if (
+          typeof part === "object" &&
+          part !== null &&
+          part.type === "text" &&
+          typeof part.text === "string"
+        ) {
+          return part.text;
+        }
+        return "";
+      })
+      .join("");
+  }
+  return String(content ?? "");
 };

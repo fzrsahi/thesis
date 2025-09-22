@@ -73,11 +73,12 @@ export const generateCompetitionUsecase = async (
     extractTextFromPdfBuffer(file, startPage, endPage),
   ]);
   logger.debug({ fileId }, "Uploaded file and extracted text");
+  logger.info({ textLength: pdfText?.length || 0 }, "Extracted PDF text length");
   const competition = await createCompetition(createInitialCompetitionData(payload));
   logger.debug({ competitionId: competition.id }, "Created initial competition record");
   const chunks = await splitTextIntoChunks(pdfText);
+  logger.info({ competitionId: competition.id, totalChunks: chunks.length }, "Chunking completed");
   await saveChunksToPostgres(chunks, competition.id);
-  logger.debug({ totalChunks: chunks.length }, "Saved chunks to Postgres and vector store");
   const contextText = await getContextText(title, competition.id);
   const result = await generateCompetitionData(payload, contextText);
   logger.info({ competitionId: competition.id }, "Generated competition data with model");
@@ -129,8 +130,8 @@ const createInitialCompetitionData = (payload: CreateCompetitionGeneratePayload)
 
 const extractTextFromPdfBuffer = async (
   fileBuffer: File,
-  endPage?: number,
-  startPage: number = 1
+  startPage?: number,
+  endPage?: number
 ): Promise<string> => {
   const arrayBuffer = await fileBuffer.arrayBuffer();
   const pdfDataAsUint8Array = new Uint8Array(arrayBuffer);
@@ -138,11 +139,12 @@ const extractTextFromPdfBuffer = async (
   const pdf = await loadingTask.promise;
 
   const totalPages = pdf.numPages;
+  const firstPage = startPage ?? 1;
   const finalEndPage = endPage ?? totalPages;
   const texts: string[] = [];
 
   const pagePromises = [];
-  for (let pageNum = startPage; pageNum <= finalEndPage; pageNum += 1) {
+  for (let pageNum = firstPage; pageNum <= finalEndPage; pageNum += 1) {
     pagePromises.push(
       pdf.getPage(pageNum).then(async (page) => {
         const content = await page.getTextContent();
@@ -158,12 +160,82 @@ const extractTextFromPdfBuffer = async (
 };
 
 const splitTextIntoChunks = async (text: string): Promise<Document[]> => {
+  const paraDocs = buildParagraphDocuments(text);
+  if (paraDocs.length > 0) {
+    return paraDocs;
+  }
+
+  // 2) Fallback to recursive character splitter
   const splitter = new RecursiveCharacterTextSplitter({
     chunkSize: CHUNK_SIZE,
     chunkOverlap: CHUNK_OVERLAP,
+    separators: ["\n\n", "\n", ". ", " "],
   });
+  const docs = await splitter.createDocuments([text]);
+  if ((text?.length || 0) > 0 && docs.length === 0) {
+    return [new Document({ pageContent: text })];
+  }
+  return docs;
+};
 
-  return splitter.createDocuments([text]);
+// Heuristics: detect headings and merge with the next paragraph when suitable
+const buildParagraphDocuments = (rawText: string): Document[] => {
+  if (!rawText || !rawText.trim()) return [];
+
+  const normalized = normalizeText(rawText);
+  const blocks = normalized
+    .split(/\n{2,}/) // split by blank lines (paragraph breaks)
+    .map((b) => b.trim())
+    .filter((b) => b.length > 0);
+
+  const docs: Document[] = [];
+  let i = 0;
+  while (i < blocks.length) {
+    const current = blocks[i];
+    const next = i + 1 < blocks.length ? blocks[i + 1] : null;
+
+    if (looksLikeHeading(current) && next) {
+      // Merge heading with its following paragraph
+      const merged = `${current}\n\n${next}`;
+      docs.push(new Document({ pageContent: merged }));
+      i += 2;
+      // avoid continue to satisfy lint: restructure
+    } else {
+      // Otherwise keep the paragraph as-is
+      docs.push(new Document({ pageContent: current }));
+      i += 1;
+    }
+  }
+
+  return docs;
+};
+
+const normalizeText = (t: string): string =>
+  // Remove excessive spaces within lines; preserve newlines
+  t
+    .replace(/[\t\r]+/g, " ")
+    .replace(/[ ]{2,}/g, " ")
+    .replace(/\u00A0/g, " ") // nbsp
+    .trim();
+const looksLikeHeading = (line: string): boolean => {
+  if (!line) return false;
+  const trimmed = line.trim();
+  if (trimmed.length > 0 && trimmed.length <= 12 && /:$/i.test(trimmed)) return true; // short ending colon
+
+  // All caps heuristic with limited length
+  const letters = trimmed.replace(/[^A-Za-z]/g, "");
+  const upper = letters.replace(/[^A-Z]/g, "");
+  if (letters.length > 0 && upper.length / letters.length >= 0.7 && trimmed.length <= 80)
+    return true;
+
+  // Numbered/roman or common Indonesian heading keywords
+  if (/^(bab|bagian|pasal)\b/i.test(trimmed)) return true;
+  if (/^\d+\.|^[IVXLC]+\./i.test(trimmed)) return true;
+
+  // Short lines likely to be headings
+  if (trimmed.length <= 40 && /[A-Za-z]/.test(trimmed) && !/[.!?]$/.test(trimmed)) return true;
+
+  return false;
 };
 
 const saveChunksToPostgres = async (chunks: Document[], competitionId: number): Promise<void> => {
@@ -181,7 +253,32 @@ const saveChunksToPostgres = async (chunks: Document[], competitionId: number): 
   );
 
   const vectorStore = getDocumentChunksVectorStore();
+  const logger = getLogger({ module: "usecase/generate-competition" });
+  const t0 = Date.now();
+  logger.info({ competitionId, readyToEmbed: savedDocuments.length }, "Embedding start");
   await vectorStore.addModels(savedDocuments);
+  const t1 = Date.now();
+  logger.info(
+    { competitionId, embeddedPoints: savedDocuments.length, ms: t1 - t0 },
+    "Embedding completed"
+  );
+
+  // Verification logs
+  const totalChunks = await prisma.documentChunks.count({ where: { competitionId } });
+  logger.info({ competitionId, totalChunks }, "documentChunks inserted (rows)");
+
+  try {
+    const [{ count: vectorCount }] = await prisma.$queryRawUnsafe<{ count: number }[]>(
+      'SELECT COUNT(*)::int as count FROM "documentChunks" WHERE "competitionId" = $1 AND "vector" IS NOT NULL',
+      competitionId
+    );
+    logger.info({ competitionId, vectorCount }, "documentChunks with non-null vector");
+  } catch (e) {
+    logger.warn(
+      { competitionId, err: String(e) },
+      "Failed to count non-null vectors in documentChunks"
+    );
+  }
 };
 
 const getContextText = async (title: string, competitionId: number): Promise<string> => {
