@@ -1,4 +1,4 @@
 interface ErrorResponse {
-  code: number;
+  code: string | number;
   message: string;
 }

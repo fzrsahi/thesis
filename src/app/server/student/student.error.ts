@@ -1,30 +1,30 @@
 export const STUDENT_ERROR_RESPONSE = {
   INTERNAL_SERVER_ERROR: {
     code: "STUDENT_001",
-    message: "Internal server error",
+    message: "Terjadi kesalahan server internal",
   },
   STUDENT_NOT_FOUND: {
     code: "STUDENT_002",
-    message: "Student not found",
+    message: "Mahasiswa tidak ditemukan",
   },
   BAD_REQUEST: {
     code: "STUDENT_003",
-    message: "Bad request",
+    message: "Permintaan tidak valid",
   },
   NOT_COMPLETED_PROFILE: {
     code: "STUDENT_004",
-    message: "Student profile not completed",
+    message: "Profil mahasiswa tidak lengkap",
   },
   STUDENT_ALREADY_EXISTS: {
     code: "STUDENT_005",
-    message: "Student already exists",
+    message: "Mahasiswa sudah ada",
   },
   STUDENT_ID_ALREADY_EXISTS: {
     code: "STUDENT_006",
-    message: "Student ID already exists",
+    message: "ID mahasiswa sudah ada",
   },
 };
 
 export const STUDENT_ERROR_LOG = {
-  INTERNAL_SERVER_ERROR: "Internal server error",
+  INTERNAL_SERVER_ERROR: "Terjadi kesalahan server internal",
 };

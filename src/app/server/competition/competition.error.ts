@@ -1,19 +1,19 @@
 export const COMPETITION_ERROR_RESPONSE = {
   INTERNAL_SERVER_ERROR: {
     code: "COMPETITION_001",
-    message: "Internal server error",
+    message: "Terjadi kesalahan server internal",
   },
   BAD_REQUEST: {
     code: "COMPETITION_002",
-    message: "Bad request",
+    message: "Permintaan tidak valid",
   },
   NOT_FOUND: {
     code: "COMPETITION_003",
-    message: "Competition not found",
+    message: "Kompetisi tidak ditemukan",
   },
   COMPETITION_NOT_FOUND: {
     code: "COMPETITION_004",
-    message: "Competition not found",
+    message: "Kompetisi tidak ditemukan",
   },
 } as const;
 

@@ -1,15 +1,15 @@
 export const USER_ERROR_RESPONSE = {
   USER_NOT_FOUND: {
     code: "USER_001",
-    message: "User not found",
+    message: "Pengguna tidak ditemukan",
   },
   INTERNAL_SERVER_ERROR: {
     code: "USER_002",
-    message: "Internal server error",
+    message: "Terjadi kesalahan server internal",
   },
   EMAIL_ALREADY_EXISTS: {
     code: "USER_003",
-    message: "Email already exists",
+    message: "Email sudah ada",
   },
 } as const;
 

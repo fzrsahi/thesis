@@ -83,7 +83,7 @@ const AIChatInterface = () => {
   const [messages, setMessages] = useState([
     {
       id: 1,
-      text: "Halo! Saya adalah penasihat kompetisi AI Anda. Tanyakan apa saja tentang menemukan kompetisi sempurna untuk Anda!",
+      text: "Halo! Saya asisten AI untuk dosen dan mahasiswa. Tanyakan apa saja tentang memilih kompetisi akademik yang paling relevan bagi Anda atau bimbingan Anda.",
       isAI: true,
       timestamp: new Date(),
     },
@@ -109,7 +109,7 @@ const AIChatInterface = () => {
     setTimeout(() => {
       const aiResponse = {
         id: messages.length + 2,
-        text: "Pertanyaan yang bagus! Berdasarkan profil Anda, saya merekomendasikan untuk fokus pada kompetisi yang sesuai dengan keterampilan teknis dan tujuan karir Anda. Apakah Anda ingin saya menganalisis profil Anda dan memberikan rekomendasi spesifik?",
+        text: "Pertanyaan yang bagus! Berdasarkan peran Anda (dosen/mahasiswa) dan profil akademik, saya dapat merekomendasikan kompetisi yang relevan dengan bidang keahlian, kurikulum, dan tujuan pengembangan. Ingin saya analisis profil Anda sekarang?",
         isAI: true,
         timestamp: new Date(),
       };
@@ -136,8 +136,8 @@ const AIChatInterface = () => {
                     <Bot className="h-4 w-4 text-white" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-semibold text-white">Penasihat AI</h3>
-                    <p className="text-xs text-zinc-400">Online</p>
+                    <h3 className="text-sm font-semibold text-white">Asisten AI Kampus</h3>
+                    <p className="text-xs text-zinc-400">Siap membantu</p>
                   </div>
                 </div>
                 <button
@@ -200,7 +200,7 @@ const AIChatInterface = () => {
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
-                    placeholder="Tanyakan apa saja..."
+                    placeholder="Tanyakan kebutuhan Anda (dosen/mahasiswa)..."
                     className="flex-1 rounded-lg border border-zinc-700/50 bg-zinc-800/50 px-3 py-2 text-sm text-white placeholder-zinc-400 focus:border-blue-500 focus:outline-none"
                   />
                   <button
@@ -258,7 +258,7 @@ const Home = () => {
         >
           <div className="flex items-center justify-center space-x-2">
             <Brain className="h-4 w-4 text-blue-400" />
-            <span>PENCARIAN KOMPETISI BERBASIS AI</span>
+            <span>REKOMENDASI KOMPETISI AKADEMIK BERBASIS AI</span>
             <Brain className="h-4 w-4 text-purple-400" />
           </div>
         </motion.div>
@@ -273,7 +273,7 @@ const Home = () => {
         >
           Masa Depan{" "}
           <span className="animate-pulse bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-            Pencarian Kompetisi
+            Rekomendasi Kompetisi Akademik
           </span>
         </motion.h1>
 
@@ -284,11 +284,9 @@ const Home = () => {
           transition={{ delay: 0.4, duration: 1 }}
           className={`${montserrat.className} mx-auto mt-8 max-w-3xl text-lg text-zinc-300 md:text-xl`}
         >
-          Manfaatkan kekuatan <span className="font-bold text-blue-300">AI canggih</span> dan{" "}
-          <span className="font-bold text-purple-300">machine learning</span> untuk menemukan
-          kompetisi yang sempurna sesuai dengan keterampilan, minat, dan aspirasi karir Anda.
-          Teknologi <span className="text-pink-300 italic">LLM generasi terbaru</span> kami
-          menganalisis ribuan kompetisi untuk menemukan kecocokan sempurna untuk Anda.
+          Bantu dosen dan mahasiswa menemukan kompetisi yang paling selaras dengan mata kuliah,
+          riset, dan minat. Didukung <span className="font-bold text-blue-300">AI</span> dan{" "}
+          <span className="font-bold text-purple-300">machine learning</span> terkini.
         </motion.p>
 
         <motion.div
@@ -296,7 +294,7 @@ const Home = () => {
           initial="hidden"
           animate="show"
           transition={{ delay: 0.6, duration: 1 }}
-          className={`mt-12 flex flex-col justify-center gap-6 md:gap-8 ${
+          className={`mt-10 mt-12 flex flex-col justify-center gap-6 md:gap-8 ${
             isMobile ? "" : "sm:flex-row"
           }`}
         >
@@ -309,7 +307,7 @@ const Home = () => {
             <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
             <div className="relative flex items-center space-x-3">
               <Rocket className="h-6 w-6" />
-              <span>Mulai Perjalanan Anda</span>
+              <span>Mulai Rekomendasi</span>
               <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
             </div>
           </motion.button>
@@ -323,7 +321,7 @@ const Home = () => {
             <div className="absolute inset-0 bg-gradient-to-r from-zinc-500/10 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
             <div className="relative flex items-center space-x-3">
               <Lightbulb className="h-6 w-6" />
-              <span>Pelajari Lebih Lanjut</span>
+              <span>Pelajari Fitur</span>
             </div>
           </motion.button>
         </motion.div>
@@ -338,18 +336,18 @@ const Home = () => {
           {[
             {
               icon: Brain,
-              title: "Analisis AI",
-              desc: "Jaringan neural canggih menganalisis profil Anda",
+              title: "Analisis Berbasis AI",
+              desc: "Menilai profil dosen/mahasiswa untuk kebutuhan akademik",
             },
             {
               icon: Target,
-              title: "Kecocokan Sempurna",
-              desc: "Temukan kompetisi yang sesuai dengan tujuan Anda",
+              title: "Kecocokan Tepat",
+              desc: "Mencocokkan kompetisi dengan kurikulum, riset, dan minat",
             },
             {
               icon: TrendingUp,
-              title: "Tingkat Keberhasilan",
-              desc: "95% kepuasan pengguna dengan rekomendasi",
+              title: "Dampak Terukur",
+              desc: "Mendorong partisipasi dan capaian prestasi yang lebih tinggi",
             },
           ].map((feature, _index) => (
             <motion.div
@@ -386,14 +384,14 @@ const Home = () => {
             className="mb-16 text-center"
           >
             <h2 className={`${orbitron.className} mb-4 text-3xl font-bold text-white md:text-5xl`}>
-              Saksikan{" "}
+              Lihat{" "}
               <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                AI Kami Beraksi
+                AI Kami Membantu Kampus
               </span>
             </h2>
             <p className={`${montserrat.className} mx-auto max-w-2xl text-lg text-zinc-400`}>
-              Lihat bagaimana AI canggih kami menganalisis profil Anda dan menghasilkan rekomendasi
-              kompetisi yang dipersonalisasi secara real-time
+              Ketahui bagaimana AI menganalisis profil dosen dan mahasiswa untuk menghasilkan
+              rekomendasi kompetisi yang relevan dan dapat ditindaklanjuti.
             </p>
           </motion.div>
 
@@ -429,9 +427,9 @@ const Home = () => {
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-white">
-                        Analisis AI Sedang Berlangsung
+                        Analisis AI untuk Profil Akademik
                       </p>
-                      <p className="text-xs text-zinc-400">Pencocokan kompetisi real-time</p>
+                      <p className="text-xs text-zinc-400">Pencocokan kompetisi secara real-time</p>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2">
@@ -454,12 +452,12 @@ const Home = () => {
               {/* Floating Elements */}
               <div className="absolute top-4 left-4 flex items-center space-x-2 rounded-lg bg-black/50 px-3 py-2 backdrop-blur-sm">
                 <div className="h-2 w-2 animate-pulse rounded-full bg-green-400" />
-                <span className="text-xs text-white">AI Sedang Memproses</span>
+                <span className="text-xs text-white">AI Sedang Menganalisis</span>
               </div>
 
               <div className="absolute top-4 right-4 flex items-center space-x-2 rounded-lg bg-black/50 px-3 py-2 backdrop-blur-sm">
                 <Brain className="h-3 w-3 text-blue-400" />
-                <span className="text-xs text-white">LLM Aktif</span>
+                <span className="text-xs text-white">Model LLM Aktif</span>
               </div>
             </div>
 
@@ -475,17 +473,17 @@ const Home = () => {
                 {
                   icon: Zap,
                   title: "Analisis Real-time",
-                  desc: "Pemrosesan dan pencocokan profil secara instan",
+                  desc: "Profil akademik diproses dan dicocokkan secara instan",
                 },
                 {
                   icon: Target,
                   title: "Pencocokan Presisi",
-                  desc: "AI menemukan kompetisi yang sesuai dengan profil Anda",
+                  desc: "AI menemukan kompetisi yang sesuai dengan tujuan pembelajaran",
                 },
                 {
                   icon: TrendingUp,
                   title: "Pembelajaran Berkelanjutan",
-                  desc: "Algoritma terus berkembang dengan setiap interaksi",
+                  desc: "Algoritma membaik dari interaksi dosen dan mahasiswa",
                 },
               ].map((feature, _index) => (
                 <motion.div
@@ -526,15 +524,14 @@ const Home = () => {
             className="mb-16 text-center"
           >
             <h2 className={`${orbitron.className} mb-4 text-3xl font-bold text-white md:text-5xl`}>
-              Dipercaya oleh{" "}
+              Dirancang untuk
               <span className="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
-                Ribuan
-              </span>{" "}
-              Pengguna di Seluruh Dunia
+                Dosen dan Mahasiswa
+              </span>
             </h2>
             <p className={`${montserrat.className} mx-auto max-w-2xl text-lg text-zinc-400`}>
-              Bergabunglah dengan komunitas mahasiswa dan profesional yang terus berkembang yang
-              telah menemukan kompetisi sempurna mereka
+              Platform ini sedang dalam tahap peluncuran awal. Coba sekarang untuk menemukan
+              kompetisi yang relevan; masukan Anda membantu kami meningkatkan akurasi rekomendasi.
             </p>
           </motion.div>
 
@@ -616,10 +613,9 @@ const Home = () => {
                     </div>
                     <h3 className="mb-3 text-xl font-bold text-white">Jaringan Neural</h3>
                     <p className="text-sm leading-relaxed text-zinc-400">
-                      LLM canggih kami menggunakan jaringan neural dalam dengan miliaran parameter
-                      untuk memahami nuansa persyaratan kompetisi dan mencocokkannya dengan
-                      keterampilan dan preferensi Anda. Model ini terus belajar dan beradaptasi
-                      untuk memberikan rekomendasi yang semakin akurat.
+                      Model bahasa besar kami memahami deskripsi kompetisi, luaran pembelajaran,
+                      serta fokus riset untuk dosen dan mahasiswa, lalu memetakan kecocokannya
+                      secara akurat.
                     </p>
                   </div>
                 </motion.div>
@@ -635,9 +631,8 @@ const Home = () => {
                     </div>
                     <h3 className="mb-3 text-xl font-bold text-white">Pemahaman Kontekstual</h3>
                     <p className="text-sm leading-relaxed text-zinc-400">
-                      Melalui arsitektur transformer, model kami memproses informasi secara
-                      kontekstual, memahami hubungan antara berbagai aspek kompetisi, latar belakang
-                      Anda, dan tujuan masa depan untuk memberikan rekomendasi yang dipersonalisasi.
+                      Dengan arsitektur transformer, sistem memahami konteks mata kuliah, capaian
+                      pembelajaran, dan minat riset untuk memberi rekomendasi yang relevan.
                     </p>
                   </div>
                 </motion.div>
@@ -655,10 +650,8 @@ const Home = () => {
                     </div>
                     <h3 className="mb-3 text-xl font-bold text-white">Embedding Vektor</h3>
                     <p className="text-sm leading-relaxed text-zinc-400">
-                      Kami mengubah teks menjadi ruang vektor berdimensi tinggi, memungkinkan sistem
-                      kami untuk menemukan kesamaan semantik antara profil Anda dan deskripsi
-                      kompetisi. Ini memungkinkan pencocokan yang presisi melampaui pencarian kata
-                      kunci sederhana.
+                      Teks profil akademik dan deskripsi kompetisi diubah ke ruang vektor untuk
+                      menemukan kesamaan semantik yang melampaui pencarian kata kunci.
                     </p>
                   </div>
                 </motion.div>
@@ -676,10 +669,9 @@ const Home = () => {
                       Pembelajaran Berkelanjutan
                     </h3>
                     <p className="text-sm leading-relaxed text-zinc-400">
-                      Model kami terus berkembang melalui loop umpan balik, belajar dari kecocokan
-                      yang berhasil untuk memberikan rekomendasi yang semakin akurat dari waktu ke
-                      waktu. Setiap interaksi membantu menyempurnakan algoritma untuk saran yang
-                      lebih baik di masa depan.
+                      Sistem terus membaik dari umpan balik penggunaan di kelas, laboratorium, dan
+                      organisasi mahasiswa untuk meningkatkan kualitas rekomendasi dari waktu ke
+                      waktu.
                     </p>
                   </div>
                 </motion.div>

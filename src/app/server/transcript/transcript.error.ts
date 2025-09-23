@@ -1,27 +1,27 @@
 export const TRANSCRIPT_ERROR_RESPONSE = {
   INTERNAL_SERVER_ERROR: {
     code: "TRANSCRIPT_001",
-    message: "Internal server error.",
+    message: "Terjadi kesalahan server internal.",
   },
   BAD_REQUEST: {
     code: "TRANSCRIPT_002",
-    message: "Bad request.",
+    message: "Permintaan tidak valid.",
   },
   NOT_FOUND: {
     code: "TRANSCRIPT_003",
-    message: "Transcript not found.",
+    message: "Transkrip tidak ditemukan.",
   },
   ERROR_PROCESSING_TRANSCRIPT: {
     code: "TRANSCRIPT_004",
-    message: "Error processing transcript text.",
+    message: "Terjadi kesalahan saat memproses teks transkrip.",
   },
   FORMAT_PDF_TRANSCRIPT: {
     code: "TRANSCRIPT_005",
     message:
-      "The transcript format is not valid. Please upload the official transcript from https://siat.ung.ac.id.",
+      "Format transkrip tidak valid. Silakan unggah transkrip resmi dari https://siat.ung.ac.id.",
   },
 } as const;
 
 export const TRANSCRIPT_ERROR_LOG = {
-  INTERNAL_SERVER_ERROR: "Internal server error:",
+  INTERNAL_SERVER_ERROR: "Terjadi kesalahan server internal:",
 };

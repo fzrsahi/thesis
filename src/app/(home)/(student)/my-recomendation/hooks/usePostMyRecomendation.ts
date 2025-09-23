@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 
 import { useMutationPostMyRecomendation } from "../_api/useMutationPostMyRecomendation";
 
@@ -7,7 +8,9 @@ const usePostMyRecomendation = () => {
 
   const { mutate: createMyRecomendation, isPending: isCreating } = useMutationPostMyRecomendation({
     onError: (error) => {
-      setCreateError(error?.response?.data?.message || "");
+      const message = error?.response?.data?.message || "Terjadi kesalahan";
+      setCreateError(message);
+      toast.error(message);
     },
   });
 
