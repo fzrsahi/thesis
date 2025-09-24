@@ -20,6 +20,8 @@ import {
   AlertCircle,
   ChevronDown,
   ChevronUp,
+  ChevronLeft,
+  ChevronRight,
   Sparkles,
   Zap,
   Star,
@@ -28,6 +30,7 @@ import {
   Rocket,
 } from "lucide-react";
 import { useEffect, useRef, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   RadarChart,
   PolarGrid,
@@ -79,6 +82,14 @@ const skillNameMapping: Record<string, string> = {
   businessAcumen: "Pemahaman Bisnis",
   designThinking: "Design Thinking",
   selfLearning: "Pembelajaran Mandiri",
+};
+
+// Visual styles for rank highlighting
+const getRankGradientClass = (rank: number): string => {
+  if (rank === 1) return "from-yellow-400 via-amber-400 to-orange-400"; // Gold
+  if (rank === 2) return "from-zinc-300 via-gray-300 to-zinc-400"; // Silver
+  if (rank === 3) return "from-amber-700 via-orange-600 to-amber-600"; // Bronze
+  return "from-blue-500 via-purple-500 to-pink-500"; // Default
 };
 
 const EmptyState = ({
@@ -468,6 +479,14 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
     developmentSources: false,
   });
 
+  // Sidebar perbandingan keterampilan
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  // Portal mounting guard
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -557,75 +576,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
 
         {/* Layout Horizontal - 4 Section Independen */}
         <div className="space-y-8">
-          {/* Section 1: Perbandingan Keterampilan */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 0.8 }}
-          >
-            <Card className="group relative overflow-hidden border border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50 backdrop-blur-sm transition-all hover:border-zinc-700/50">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg">
-                      <RadarIcon className="h-5 w-5 text-white" />
-                    </div>
-                    <span className="text-xl text-white">Perbandingan Keterampilan</span>
-                    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => toggleSection("skillsComparison")}
-                        className="bg-zinc-800/50 text-white backdrop-blur-sm hover:bg-zinc-700/50"
-                      >
-                        {collapsedSections.skillsComparison ? (
-                          <ChevronDown className="h-4 w-4" />
-                        ) : (
-                          <ChevronUp className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </motion.div>
-                  </div>
-                  {selectedCompetition && (
-                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setSelectedCompetition(null)}
-                        className="bg-gradient-to-r from-zinc-800/50 to-zinc-900/50 text-xs text-white backdrop-blur-sm hover:from-zinc-700/50 hover:to-zinc-800/50"
-                      >
-                        <Zap className="mr-1 h-3 w-3" />
-                        Reset Tampilan
-                      </Button>
-                    </motion.div>
-                  )}
-                </CardTitle>
-                <CardDescription className="text-zinc-400">
-                  {selectedCompetition
-                    ? `Perbandingan keterampilan Anda dengan ${selectedCompetition.competitionName}`
-                    : "Pilih kompetisi untuk melihat perbandingan keterampilan"}
-                </CardDescription>
-              </CardHeader>
-              <AnimatePresence>
-                {!collapsedSections.skillsComparison && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <CardContent className="p-6">
-                      <ComparisonSpiderChart
-                        studentData={studentSkillsData}
-                        competitionData={selectedCompetition ? competitionSkillsData : undefined}
-                      />
-                    </CardContent>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </Card>
-          </motion.div>
+          {/* Section 1 dipindah ke sidebar kanan */}
 
           {/* Section 2: Profil Keterampilan */}
           <motion.div
@@ -981,26 +932,21 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                         <div className="space-y-3">
                           <div className="flex items-center space-x-3">
                             <div
-                              className={`flex h-12 w-12 items-center justify-center rounded-full shadow-lg ${
-                                selectedCompetition?.id === rec.id
-                                  ? "bg-gradient-to-r from-blue-500 to-purple-600"
-                                  : "bg-gradient-to-r from-zinc-600 to-zinc-700"
-                              }`}
+                              className={`flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r ${getRankGradientClass(
+                                rec.rank
+                              )} shadow-xl`}
                             >
-                              <Trophy className="h-6 w-6 text-white" />
+                              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white/95">
+                                <span className="text-base font-extrabold text-zinc-900">
+                                  #{rec.rank}
+                                </span>
+                              </div>
                             </div>
                             <div>
                               <CardTitle className="text-xl text-white">
                                 {rec.competitionName}
                               </CardTitle>
                               <div className="mt-1 flex items-center space-x-2">
-                                <Badge
-                                  variant="outline"
-                                  className="border-zinc-600 text-xs text-zinc-300"
-                                >
-                                  <Star className="mr-1 h-3 w-3" />
-                                  Peringkat #{rec.rank}
-                                </Badge>
                                 <Badge
                                   className={`text-xs text-white ${getMatchScoreColor(rec.matchScore.score)}`}
                                 >
@@ -1280,6 +1226,89 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
           </motion.div>
         </div>
       </div>
+
+      {isMounted &&
+        createPortal(
+          <>
+            {/* Toggle Button untuk Sidebar */}
+            <motion.button
+              aria-label={
+                isSidebarOpen ? "Tutup perbandingan keterampilan" : "Buka perbandingan keterampilan"
+              }
+              onClick={() => setIsSidebarOpen((prev) => !prev)}
+              className="fixed top-1/2 right-4 z-[100] -translate-y-1/2 rounded-full border border-zinc-700/50 bg-zinc-900/80 p-2 text-white shadow-xl backdrop-blur-md hover:bg-zinc-800/80"
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {isSidebarOpen ? (
+                <ChevronRight className="h-5 w-5" />
+              ) : (
+                <ChevronLeft className="h-5 w-5" />
+              )}
+            </motion.button>
+
+            {/* Sidebar Kanan: Perbandingan Keterampilan */}
+            <AnimatePresence>
+              {isSidebarOpen && (
+                <motion.div
+                  initial={{ x: 420, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  exit={{ x: 420, opacity: 0 }}
+                  transition={{ type: "spring", stiffness: 260, damping: 26 }}
+                  className="fixed top-1/2 right-4 z-[90] w-[420px] -translate-y-1/2 overflow-hidden rounded-2xl border border-zinc-800/60 bg-gradient-to-b from-zinc-900/95 to-black/95 shadow-2xl backdrop-blur-xl"
+                >
+                  <div className="flex max-h-[85vh] flex-col">
+                    <div className="flex items-center justify-between border-b border-zinc-800/60 p-4">
+                      <div className="flex items-center space-x-3">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg">
+                          <RadarIcon className="h-4 w-4 text-white" />
+                        </div>
+                        <span className="text-sm font-semibold text-white">
+                          Perbandingan Keterampilan
+                        </span>
+                      </div>
+                      {selectedCompetition && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setSelectedCompetition(null)}
+                          className="bg-gradient-to-r from-zinc-800/50 to-zinc-900/50 text-xs text-white backdrop-blur-sm hover:from-zinc-700/50 hover:to-zinc-800/50"
+                        >
+                          <Zap className="mr-1 h-3 w-3" />
+                          Reset
+                        </Button>
+                      )}
+                    </div>
+                    <div className="flex-1 overflow-auto p-4">
+                      <Card className="relative overflow-hidden border border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50">
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5" />
+                        <CardHeader>
+                          <CardDescription className="text-zinc-400">
+                            {selectedCompetition
+                              ? `Perbandingan dengan ${selectedCompetition.competitionName}`
+                              : "Pilih kompetisi untuk melihat perbandingan keterampilan"}
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className="p-0">
+                          <div className="p-4">
+                            <ComparisonSpiderChart
+                              studentData={studentSkillsData}
+                              competitionData={
+                                selectedCompetition ? competitionSkillsData : undefined
+                              }
+                              showOnlyStudent={!selectedCompetition}
+                            />
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </>,
+          document.body
+        )}
     </div>
   );
 };
