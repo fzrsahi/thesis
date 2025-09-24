@@ -1,6 +1,6 @@
 import { HttpStatusCode } from "axios";
 
-import { getLogger } from "@/app/server/utils/pino.helper";
+import { getLogger } from "@/app/server/utils/helpers/pino.helper";
 import { AdvisorPayload } from "@/app/shared/schema/advisor/AdvisorSchema";
 
 import { USER_ERROR_RESPONSE } from "../../user/user.error";
@@ -27,6 +27,10 @@ export const createAdvisorUsecase = async (body: AdvisorPayload) => {
     password: hashedPassword,
   });
 
-  await createAdvisor(newUser.id);
+  await createAdvisor({
+    userId: newUser.id,
+    type: body.type,
+    studyProgramId: body.studyProgramId,
+  });
   logger.info({ userId: newUser.id }, "Creating advisor - success");
 };

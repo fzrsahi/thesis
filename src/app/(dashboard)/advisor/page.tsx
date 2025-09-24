@@ -1,9 +1,12 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { ColumnDef } from "@tanstack/react-table";
 import { UserCheck } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
+import { AdvisorListItem } from "@/app/server/advisor/advisor.repository";
+import { ADVISOR_TYPES_ID_LABEL } from "@/app/shared/const/role";
 import { AdvisorSchema, type AdvisorPayload } from "@/app/shared/schema/advisor/AdvisorSchema";
 import { createAdvisor, deleteAdvisor } from "@/client/api/advisors";
 import Button from "@/components/ui/button";
@@ -30,6 +33,23 @@ const AdvisorPage = () => {
         setDeleteOpen(true);
       },
     });
+
+  const displayColumns = useMemo(
+    () =>
+      columns.map((col) => {
+        if ((col as unknown as { accessorKey: string }).accessorKey === "type") {
+          return {
+            ...col,
+            cell: ({ row }: { row: { original: { type: string } } }) =>
+              ADVISOR_TYPES_ID_LABEL[row.original.type as keyof typeof ADVISOR_TYPES_ID_LABEL] ??
+              row.original.type ??
+              "-",
+          };
+        }
+        return col;
+      }),
+    [columns]
+  );
 
   const { mutateAsync: doCreate, isPending } = useMutation({
     mutationFn: async (payload: AdvisorPayload) => {
@@ -99,7 +119,10 @@ const AdvisorPage = () => {
           </CardHeader>
           <CardContent ref={tableRef} className="bg-zinc-900 p-0 md:p-4">
             <div className="w-full">
-              <DataTable columns={columns} data={tableData} />
+              <DataTable
+                columns={displayColumns as unknown as ColumnDef<AdvisorListItem, unknown>[]}
+                data={tableData as unknown as AdvisorListItem[]}
+              />
             </div>
             <Pagination pagination={pagination} onPageChange={handlePageChange} />
           </CardContent>

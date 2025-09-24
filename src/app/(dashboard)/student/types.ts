@@ -4,7 +4,7 @@ export type Student = {
   nim: string;
   email: string;
   gpa?: number;
-  semester?: number;
-  major?: string;
+  entryYear?: number;
+  studyProgramName?: string;
   phone?: string;
 };

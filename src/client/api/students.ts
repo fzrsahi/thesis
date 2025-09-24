@@ -11,6 +11,8 @@ export type GetStudentsParams = {
   page?: number;
   limit?: number;
   keywords?: string;
+  studyProgramId?: number;
+  entryYear?: number;
 };
 
 export type GetStudentsResponse = {
@@ -25,6 +27,8 @@ export const getStudents = async (params: GetStudentsParams): Promise<GetStudent
       page: params.page,
       limit: params.limit,
       keywords: params.keywords,
+      studyProgramId: params.studyProgramId,
+      entryYear: params.entryYear,
     },
   });
   return response as unknown as GetStudentsResponse;
@@ -34,6 +38,7 @@ export type CreateStudentRequest = {
   name: string;
   email: string;
   studentId: string;
+  studyProgramId: number;
 };
 
 export type CreateStudentResponse = {
@@ -68,4 +73,14 @@ export const deleteStudent = async (id: number): Promise<DeleteStudentResponse> 
   const api = apiClient as unknown as { request: ApiClientRequest };
   const response = await api.request("delete", `/students/${id}`);
   return response as unknown as DeleteStudentResponse;
+};
+
+// Study Programs
+export type StudyProgramItem = { id: number; name: string };
+export type GetStudyProgramsResponse = { success?: boolean; data?: StudyProgramItem[] };
+
+export const getStudyPrograms = async (): Promise<GetStudyProgramsResponse> => {
+  const api = apiClient as unknown as { request: ApiClientRequest };
+  const response = await api.request("get", "/study-programs");
+  return response as unknown as GetStudyProgramsResponse;
 };

@@ -45,6 +45,9 @@ model Student {
   interests String[] // Array minat, contoh: ["AI","Desain"]
   skills    String[] // Array keterampilan, contoh: ["Python","Java"]
   studentId String? // ID mahasiswa
+  studyProgramId Int
+  entryYear Int
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -53,6 +56,7 @@ model Student {
   recommendations Recommendation[]
   transcript      Transcript[]
   studentDocumentChunks StudentDocumentChunk[]
+  studyProgram StudyProgram @relation(fields: [studyProgramId], references: [id], onDelete: Cascade)
 
   @@map("students")
 }
@@ -75,8 +79,12 @@ model Advisor {
   id        Int      @id @default(autoincrement())
   userId    Int      @unique
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  studyProgramId Int?
+  studyProgram StudyProgram? @relation(fields: [studyProgramId], references: [id], onDelete: Cascade)
 
   @@map("advisors")
 }
@@ -282,4 +290,17 @@ model StudentDocumentChunk {
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@map("studentDocumentChunks")
+}
+
+
+model StudyProgram {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("studyPrograms")
+
+  students Student[]
+  advisors Advisor[]
 }

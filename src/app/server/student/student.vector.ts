@@ -3,7 +3,7 @@ import { Prisma } from "@prisma/client";
 
 import { findStudentByUserId } from "./student.repository";
 import { prisma } from "../prisma/prisma";
-import { getLogger } from "../utils/pino.helper";
+import { getLogger } from "../utils/helpers/pino.helper";
 import { getStudentDocumentChunksVectorStore } from "../vector/pgvector.service";
 
 const buildStudentProfileContext = (student: {

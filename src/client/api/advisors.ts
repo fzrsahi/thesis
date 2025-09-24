@@ -31,6 +31,8 @@ export const getAdvisors = async (params: GetAdvisorsParams): Promise<GetAdvisor
 export type CreateAdvisorRequest = {
   name: string;
   email: string;
+  type: "HeadOfDepartment" | "HeadOfStudyProgram";
+  studyProgramId: number | null;
 };
 
 export type CreateAdvisorResponse = {

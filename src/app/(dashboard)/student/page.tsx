@@ -2,10 +2,17 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Users } from "lucide-react";
-import { useState } from "react";
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 
+import { ADVISOR_TYPES, ROLES } from "@/app/shared/const/role";
 import { StudentSchema, type StudentPayload } from "@/app/shared/schema/student/StudentSchema";
-import { createStudent, deleteStudent, getStudentDetail } from "@/client/api/students";
+import {
+  createStudent,
+  deleteStudent,
+  getStudentDetail,
+  getStudyPrograms,
+} from "@/client/api/students";
 import Button from "@/components/ui/button";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/data-table";
@@ -19,13 +26,18 @@ import { StudentDetailModal } from "./components/StudentDetailModal";
 import { useStudentList } from "./hooks/useStudentList";
 
 const StudentPage = () => {
+  const { data: session } = useSession();
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [entryYear, setEntryYear] = useState<string>("");
+  const [studyProgramId, setStudyProgramId] = useState<string>("");
   const { search, setSearch, tableRef, tableData, columns, pagination, handlePageChange } =
     useStudentList({
       onDelete: (id: number) => {
         setSelectedId(id);
         setDeleteOpen(true);
       },
+      entryYear: entryYear ? Number(entryYear) : undefined,
+      studyProgramId: studyProgramId ? Number(studyProgramId) : undefined,
     });
 
   const queryClient = useQueryClient();
@@ -43,11 +55,34 @@ const StudentPage = () => {
     enabled: selectedId != null && detailOpen,
   });
 
+  const { data: studyPrograms } = useQuery({
+    queryKey: ["study-programs"],
+    queryFn: async () => {
+      const res = await getStudyPrograms();
+      return res?.data ?? [];
+    },
+  });
+
+  const canFilterStudyProgram =
+    session?.user?.role === ROLES.ADMIN ||
+    session?.user?.advisorType === ADVISOR_TYPES.HEAD_OF_DEPARTMENT;
+
+  // Keep list in sync by invalidating when filters change
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ["students"] });
+  }, [entryYear, studyProgramId, queryClient]);
+
   const { mutateAsync: doCreate, isPending } = useMutation({
     mutationFn: async (payload: StudentPayload) => {
       // Ensure payload matches schema
       const parsed = StudentSchema.parse(payload);
-      return createStudent(parsed);
+      // Map to API request shape (ensure required fields exist)
+      return createStudent({
+        name: parsed.name,
+        email: parsed.email,
+        studentId: parsed.studentId,
+        studyProgramId: 1,
+      });
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["students"] });
@@ -88,13 +123,34 @@ const StudentPage = () => {
       <div className="flex justify-center">
         <Card className="w-full border-2 border-zinc-700 bg-zinc-900 text-zinc-100 shadow-lg">
           <CardHeader className="flex flex-col gap-4 border-b border-zinc-700 bg-zinc-900 pb-4 md:flex-row md:items-center md:justify-between">
-            <div className="flex gap-2">
+            <div className="flex flex-wrap items-center gap-2">
               <Input
                 placeholder="Cari mahasiswa..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full md:w-56"
               />
+              <Input
+                placeholder="Angkatan"
+                type="number"
+                value={entryYear}
+                onChange={(e) => setEntryYear(e.target.value)}
+                className="w-28"
+              />
+              {canFilterStudyProgram && (
+                <select
+                  value={studyProgramId}
+                  onChange={(e) => setStudyProgramId(e.target.value)}
+                  className="rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100"
+                >
+                  <option value="">Semua Program Studi</option>
+                  {(studyPrograms ?? []).map((sp) => (
+                    <option key={sp.id} value={sp.id}>
+                      {sp.name}
+                    </option>
+                  ))}
+                </select>
+              )}
               <Button
                 variant="outline"
                 className="border-zinc-700 bg-gradient-to-r from-zinc-800 to-zinc-900 text-white hover:bg-zinc-700 hover:ring-2 hover:ring-blue-400"

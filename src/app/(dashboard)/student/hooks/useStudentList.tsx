@@ -14,6 +14,8 @@ import { Student } from "../types";
 // eslint-disable-next-line no-empty-pattern
 type UseStudentListOptions = {
   onDelete?: (id: number) => void;
+  entryYear?: number;
+  studyProgramId?: number;
 };
 
 export const useStudentList = (options?: UseStudentListOptions) => {
@@ -29,12 +31,23 @@ export const useStudentList = (options?: UseStudentListOptions) => {
   }, [search]);
 
   const { data, isLoading } = useQuery<GetStudentsResponse>({
-    queryKey: ["students", { page, limit: pageSize, keywords: debouncedSearch }],
+    queryKey: [
+      "students",
+      {
+        page,
+        limit: pageSize,
+        keywords: debouncedSearch,
+        entryYear: options?.entryYear,
+        studyProgramId: options?.studyProgramId,
+      },
+    ],
     queryFn: async () => {
       const res = await getStudents({
         page,
         limit: pageSize,
         keywords: debouncedSearch || undefined,
+        entryYear: options?.entryYear,
+        studyProgramId: options?.studyProgramId,
       });
       return res;
     },
@@ -44,6 +57,8 @@ export const useStudentList = (options?: UseStudentListOptions) => {
     id?: number;
     studentId?: string | null;
     gpa?: string | null;
+    entryYear?: number | null;
+    studyProgram?: { id?: number; name?: string } | null;
     user?: { name?: string; email?: string };
   };
 
@@ -55,8 +70,8 @@ export const useStudentList = (options?: UseStudentListOptions) => {
       nim: item.studentId ?? "-",
       email: item.user?.email ?? "-",
       gpa: item.gpa ? parseFloat(item.gpa) : undefined,
-      semester: undefined,
-      major: undefined,
+      entryYear: item.entryYear ?? undefined,
+      studyProgramName: item.studyProgram?.name ?? "-",
       phone: undefined,
     }));
   }, [data]);
@@ -70,7 +85,7 @@ export const useStudentList = (options?: UseStudentListOptions) => {
 
   useEffect(() => {
     setPage(1);
-  }, [debouncedSearch]);
+  }, [debouncedSearch, options?.entryYear, options?.studyProgramId]);
 
   const columns: ColumnDef<Student>[] = [
     { header: "NIM", accessorKey: "nim" },
@@ -82,14 +97,14 @@ export const useStudentList = (options?: UseStudentListOptions) => {
       cell: ({ row }) => (row.original.gpa ? row.original.gpa.toFixed(2) : "-"),
     },
     {
-      header: "Semester",
-      accessorKey: "semester",
-      cell: ({ row }) => row.original.semester ?? "-",
+      header: "Angkatan",
+      accessorKey: "entryYear",
+      cell: ({ row }) => row.original.entryYear ?? "-",
     },
     {
-      header: "Jurusan",
-      accessorKey: "major",
-      cell: ({ row }) => row.original.major ?? "-",
+      header: "Program Studi",
+      accessorKey: "studyProgramName",
+      cell: ({ row }) => row.original.studyProgramName ?? "-",
     },
     {
       header: "Aksi",

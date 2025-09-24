@@ -7,6 +7,9 @@ declare module "next-auth" {
       email: string;
       name: string;
       role: string;
+      advisorType?: string | null;
+      studyProgram?: { id: number; name: string } | null;
+      entryYear?: number | null;
     } & DefaultSession["user"];
   }
 
@@ -15,6 +18,9 @@ declare module "next-auth" {
     email: string;
     name: string;
     role: string;
+    advisorType?: string | null;
+    studyProgram?: { id: number; name: string } | null;
+    entryYear?: number | null;
   }
 }
 
@@ -24,5 +30,8 @@ declare module "next-auth/jwt" {
     email: string;
     name: string;
     role: string;
+    advisorType?: string | null;
+    studyProgram?: { id: number; name: string } | null;
+    entryYear?: number | null;
   }
 }

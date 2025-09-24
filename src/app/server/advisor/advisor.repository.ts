@@ -1,9 +1,10 @@
-import { Prisma } from "@prisma/client";
+import { Advisor, Prisma } from "@prisma/client";
 
 import { prisma } from "../prisma/prisma";
 import { paginate } from "../utils/pagination/paginate";
 import { PaginatedResult, PaginationParams } from "../utils/pagination/pagination.types";
 
+type createAdvisorPayload = Pick<Advisor, "userId" | "type" | "studyProgramId">;
 export const findAdvisorByUserId = async (
   userId: number,
   fields: Prisma.AdvisorSelect = {
@@ -57,7 +58,9 @@ export const getAdvisors = async (
             userId: true,
             createdAt: true,
             updatedAt: true,
+            type: true,
             user: { select: { name: true, email: true } },
+            studyProgram: { select: { id: true, name: true } },
           },
           orderBy: { id: "asc" },
           skip: args.skip,
@@ -69,7 +72,14 @@ export const getAdvisors = async (
   );
 };
 
-export const createAdvisor = async (userId: number) => prisma.advisor.create({ data: { userId } });
+export const createAdvisor = async (payload: createAdvisorPayload) =>
+  prisma.advisor.create({
+    data: {
+      userId: payload.userId,
+      type: payload.type,
+      studyProgramId: payload.studyProgramId,
+    },
+  });
 
 export const findAdvisorById = async (id: number) => prisma.advisor.findUnique({ where: { id } });
 

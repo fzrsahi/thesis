@@ -107,13 +107,13 @@ const UserProfilePage = () => {
   const tabs = [
     {
       id: "personal" as const,
-      label: "Personal Data",
+      label: "Data Pribadi",
       icon: User,
       description: "Your personal information",
     },
     {
       id: "academic" as const,
-      label: "Academic Data",
+      label: "Data Prestasi",
       icon: GraduationCap,
       description: "Your academic information and achievements",
     },
@@ -254,12 +254,12 @@ const UserProfilePage = () => {
             <div className="space-y-2">
               <Separator className="bg-zinc-800" />
               <div className="text-sm">
-                <p className="text-zinc-400">Jurusan</p>
-                <p>Teknik Informatika</p>
+                <p className="text-zinc-400">Program Studi</p>
+                <p>{session?.user?.studyProgram?.name ?? "-"}</p>
               </div>
               <div className="text-sm">
-                <p className="text-zinc-400">Fakultas</p>
-                <p>Teknik</p>
+                <p className="text-zinc-400">Angkatan</p>
+                <p>{session?.user?.entryYear ?? "-"}</p>
               </div>
             </div>
           </CardContent>
@@ -379,10 +379,10 @@ const UserProfilePage = () => {
                 <div>
                   <CardTitle className="flex items-center gap-2">
                     <GraduationCap className="h-5 w-5" />
-                    Data Akademik
+                    Data Akademik & Non Akademik
                   </CardTitle>
                   <CardDescription className="text-zinc-400">
-                    Informasi akademik dan pencapaian Anda
+                    Informasi akademik & non akademik Anda
                   </CardDescription>
                 </div>
               </CardHeader>

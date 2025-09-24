@@ -6,19 +6,30 @@ import { createStudentUsecase } from "@/app/server/student/usecase/create-studen
 import { getStudentsUsecase } from "@/app/server/student/usecase/get-students.usecase";
 import { STUDENT_ERROR_LOG_MESSAGE, STUDENT_ERROR_RESPONSE } from "@/app/server/user/student.error";
 import { internalServerError } from "@/app/server/utils/error/internal-server-error";
+import { getQueryParams } from "@/app/server/utils/helpers/get-params-url.helper";
+import { getLogger } from "@/app/server/utils/helpers/pino.helper";
 import { getPaginationParams } from "@/app/server/utils/pagination/get-pagination-params";
 import { PaginationParams } from "@/app/server/utils/pagination/pagination.types";
-import { getLogger } from "@/app/server/utils/pino.helper";
 import { ROLES } from "@/app/shared/const/role";
 import { StudentPayload, StudentSchema } from "@/app/shared/schema/student/StudentSchema";
 
 export const GET = withAuth(
-  async (req: NextRequest) => {
+  async (req: NextRequest, session) => {
     try {
       const logger = getLogger({ module: "api/students", method: "GET" });
       const pagination = getPaginationParams(req) as PaginationParams;
-      logger.debug({ pagination }, "Fetching students");
-      const result = await getStudentsUsecase(pagination);
+
+      const { studyProgramId: queryStudyProgramId, entryYear } = getQueryParams(req.nextUrl, {
+        studyProgramId: "number",
+        entryYear: "number",
+      });
+      const filter = {
+        studyProgramId: session.getEffectiveStudyProgramId(queryStudyProgramId),
+        entryYear,
+      };
+
+      logger.debug({ pagination, filter }, "Fetching students");
+      const result = await getStudentsUsecase(pagination, filter);
       logger.info({ count: result.data.length }, "Fetched students successfully");
       return NextResponse.json({
         success: true,

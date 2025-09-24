@@ -3,7 +3,7 @@ import { competitions } from "@prisma/client";
 import { CreateCompetitionPayload } from "@/app/shared/schema/competition/CompetitionSchema";
 
 import { prisma } from "../../prisma/prisma";
-import { getLogger } from "../../utils/pino.helper";
+import { getLogger } from "../../utils/helpers/pino.helper";
 import { getCompetitionVectorStore } from "../../vector/pgvector.service";
 
 export const generateCompetitionText = (competitionData: CreateCompetitionPayload) => {

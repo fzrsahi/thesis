@@ -2,9 +2,10 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AlertCircle, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 
+import { ADVISOR_TYPES } from "@/app/shared/const/role";
 import { AdvisorSchema, type AdvisorPayload } from "@/app/shared/schema/advisor/AdvisorSchema";
 import Button from "@/components/ui/button";
 import { DarkModal } from "@/components/ui/dark-modal";
@@ -17,6 +18,14 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import Input from "@/components/ui/input";
+
+// Simple fetcher for study programs
+const fetchStudyPrograms = async () => {
+  const res = await fetch("/api/study-programs", { cache: "no-store" });
+  if (!res.ok) throw new Error("Gagal memuat program studi");
+  const json = (await res.json()) as { success?: boolean; data?: { id: number; name: string }[] };
+  return json.data ?? [];
+};
 
 type BackendErrorData = {
   code?: string;
@@ -73,12 +82,31 @@ export const AdvisorAddModal = ({
     defaultValues: {
       name: "",
       email: "",
+      type: "HeadOfDepartment",
+      studyProgramId: null,
       ...defaultValues,
     },
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [backendError, setBackendError] = useState<string | null>(null);
+  const [studyPrograms, setStudyPrograms] = useState<{ id: number; name: string }[]>([]);
+  const [_loadingPrograms, setLoadingPrograms] = useState(false);
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        setLoadingPrograms(true);
+        const list = await fetchStudyPrograms();
+        setStudyPrograms(list);
+      } catch (e) {
+        // ignore, will be handled by selection state
+      } finally {
+        setLoadingPrograms(false);
+      }
+    };
+    if (open) load();
+  }, [open]);
 
   const handleSubmit = async (values: AdvisorPayload) => {
     setBackendError(null);
@@ -159,6 +187,58 @@ export const AdvisorAddModal = ({
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="type"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-zinc-200">Tipe Dosen</FormLabel>
+                  <FormControl>
+                    <select
+                      value={field.value}
+                      onChange={(e) => field.onChange(e.target.value)}
+                      className="rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100"
+                    >
+                      <option value={ADVISOR_TYPES.HEAD_OF_DEPARTMENT}>Kepala Jurusan</option>
+                      <option value={ADVISOR_TYPES.HEAD_OF_STUDY_PROGRAM}>
+                        Kepala Program Studi
+                      </option>
+                    </select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {form.watch("type") === ADVISOR_TYPES.HEAD_OF_STUDY_PROGRAM && (
+              <FormField
+                control={form.control}
+                name="studyProgramId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-zinc-200">Program Studi</FormLabel>
+                    <FormControl>
+                      <select
+                        value={field.value == null ? "" : String(field.value)}
+                        onChange={(e) =>
+                          field.onChange(e.target.value ? Number(e.target.value) : null)
+                        }
+                        className="rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100"
+                      >
+                        <option value="">Pilih Program Studi</option>
+                        {studyPrograms.map((sp) => (
+                          <option key={sp.id} value={sp.id}>
+                            {sp.name}
+                          </option>
+                        ))}
+                      </select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             <DarkModal.Footer className="pt-4">
               <Button

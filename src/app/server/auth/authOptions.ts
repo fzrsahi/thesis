@@ -1,7 +1,10 @@
 import { NextAuthOptions, User } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
+import { findAdvisorByUserId } from "@/app/server/advisor/advisor.repository";
 import { getUserRole, validateCredentials } from "@/app/server/auth/services/auth.service";
+import { findStudentByUserId } from "@/app/server/student/student.repository";
+import { ROLES } from "@/app/shared/const/role";
 import { loginSchema } from "@/app/shared/validations/schema/loginSchema";
 
 export const authOptions: NextAuthOptions = {
@@ -80,6 +83,38 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Invalid session");
         }
 
+        let advisorType: string | null = null;
+        let studyProgram: { id: number; name: string } | null = null;
+        let entryYear: number | null = null;
+
+        if (currentRole === ROLES.ADVISOR) {
+          const advisor = await findAdvisorByUserId(Number(token.id), {
+            type: true,
+            studyProgram: { select: { id: true, name: true } },
+            id: true,
+            userId: true,
+            createdAt: true,
+            updatedAt: true,
+          });
+
+          advisorType = advisor?.type ?? null;
+          studyProgram = advisor?.studyProgram
+            ? { id: advisor.studyProgram.id, name: advisor.studyProgram.name }
+            : null;
+        }
+
+        if (currentRole === ROLES.STUDENT) {
+          const student = await findStudentByUserId(Number(token.id), {
+            studyProgramId: true,
+            entryYear: true,
+            studyProgram: { select: { id: true, name: true } },
+          });
+          studyProgram = student?.studyProgram
+            ? { id: student.studyProgram.id, name: student.studyProgram.name }
+            : null;
+          entryYear = student?.entryYear ?? null;
+        }
+
         return {
           ...session,
           user: {
@@ -88,6 +123,9 @@ export const authOptions: NextAuthOptions = {
             email: token.email,
             name: token.name,
             role: token.role,
+            advisorType,
+            studyProgram,
+            entryYear,
           },
         };
       } catch (error) {

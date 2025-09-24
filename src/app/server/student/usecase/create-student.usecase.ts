@@ -1,12 +1,13 @@
 import { HttpStatusCode } from "axios";
 
-import { getLogger } from "@/app/server/utils/pino.helper";
+import { getLogger } from "@/app/server/utils/helpers/pino.helper";
 import { StudentPayload } from "@/app/shared/schema/student/StudentSchema";
 
 import { USER_ERROR_RESPONSE } from "../../user/user.error";
 import { createUser, findUserByEmail } from "../../user/user.repository";
 import { generateHash } from "../../utils/bcrypt/bcrypt";
 import { customError } from "../../utils/error/custom-error";
+import { extractStudentId } from "../../utils/helpers/extract-student-id.helper";
 import { STUDENT_ERROR_RESPONSE } from "../student.error";
 import { createStudent, findStudentByStudentId } from "../student.repository";
 
@@ -41,9 +42,13 @@ export const createStudentUsecase = async (payload: StudentPayload) => {
     password: hashedPassword,
   });
 
+  const extractedStudentId = extractStudentId(payload.studentId);
+
   await createStudent({
     userId: newUser.id,
     studentId: payload.studentId as string,
+    studyProgramId: extractedStudentId.studyProgram.id,
+    entryYear: extractedStudentId.entryYear,
   });
   logger.info({ userId: newUser.id, studentId: payload.studentId }, "Creating student - success");
 };

@@ -12,6 +12,8 @@ export type Advisor = {
   id: number;
   name: string;
   email: string;
+  type?: string;
+  studyProgramName?: string;
   phone?: string;
   specialization?: string[];
   department?: string;
@@ -48,7 +50,9 @@ export const useAdvisorList = (options?: UseAdvisorListOptions) => {
 
   type ApiAdvisorListItem = {
     id?: number;
+    type?: string;
     user?: { name?: string; email?: string };
+    studyProgram?: { id?: number; name?: string } | null;
   };
 
   const tableData: Advisor[] = useMemo(() => {
@@ -57,6 +61,8 @@ export const useAdvisorList = (options?: UseAdvisorListOptions) => {
       id: item.id ?? idx + 1,
       name: item.user?.name ?? "-",
       email: item.user?.email ?? "-",
+      type: item.type ?? "-",
+      studyProgramName: item.studyProgram?.name ?? "-",
       phone: undefined,
       specialization: [],
       department: undefined,
@@ -85,6 +91,8 @@ export const useAdvisorList = (options?: UseAdvisorListOptions) => {
   const columns: ColumnDef<Advisor>[] = [
     { header: "Nama", accessorKey: "name" },
     { header: "Email", accessorKey: "email" },
+    { header: "Tipe", accessorKey: "type" },
+    { header: "Program Studi", accessorKey: "studyProgramName" },
     {
       header: "Aksi",
       accessorKey: "actions",

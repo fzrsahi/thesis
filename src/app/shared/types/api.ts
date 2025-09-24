@@ -79,7 +79,7 @@ export interface paths {
     };
     /**
      * Get student list with filter
-     * @description Get all students, optionally filtered by query parameters such as name, email, or studentId
+     * @description Get all students, optionally filtered by query parameters such as name, email, studentId, studyProgramId, or entryYear
      */
     get: {
       parameters: {
@@ -90,6 +90,10 @@ export interface paths {
           limit?: components["parameters"]["LimitParam"];
           /** @description Free-text search keywords */
           keywords?: components["parameters"]["KeywordsParam"];
+          /** @description Filter by study program ID */
+          studyProgramId?: number;
+          /** @description Filter by entry year (angkatan) */
+          entryYear?: number;
         };
         header?: never;
         path?: never;
@@ -111,6 +115,7 @@ export interface paths {
                 name?: string;
                 email?: string;
                 studentId?: string;
+                studyProgramId?: number;
               }[];
               pagination?: components["schemas"]["Pagination"];
             };
@@ -136,6 +141,7 @@ export interface paths {
             name: string;
             email: string;
             studentId: string;
+            studyProgramId: number;
           };
         };
       };
@@ -153,12 +159,59 @@ export interface paths {
                 name?: string;
                 email?: string;
                 studentId?: string;
+                studyProgramId?: number;
               };
             };
           };
         };
       };
     };
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/study-programs": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get all study programs
+     * @description Retrieve a list of all study programs
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description List of study programs retrieved successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": {
+              /** @example true */
+              success?: boolean;
+              data?: {
+                id?: number;
+                name?: string;
+              }[];
+            };
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
     delete?: never;
     options?: never;
     head?: never;
@@ -877,7 +930,65 @@ export interface paths {
       path?: never;
       cookie?: never;
     };
-    get?: never;
+    /**
+     * Get last chat messages
+     * @description Get the last 10 chat messages for the current user (from the latest session).
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description List of last chat messages */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": {
+              messages?: {
+                /** @example m_123 */
+                id?: string;
+                /**
+                 * @example user
+                 * @enum {string}
+                 */
+                role?: "user" | "ai";
+                /** @example Halo, ada yang bisa saya bantu? */
+                content?: string;
+                /**
+                 * Format: date-time
+                 * @example 2024-06-01T12:00:00.000Z
+                 */
+                createdAt?: string;
+              }[];
+            };
+          };
+        };
+        /** @description Unauthorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["ErrorResponse"];
+          };
+        };
+        /** @description Internal server error */
+        500: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["ErrorResponse"];
+          };
+        };
+      };
+    };
     put?: never;
     /**
      * Chat with LLM (streaming)
@@ -958,11 +1069,15 @@ export interface components {
       updatedAt: string;
     };
     AdvisorCreate: {
-      name?: string;
-      email?: string;
+      name: string;
+      email: string;
+      /** @enum {string} */
+      type: "HeadOfDepartment" | "HeadOfStudyProgram";
+      studyProgramId?: number | null;
     };
     AdvisorUpdate: {
-      userId?: number;
+      userId: number;
+      studyProgramId: number;
     };
     Competition: {
       id?: number;

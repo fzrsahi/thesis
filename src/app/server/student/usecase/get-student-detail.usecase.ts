@@ -15,6 +15,8 @@ const studentFields: Prisma.StudentSelect = {
     },
   },
   studentId: true,
+  studyProgram: { select: { id: true, name: true } },
+  entryYear: true,
   transcript: {
     select: {
       id: true,

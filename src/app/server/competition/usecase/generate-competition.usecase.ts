@@ -5,7 +5,7 @@ import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { getDocument } from "pdfjs-serverless";
 
 import { prisma } from "@/app/server/prisma/prisma";
-import { getLogger } from "@/app/server/utils/pino.helper";
+import { getLogger } from "@/app/server/utils/helpers/pino.helper";
 import { CreateCompetitionGeneratePayload } from "@/app/shared/schema/competition/CompetitionGenerateSchema";
 import { CreateCompetitionPayload } from "@/app/shared/schema/competition/CompetitionSchema";
 

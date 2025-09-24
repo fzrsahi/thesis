@@ -6,9 +6,9 @@ import { getAdvisorsUsecase } from "@/app/server/advisor/usecase/get-advisors.us
 import { withAuth } from "@/app/server/auth/with-auth";
 import { ADVISOR_ERROR_LOG_MESSAGE, ADVISOR_ERROR_RESPONSE } from "@/app/server/user/advisor.error";
 import { internalServerError } from "@/app/server/utils/error/internal-server-error";
+import { getLogger } from "@/app/server/utils/helpers/pino.helper";
 import { getPaginationParams } from "@/app/server/utils/pagination/get-pagination-params";
 import { PaginationParams } from "@/app/server/utils/pagination/pagination.types";
-import { getLogger } from "@/app/server/utils/pino.helper";
 import { ROLES } from "@/app/shared/const/role";
 import { AdvisorSchema } from "@/app/shared/schema/advisor/AdvisorSchema";
 

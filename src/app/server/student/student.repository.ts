@@ -9,7 +9,7 @@ import { prisma } from "../prisma/prisma";
 import { paginate } from "../utils/pagination/paginate";
 import { PaginationParams, PaginatedResult } from "../utils/pagination/pagination.types";
 
-type studentCreate = Pick<Student, "userId" | "studentId">;
+type studentCreate = Pick<Student, "userId" | "studentId" | "entryYear" | "studyProgramId">;
 
 export const findStudentByUserId = (
   userId: number,
@@ -99,6 +99,8 @@ export const createStudent = (data: studentCreate) =>
     data: {
       userId: data.userId,
       studentId: data.studentId,
+      studyProgramId: data.studyProgramId,
+      entryYear: data.entryYear,
     },
   });
 
@@ -121,6 +123,7 @@ export type StudentListItem = {
   id: number;
   userId: number;
   studentId: string | null;
+  studyProgramId: number;
   createdAt: Date;
   updatedAt: Date;
   user: {
@@ -129,20 +132,31 @@ export type StudentListItem = {
   };
 };
 
+export type StudentFilter = {
+  studyProgramId?: number;
+  entryYear?: number;
+};
+
 export const getStudents = async (
-  pagination?: PaginationParams
+  pagination?: PaginationParams,
+  filter?: StudentFilter
 ): Promise<PaginatedResult<StudentListItem>> => {
-  let where: Prisma.StudentWhereInput | undefined;
+  const where: Prisma.StudentWhereInput = {};
 
   if (pagination?.keywords) {
     const keyword = pagination.keywords;
-    where = {
-      OR: [
-        { user: { name: { contains: keyword as string, mode: "insensitive" } } },
-        { user: { email: { contains: keyword as string, mode: "insensitive" } } },
-        { studentId: { contains: keyword as string, mode: "insensitive" } },
-      ],
-    };
+    where.OR = [
+      { user: { name: { contains: keyword as string, mode: "insensitive" } } },
+      { user: { email: { contains: keyword as string, mode: "insensitive" } } },
+      { studentId: { contains: keyword as string, mode: "insensitive" } },
+    ];
+  }
+
+  if (filter?.studyProgramId) {
+    where.studyProgramId = filter.studyProgramId;
+  }
+  if (filter?.entryYear) {
+    where.entryYear = filter.entryYear;
   }
 
   return paginate<StudentListItem, Prisma.StudentWhereInput>(
@@ -155,10 +169,13 @@ export const getStudents = async (
             id: true,
             userId: true,
             studentId: true,
+            studyProgramId: true,
             createdAt: true,
             updatedAt: true,
             gpa: true,
             user: { select: { name: true, email: true } },
+            studyProgram: { select: { name: true } },
+            entryYear: true,
           },
           orderBy: { id: "asc" },
           skip: args.skip,

@@ -8,7 +8,7 @@ import {
 } from "@/app/server/competition/competition.error";
 import { generateCompetitionUsecase } from "@/app/server/competition/usecase/generate-competition.usecase";
 import { internalServerError } from "@/app/server/utils/error/internal-server-error";
-import { getLogger } from "@/app/server/utils/pino.helper";
+import { getLogger } from "@/app/server/utils/helpers/pino.helper";
 import { ROLES } from "@/app/shared/const/role";
 import {
   competitionGenerateSchema,

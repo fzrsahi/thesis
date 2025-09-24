@@ -127,11 +127,31 @@
       "get": {
         "tags": ["Student"],
         "summary": "Get student list with filter",
-        "description": "Get all students, optionally filtered by query parameters such as name, email, or studentId",
+        "description": "Get all students, optionally filtered by query parameters such as name, email, studentId, studyProgramId, or entryYear",
         "parameters": [
           { "$ref": "#/components/parameters/PageParam" },
           { "$ref": "#/components/parameters/LimitParam" },
-          { "$ref": "#/components/parameters/KeywordsParam" }
+          { "$ref": "#/components/parameters/KeywordsParam" },
+          {
+            "name": "studyProgramId",
+            "in": "query",
+            "description": "Filter by study program ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "entryYear",
+            "in": "query",
+            "description": "Filter by entry year (angkatan)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1900
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -153,7 +173,8 @@
                           "id": { "type": "number" },
                           "name": { "type": "string" },
                           "email": { "type": "string" },
-                          "studentId": { "type": "string" }
+                          "studentId": { "type": "string" },
+                          "studyProgramId": { "type": "integer" }
                         }
                       }
                     },
@@ -178,9 +199,10 @@
                 "properties": {
                   "name": { "type": "string" },
                   "email": { "type": "string" },
-                  "studentId": { "type": "string" }
+                  "studentId": { "type": "string" },
+                  "studyProgramId": { "type": "integer" }
                 },
-                "required": ["name", "email", "studentId"]
+                "required": ["name", "email", "studentId", "studyProgramId"]
               }
             }
           }
@@ -202,7 +224,8 @@
                       "properties": {
                         "name": { "type": "string" },
                         "email": { "type": "string" },
-                        "studentId": { "type": "string" }
+                        "studentId": { "type": "string" },
+                        "studyProgramId": { "type": "integer" }
                       }
                     }
                   }
@@ -213,6 +236,44 @@
         }
       }
     },
+    "/study-programs": {
+      "get": {
+        "tags": ["StudyProgram"],
+        "summary": "Get all study programs",
+        "description": "Retrieve a list of all study programs",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of study programs retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean", "example": true },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": { "type": "integer" },
+                          "name": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
     "/students/{id}": {
       "get": {
         "tags": ["Student"],
@@ -1131,15 +1192,19 @@
         "type": "object",
         "properties": {
           "name": { "type": "string" },
-          "email": { "type": "string" }
+          "email": { "type": "string" },
+          "type": { "type": "string", "enum": ["HeadOfDepartment", "HeadOfStudyProgram"] },
+          "studyProgramId": { "type": "integer", "nullable": true }
         },
-        "required": ["userId"]
+        "required": ["name", "email", "type"]
       },
       "AdvisorUpdate": {
         "type": "object",
         "properties": {
-          "userId": { "type": "integer" }
-        }
+          "userId": { "type": "integer" },
+          "studyProgramId": { "type": "integer" }
+        },
+        "required": ["userId", "studyProgramId"]
       },
       "Competition": {
         "type": "object",

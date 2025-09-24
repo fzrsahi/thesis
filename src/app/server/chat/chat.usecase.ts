@@ -5,7 +5,7 @@ import { findAdminByUserId } from "../admin/admin.repository";
 import { findAdvisorByUserId } from "../advisor/advisor.repository";
 import { sendChatCompletion, createOpenAIClient } from "../model/azure/azure-openai.service";
 import { findStudentByUserId } from "../student/student.repository";
-import { getLogger } from "../utils/pino.helper";
+import { getLogger } from "../utils/helpers/pino.helper";
 import {
   getCompetitionVectorStore,
   getDocumentChunksVectorStore,

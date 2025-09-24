@@ -1,7 +1,7 @@
 import { HttpStatusCode } from "axios";
 
 import { customError } from "../../utils/error/custom-error";
-import { getLogger } from "../../utils/pino.helper";
+import { getLogger } from "../../utils/helpers/pino.helper";
 import { COMPETITION_ERROR_RESPONSE } from "../competition.error";
 import { deleteCompetitionById, findCompetitionById } from "../competition.repository";
 

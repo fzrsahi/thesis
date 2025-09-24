@@ -58,6 +58,8 @@ const StudentDetailPage = () => {
   });
 
   const student = data ?? undefined;
+  type StudentExtra = { studyProgram?: { name?: string } | null; entryYear?: number | null };
+  const sExtra = student as unknown as StudentExtra;
 
   return (
     <div className="w-full">
@@ -116,6 +118,14 @@ const StudentDetailPage = () => {
                   <div className="space-y-2 rounded-lg bg-zinc-800/30 p-4 backdrop-blur-sm">
                     <Label className="text-zinc-300">IPK</Label>
                     <Field className="text-zinc-100">{student?.gpa ?? "-"}</Field>
+                  </div>
+                  <div className="space-y-2 rounded-lg bg-zinc-800/30 p-4 backdrop-blur-sm">
+                    <Label className="text-zinc-300">Program Studi</Label>
+                    <Field className="text-zinc-100">{sExtra?.studyProgram?.name ?? "-"}</Field>
+                  </div>
+                  <div className="space-y-2 rounded-lg bg-zinc-800/30 p-4 backdrop-blur-sm">
+                    <Label className="text-zinc-300">Angkatan</Label>
+                    <Field className="text-zinc-100">{sExtra?.entryYear ?? "-"}</Field>
                   </div>
                   <div className="space-y-2 rounded-lg bg-zinc-800/30 p-4 backdrop-blur-sm">
                     <Label className="text-zinc-300">ID</Label>
@@ -243,7 +253,7 @@ const StudentDetailPage = () => {
                       <div className="grid gap-4 md:grid-cols-3">
                         <div className="space-y-1">
                           <Label className="text-zinc-300">Judul</Label>
-                          <Field className="font-medium text-zinc-100">{a?.title ?? "-"}</Field>
+                          <Field className="text-zinc-100">{a?.title ?? "-"}</Field>
                         </div>
                         <div className="space-y-1">
                           <Label className="text-zinc-300">Deskripsi</Label>
