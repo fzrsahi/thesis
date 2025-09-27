@@ -70,6 +70,46 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/recomendations/competitions": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get recommendations overview grouped by competition
+     * @description Retrieves all student recommendations grouped by competition, with filtering options for study programs and specific competitions. This endpoint provides a comprehensive overview of which students are recommended for which competitions.
+     */
+    get: operations["getRecommendationsByCompetition"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
+  "/recomendations/students": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get recommendations overview grouped by student
+     * @description Retrieves all student recommendations grouped by student, with filtering options for study programs and specific competitions. This endpoint provides a comprehensive overview of which competitions each student is recommended for.
+     */
+    get: operations["getRecommendationsByStudent"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/students": {
     parameters: {
       query?: never;
@@ -1501,6 +1541,100 @@ export interface components {
       error?: string;
       message?: string;
     };
+    CompetitionRecommendationGroup: {
+      competition: {
+        id: number;
+        title: string;
+        field: string[];
+        type?: string | null;
+        organizer?: string | null;
+      };
+      students: components["schemas"]["StudentRecommendationSummary"][];
+      statistics: {
+        totalStudents?: number;
+        averageMatchScore?: number;
+        highestScore?: number;
+        lowestScore?: number;
+        scoreDistribution?: {
+          /** @description Score >= 0.8 */
+          excellent?: number;
+          /** @description Score >= 0.6 and < 0.8 */
+          good?: number;
+          /** @description Score >= 0.4 and < 0.6 */
+          fair?: number;
+          /** @description Score < 0.4 */
+          poor?: number;
+        };
+      };
+    };
+    StudentRecommendationGroup: {
+      student: {
+        id: number;
+        name: string;
+        email: string;
+        studentId?: string | null;
+        studyProgram: {
+          id: number;
+          name: string;
+        };
+        entryYear: number;
+      };
+      competitions: components["schemas"]["CompetitionRecommendationSummary"][];
+      statistics: {
+        totalCompetitions?: number;
+        averageMatchScore?: number;
+        highestScore?: number;
+        lowestScore?: number;
+        scoreDistribution?: {
+          /** @description Score >= 0.8 */
+          excellent?: number;
+          /** @description Score >= 0.6 and < 0.8 */
+          good?: number;
+          /** @description Score >= 0.4 and < 0.6 */
+          fair?: number;
+          /** @description Score < 0.4 */
+          poor?: number;
+        };
+      };
+    };
+    CompetitionRecommendationSummary: {
+      competition: {
+        id: number;
+        title: string;
+        field: string[];
+        type?: string | null;
+        organizer?: string | null;
+      };
+      recommendation: {
+        id: number;
+        rank: number;
+        /** @description Match score between 0.0 and 1.0 */
+        matchScore: number;
+        /** Format: date-time */
+        createdAt: string;
+      };
+    };
+    StudentRecommendationSummary: {
+      student: {
+        id: number;
+        name: string;
+        email: string;
+        studentId?: string | null;
+        studyProgram: {
+          id: number;
+          name: string;
+        };
+        entryYear: number;
+      };
+      recommendation: {
+        id: number;
+        rank: number;
+        /** @description Match score between 0.0 and 1.0 */
+        matchScore: number;
+        /** Format: date-time */
+        createdAt: string;
+      };
+    };
   };
   responses: never;
   parameters: {
@@ -1569,6 +1703,168 @@ export interface operations {
         };
         content: {
           "application/json": components["schemas"]["SuccessResponse"];
+        };
+      };
+    };
+  };
+  getRecommendationsByCompetition: {
+    parameters: {
+      query?: {
+        /** @description Page number (1-based) */
+        page?: components["parameters"]["PageParam"];
+        /** @description Items per page */
+        limit?: components["parameters"]["LimitParam"];
+        /** @description Free-text search keywords */
+        keywords?: components["parameters"]["KeywordsParam"];
+        /** @description Filter by study program ID */
+        studyProgramId?: number;
+        /** @description Filter by entry year (angkatan) */
+        entryYear?: number;
+        /** @description Filter by specific competition ID */
+        competitionId?: number;
+        /** @description Minimum match score threshold (0.0-1.0) */
+        minMatchScore?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Recommendations retrieved successfully */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @example true */
+            success?: boolean;
+            data?: components["schemas"]["CompetitionRecommendationGroup"][];
+            pagination?: components["schemas"]["Pagination"];
+            summary?: {
+              /** @description Total number of students with recommendations */
+              totalStudents?: number;
+              /** @description Total number of competitions with recommendations */
+              totalCompetitions?: number;
+              /** @description Average match score across all recommendations */
+              averageMatchScore?: number;
+              topCompetitions?: {
+                competitionId?: number;
+                competitionName?: string;
+                studentCount?: number;
+                averageScore?: number;
+              }[];
+            };
+          };
+        };
+      };
+      /** @description Bad request - invalid parameters */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  getRecommendationsByStudent: {
+    parameters: {
+      query?: {
+        /** @description Page number (1-based) */
+        page?: components["parameters"]["PageParam"];
+        /** @description Items per page */
+        limit?: components["parameters"]["LimitParam"];
+        /** @description Free-text search keywords */
+        keywords?: components["parameters"]["KeywordsParam"];
+        /** @description Filter by study program ID */
+        studyProgramId?: number;
+        /** @description Filter by entry year (angkatan) */
+        entryYear?: number;
+        /** @description Filter by specific competition ID */
+        competitionId?: number;
+        /** @description Minimum match score threshold (0.0-1.0) */
+        minMatchScore?: number;
+      };
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Recommendations retrieved successfully */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @example true */
+            success?: boolean;
+            data?: components["schemas"]["StudentRecommendationGroup"][];
+            pagination?: components["schemas"]["Pagination"];
+            summary?: {
+              /** @description Total number of students with recommendations */
+              totalStudents?: number;
+              /** @description Total number of competitions with recommendations */
+              totalCompetitions?: number;
+              /** @description Average match score across all recommendations */
+              averageMatchScore?: number;
+              topStudents?: {
+                studentId?: number;
+                studentName?: string;
+                competitionCount?: number;
+                averageScore?: number;
+              }[];
+            };
+          };
+        };
+      };
+      /** @description Bad request - invalid parameters */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
         };
       };
     };

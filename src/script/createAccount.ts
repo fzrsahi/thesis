@@ -169,7 +169,11 @@ const createStudyProgram = async () => {
   });
 };
 
-createAdmin();
-createStudyProgram();
-createStudent();
-createAdvisors();
+const main = async () => {
+  await createAdmin();
+  await createStudyProgram();
+  await createStudent();
+  await createAdvisors();
+};
+
+main();

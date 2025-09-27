@@ -1,4 +1,4 @@
-import { Home, User, BookOpen, Settings, MessageCircle } from "lucide-react";
+import { Home, User, BookOpen, Settings, MessageCircle, Brain } from "lucide-react";
 
 import { ROLES } from "@/app/shared/const/role";
 
@@ -14,8 +14,9 @@ export const routes: Route[] = [
     roles: [ROLES.ADVISOR, ROLES.ADMIN],
     icon: BookOpen,
   },
-  { name: "Obrolan", href: "/chat", roles: [ROLES.ADVISOR, ROLES.ADMIN], icon: MessageCircle },
+  { name: "Rekomendasi", href: "/recomendation", roles: [ROLES.ADMIN, ROLES.ADVISOR], icon: Brain },
   { name: "Pengaturan", href: "/settings", roles: [ROLES.ADMIN], icon: Settings },
+  { name: "Obrolan", href: "/chat", roles: [ROLES.ADVISOR, ROLES.ADMIN], icon: MessageCircle },
   { name: "Profil", href: "/student/profile", roles: [ROLES.STUDENT], icon: User },
   { name: "Rekomendasi", href: "/my-recomendation", roles: [ROLES.STUDENT], icon: BookOpen },
   { name: "Obrolan", href: "/my-chat", roles: [ROLES.STUDENT], icon: MessageCircle },

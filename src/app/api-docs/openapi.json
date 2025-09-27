@@ -123,6 +123,282 @@
         }
       }
     },
+    "/recomendations/competitions": {
+      "get": {
+        "tags": ["Recommendation"],
+        "summary": "Get recommendations overview grouped by competition",
+        "description": "Retrieves all student recommendations grouped by competition, with filtering options for study programs and specific competitions. This endpoint provides a comprehensive overview of which students are recommended for which competitions.",
+        "operationId": "getRecommendationsByCompetition",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          { "$ref": "#/components/parameters/PageParam" },
+          { "$ref": "#/components/parameters/LimitParam" },
+          { "$ref": "#/components/parameters/KeywordsParam" },
+          {
+            "name": "studyProgramId",
+            "in": "query",
+            "description": "Filter by study program ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "entryYear",
+            "in": "query",
+            "description": "Filter by entry year (angkatan)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1900
+            }
+          },
+          {
+            "name": "competitionId",
+            "in": "query",
+            "description": "Filter by specific competition ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "minMatchScore",
+            "in": "query",
+            "description": "Minimum match score threshold (0.0-1.0)",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "default": 0.0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recommendations retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/CompetitionRecommendationGroup"
+                      }
+                    },
+                    "pagination": { "$ref": "#/components/schemas/Pagination" },
+                    "summary": {
+                      "type": "object",
+                      "properties": {
+                        "totalStudents": {
+                          "type": "integer",
+                          "description": "Total number of students with recommendations"
+                        },
+                        "totalCompetitions": {
+                          "type": "integer",
+                          "description": "Total number of competitions with recommendations"
+                        },
+                        "averageMatchScore": {
+                          "type": "number",
+                          "description": "Average match score across all recommendations"
+                        },
+                        "topCompetitions": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "competitionId": { "type": "integer" },
+                              "competitionName": { "type": "string" },
+                              "studentCount": { "type": "integer" },
+                              "averageScore": { "type": "number" }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/recomendations/students": {
+      "get": {
+        "tags": ["Recommendation"],
+        "summary": "Get recommendations overview grouped by student",
+        "description": "Retrieves all student recommendations grouped by student, with filtering options for study programs and specific competitions. This endpoint provides a comprehensive overview of which competitions each student is recommended for.",
+        "operationId": "getRecommendationsByStudent",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          { "$ref": "#/components/parameters/PageParam" },
+          { "$ref": "#/components/parameters/LimitParam" },
+          { "$ref": "#/components/parameters/KeywordsParam" },
+          {
+            "name": "studyProgramId",
+            "in": "query",
+            "description": "Filter by study program ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "entryYear",
+            "in": "query",
+            "description": "Filter by entry year (angkatan)",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1900
+            }
+          },
+          {
+            "name": "competitionId",
+            "in": "query",
+            "description": "Filter by specific competition ID",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "minMatchScore",
+            "in": "query",
+            "description": "Minimum match score threshold (0.0-1.0)",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 1.0,
+              "default": 0.0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recommendations retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/StudentRecommendationGroup"
+                      }
+                    },
+                    "pagination": { "$ref": "#/components/schemas/Pagination" },
+                    "summary": {
+                      "type": "object",
+                      "properties": {
+                        "totalStudents": {
+                          "type": "integer",
+                          "description": "Total number of students with recommendations"
+                        },
+                        "totalCompetitions": {
+                          "type": "integer",
+                          "description": "Total number of competitions with recommendations"
+                        },
+                        "averageMatchScore": {
+                          "type": "number",
+                          "description": "Average match score across all recommendations"
+                        },
+                        "topStudents": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "studentId": { "type": "integer" },
+                              "studentName": { "type": "string" },
+                              "competitionCount": { "type": "integer" },
+                              "averageScore": { "type": "number" }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
     "/students": {
       "get": {
         "tags": ["Student"],
@@ -2076,6 +2352,168 @@
             "type": "string"
           }
         }
+      },
+      "CompetitionRecommendationGroup": {
+        "type": "object",
+        "properties": {
+          "competition": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer" },
+              "title": { "type": "string" },
+              "field": { "type": "array", "items": { "type": "string" } },
+              "type": { "type": "string", "nullable": true },
+              "organizer": { "type": "string", "nullable": true }
+            },
+            "required": ["id", "title", "field"]
+          },
+          "students": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StudentRecommendationSummary"
+            }
+          },
+          "statistics": {
+            "type": "object",
+            "properties": {
+              "totalStudents": { "type": "integer" },
+              "averageMatchScore": { "type": "number" },
+              "highestScore": { "type": "number" },
+              "lowestScore": { "type": "number" },
+              "scoreDistribution": {
+                "type": "object",
+                "properties": {
+                  "excellent": { "type": "integer", "description": "Score >= 0.8" },
+                  "good": { "type": "integer", "description": "Score >= 0.6 and < 0.8" },
+                  "fair": { "type": "integer", "description": "Score >= 0.4 and < 0.6" },
+                  "poor": { "type": "integer", "description": "Score < 0.4" }
+                }
+              }
+            }
+          }
+        },
+        "required": ["competition", "students", "statistics"]
+      },
+      "StudentRecommendationGroup": {
+        "type": "object",
+        "properties": {
+          "student": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer" },
+              "name": { "type": "string" },
+              "email": { "type": "string" },
+              "studentId": { "type": "string", "nullable": true },
+              "studyProgram": {
+                "type": "object",
+                "properties": {
+                  "id": { "type": "integer" },
+                  "name": { "type": "string" }
+                },
+                "required": ["id", "name"]
+              },
+              "entryYear": { "type": "integer" }
+            },
+            "required": ["id", "name", "email", "studyProgram", "entryYear"]
+          },
+          "competitions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CompetitionRecommendationSummary"
+            }
+          },
+          "statistics": {
+            "type": "object",
+            "properties": {
+              "totalCompetitions": { "type": "integer" },
+              "averageMatchScore": { "type": "number" },
+              "highestScore": { "type": "number" },
+              "lowestScore": { "type": "number" },
+              "scoreDistribution": {
+                "type": "object",
+                "properties": {
+                  "excellent": { "type": "integer", "description": "Score >= 0.8" },
+                  "good": { "type": "integer", "description": "Score >= 0.6 and < 0.8" },
+                  "fair": { "type": "integer", "description": "Score >= 0.4 and < 0.6" },
+                  "poor": { "type": "integer", "description": "Score < 0.4" }
+                }
+              }
+            }
+          }
+        },
+        "required": ["student", "competitions", "statistics"]
+      },
+      "CompetitionRecommendationSummary": {
+        "type": "object",
+        "properties": {
+          "competition": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer" },
+              "title": { "type": "string" },
+              "field": { "type": "array", "items": { "type": "string" } },
+              "type": { "type": "string", "nullable": true },
+              "organizer": { "type": "string", "nullable": true }
+            },
+            "required": ["id", "title", "field"]
+          },
+          "recommendation": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer" },
+              "rank": { "type": "integer" },
+              "matchScore": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "Match score between 0.0 and 1.0"
+              },
+              "createdAt": { "type": "string", "format": "date-time" }
+            },
+            "required": ["id", "rank", "matchScore", "createdAt"]
+          }
+        },
+        "required": ["competition", "recommendation"]
+      },
+      "StudentRecommendationSummary": {
+        "type": "object",
+        "properties": {
+          "student": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer" },
+              "name": { "type": "string" },
+              "email": { "type": "string" },
+              "studentId": { "type": "string", "nullable": true },
+              "studyProgram": {
+                "type": "object",
+                "properties": {
+                  "id": { "type": "integer" },
+                  "name": { "type": "string" }
+                },
+                "required": ["id", "name"]
+              },
+              "entryYear": { "type": "integer" }
+            },
+            "required": ["id", "name", "email", "studyProgram", "entryYear"]
+          },
+          "recommendation": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer" },
+              "rank": { "type": "integer" },
+              "matchScore": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "Match score between 0.0 and 1.0"
+              },
+              "createdAt": { "type": "string", "format": "date-time" }
+            },
+            "required": ["id", "rank", "matchScore", "createdAt"]
+          }
+        },
+        "required": ["student", "recommendation"]
       }
     }
   },
