@@ -110,6 +110,26 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/recomendations/competitions/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get detailed competition recommendations by ID
+     * @description Retrieves detailed information about a specific competition including comprehensive statistics about study programs, entry years, match scores, and top 3 students with highest scores.
+     */
+    get: operations["getCompetitionRecommendationsById"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/students": {
     parameters: {
       query?: never;
@@ -1635,6 +1655,103 @@ export interface components {
         createdAt: string;
       };
     };
+    CompetitionRecommendationDetail: {
+      competition: components["schemas"]["CompetitionDetail"];
+      statistics: {
+        overview: {
+          /** @description Total number of students recommended for this competition */
+          totalStudents: number;
+          /** @description Average match score across all recommendations */
+          averageMatchScore: number;
+          /** @description Highest match score among all recommendations */
+          highestMatchScore: number;
+          /** @description Lowest match score among all recommendations */
+          lowestMatchScore: number;
+          scoreDistribution: {
+            /** @description Number of students with score >= 0.8 */
+            excellent: number;
+            /** @description Number of students with score >= 0.6 and < 0.8 */
+            good: number;
+            /** @description Number of students with score >= 0.4 and < 0.6 */
+            fair: number;
+            /** @description Number of students with score < 0.4 */
+            poor: number;
+          };
+        };
+        /** @description Statistics grouped by study program */
+        studyPrograms: {
+          studyProgram: {
+            id: number;
+            name: string;
+          };
+          /** @description Number of students from this study program */
+          studentCount: number;
+          /** @description Average match score for students from this study program */
+          averageScore: number;
+          /** @description Percentage of total students from this study program */
+          percentage: number;
+        }[];
+        /** @description Statistics grouped by entry year (angkatan) */
+        entryYears: {
+          /** @description Entry year (angkatan) */
+          entryYear: number;
+          /** @description Number of students from this entry year */
+          studentCount: number;
+          /** @description Average match score for students from this entry year */
+          averageScore: number;
+          /** @description Percentage of total students from this entry year */
+          percentage: number;
+        }[];
+        /** @description Top 3 students with highest match scores */
+        topPerformers: {
+          student: {
+            id: number;
+            name: string;
+            studentId?: string | null;
+            studyProgram: {
+              id: number;
+              name: string;
+            };
+            entryYear: number;
+          };
+          matchScore: number;
+          /** @description Ranking position among all recommendations */
+          rank: number;
+        }[];
+      };
+    };
+    StudentRecommendationDetail: {
+      student: {
+        id: number;
+        name: string;
+        email: string;
+        studentId?: string | null;
+        studyProgram: {
+          id: number;
+          name: string;
+        };
+        entryYear: number;
+        gpa?: string | null;
+        interests?: string[];
+        skills?: string[];
+      };
+      recommendation: {
+        id: number;
+        rank: number;
+        /** @description Match score between 0.0 and 1.0 */
+        matchScore: number;
+        reasoning: {
+          /** @description Brief summary of why this student is recommended */
+          summary: string;
+          /** @description Student's strengths relevant to this competition */
+          strengths: string[];
+          /** @description Areas where the student could improve for this competition */
+          areasForImprovement: string[];
+        };
+        /** Format: date-time */
+        createdAt: string;
+      };
+    };
   };
   responses: never;
   parameters: {
@@ -1851,6 +1968,69 @@ export interface operations {
       };
       /** @description Unauthorized */
       401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  getCompetitionRecommendationsById: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Competition ID */
+        id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Competition recommendations retrieved successfully */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": {
+            /** @example true */
+            success: boolean;
+            data: components["schemas"]["CompetitionRecommendationDetail"];
+          };
+        };
+      };
+      /** @description Bad request - invalid parameters */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Competition not found */
+      404: {
         headers: {
           [name: string]: unknown;
         };

@@ -399,6 +399,85 @@
         }
       }
     },
+    "/recomendations/competitions/{id}": {
+      "get": {
+        "tags": ["Recommendation"],
+        "summary": "Get detailed competition recommendations by ID",
+        "description": "Retrieves detailed information about a specific competition including comprehensive statistics about study programs, entry years, match scores, and top 3 students with highest scores.",
+        "operationId": "getCompetitionRecommendationsById",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Competition ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Competition recommendations retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/CompetitionRecommendationDetail"
+                    }
+                  },
+                  "required": ["success", "data"]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Competition not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
     "/students": {
       "get": {
         "tags": ["Student"],
@@ -2511,6 +2590,247 @@
               "createdAt": { "type": "string", "format": "date-time" }
             },
             "required": ["id", "rank", "matchScore", "createdAt"]
+          }
+        },
+        "required": ["student", "recommendation"]
+      },
+      "CompetitionRecommendationDetail": {
+        "type": "object",
+        "properties": {
+          "competition": {
+            "$ref": "#/components/schemas/CompetitionDetail"
+          },
+          "statistics": {
+            "type": "object",
+            "properties": {
+              "overview": {
+                "type": "object",
+                "properties": {
+                  "totalStudents": {
+                    "type": "integer",
+                    "description": "Total number of students recommended for this competition"
+                  },
+                  "averageMatchScore": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "description": "Average match score across all recommendations"
+                  },
+                  "highestMatchScore": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "description": "Highest match score among all recommendations"
+                  },
+                  "lowestMatchScore": {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "description": "Lowest match score among all recommendations"
+                  },
+                  "scoreDistribution": {
+                    "type": "object",
+                    "properties": {
+                      "excellent": {
+                        "type": "integer",
+                        "description": "Number of students with score >= 0.8"
+                      },
+                      "good": {
+                        "type": "integer",
+                        "description": "Number of students with score >= 0.6 and < 0.8"
+                      },
+                      "fair": {
+                        "type": "integer",
+                        "description": "Number of students with score >= 0.4 and < 0.6"
+                      },
+                      "poor": {
+                        "type": "integer",
+                        "description": "Number of students with score < 0.4"
+                      }
+                    },
+                    "required": ["excellent", "good", "fair", "poor"]
+                  }
+                },
+                "required": [
+                  "totalStudents",
+                  "averageMatchScore",
+                  "highestMatchScore",
+                  "lowestMatchScore",
+                  "scoreDistribution"
+                ]
+              },
+              "studyPrograms": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "studyProgram": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "integer" },
+                        "name": { "type": "string" }
+                      },
+                      "required": ["id", "name"]
+                    },
+                    "studentCount": {
+                      "type": "integer",
+                      "description": "Number of students from this study program"
+                    },
+                    "averageScore": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1,
+                      "description": "Average match score for students from this study program"
+                    },
+                    "percentage": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100,
+                      "description": "Percentage of total students from this study program"
+                    }
+                  },
+                  "required": ["studyProgram", "studentCount", "averageScore", "percentage"]
+                },
+                "description": "Statistics grouped by study program"
+              },
+              "entryYears": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "entryYear": {
+                      "type": "integer",
+                      "description": "Entry year (angkatan)"
+                    },
+                    "studentCount": {
+                      "type": "integer",
+                      "description": "Number of students from this entry year"
+                    },
+                    "averageScore": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1,
+                      "description": "Average match score for students from this entry year"
+                    },
+                    "percentage": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 100,
+                      "description": "Percentage of total students from this entry year"
+                    }
+                  },
+                  "required": ["entryYear", "studentCount", "averageScore", "percentage"]
+                },
+                "description": "Statistics grouped by entry year (angkatan)"
+              },
+              "topPerformers": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "student": {
+                      "type": "object",
+                      "properties": {
+                        "id": { "type": "integer" },
+                        "name": { "type": "string" },
+                        "studentId": { "type": "string", "nullable": true },
+                        "studyProgram": {
+                          "type": "object",
+                          "properties": {
+                            "id": { "type": "integer" },
+                            "name": { "type": "string" }
+                          },
+                          "required": ["id", "name"]
+                        },
+                        "entryYear": { "type": "integer" }
+                      },
+                      "required": ["id", "name", "studyProgram", "entryYear"]
+                    },
+                    "matchScore": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 1
+                    },
+                    "rank": {
+                      "type": "integer",
+                      "description": "Ranking position among all recommendations"
+                    }
+                  },
+                  "required": ["student", "matchScore", "rank"]
+                },
+                "description": "Top 3 students with highest match scores"
+              }
+            },
+            "required": ["overview", "studyPrograms", "entryYears", "topPerformers"]
+          }
+        },
+        "required": ["competition", "statistics"]
+      },
+      "StudentRecommendationDetail": {
+        "type": "object",
+        "properties": {
+          "student": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer" },
+              "name": { "type": "string" },
+              "email": { "type": "string" },
+              "studentId": { "type": "string", "nullable": true },
+              "studyProgram": {
+                "type": "object",
+                "properties": {
+                  "id": { "type": "integer" },
+                  "name": { "type": "string" }
+                },
+                "required": ["id", "name"]
+              },
+              "entryYear": { "type": "integer" },
+              "gpa": { "type": "string", "nullable": true },
+              "interests": {
+                "type": "array",
+                "items": { "type": "string" }
+              },
+              "skills": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            },
+            "required": ["id", "name", "email", "studyProgram", "entryYear"]
+          },
+          "recommendation": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer" },
+              "rank": { "type": "integer" },
+              "matchScore": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1,
+                "description": "Match score between 0.0 and 1.0"
+              },
+              "reasoning": {
+                "type": "object",
+                "properties": {
+                  "summary": {
+                    "type": "string",
+                    "description": "Brief summary of why this student is recommended"
+                  },
+                  "strengths": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Student's strengths relevant to this competition"
+                  },
+                  "areasForImprovement": {
+                    "type": "array",
+                    "items": { "type": "string" },
+                    "description": "Areas where the student could improve for this competition"
+                  }
+                },
+                "required": ["summary", "strengths", "areasForImprovement"]
+              },
+              "createdAt": { "type": "string", "format": "date-time" }
+            },
+            "required": ["id", "rank", "matchScore", "reasoning", "createdAt"]
           }
         },
         "required": ["student", "recommendation"]

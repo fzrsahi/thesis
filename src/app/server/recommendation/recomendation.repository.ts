@@ -514,7 +514,7 @@ export const getRecommendationsByStudent = async (
           (compRec) => compRec.competitionId
         ) || []
     )
-    .filter((id, index, arr) => arr.indexOf(id) === index); // Remove duplicates
+    .filter((id, index, arr) => arr.indexOf(id) === index);
 
   const competitions = await prisma.competitions.findMany({
     where: {
@@ -555,7 +555,6 @@ export const getRecommendationsByStudent = async (
         }
       );
 
-      // Calculate statistics
       const matchScores = studentCompetitions.map((c) => c.recommendation.matchScore);
       const statistics = {
         totalCompetitions: studentCompetitions.length,
@@ -585,7 +584,6 @@ export const getRecommendationsByStudent = async (
       };
     });
 
-  // Use pagination utility for students
   const paginatedResult = await paginate(
     {
       count: async () => studentGroups.length,
@@ -595,7 +593,6 @@ export const getRecommendationsByStudent = async (
     pagination
   );
 
-  // Calculate overall summary
   const allMatchScores = studentGroups.flatMap((group) =>
     group.competitions.map((c) => c.recommendation.matchScore)
   );
@@ -621,5 +618,275 @@ export const getRecommendationsByStudent = async (
     data: paginatedResult.data,
     pagination: paginatedResult.pagination,
     summary,
+  };
+};
+
+export const getRecomendationByCompetitionId = async (competitionId: number) => {
+  const competition = await prisma.competitions.findUnique({
+    where: { id: competitionId },
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      field: true,
+      type: true,
+      minGPA: true,
+      location: true,
+      organizer: true,
+      startDate: true,
+      endDate: true,
+      sourceUrl: true,
+      relevantCourses: true,
+      relevantSkills: true,
+      requirements: true,
+      evaluationCriteria: true,
+      competitionStats: {
+        include: {
+          totalApplicantsPastYear: true,
+          pastUngParticipants: true,
+        },
+      },
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+
+  if (!competition) {
+    return null;
+  }
+
+  const recommendations = await prisma.recommendation.findMany({
+    where: {
+      competitionRecommendations: {
+        some: { competitionId },
+      },
+    },
+    select: {
+      id: true,
+      studentId: true,
+      createdAt: true,
+      student: {
+        select: {
+          id: true,
+          studentId: true,
+          entryYear: true,
+          gpa: true,
+          interests: true,
+          skills: true,
+          user: {
+            select: {
+              name: true,
+              email: true,
+            },
+          },
+          studyProgram: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      },
+      competitionRecommendations: {
+        where: { competitionId },
+        select: {
+          id: true,
+          rank: true,
+          matchScore: true,
+          matchReason: true,
+          reasoning: true,
+          keyFactors: true,
+          preparationTips: true,
+          skillRequirements: true,
+          createdAt: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  const students = recommendations
+    .filter((rec) => rec.student && rec.competitionRecommendations.length > 0)
+    .map((rec) => {
+      const competitionRec = rec.competitionRecommendations[0];
+      return {
+        student: {
+          id: rec.student!.id,
+          name: rec.student!.user.name,
+          email: rec.student!.user.email,
+          studentId: rec.student!.studentId,
+          studyProgram: {
+            id: rec.student!.studyProgram.id,
+            name: rec.student!.studyProgram.name,
+          },
+          entryYear: rec.student!.entryYear,
+          gpa: rec.student!.gpa,
+          interests: rec.student!.interests,
+          skills: rec.student!.skills,
+        },
+        recommendation: {
+          id: competitionRec.id,
+          rank: competitionRec.rank,
+          matchScore: competitionRec.matchScore,
+          matchReason: competitionRec.matchReason,
+          reasoning: competitionRec.reasoning ? JSON.parse(competitionRec.reasoning) : null,
+          keyFactors: competitionRec.keyFactors ? JSON.parse(competitionRec.keyFactors) : null,
+          preparationTips: competitionRec.preparationTips
+            ? JSON.parse(competitionRec.preparationTips)
+            : null,
+          skillRequirements: competitionRec.skillRequirements
+            ? JSON.parse(competitionRec.skillRequirements)
+            : null,
+          createdAt: competitionRec.createdAt,
+        },
+      };
+    });
+
+  const matchScores = students.map((s) => s.recommendation.matchScore);
+
+  type StudyProgramGroup = {
+    studyProgram: { id: number; name: string };
+    students: typeof students;
+    studentCount: number;
+    averageScore: number;
+    percentage?: number;
+  };
+
+  const studyProgramGroups = students.reduce(
+    (acc, item) => {
+      const programId = item.student.studyProgram.id;
+      const programName = item.student.studyProgram.name;
+
+      if (!acc[programId]) {
+        acc[programId] = {
+          studyProgram: { id: programId, name: programName },
+          students: [],
+          studentCount: 0,
+          averageScore: 0,
+        };
+      }
+
+      acc[programId].students.push(item);
+      acc[programId].studentCount += 1;
+
+      return acc;
+    },
+    {} as Record<number, StudyProgramGroup>
+  );
+
+  Object.values(studyProgramGroups).forEach((group) => {
+    const scores = group.students.map((s) => s.recommendation.matchScore);
+    const updatedGroup = group;
+    updatedGroup.averageScore =
+      scores.length > 0 ? scores.reduce((a: number, b: number) => a + b, 0) / scores.length : 0;
+    updatedGroup.percentage = (group.studentCount / students.length) * 100;
+  });
+
+  type EntryYearGroup = {
+    entryYear: number;
+    students: typeof students;
+    studentCount: number;
+    averageScore: number;
+    percentage?: number;
+  };
+
+  const entryYearGroups = students.reduce(
+    (acc, item) => {
+      const year = item.student.entryYear;
+
+      if (!acc[year]) {
+        acc[year] = {
+          entryYear: year,
+          students: [],
+          studentCount: 0,
+          averageScore: 0,
+        };
+      }
+
+      acc[year].students.push(item);
+      acc[year].studentCount += 1;
+
+      return acc;
+    },
+    {} as Record<number, EntryYearGroup>
+  );
+
+  Object.values(entryYearGroups).forEach((group) => {
+    const scores = group.students.map((s) => s.recommendation.matchScore);
+    const updatedGroup = group;
+    updatedGroup.averageScore =
+      scores.length > 0 ? scores.reduce((a: number, b: number) => a + b, 0) / scores.length : 0;
+    updatedGroup.percentage = (group.studentCount / students.length) * 100;
+  });
+
+  const topPerformers = students
+    .sort((a, b) => b.recommendation.matchScore - a.recommendation.matchScore)
+    .slice(0, 3)
+    .map((item, index) => ({
+      student: item.student,
+      matchScore: item.recommendation.matchScore,
+      rank: index + 1,
+    }));
+
+  return {
+    competition: {
+      id: competition.id,
+      title: competition.title,
+      description: competition.description,
+      field: competition.field,
+      type: competition.type,
+      minGPA: competition.minGPA,
+      requirements: competition.requirements,
+      startDate: competition.startDate,
+      endDate: competition.endDate,
+      location: competition.location,
+      organizer: competition.organizer,
+      evaluationCriteria: competition.evaluationCriteria,
+      sourceUrl: competition.sourceUrl,
+      relevantCourses: competition.relevantCourses,
+      relevantSkills: competition.relevantSkills,
+      createdAt: competition.createdAt,
+      updatedAt: competition.updatedAt,
+    },
+    statistics: {
+      overview: {
+        totalStudents: students.length,
+        averageMatchScore:
+          matchScores.length > 0 ? matchScores.reduce((a, b) => a + b, 0) / matchScores.length : 0,
+        highestMatchScore: matchScores.length > 0 ? Math.max(...matchScores) : 0,
+        lowestMatchScore: matchScores.length > 0 ? Math.min(...matchScores) : 0,
+        scoreDistribution: {
+          excellent: matchScores.filter((score) => score >= 0.8).length,
+          good: matchScores.filter((score) => score >= 0.6 && score < 0.8).length,
+          fair: matchScores.filter((score) => score >= 0.4 && score < 0.6).length,
+          poor: matchScores.filter((score) => score < 0.4).length,
+        },
+      },
+      studyPrograms: Object.values(studyProgramGroups).map((group) => ({
+        studyProgram: group.studyProgram,
+        studentCount: group.studentCount,
+        averageScore: group.averageScore,
+        percentage: group.percentage,
+      })),
+      entryYears: Object.values(entryYearGroups).map((group) => ({
+        entryYear: group.entryYear,
+        studentCount: group.studentCount,
+        averageScore: group.averageScore,
+        percentage: group.percentage,
+      })),
+      topPerformers: topPerformers.map((performer) => ({
+        student: {
+          id: performer.student.id,
+          name: performer.student.name,
+          studentId: performer.student.studentId,
+          studyProgram: performer.student.studyProgram,
+          entryYear: performer.student.entryYear,
+        },
+        matchScore: performer.matchScore,
+        rank: performer.rank,
+      })),
+    },
   };
 };
