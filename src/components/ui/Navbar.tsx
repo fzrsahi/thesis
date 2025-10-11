@@ -7,7 +7,6 @@ import {
   DropdownMenuTrigger,
 } from "@radix-ui/react-dropdown-menu";
 import { Home, Sparkles, Brain, Zap } from "lucide-react";
-import { Orbitron } from "next/font/google";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -16,8 +15,6 @@ import { useCallback, useEffect, useState } from "react";
 
 import { ROLES } from "@/app/shared/const/role";
 import { routes } from "@/constants/auth-routes";
-
-const orbitron = Orbitron({ subsets: ["latin"] });
 
 const Navbar = () => {
   const { data: session, status } = useSession();
@@ -44,8 +41,20 @@ const Navbar = () => {
   }, [pathname]);
 
   const handleAccountSettings = useCallback(() => {
-    window.location.href = "/profile";
-  }, []);
+    if (!session) return;
+
+    const userRole = session.user.role;
+
+    // Redirect based on user role
+    if (userRole === ROLES.STUDENT) {
+      window.location.href = "/student/profile";
+    } else if (userRole === ROLES.ADMIN) {
+      window.location.href = "/profile";
+    } else {
+      // For advisor or other roles, redirect to dashboard
+      window.location.href = "/dashboard";
+    }
+  }, [session]);
 
   const toggleMobileMenu = useCallback(() => {
     setMobileMenuOpen((prev) => !prev);
@@ -154,9 +163,9 @@ const Navbar = () => {
                     <UserCircleIcon className="h-5 w-5 text-white" />
                   </div>
                   <div>
-                    <p className="font-bold text-white">{session?.user?.name || "FAZRUL SAMI"}</p>
+                    <p className="font-bold text-white">{session?.user?.name || "User"}</p>
                     <p className="text-xs text-zinc-400">
-                      {session?.user?.email || "fazrul_s1sisfo@mahasiswa.ung.ac.id"}
+                      {session?.user?.email || "user@example.com"}
                     </p>
                   </div>
                 </div>
@@ -194,7 +203,7 @@ const Navbar = () => {
 
     const userRole = session.user.role;
     const isAdmin = userRole === ROLES.ADMIN;
-    const isAdvisor = userRole === "advisor";
+    const isAdvisor = userRole === ROLES.ADVISOR;
     const isStudent = userRole === ROLES.STUDENT;
 
     return (
@@ -280,12 +289,21 @@ const Navbar = () => {
           <div className="flex items-center gap-3">
             <Link href="/">
               <div className="flex items-center gap-3">
-                <Image src="/images/logo.png" alt="Scout" width={40} height={40} />
-                <span
-                  className={`${orbitron.className} animate-pulse bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-lg font-bold text-transparent`}
-                >
-                  Scout
-                </span>
+                <div className="flex items-center gap-2">
+                  <Image
+                    src="/images/logo.png"
+                    alt="Scout"
+                    width={50}
+                    height={50}
+                    className="mt-2"
+                  />
+                  <Image
+                    src="/images/image.png"
+                    alt="Universitas Negeri Gorontalo"
+                    width={40}
+                    height={40}
+                  />
+                </div>
               </div>
             </Link>
           </div>
@@ -294,31 +312,31 @@ const Navbar = () => {
             <li>
               <a
                 href="#features"
-                className="group relative flex items-center gap-2 rounded-lg px-4 py-2 transition-all hover:bg-gradient-to-r hover:from-blue-500/10 hover:to-purple-500/10 hover:text-zinc-300"
-              >
-                <Brain className="h-4 w-4 text-blue-400" />
-                <span>Features</span>
-                <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
-              </a>
-            </li>
-            <li>
-              <a
-                href="#about"
                 className="group relative flex items-center gap-2 rounded-lg px-4 py-2 transition-all hover:bg-gradient-to-r hover:from-purple-500/10 hover:to-pink-500/10 hover:text-zinc-300"
               >
                 <Zap className="h-4 w-4 text-purple-400" />
-                <span>Teknologi</span>
+                <span>Demo AI</span>
                 <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/5 to-pink-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
               </a>
             </li>
             <li>
               <a
-                href="#pricing"
+                href="#about"
                 className="group relative flex items-center gap-2 rounded-lg px-4 py-2 transition-all hover:bg-gradient-to-r hover:from-pink-500/10 hover:to-red-500/10 hover:text-zinc-300"
               >
                 <Sparkles className="h-4 w-4 text-pink-400" />
-                <span>Tentang</span>
+                <span>Platform</span>
                 <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-pink-500/5 to-red-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
+              </a>
+            </li>
+            <li>
+              <a
+                href="#technology"
+                className="group relative flex items-center gap-2 rounded-lg px-4 py-2 transition-all hover:bg-gradient-to-r hover:from-cyan-500/10 hover:to-blue-500/10 hover:text-zinc-300"
+              >
+                <Brain className="h-4 w-4 text-cyan-400" />
+                <span>AI Canggih</span>
+                <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-cyan-500/5 to-blue-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
               </a>
             </li>
           </ul>
@@ -355,40 +373,40 @@ const Navbar = () => {
             <li>
               <a
                 href="#features"
-                className="group relative flex items-center gap-3 rounded-lg px-4 py-3 transition-all hover:bg-gradient-to-r hover:from-blue-500/10 hover:to-purple-500/10"
-                onClick={handleMobileMenuClick}
-              >
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg">
-                  <Brain className="h-4 w-4 text-white" />
-                </div>
-                <span>Fitur</span>
-                <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
-              </a>
-            </li>
-            <li>
-              <a
-                href="#about"
                 className="group relative flex items-center gap-3 rounded-lg px-4 py-3 transition-all hover:bg-gradient-to-r hover:from-purple-500/10 hover:to-pink-500/10"
                 onClick={handleMobileMenuClick}
               >
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-pink-600 shadow-lg">
                   <Zap className="h-4 w-4 text-white" />
                 </div>
-                <span>Teknologi</span>
+                <span>Demo AI</span>
                 <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/5 to-pink-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
               </a>
             </li>
             <li>
               <a
-                href="#pricing"
+                href="#about"
                 className="group relative flex items-center gap-3 rounded-lg px-4 py-3 transition-all hover:bg-gradient-to-r hover:from-pink-500/10 hover:to-red-500/10"
                 onClick={handleMobileMenuClick}
               >
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-pink-500 to-red-600 shadow-lg">
                   <Sparkles className="h-4 w-4 text-white" />
                 </div>
-                <span>Tentang</span>
+                <span>Platform</span>
                 <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-pink-500/5 to-red-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
+              </a>
+            </li>
+            <li>
+              <a
+                href="#technology"
+                className="group relative flex items-center gap-3 rounded-lg px-4 py-3 transition-all hover:bg-gradient-to-r hover:from-cyan-500/10 hover:to-blue-500/10"
+                onClick={handleMobileMenuClick}
+              >
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 shadow-lg">
+                  <Brain className="h-4 w-4 text-white" />
+                </div>
+                <span>AI Canggih</span>
+                <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-cyan-500/5 to-blue-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
               </a>
             </li>
           </ul>
