@@ -185,7 +185,6 @@ const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
       title: "",
       description: "",
       date: "",
-      issuer: "",
     });
     toast.success("Prestasi baru ditambahkan");
   };
