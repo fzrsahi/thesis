@@ -2912,7 +2912,12 @@
                 "example": 8
               }
             },
-            "required": ["totalStudents", "activeCompetitions", "totalRecommendations", "upcomingDeadlines"]
+            "required": [
+              "totalStudents",
+              "activeCompetitions",
+              "totalRecommendations",
+              "upcomingDeadlines"
+            ]
           },
           "popularCompetitions": {
             "type": "array",

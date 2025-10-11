@@ -245,35 +245,38 @@ const looksLikeHeading = (line: string): boolean => {
 
 const saveChunksToPostgres = async (chunks: Document[], competitionId: number): Promise<void> => {
   const logger = getLogger({ module: "usecase/generate-competition" });
-  
-  logger.info({ competitionId, totalChunks: chunks.length }, "Starting similarity check for chunks");
-  
+
+  logger.info(
+    { competitionId, totalChunks: chunks.length },
+    "Starting similarity check for chunks"
+  );
+
   // Cek similarity untuk setiap chunk
   const similarityResults = await checkDocumentChunksSimilarity(chunks, competitionId);
   const summary = getSimilaritySummary(similarityResults);
-  
+
   logger.info(
-    { 
+    {
       competitionId,
-      ...summary
+      ...summary,
     },
     "Similarity check completed"
   );
 
   // Filter chunks yang unique (tidak similar dengan yang sudah ada)
   const uniqueChunks = filterUniqueChunks(chunks, similarityResults);
-  
+
   if (uniqueChunks.length === 0) {
     logger.info({ competitionId }, "All chunks are similar to existing ones, skipping embedding");
     return;
   }
 
   logger.info(
-    { 
+    {
       competitionId,
       originalChunks: chunks.length,
       uniqueChunks: uniqueChunks.length,
-      skippedChunks: chunks.length - uniqueChunks.length
+      skippedChunks: chunks.length - uniqueChunks.length,
     },
     "Processing unique chunks only"
   );
@@ -295,7 +298,10 @@ const saveChunksToPostgres = async (chunks: Document[], competitionId: number): 
   // Embedding untuk chunks yang unique saja
   const vectorStore = getDocumentChunksVectorStore();
   const t0 = Date.now();
-  logger.info({ competitionId, readyToEmbed: savedDocuments.length }, "Embedding start (unique chunks only)");
+  logger.info(
+    { competitionId, readyToEmbed: savedDocuments.length },
+    "Embedding start (unique chunks only)"
+  );
   await vectorStore.addModels(savedDocuments);
   const t1 = Date.now();
   logger.info(

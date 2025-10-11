@@ -68,12 +68,12 @@ export const checkCompetitionSimilarity = async (
 
     // Ambil similarity score tertinggi
     const [mostSimilarCompetition, highestScore] = similarCompetitions[0];
-    
+
     logger.info(
-      { 
-        highestScore, 
+      {
+        highestScore,
         competitionId: mostSimilarCompetition.id,
-        threshold: SIMILARITY_THRESHOLD 
+        threshold: SIMILARITY_THRESHOLD,
       },
       "Similarity check completed"
     );
@@ -130,36 +130,35 @@ export const checkDocumentChunksSimilarity = async (
             isSimilar: false,
             similarityScore: 0,
           };
-        } 
-          // Ambil similarity score tertinggi
-          const [mostSimilarChunk, highestScore] = similarChunks[0];
-          
-          const isSimilar = highestScore >= SIMILARITY_THRESHOLD;
-          
-          logger.debug(
-            { 
-              chunkIndex: i,
-              highestScore, 
-              isSimilar,
-              threshold: SIMILARITY_THRESHOLD 
-            },
-            "Chunk similarity check completed"
-          );
+        }
+        // Ambil similarity score tertinggi
+        const [mostSimilarChunk, highestScore] = similarChunks[0];
 
-          return {
+        const isSimilar = highestScore >= SIMILARITY_THRESHOLD;
+
+        logger.debug(
+          {
             chunkIndex: i,
+            highestScore,
             isSimilar,
-            similarityScore: highestScore,
-            existingChunkId: mostSimilarChunk.id as string,
-            existingContent: mostSimilarChunk.pageContent,
-          };
-        
+            threshold: SIMILARITY_THRESHOLD,
+          },
+          "Chunk similarity check completed"
+        );
+
+        return {
+          chunkIndex: i,
+          isSimilar,
+          similarityScore: highestScore,
+          existingChunkId: mostSimilarChunk.id as string,
+          existingContent: mostSimilarChunk.pageContent,
+        };
       } catch (chunkError) {
         logger.error(
           { chunkIndex: i, error: String(chunkError) },
           "Error checking chunk similarity"
         );
-        
+
         // Jika error, anggap tidak similar dan lanjutkan
         return {
           chunkIndex: i,
@@ -172,10 +171,10 @@ export const checkDocumentChunksSimilarity = async (
     const results = await Promise.all(chunkPromises);
 
     logger.info(
-      { 
+      {
         totalChunks: chunks.length,
-        similarChunks: results.filter(r => r.isSimilar).length,
-        uniqueChunks: results.filter(r => !r.isSimilar).length
+        similarChunks: results.filter((r) => r.isSimilar).length,
+        uniqueChunks: results.filter((r) => !r.isSimilar).length,
       },
       "Document chunks similarity check completed"
     );
@@ -196,18 +195,18 @@ export const filterUniqueChunks = (
   similarityResults: ChunkSimilarityResult[]
 ): Document[] => {
   const uniqueChunks: Document[] = [];
-  
+
   for (let i = 0; i < chunks.length; i += 1) {
-    const similarityResult = similarityResults.find(r => r.chunkIndex === i);
-    
+    const similarityResult = similarityResults.find((r) => r.chunkIndex === i);
+
     if (!similarityResult || !similarityResult.isSimilar) {
       uniqueChunks.push(chunks[i]);
     } else {
       logger.debug(
-        { 
+        {
           chunkIndex: i,
           similarityScore: similarityResult.similarityScore,
-          existingChunkId: similarityResult.existingChunkId
+          existingChunkId: similarityResult.existingChunkId,
         },
         "Skipping similar chunk"
       );
@@ -215,10 +214,10 @@ export const filterUniqueChunks = (
   }
 
   logger.info(
-    { 
+    {
       originalChunks: chunks.length,
       uniqueChunks: uniqueChunks.length,
-      skippedChunks: chunks.length - uniqueChunks.length
+      skippedChunks: chunks.length - uniqueChunks.length,
     },
     "Chunks filtered based on similarity"
   );
@@ -238,9 +237,10 @@ export const getSimilaritySummary = (
   averageSimilarity: number;
 } => {
   const totalChunks = similarityResults.length;
-  const similarChunks = similarityResults.filter(r => r.isSimilar).length;
+  const similarChunks = similarityResults.filter((r) => r.isSimilar).length;
   const uniqueChunks = totalChunks - similarChunks;
-  const averageSimilarity = similarityResults.reduce((sum, r) => sum + r.similarityScore, 0) / totalChunks;
+  const averageSimilarity =
+    similarityResults.reduce((sum, r) => sum + r.similarityScore, 0) / totalChunks;
 
   return {
     totalChunks,

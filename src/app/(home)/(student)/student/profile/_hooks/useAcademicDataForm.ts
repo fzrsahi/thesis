@@ -2,6 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { useEffect, useState, KeyboardEvent } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
+import { toast } from "sonner";
 
 import {
   AcademicDataPayload,
@@ -37,9 +38,17 @@ const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
     isPending: isPutPending,
     isSuccess: isPutSuccess,
   } = useMutationPutAcademicData({
+    onSuccess: () => {
+      toast.success("Data prestasi berhasil diperbarui");
+      setErrorMessage("");
+    },
     onError: (error: Error) => {
       if (error instanceof AxiosError) {
-        setErrorMessage(error.response?.data.message ?? "");
+        const errorMsg = error.response?.data.message ?? "Gagal memperbarui data prestasi";
+        setErrorMessage(errorMsg);
+        toast.error(errorMsg);
+      } else {
+        toast.error("Gagal memperbarui data prestasi");
       }
     },
   });
@@ -137,6 +146,7 @@ const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
   const handleConfirmDeleteAchievement = () => {
     if (achievementToDelete) {
       removeAchievement(achievementToDelete.index);
+      toast.success("Prestasi berhasil dihapus");
       setIsDeleteAchievementDialogOpen(false);
       setAchievementToDelete(null);
     }
@@ -158,6 +168,7 @@ const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
   const handleConfirmDeleteExperience = () => {
     if (experienceToDelete) {
       removeExperience(experienceToDelete.index);
+      toast.success("Pengalaman berhasil dihapus");
       setIsDeleteExperienceDialogOpen(false);
       setExperienceToDelete(null);
     }
@@ -166,6 +177,28 @@ const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
   const handleCancelDeleteExperience = () => {
     setIsDeleteExperienceDialogOpen(false);
     setExperienceToDelete(null);
+  };
+
+  // Wrapper functions with toast notifications
+  const handleAddAchievement = () => {
+    appendAchievement({
+      title: "",
+      description: "",
+      date: "",
+      issuer: "",
+    });
+    toast.success("Prestasi baru ditambahkan");
+  };
+
+  const handleAddExperience = () => {
+    appendExperience({
+      organization: "",
+      position: "",
+      description: "",
+      startDate: "",
+      endDate: "",
+    });
+    toast.success("Pengalaman baru ditambahkan");
   };
 
   const handleSubmit = (formData: AcademicDataPayload) => {
@@ -227,10 +260,10 @@ const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
 
     // Field arrays
     achievementFields,
-    appendAchievement,
+    appendAchievement: handleAddAchievement,
     removeAchievement,
     experienceFields,
-    appendExperience,
+    appendExperience: handleAddExperience,
     removeExperience,
 
     // Interests management

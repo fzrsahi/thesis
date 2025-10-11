@@ -108,20 +108,20 @@ export const generateCompetitionText = (competitionData: CreateCompetitionPayloa
 
 export const storeToVectorStore = async (competition: competitions, competitionText: string) => {
   const logger = getLogger({ module: "competition/helper/storeToVectorStore" });
-  
+
   logger.info(
     { competitionId: competition.id },
     "Starting similarity check for competition summary"
   );
 
   const similarityResult = await checkCompetitionSimilarity(competitionText, competition.id);
-  
+
   if (similarityResult.isSimilar) {
     logger.info(
-      { 
+      {
         competitionId: competition.id,
         similarityScore: similarityResult.similarityScore,
-        existingCompetitionId: similarityResult.existingCompetitionId
+        existingCompetitionId: similarityResult.existingCompetitionId,
       },
       "Competition summary is similar to existing one, skipping embedding"
     );
@@ -129,9 +129,9 @@ export const storeToVectorStore = async (competition: competitions, competitionT
   }
 
   logger.info(
-    { 
+    {
       competitionId: competition.id,
-      similarityScore: similarityResult.similarityScore
+      similarityScore: similarityResult.similarityScore,
     },
     "Competition summary is unique, proceeding with embedding"
   );

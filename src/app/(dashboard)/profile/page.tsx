@@ -1,16 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { 
-  User, 
-  Mail, 
-  Lock, 
-  Save, 
-  Eye, 
-  EyeOff, 
-  AlertCircle,
-  Shield
-} from "lucide-react";
+import { User, Mail, Lock, Save, Eye, EyeOff, AlertCircle, Shield } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
@@ -20,7 +11,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import Input from "@/components/ui/input";
 import Label from "@/components/ui/label";
 import { TypographyH2, TypographyP } from "@/components/ui/typography";
-
 
 const staggerContainer = {
   hidden: { opacity: 0 },
@@ -41,19 +31,19 @@ const staggerItem = {
 const ProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  
+
   // Form states
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  
+
   // Password visibility states
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
+
   // Form errors
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -65,15 +55,15 @@ const ProfilePage = () => {
     try {
       const response = await fetch("/api/profile");
       const result = await response.json();
-      
+
       if (result.success) {
         setName(result.data.name);
         setEmail(result.data.email);
       } else {
-        toast.error(result.error || 'Gagal memuat profil');
+        toast.error(result.error || "Gagal memuat profil");
       }
     } catch (error) {
-      toast.error('Gagal memuat profil');
+      toast.error("Gagal memuat profil");
     } finally {
       setLoading(false);
     }
@@ -81,42 +71,43 @@ const ProfilePage = () => {
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
-    
+
     // Validate name
     if (!name.trim()) {
       newErrors.name = "Nama wajib diisi";
     } else if (name.trim().length < 2) {
       newErrors.name = "Nama harus minimal 2 karakter";
     }
-    
+
     // Validate email
     if (!email.trim()) {
       newErrors.email = "Email wajib diisi";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       newErrors.email = "Format email tidak valid";
     }
-    
+
     // Validate password fields if any password field is filled
     if (currentPassword || newPassword || confirmPassword) {
       if (!currentPassword) {
         newErrors.currentPassword = "Password saat ini wajib diisi";
       }
-      
+
       if (!newPassword) {
         newErrors.newPassword = "Password baru wajib diisi";
       } else if (newPassword.length < 8) {
         newErrors.newPassword = "Password harus minimal 8 karakter";
       } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(newPassword)) {
-        newErrors.newPassword = "Password must contain at least one uppercase letter, one lowercase letter, and one number";
+        newErrors.newPassword =
+          "Password must contain at least one uppercase letter, one lowercase letter, and one number";
       }
-      
+
       if (!confirmPassword) {
         newErrors.confirmPassword = "Please confirm your new password";
       } else if (newPassword !== confirmPassword) {
         newErrors.confirmPassword = "Passwords do not match";
       }
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -155,16 +146,16 @@ const ProfilePage = () => {
         toast.success("Berhasil memperbarui profil");
         setName(result.data.name);
         setEmail(result.data.email);
-        
+
         // Clear password fields
         setCurrentPassword("");
         setNewPassword("");
         setConfirmPassword("");
       } else {
-        toast.error(result.error || 'Gagal memperbarui profil');
+        toast.error(result.error || "Gagal memperbarui profil");
       }
     } catch (error) {
-      toast.error('Gagal memperbarui profil');
+      toast.error("Gagal memperbarui profil");
     } finally {
       setSaving(false);
     }
@@ -172,8 +163,8 @@ const ProfilePage = () => {
 
   if (loading) {
     return (
-      <div className="w-full flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600" />
+      <div className="flex min-h-[400px] w-full items-center justify-center">
+        <div className="h-32 w-32 animate-spin rounded-full border-b-2 border-blue-600" />
       </div>
     );
   }
@@ -191,12 +182,7 @@ const ProfilePage = () => {
         <div className="mb-6 border-t border-gray-500" />
       </div>
 
-      <motion.div
-        variants={staggerContainer}
-        initial="hidden"
-        animate="show"
-        className="space-y-6"
-      >
+      <motion.div variants={staggerContainer} initial="hidden" animate="show" className="space-y-6">
         {/* Profile Information Card */}
         <motion.div variants={staggerItem}>
           <Card className="border border-zinc-600/50 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 shadow-xl backdrop-blur-sm">
@@ -210,22 +196,24 @@ const ProfilePage = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-zinc-300">Nama Lengkap</Label>
+                  <Label htmlFor="name" className="text-zinc-300">
+                    Nama Lengkap
+                  </Label>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                    <User className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-zinc-400" />
                     <Input
                       id="name"
                       type="text"
                       value={name}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
-                      className="pl-10 bg-zinc-800 border-zinc-600 text-white placeholder-zinc-400 focus:border-blue-500"
+                      className="border-zinc-600 bg-zinc-800 pl-10 text-white placeholder-zinc-400 focus:border-blue-500"
                       placeholder="Masukkan nama lengkap"
                     />
                   </div>
                   {errors.name && (
-                    <p className="text-red-400 text-sm flex items-center gap-1">
+                    <p className="flex items-center gap-1 text-sm text-red-400">
                       <AlertCircle className="h-4 w-4" />
                       {errors.name}
                     </p>
@@ -233,20 +221,24 @@ const ProfilePage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-zinc-300">Email</Label>
+                  <Label htmlFor="email" className="text-zinc-300">
+                    Email
+                  </Label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                    <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-zinc-400" />
                     <Input
                       id="email"
                       type="email"
                       value={email}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                      className="pl-10 bg-zinc-800 border-zinc-600 text-white placeholder-zinc-400 focus:border-blue-500"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setEmail(e.target.value)
+                      }
+                      className="border-zinc-600 bg-zinc-800 pl-10 text-white placeholder-zinc-400 focus:border-blue-500"
                       placeholder="Masukkan email"
                     />
                   </div>
                   {errors.email && (
-                    <p className="text-red-400 text-sm flex items-center gap-1">
+                    <p className="flex items-center gap-1 text-sm text-red-400">
                       <AlertCircle className="h-4 w-4" />
                       {errors.email}
                     </p>
@@ -271,56 +263,72 @@ const ProfilePage = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="currentPassword" className="text-zinc-300">Password Saat Ini</Label>
+                <Label htmlFor="currentPassword" className="text-zinc-300">
+                  Password Saat Ini
+                </Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                  <Lock className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-zinc-400" />
                   <Input
                     id="currentPassword"
                     type={showCurrentPassword ? "text" : "password"}
                     value={currentPassword}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCurrentPassword(e.target.value)}
-                    className="pl-10 pr-10 bg-zinc-800 border-zinc-600 text-white placeholder-zinc-400 focus:border-blue-500"
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setCurrentPassword(e.target.value)
+                    }
+                    className="border-zinc-600 bg-zinc-800 pr-10 pl-10 text-white placeholder-zinc-400 focus:border-blue-500"
                     placeholder="Masukkan password saat ini"
                   />
                   <button
                     type="button"
                     onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-zinc-400 hover:text-zinc-300"
+                    className="absolute top-1/2 right-3 -translate-y-1/2 transform text-zinc-400 hover:text-zinc-300"
                   >
-                    {showCurrentPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    {showCurrentPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
                   </button>
                 </div>
                 {errors.currentPassword && (
-                  <p className="text-red-400 text-sm flex items-center gap-1">
+                  <p className="flex items-center gap-1 text-sm text-red-400">
                     <AlertCircle className="h-4 w-4" />
                     {errors.currentPassword}
                   </p>
                 )}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="newPassword" className="text-zinc-300">Password Baru</Label>
+                  <Label htmlFor="newPassword" className="text-zinc-300">
+                    Password Baru
+                  </Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                    <Lock className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-zinc-400" />
                     <Input
                       id="newPassword"
                       type={showNewPassword ? "text" : "password"}
                       value={newPassword}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewPassword(e.target.value)}
-                      className="pl-10 pr-10 bg-zinc-800 border-zinc-600 text-white placeholder-zinc-400 focus:border-blue-500"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setNewPassword(e.target.value)
+                      }
+                      className="border-zinc-600 bg-zinc-800 pr-10 pl-10 text-white placeholder-zinc-400 focus:border-blue-500"
                       placeholder="Masukkan password baru"
                     />
                     <button
                       type="button"
                       onClick={() => setShowNewPassword(!showNewPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-zinc-400 hover:text-zinc-300"
+                      className="absolute top-1/2 right-3 -translate-y-1/2 transform text-zinc-400 hover:text-zinc-300"
                     >
-                      {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showNewPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
                     </button>
                   </div>
                   {errors.newPassword && (
-                    <p className="text-red-400 text-sm flex items-center gap-1">
+                    <p className="flex items-center gap-1 text-sm text-red-400">
                       <AlertCircle className="h-4 w-4" />
                       {errors.newPassword}
                     </p>
@@ -328,27 +336,35 @@ const ProfilePage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword" className="text-zinc-300">Konfirmasi Password</Label>
+                  <Label htmlFor="confirmPassword" className="text-zinc-300">
+                    Konfirmasi Password
+                  </Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-zinc-400" />
+                    <Lock className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-zinc-400" />
                     <Input
                       id="confirmPassword"
                       type={showConfirmPassword ? "text" : "password"}
                       value={confirmPassword}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setConfirmPassword(e.target.value)}
-                      className="pl-10 pr-10 bg-zinc-800 border-zinc-600 text-white placeholder-zinc-400 focus:border-blue-500"
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        setConfirmPassword(e.target.value)
+                      }
+                      className="border-zinc-600 bg-zinc-800 pr-10 pl-10 text-white placeholder-zinc-400 focus:border-blue-500"
                       placeholder="Konfirmasi password baru"
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-zinc-400 hover:text-zinc-300"
+                      className="absolute top-1/2 right-3 -translate-y-1/2 transform text-zinc-400 hover:text-zinc-300"
                     >
-                      {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showConfirmPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
                     </button>
                   </div>
                   {errors.confirmPassword && (
-                    <p className="text-red-400 text-sm flex items-center gap-1">
+                    <p className="flex items-center gap-1 text-sm text-red-400">
                       <AlertCircle className="h-4 w-4" />
                       {errors.confirmPassword}
                     </p>
@@ -364,11 +380,11 @@ const ProfilePage = () => {
           <Button
             onClick={handleSaveProfile}
             disabled={saving}
-            className="bg-gradient-to-r from-black to-black hover:from-black hover:to-black text-white px-8 py-2 rounded-lg font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="rounded-lg bg-gradient-to-r from-black to-black px-8 py-2 font-medium text-white transition-all duration-200 hover:from-black hover:to-black disabled:cursor-not-allowed disabled:opacity-50"
           >
             {saving ? (
               <div className="flex items-center gap-2">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-white" />
                 Menyimpan...
               </div>
             ) : (

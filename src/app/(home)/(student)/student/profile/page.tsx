@@ -372,7 +372,7 @@ const UserProfilePage = () => {
                     {/* Password Change Section */}
                     <div className="space-y-4">
                       <div className="border-t border-zinc-700 pt-6">
-                        <h3 className="text-lg font-medium text-white mb-4">Ubah Password</h3>
+                        <h3 className="mb-4 text-lg font-medium text-white">Ubah Password</h3>
                         <PasswordChangeForm />
                       </div>
                     </div>
@@ -513,13 +513,7 @@ const UserProfilePage = () => {
                           type="button"
                           variant="outline"
                           size="sm"
-                          onClick={() =>
-                            appendAchievement({
-                              title: "",
-                              description: "",
-                              date: "",
-                            })
-                          }
+                          onClick={() => appendAchievement()}
                           className="flex items-center gap-1 bg-white text-black hover:bg-zinc-200"
                         >
                           <Plus className="h-3 w-3" /> Tambah Pencapaian
@@ -621,15 +615,7 @@ const UserProfilePage = () => {
                           type="button"
                           variant="outline"
                           size="sm"
-                          onClick={() =>
-                            appendExperience({
-                              organization: "",
-                              position: "",
-                              description: "",
-                              startDate: "",
-                              endDate: "",
-                            })
-                          }
+                          onClick={() => appendExperience()}
                           className="flex items-center gap-1 bg-white text-black hover:bg-zinc-200"
                         >
                           <Plus className="h-3 w-3" /> Tambah Pengalaman

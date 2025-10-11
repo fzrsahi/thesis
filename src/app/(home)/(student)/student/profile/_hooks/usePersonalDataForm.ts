@@ -3,6 +3,7 @@ import { AxiosError } from "axios";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 import {
   PersonalDataPayload,
@@ -24,9 +25,17 @@ const usePersonalDataForm = (data?: PersonalDataResponse | undefined) => {
     isPending: isPutPending,
     isSuccess: isPutSuccess,
   } = useMutationPutPersonalData({
+    onSuccess: () => {
+      toast.success("Data pribadi berhasil diperbarui");
+      setErrorMessage("");
+    },
     onError: (error) => {
       if (error instanceof AxiosError) {
-        setErrorMessage(error.response?.data.message ?? "");
+        const errorMsg = error.response?.data.message ?? "Gagal memperbarui data pribadi";
+        setErrorMessage(errorMsg);
+        toast.error(errorMsg);
+      } else {
+        toast.error("Gagal memperbarui data pribadi");
       }
     },
   });

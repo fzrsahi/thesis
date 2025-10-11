@@ -1,15 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import {
-  Users,
-  Trophy,
-  BookOpen,
-  Calendar,
-  Target,
-  BarChart3,
-  Activity,
-} from "lucide-react";
+import { Users, Trophy, BookOpen, Calendar, Target, BarChart3, Activity } from "lucide-react";
 import { useState, useEffect } from "react";
 
 import { TypographyH2, TypographyP } from "@/components/ui/typography";
@@ -56,13 +48,13 @@ const AnimatedCounter = ({ end, duration = 2 }: { end: number; duration?: number
 };
 
 // Stats Card Component
-const StatsCard = ({ 
-  icon: Icon, 
-  title, 
-  value, 
-  change, 
+const StatsCard = ({
+  icon: Icon,
+  title,
+  value,
+  change,
   changeType = "positive",
-  color = "blue" 
+  color = "blue",
 }: {
   icon: React.ComponentType<{ className?: string }>;
   title: string;
@@ -73,7 +65,7 @@ const StatsCard = ({
 }) => {
   const colorClasses = {
     blue: "from-blue-500 to-blue-600",
-    green: "from-green-500 to-green-600", 
+    green: "from-green-500 to-green-600",
     purple: "from-purple-500 to-purple-600",
     orange: "from-orange-500 to-orange-600",
     red: "from-red-500 to-red-600",
@@ -81,30 +73,34 @@ const StatsCard = ({
 
   const changeClasses = {
     positive: "text-green-600 bg-green-100",
-    negative: "text-red-600 bg-red-100", 
+    negative: "text-red-600 bg-red-100",
     neutral: "text-gray-600 bg-gray-100",
   };
 
   return (
     <motion.div
       variants={staggerItem}
-      className="group relative overflow-hidden rounded-xl border border-zinc-600/50 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 p-6 shadow-xl backdrop-blur-sm hover:shadow-2xl transition-all duration-300"
+      className="group relative overflow-hidden rounded-xl border border-zinc-600/50 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 p-6 shadow-xl backdrop-blur-sm transition-all duration-300 hover:shadow-2xl"
     >
       <div className="flex items-center justify-between">
         <div className="flex-1">
-          <p className="text-sm font-medium text-zinc-300 mb-1">{title}</p>
+          <p className="mb-1 text-sm font-medium text-zinc-300">{title}</p>
           <div className="flex items-baseline space-x-2">
             <p className="text-2xl font-bold text-white">
               {typeof value === "number" ? <AnimatedCounter end={value} /> : value}
             </p>
             {change && (
-              <span className={`text-xs font-medium px-2 py-1 rounded-full ${changeClasses[changeType]}`}>
+              <span
+                className={`rounded-full px-2 py-1 text-xs font-medium ${changeClasses[changeType]}`}
+              >
                 {change}
               </span>
             )}
           </div>
         </div>
-        <div className={`flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-r ${colorClasses[color]} shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+        <div
+          className={`flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-r ${colorClasses[color]} shadow-lg transition-transform duration-300 group-hover:scale-110`}
+        >
           <Icon className="h-6 w-6 text-white" />
         </div>
       </div>
@@ -113,20 +109,26 @@ const StatsCard = ({
 };
 
 // Chart Component (Simple Bar Chart)
-const SimpleBarChart = ({ data, title }: { data: { label: string; value: number; color: string }[]; title: string }) => {
-  const maxValue = Math.max(...data.map(d => d.value));
+const SimpleBarChart = ({
+  data,
+  title,
+}: {
+  data: { label: string; value: number; color: string }[];
+  title: string;
+}) => {
+  const maxValue = Math.max(...data.map((d) => d.value));
 
   return (
     <motion.div
       variants={staggerItem}
-      className="rounded-xl border border-zinc-600/50 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 p-6 shadow-xl backdrop-blur-sm text-white"
+      className="rounded-xl border border-zinc-600/50 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 p-6 text-white shadow-xl backdrop-blur-sm"
     >
-      <h3 className="text-lg font-semibold text-white mb-4">{title}</h3>
+      <h3 className="mb-4 text-lg font-semibold text-white">{title}</h3>
       <div className="space-y-3">
         {data.map((item) => (
           <div key={item.label} className="flex items-center space-x-3">
-            <div className="w-20 text-sm text-zinc-300 truncate">{item.label}</div>
-            <div className="flex-1 bg-zinc-700/50 rounded-full h-6 relative overflow-hidden">
+            <div className="w-20 truncate text-sm text-zinc-300">{item.label}</div>
+            <div className="relative h-6 flex-1 overflow-hidden rounded-full bg-zinc-700/50">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${(item.value / maxValue) * 100}%` }}
@@ -147,55 +149,90 @@ const SimpleBarChart = ({ data, title }: { data: { label: string; value: number;
 // Recent Activity Component
 const RecentActivity = () => {
   const activities = [
-    { id: 1, action: "Kompetisi baru ditambahkan", competition: "PKM 2024", time: "2 jam yang lalu", type: "competition" },
-    { id: 2, action: "Mahasiswa mendaftar", student: "Ahmad Rizki", competition: "Hackathon Nasional", time: "4 jam yang lalu", type: "registration" },
-    { id: 3, action: "Dokumen diupload", competition: "Lomba Robotik", time: "6 jam yang lalu", type: "upload" },
-    { id: 4, action: "Rekomendasi diberikan", student: "Siti Nurhaliza", time: "8 jam yang lalu", type: "recommendation" },
+    {
+      id: 1,
+      action: "Kompetisi baru ditambahkan",
+      competition: "PKM 2024",
+      time: "2 jam yang lalu",
+      type: "competition",
+    },
+    {
+      id: 2,
+      action: "Mahasiswa mendaftar",
+      student: "Ahmad Rizki",
+      competition: "Hackathon Nasional",
+      time: "4 jam yang lalu",
+      type: "registration",
+    },
+    {
+      id: 3,
+      action: "Dokumen diupload",
+      competition: "Lomba Robotik",
+      time: "6 jam yang lalu",
+      type: "upload",
+    },
+    {
+      id: 4,
+      action: "Rekomendasi diberikan",
+      student: "Siti Nurhaliza",
+      time: "8 jam yang lalu",
+      type: "recommendation",
+    },
   ];
 
   const getActivityIcon = (type: string) => {
     switch (type) {
-      case "competition": return Trophy;
-      case "registration": return Users;
-      case "upload": return BookOpen;
-      case "recommendation": return Target;
-      default: return Activity;
+      case "competition":
+        return Trophy;
+      case "registration":
+        return Users;
+      case "upload":
+        return BookOpen;
+      case "recommendation":
+        return Target;
+      default:
+        return Activity;
     }
   };
 
   const getActivityColor = (type: string) => {
     switch (type) {
-      case "competition": return "text-blue-600 bg-blue-100";
-      case "registration": return "text-green-600 bg-green-100";
-      case "upload": return "text-purple-600 bg-purple-100";
-      case "recommendation": return "text-orange-600 bg-orange-100";
-      default: return "text-gray-600 bg-gray-100";
+      case "competition":
+        return "text-blue-600 bg-blue-100";
+      case "registration":
+        return "text-green-600 bg-green-100";
+      case "upload":
+        return "text-purple-600 bg-purple-100";
+      case "recommendation":
+        return "text-orange-600 bg-orange-100";
+      default:
+        return "text-gray-600 bg-gray-100";
     }
   };
 
   return (
     <motion.div
       variants={staggerItem}
-      className="rounded-xl border border-zinc-600/50 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 p-6 shadow-xl backdrop-blur-sm text-white"
+      className="rounded-xl border border-zinc-600/50 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 p-6 text-white shadow-xl backdrop-blur-sm"
     >
-      <h3 className="text-lg font-semibold text-white mb-4">Aktivitas Terbaru</h3>
+      <h3 className="mb-4 text-lg font-semibold text-white">Aktivitas Terbaru</h3>
       <div className="space-y-4">
         {activities.map((activity) => {
           const Icon = getActivityIcon(activity.type);
           return (
             <div key={activity.id} className="flex items-start space-x-3">
-              <div className={`flex h-8 w-8 items-center justify-center rounded-full ${getActivityColor(activity.type)}`}>
+              <div
+                className={`flex h-8 w-8 items-center justify-center rounded-full ${getActivityColor(activity.type)}`}
+              >
                 <Icon className="h-4 w-4" />
               </div>
-              <div className="flex-1 min-w-0">
+              <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium text-white">
                   {activity.action}
                   {activity.competition && (
                     <span className="text-zinc-300"> - {activity.competition}</span>
                   )}
-                  {activity.student && (
-                    <span className="text-zinc-300"> ({activity.student})</span>
-                  )}
+                  {activity.student && <span className="text-zinc-300"> ({activity.student})</span>}
                 </p>
                 <p className="text-xs text-zinc-400">{activity.time}</p>
               </div>
@@ -287,15 +324,11 @@ const DashboardPage = () => {
             className="grid grid-cols-1 gap-6 lg:grid-cols-2"
           >
             {/* Chart */}
-            <SimpleBarChart 
-              data={chartData} 
-              title="Kompetisi Populer" 
-            />
+            <SimpleBarChart data={chartData} title="Kompetisi Populer" />
 
             {/* Recent Activity */}
             <RecentActivity />
           </motion.div>
-
         </div>
       </div>
     </div>
