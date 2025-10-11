@@ -5,6 +5,7 @@ import { CreateCompetitionPayload } from "@/app/shared/schema/competition/Compet
 import { prisma } from "../../prisma/prisma";
 import { getLogger } from "../../utils/helpers/pino.helper";
 import { getCompetitionVectorStore } from "../../vector/pgvector.service";
+import { checkCompetitionSimilarity } from "../service/similarity-check.service";
 
 export const generateCompetitionText = (competitionData: CreateCompetitionPayload) => {
   const competitionTextParts = [
@@ -106,13 +107,41 @@ export const generateCompetitionText = (competitionData: CreateCompetitionPayloa
 };
 
 export const storeToVectorStore = async (competition: competitions, competitionText: string) => {
-  const vectorStore = getCompetitionVectorStore();
   const logger = getLogger({ module: "competition/helper/storeToVectorStore" });
+  
+  logger.info(
+    { competitionId: competition.id },
+    "Starting similarity check for competition summary"
+  );
+
+  const similarityResult = await checkCompetitionSimilarity(competitionText, competition.id);
+  
+  if (similarityResult.isSimilar) {
+    logger.info(
+      { 
+        competitionId: competition.id,
+        similarityScore: similarityResult.similarityScore,
+        existingCompetitionId: similarityResult.existingCompetitionId
+      },
+      "Competition summary is similar to existing one, skipping embedding"
+    );
+    return;
+  }
+
+  logger.info(
+    { 
+      competitionId: competition.id,
+      similarityScore: similarityResult.similarityScore
+    },
+    "Competition summary is unique, proceeding with embedding"
+  );
+
+  const vectorStore = getCompetitionVectorStore();
+  const t0 = Date.now();
   logger.info(
     { competitionId: competition.id, readyToEmbed: 1 },
     "Embedding start (competition summary)"
   );
-  const t0 = Date.now();
   await vectorStore.addModels([
     {
       id: competition.id,

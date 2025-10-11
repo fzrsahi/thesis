@@ -42,3 +42,19 @@ export const createUser = (user: userCreate) =>
       name: user.name,
     },
   });
+
+export const updateUserProfile = (
+  id: number,
+  data: Partial<Pick<User, "name" | "email" | "password">>
+) =>
+  prisma.user.update({
+    where: { id },
+    data,
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });

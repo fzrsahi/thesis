@@ -11,8 +11,12 @@ export const USER_ERROR_RESPONSE = {
     code: "USER_003",
     message: "Email sudah ada",
   },
+  INVALID_PASSWORD: {
+    code: "USER_004",
+    message: "Password saat ini tidak benar",
+  },
 } as const;
 
-export const USER_ERROR_LOG = {
+export const USER_ERROR_LOG_MESSAGE = {
   INTERNAL_SERVER_ERROR: "Internal server error",
 };

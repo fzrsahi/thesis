@@ -1476,6 +1476,56 @@
           }
         }
       }
+    },
+    "/dashboard/stats": {
+      "get": {
+        "tags": ["Dashboard"],
+        "summary": "Get dashboard statistics",
+        "description": "Retrieve comprehensive statistics for the dashboard including student counts, active competitions, recommendations, and upcoming deadlines.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Dashboard statistics retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean",
+                      "example": true
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/DashboardStats"
+                    }
+                  },
+                  "required": ["success", "data"]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2834,6 +2884,176 @@
           }
         },
         "required": ["student", "recommendation"]
+      },
+      "DashboardStats": {
+        "type": "object",
+        "properties": {
+          "overview": {
+            "type": "object",
+            "properties": {
+              "totalStudents": {
+                "type": "integer",
+                "description": "Total number of students in the system",
+                "example": 1250
+              },
+              "activeCompetitions": {
+                "type": "integer",
+                "description": "Number of active competitions",
+                "example": 45
+              },
+              "totalRecommendations": {
+                "type": "integer",
+                "description": "Total number of recommendations given",
+                "example": 890
+              },
+              "upcomingDeadlines": {
+                "type": "integer",
+                "description": "Number of competitions with deadlines within 7 days",
+                "example": 8
+              }
+            },
+            "required": ["totalStudents", "activeCompetitions", "totalRecommendations", "upcomingDeadlines"]
+          },
+          "popularCompetitions": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Competition name",
+                  "example": "PKM"
+                },
+                "count": {
+                  "type": "integer",
+                  "description": "Number of students recommended for this competition",
+                  "example": 45
+                },
+                "percentage": {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100,
+                  "description": "Percentage of total recommendations",
+                  "example": 25.5
+                }
+              },
+              "required": ["name", "count", "percentage"]
+            },
+            "description": "Top 5 most popular competitions by recommendation count"
+          },
+          "recentActivity": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "description": "Activity ID"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": ["competition", "registration", "upload", "recommendation"],
+                  "description": "Type of activity"
+                },
+                "action": {
+                  "type": "string",
+                  "description": "Description of the activity",
+                  "example": "Kompetisi baru ditambahkan"
+                },
+                "competitionName": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "Name of the competition (if applicable)",
+                  "example": "PKM 2024"
+                },
+                "studentName": {
+                  "type": "string",
+                  "nullable": true,
+                  "description": "Name of the student (if applicable)",
+                  "example": "Ahmad Rizki"
+                },
+                "timestamp": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "When the activity occurred",
+                  "example": "2024-01-15T10:30:00.000Z"
+                }
+              },
+              "required": ["id", "type", "action", "timestamp"]
+            },
+            "description": "Recent activities in the system (last 10)"
+          },
+          "statistics": {
+            "type": "object",
+            "properties": {
+              "studentGrowth": {
+                "type": "object",
+                "properties": {
+                  "currentMonth": {
+                    "type": "integer",
+                    "description": "Number of new students this month",
+                    "example": 25
+                  },
+                  "previousMonth": {
+                    "type": "integer",
+                    "description": "Number of new students last month",
+                    "example": 20
+                  },
+                  "growthPercentage": {
+                    "type": "number",
+                    "description": "Percentage growth compared to previous month",
+                    "example": 25.0
+                  }
+                },
+                "required": ["currentMonth", "previousMonth", "growthPercentage"]
+              },
+              "competitionGrowth": {
+                "type": "object",
+                "properties": {
+                  "currentMonth": {
+                    "type": "integer",
+                    "description": "Number of new competitions this month",
+                    "example": 5
+                  },
+                  "previousMonth": {
+                    "type": "integer",
+                    "description": "Number of new competitions last month",
+                    "example": 3
+                  },
+                  "growthPercentage": {
+                    "type": "number",
+                    "description": "Percentage growth compared to previous month",
+                    "example": 66.7
+                  }
+                },
+                "required": ["currentMonth", "previousMonth", "growthPercentage"]
+              },
+              "recommendationGrowth": {
+                "type": "object",
+                "properties": {
+                  "currentMonth": {
+                    "type": "integer",
+                    "description": "Number of recommendations given this month",
+                    "example": 150
+                  },
+                  "previousMonth": {
+                    "type": "integer",
+                    "description": "Number of recommendations given last month",
+                    "example": 120
+                  },
+                  "growthPercentage": {
+                    "type": "number",
+                    "description": "Percentage growth compared to previous month",
+                    "example": 25.0
+                  }
+                },
+                "required": ["currentMonth", "previousMonth", "growthPercentage"]
+              }
+            },
+            "required": ["studentGrowth", "competitionGrowth", "recommendationGrowth"]
+          }
+        },
+        "required": ["overview", "popularCompetitions", "recentActivity", "statistics"]
       }
     }
   },

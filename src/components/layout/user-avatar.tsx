@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, Settings, User } from "lucide-react";
+import { LogOut, User } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 
@@ -62,13 +62,9 @@ export const UserAvatar = ({ user }: UserAvatarProps) => {
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => router.push("/dashboard/profile")}>
+          <DropdownMenuItem onClick={() => router.push("/profile")}>
             <User className="mr-2 h-4 w-4" />
             <span>Profile</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => router.push("/dashboard/settings")}>
-            <Settings className="mr-2 h-4 w-4" />
-            <span>Settings</span>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem className="text-red-600" onClick={handleSignOut}>

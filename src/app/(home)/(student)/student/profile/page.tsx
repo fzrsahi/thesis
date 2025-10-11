@@ -34,6 +34,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { TypographyP } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 
+import PasswordChangeForm from "./_components/PasswordChangeForm";
 import TranscriptManagement from "./_components/TranscriptManagement";
 import { useAcademicData } from "./_hooks/useAcademicData";
 import { useAcademicDataForm } from "./_hooks/useAcademicDataForm";
@@ -367,6 +368,14 @@ const UserProfilePage = () => {
                     >
                       {isSubmittingPersonal ? "Memperbarui..." : "Perbarui"}
                     </Button>
+
+                    {/* Password Change Section */}
+                    <div className="space-y-4">
+                      <div className="border-t border-zinc-700 pt-6">
+                        <h3 className="text-lg font-medium text-white mb-4">Ubah Password</h3>
+                        <PasswordChangeForm />
+                      </div>
+                    </div>
                   </form>
                 </Form>
               </CardContent>

@@ -6,6 +6,7 @@ import { SessionProvider, useSession } from "next-auth/react";
 import { BreadcrumbNav } from "@/components/layout/breadcrumb-nav";
 import { UserAvatar } from "@/components/layout/user-avatar";
 import QueryProvider from "@/components/providers/QueryProvider";
+import { DashboardToaster } from "@/components/ui/dashboard-toaster";
 import { Sidebar } from "@/components/ui/sidebar";
 import { getBreadcrumbItems } from "@/lib/breadcrumb";
 
@@ -39,6 +40,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => (
   <SessionProvider>
     <QueryProvider>
       <DashboardContent>{children}</DashboardContent>
+      <DashboardToaster />
     </QueryProvider>
   </SessionProvider>
 );

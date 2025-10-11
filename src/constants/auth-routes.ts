@@ -15,11 +15,11 @@ export const routes: Route[] = [
     icon: BookOpen,
   },
   { name: "Rekomendasi", href: "/recomendation", roles: [ROLES.ADMIN, ROLES.ADVISOR], icon: Brain },
-  { name: "Pengaturan", href: "/settings", roles: [ROLES.ADMIN], icon: Settings },
   { name: "Obrolan", href: "/chat", roles: [ROLES.ADVISOR, ROLES.ADMIN], icon: MessageCircle },
   { name: "Profil", href: "/student/profile", roles: [ROLES.STUDENT], icon: User },
   { name: "Rekomendasi", href: "/my-recomendation", roles: [ROLES.STUDENT], icon: BookOpen },
   { name: "Obrolan", href: "/my-chat", roles: [ROLES.STUDENT], icon: MessageCircle },
+  { name: "Pengaturan", href: "/profile", roles: [ROLES.ADMIN], icon: Settings },
 ];
 
 export const adminPaths = routes
