@@ -22,6 +22,7 @@ export type Advisor = {
 
 type UseAdvisorListOptions = {
   onDelete?: (id: number) => void;
+  advisorType?: string;
 };
 
 export const useAdvisorList = (options?: UseAdvisorListOptions) => {
@@ -57,7 +58,14 @@ export const useAdvisorList = (options?: UseAdvisorListOptions) => {
 
   const tableData: Advisor[] = useMemo(() => {
     const list = (data?.data ?? []) as ApiAdvisorListItem[];
-    return list.map((item, idx) => ({
+    let filteredList = list;
+
+    // Apply advisorType filter on frontend
+    if (options?.advisorType) {
+      filteredList = list.filter((item) => item.type === options.advisorType);
+    }
+
+    return filteredList.map((item, idx) => ({
       id: item.id ?? idx + 1,
       name: item.user?.name ?? "-",
       email: item.user?.email ?? "-",
@@ -68,7 +76,7 @@ export const useAdvisorList = (options?: UseAdvisorListOptions) => {
       department: undefined,
       title: undefined,
     }));
-  }, [data]);
+  }, [data, options?.advisorType]);
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);

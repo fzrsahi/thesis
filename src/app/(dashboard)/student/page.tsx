@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Users } from "lucide-react";
+import { Users, Filter } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 
@@ -30,6 +30,7 @@ const StudentPage = () => {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [entryYear, setEntryYear] = useState<string>("");
   const [studyProgramId, setStudyProgramId] = useState<string>("");
+  const [showFilters, setShowFilters] = useState(false);
   const { search, setSearch, tableRef, tableData, columns, pagination, handlePageChange } =
     useStudentList({
       onDelete: (id: number) => {
@@ -123,39 +124,20 @@ const StudentPage = () => {
       <div className="flex justify-center">
         <Card className="w-full border-2 border-zinc-700 bg-zinc-900 text-zinc-100 shadow-lg">
           <CardHeader className="flex flex-col gap-4 border-b border-zinc-700 bg-zinc-900 pb-4 md:flex-row md:items-center md:justify-between">
-            <div className="flex flex-wrap items-center gap-2">
+            {/* Search and Filters */}
+            <div className="flex gap-2">
               <Input
                 placeholder="Cari mahasiswa..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="w-full md:w-56"
               />
-              <Input
-                placeholder="Angkatan"
-                type="number"
-                value={entryYear}
-                onChange={(e) => setEntryYear(e.target.value)}
-                className="w-28"
-              />
-              {canFilterStudyProgram && (
-                <select
-                  value={studyProgramId}
-                  onChange={(e) => setStudyProgramId(e.target.value)}
-                  className="rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100"
-                >
-                  <option value="">Semua Program Studi</option>
-                  {(studyPrograms ?? []).map((sp) => (
-                    <option key={sp.id} value={sp.id}>
-                      {sp.name}
-                    </option>
-                  ))}
-                </select>
-              )}
               <Button
                 variant="outline"
+                onClick={() => setShowFilters(!showFilters)}
                 className="border-zinc-700 bg-gradient-to-r from-zinc-800 to-zinc-900 text-white hover:bg-zinc-700 hover:ring-2 hover:ring-blue-400"
               >
-                Cari
+                <Filter className="h-4 w-4" />
               </Button>
             </div>
             <Button
@@ -166,6 +148,65 @@ const StudentPage = () => {
               + Tambah Mahasiswa
             </Button>
           </CardHeader>
+
+          {/* Filters Panel */}
+          {showFilters && (
+            <div className="border-b border-zinc-700 bg-zinc-800 p-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <label
+                    htmlFor="entry-year"
+                    className="mb-2 block text-sm font-medium text-zinc-300"
+                  >
+                    Tahun Masuk
+                  </label>
+                  <Input
+                    id="entry-year"
+                    type="number"
+                    placeholder="2020"
+                    value={entryYear}
+                    onChange={(e) => setEntryYear(e.target.value)}
+                    className="border-zinc-700 bg-zinc-900 text-white"
+                  />
+                </div>
+                {canFilterStudyProgram && (
+                  <div>
+                    <label
+                      htmlFor="study-program"
+                      className="mb-2 block text-sm font-medium text-zinc-300"
+                    >
+                      Program Studi
+                    </label>
+                    <select
+                      id="study-program"
+                      value={studyProgramId}
+                      onChange={(e) => setStudyProgramId(e.target.value)}
+                      className="w-full rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100"
+                    >
+                      <option value="">Semua Program Studi</option>
+                      {(studyPrograms ?? []).map((sp) => (
+                        <option key={sp.id} value={sp.id}>
+                          {sp.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                <div className="flex items-end">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setEntryYear("");
+                      setStudyProgramId("");
+                    }}
+                    className="border-zinc-700 bg-zinc-900 text-white hover:bg-zinc-700"
+                  >
+                    Reset Filter
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
           <CardContent ref={tableRef} className="bg-zinc-900 p-0 md:p-4">
             <div className="w-full">
               <DataTable columns={columns} data={tableData} />

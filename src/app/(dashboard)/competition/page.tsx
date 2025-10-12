@@ -2,7 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
-import { BookOpen, Eye, Pencil, Trash2 } from "lucide-react";
+import { BookOpen, Eye, Pencil, Trash2, Filter } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useMemo, useRef, useEffect } from "react";
 import { toast } from "sonner";
@@ -115,6 +115,9 @@ const CompetitionPage = () => {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<Competition | null>(null);
   const [page, setPage] = useState(1);
+  const [showFilters, setShowFilters] = useState(false);
+  const [competitionType, setCompetitionType] = useState<string>("");
+  const [fieldFilter, setFieldFilter] = useState<string>("");
   const pageSize = 10;
   const tableRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
@@ -139,7 +142,20 @@ const CompetitionPage = () => {
 
   const tableData: Competition[] = useMemo(() => {
     const list = data?.data ?? [];
-    return list.map((item, idx) => ({
+    let filteredList = list;
+
+    // Apply filters on frontend
+    if (competitionType) {
+      filteredList = filteredList.filter((item) => item.type === competitionType);
+    }
+
+    if (fieldFilter) {
+      filteredList = filteredList.filter((item) =>
+        item.field?.some((field) => field.toLowerCase().includes(fieldFilter.toLowerCase()))
+      );
+    }
+
+    return filteredList.map((item, idx) => ({
       id: item.id ?? idx + 1,
       title: item.title ?? "-",
       description: item.description ?? "",
@@ -151,7 +167,7 @@ const CompetitionPage = () => {
       organizer: item.organizer ?? undefined,
       sourceUrl: undefined,
     }));
-  }, [data]);
+  }, [data, competitionType, fieldFilter]);
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
@@ -242,6 +258,7 @@ const CompetitionPage = () => {
         <div className="flex justify-center">
           <Card className="w-full border-2 border-zinc-700 bg-zinc-900 text-zinc-100 shadow-lg">
             <CardHeader className="flex flex-col gap-4 border-b border-zinc-700 bg-zinc-900 pb-4 md:flex-row md:items-center md:justify-between">
+              {/* Search and Filters */}
               <div className="flex gap-2">
                 <Input
                   placeholder="Cari kompetisi..."
@@ -251,9 +268,10 @@ const CompetitionPage = () => {
                 />
                 <Button
                   variant="outline"
+                  onClick={() => setShowFilters(!showFilters)}
                   className="border-zinc-700 bg-gradient-to-r from-zinc-800 to-zinc-900 text-white hover:bg-zinc-700 hover:ring-2 hover:ring-blue-400"
                 >
-                  Cari
+                  <Filter className="h-4 w-4" />
                 </Button>
               </div>
               <Dialog open={open} onOpenChange={setOpen}>
@@ -268,6 +286,63 @@ const CompetitionPage = () => {
                 <CompetitionAddModal open={open} onOpenChange={setOpen} onSubmit={onGenerate} />
               </Dialog>
             </CardHeader>
+
+            {/* Filters Panel */}
+            {showFilters && (
+              <div className="border-b border-zinc-700 bg-zinc-800 p-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div>
+                    <label
+                      htmlFor="competition-type"
+                      className="mb-2 block text-sm font-medium text-zinc-300"
+                    >
+                      Tipe Kompetisi
+                    </label>
+                    <select
+                      id="competition-type"
+                      value={competitionType}
+                      onChange={(e) => setCompetitionType(e.target.value)}
+                      className="w-full rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100"
+                    >
+                      <option value="">Semua Tipe</option>
+                      <option value="Programming">Programming</option>
+                      <option value="Design">Design</option>
+                      <option value="Business">Business</option>
+                      <option value="Academic">Academic</option>
+                      <option value="Sports">Sports</option>
+                      <option value="Art">Art</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="field-filter"
+                      className="mb-2 block text-sm font-medium text-zinc-300"
+                    >
+                      Bidang Kompetisi
+                    </label>
+                    <Input
+                      id="field-filter"
+                      placeholder="Cari bidang..."
+                      value={fieldFilter}
+                      onChange={(e) => setFieldFilter(e.target.value)}
+                      className="border-zinc-700 bg-zinc-900 text-white"
+                    />
+                  </div>
+                  <div className="flex items-end">
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setCompetitionType("");
+                        setFieldFilter("");
+                      }}
+                      className="border-zinc-700 bg-zinc-900 text-white hover:bg-zinc-700"
+                    >
+                      Reset Filter
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
             <CardContent ref={tableRef} className="bg-zinc-900 p-0 md:p-4">
               <div className="w-full">
                 <DataTable columns={columns} data={tableData} />

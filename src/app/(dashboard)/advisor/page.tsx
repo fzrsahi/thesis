@@ -2,7 +2,7 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
-import { UserCheck } from "lucide-react";
+import { UserCheck, Filter } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { AdvisorListItem } from "@/app/server/advisor/advisor.repository";
@@ -25,6 +25,8 @@ const AdvisorPage = () => {
   const [open, setOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
+  const [advisorType, setAdvisorType] = useState<string>("");
 
   const { search, setSearch, tableRef, tableData, columns, pagination, handlePageChange } =
     useAdvisorList({
@@ -32,6 +34,7 @@ const AdvisorPage = () => {
         setSelectedId(id);
         setDeleteOpen(true);
       },
+      advisorType: advisorType || undefined,
     });
 
   const displayColumns = useMemo(
@@ -95,6 +98,7 @@ const AdvisorPage = () => {
       <div className="flex justify-center">
         <Card className="w-full border-2 border-zinc-700 bg-zinc-900 text-zinc-100 shadow-lg">
           <CardHeader className="flex flex-col gap-4 border-b border-zinc-700 bg-zinc-900 pb-4 md:flex-row md:items-center md:justify-between">
+            {/* Search and Filters */}
             <div className="flex gap-2">
               <Input
                 placeholder="Cari dosen..."
@@ -104,9 +108,10 @@ const AdvisorPage = () => {
               />
               <Button
                 variant="outline"
+                onClick={() => setShowFilters(!showFilters)}
                 className="border-zinc-700 bg-gradient-to-r from-zinc-800 to-zinc-900 text-white hover:bg-zinc-700 hover:ring-2 hover:ring-blue-400"
               >
-                Cari
+                <Filter className="h-4 w-4" />
               </Button>
             </div>
             <Button
@@ -117,6 +122,44 @@ const AdvisorPage = () => {
               + Tambah Dosen
             </Button>
           </CardHeader>
+
+          {/* Filters Panel */}
+          {showFilters && (
+            <div className="border-b border-zinc-700 bg-zinc-800 p-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div>
+                  <label
+                    htmlFor="advisor-type"
+                    className="mb-2 block text-sm font-medium text-zinc-300"
+                  >
+                    Tipe Dosen
+                  </label>
+                  <select
+                    id="advisor-type"
+                    value={advisorType}
+                    onChange={(e) => setAdvisorType(e.target.value)}
+                    className="w-full rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100"
+                  >
+                    <option value="">Semua Tipe</option>
+                    {Object.entries(ADVISOR_TYPES_ID_LABEL).map(([key, label]) => (
+                      <option key={key} value={key}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex items-end">
+                  <Button
+                    variant="outline"
+                    onClick={() => setAdvisorType("")}
+                    className="border-zinc-700 bg-zinc-900 text-white hover:bg-zinc-700"
+                  >
+                    Reset Filter
+                  </Button>
+                </div>
+              </div>
+            </div>
+          )}
           <CardContent ref={tableRef} className="bg-zinc-900 p-0 md:p-4">
             <div className="w-full">
               <DataTable
