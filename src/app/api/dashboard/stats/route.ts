@@ -32,7 +32,7 @@ export const GET = withAuth(
       return internalServerError(error, {
         errorLogMessage: "Failed to fetch dashboard statistics",
         errorResponse: {
-          error: "Internal Server Error",
+          code: "INTERNAL_SERVER_ERROR",
           message: "Gagal mengambil statistik dashboard",
         },
       });

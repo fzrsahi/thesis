@@ -15,7 +15,9 @@ export const useDashboardStats = () => {
   return useQueryProvider({
     queryKey: ["dashboard-stats"],
     queryFn,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    refetchInterval: 10 * 60 * 1000, // Refetch every 10 minutes
+    options: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      refetchInterval: 10 * 60 * 1000, // Refetch every 10 minutes
+    },
   });
 };
