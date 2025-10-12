@@ -399,6 +399,75 @@
         }
       }
     },
+    "/recomendations/students/{id}": {
+      "get": {
+        "tags": ["Recommendation"],
+        "summary": "Get student recommendations by ID",
+        "description": "Retrieves recommendations for a specific student, including personalized competition matches and related statistics.",
+        "operationId": "getStudentRecommendationsById",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "description": "Student ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Student recommendations retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuccessResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid parameters",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "404": {
+            "description": "Student or recommendations not found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+              }
+            }
+          }
+        }
+      }
+    },
     "/recomendations/competitions/{id}": {
       "get": {
         "tags": ["Recommendation"],
@@ -1886,6 +1955,46 @@
           "result": {
             "type": "object",
             "properties": {
+              "studentProfile": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Nama lengkap mahasiswa",
+                    "example": "John Doe"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Email mahasiswa",
+                    "example": "john.doe@student.ung.ac.id"
+                  },
+                  "studentId": {
+                    "type": "string",
+                    "nullable": true,
+                    "description": "Nomor Induk Mahasiswa (NIM)",
+                    "example": "1234567890"
+                  },
+                  "entryYear": {
+                    "type": "number",
+                    "description": "Tahun masuk mahasiswa",
+                    "example": 2021
+                  },
+                  "gpa": {
+                    "type": "string",
+                    "nullable": true,
+                    "description": "Indeks Prestasi Kumulatif (IPK)",
+                    "example": "3.66"
+                  },
+                  "studyProgram": {
+                    "type": "string",
+                    "description": "Program studi mahasiswa",
+                    "example": "Teknik Informatika"
+                  }
+                },
+                "required": ["name", "email", "entryYear", "studyProgram"],
+                "description": "Profil dasar mahasiswa"
+              },
               "studentSummary": {
                 "type": "string",
                 "description": "Comprehensive summary of the student's academic and professional background",
@@ -2530,6 +2639,7 @@
             "type": "object",
             "properties": {
               "id": { "type": "integer" },
+              "userId": { "type": "integer" },
               "name": { "type": "string" },
               "email": { "type": "string" },
               "studentId": { "type": "string", "nullable": true },
@@ -2543,7 +2653,7 @@
               },
               "entryYear": { "type": "integer" }
             },
-            "required": ["id", "name", "email", "studyProgram", "entryYear"]
+            "required": ["id", "userId", "name", "email", "studyProgram", "entryYear"]
           },
           "competitions": {
             "type": "array",
@@ -2611,6 +2721,7 @@
             "type": "object",
             "properties": {
               "id": { "type": "integer" },
+              "userId": { "type": "integer" },
               "name": { "type": "string" },
               "email": { "type": "string" },
               "studentId": { "type": "string", "nullable": true },
@@ -2624,7 +2735,7 @@
               },
               "entryYear": { "type": "integer" }
             },
-            "required": ["id", "name", "email", "studyProgram", "entryYear"]
+            "required": ["id", "userId", "name", "email", "studyProgram", "entryYear"]
           },
           "recommendation": {
             "type": "object",
@@ -2823,6 +2934,7 @@
             "type": "object",
             "properties": {
               "id": { "type": "integer" },
+              "userId": { "type": "integer" },
               "name": { "type": "string" },
               "email": { "type": "string" },
               "studentId": { "type": "string", "nullable": true },
@@ -2845,7 +2957,7 @@
                 "items": { "type": "string" }
               }
             },
-            "required": ["id", "name", "email", "studyProgram", "entryYear"]
+            "required": ["id", "userId", "name", "email", "studyProgram", "entryYear"]
           },
           "recommendation": {
             "type": "object",

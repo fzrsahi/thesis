@@ -9,6 +9,7 @@ import {
 import { STUDENT_ERROR_RESPONSE } from "../../student/student.error";
 import { findStudentByUserId } from "../../student/student.repository";
 import { customError } from "../../utils/error/custom-error";
+import { extractStudentId } from "../../utils/helpers/extract-student-id.helper";
 import { RECOMMENDATION_ERROR_RESPONSE } from "../recomendation.error";
 import { findRecommendationByStudentId } from "../recomendation.repository";
 
@@ -37,10 +38,20 @@ type ExtendedCompetitionData = {
 export const getStudentRecomendationUsecase = async (userId: number) => {
   const student = await findStudentByUserId(userId, {
     id: true,
+    userId: true,
+    studentId: true,
+    entryYear: true,
+    gpa: true,
     user: {
       select: {
         name: true,
         email: true,
+      },
+    },
+    studyProgram: {
+      select: {
+        id: true,
+        name: true,
       },
     },
   });
@@ -104,6 +115,14 @@ export const getStudentRecomendationUsecase = async (userId: number) => {
   ) as Record<SkillsProfileKey, { score: number; breakdown: string }>;
 
   const response: RecommendationResponse = {
+    studentProfile: {
+      name: student.user.name,
+      email: student.user.email,
+      studentId: student.studentId,
+      entryYear: student.entryYear,
+      gpa: student.gpa,
+      studyProgram: student.studyProgram.name,
+    },
     studentSummary: recommendation.studentSummary || "",
     skillsProfile,
     overallAssessment: JSON.parse(recommendation.overallAssessment || "{}"),
@@ -151,10 +170,27 @@ export const getStudentRecomendationUsecase = async (userId: number) => {
     })),
   };
 
+  // Extract additional data from studentId if available
+  let extractedData = null;
+  if (student.studentId) {
+    try {
+      extractedData = extractStudentId(student.studentId);
+    } catch (error) {
+      // If extraction fails, use data from database
+      // Failed to extract student data from NIM, using database data instead
+    }
+  }
+
   return {
     student: {
+      id: student.id,
+      userId: student.userId,
       name: student.user.name,
       email: student.user.email,
+      studentId: student.studentId,
+      studyProgram: extractedData?.studyProgram || student.studyProgram,
+      entryYear: extractedData?.entryYear || student.entryYear,
+      gpa: student.gpa,
     },
     result: response,
   };

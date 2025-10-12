@@ -133,10 +133,15 @@ const studentColumnsDef = (
     cell: ({ row }) => (
       <div className="space-y-1">
         <div className="font-medium text-white">{row.original.student.name}</div>
-        <div className="text-sm text-zinc-400">{row.original.student.studentId || "N/A"}</div>
-        <div className="text-xs text-zinc-500">
-          {row.original.student.studyProgram.name} - {row.original.student.entryYear}
+        <div className="text-sm text-zinc-400">
+          User ID: {row.original.student.userId} | Student ID:{" "}
+          {row.original.student.studentId || "N/A"}
         </div>
+        <div className="text-xs text-zinc-500">
+          Program Studi: {row.original.student.studyProgram.name}
+        </div>
+        <div className="text-xs text-zinc-500">Tahun Masuk: {row.original.student.entryYear}</div>
+        <div className="text-xs text-zinc-500">IPK: {row.original.student.gpa || "N/A"}</div>
       </div>
     ),
   },
@@ -257,11 +262,12 @@ const RecomendationPage = () => {
     [router]
   );
 
-  const handleViewStudent = (item: StudentRecommendationGroup) => {
-    // TODO: Navigate to student detail
-    // eslint-disable-next-line no-console
-    console.log("View student:", item);
-  };
+  const handleViewStudent = useCallback(
+    (item: StudentRecommendationGroup) => {
+      router.push(`/recomendation/student/${item.student.userId}`);
+    },
+    [router]
+  );
 
   // Use columnsDef factory to avoid defining components during render
   const competitionColumns = useMemo(
@@ -269,7 +275,7 @@ const RecomendationPage = () => {
     [handleViewCompetition]
   );
 
-  const studentColumns = useMemo(() => studentColumnsDef(handleViewStudent), []);
+  const studentColumns = useMemo(() => studentColumnsDef(handleViewStudent), [handleViewStudent]);
 
   return (
     <div className="w-full">

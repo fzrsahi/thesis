@@ -549,7 +549,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
             </motion.div>
           </div>
 
-          {/* Student Summary */}
+          {/* Student Profile */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -566,9 +566,145 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <TypographyP className="leading-relaxed text-zinc-300">
-                  {data.result.studentSummary}
-                </TypographyP>
+                <div className="space-y-6">
+                  {/* Student Information Grid */}
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.3, duration: 0.3 }}
+                      className="group/item relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-500/10 to-cyan-500/10 p-4 backdrop-blur-sm transition-all hover:from-blue-500/20 hover:to-cyan-500/20"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 shadow-lg">
+                          <Users className="h-4 w-4 text-white" />
+                        </div>
+                        <div>
+                          <span className="text-xs text-zinc-400">Nama</span>
+                          <p className="text-sm font-semibold text-white">
+                            {data.result.studentProfile?.name || "Tidak tersedia"}
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.4, duration: 0.3 }}
+                      className="group/item relative overflow-hidden rounded-xl bg-gradient-to-br from-purple-500/10 to-pink-500/10 p-4 backdrop-blur-sm transition-all hover:from-purple-500/20 hover:to-pink-500/20"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg">
+                          <BookOpen className="h-4 w-4 text-white" />
+                        </div>
+                        <div>
+                          <span className="text-xs text-zinc-400">NIM</span>
+                          <p className="text-sm font-semibold text-white">
+                            {data.result.studentProfile?.studentId || "Tidak tersedia"}
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.5, duration: 0.3 }}
+                      className="group/item relative overflow-hidden rounded-xl bg-gradient-to-br from-green-500/10 to-emerald-500/10 p-4 backdrop-blur-sm transition-all hover:from-green-500/20 hover:to-emerald-500/20"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-emerald-500 shadow-lg">
+                          <Trophy className="h-4 w-4 text-white" />
+                        </div>
+                        <div>
+                          <span className="text-xs text-zinc-400">IPK</span>
+                          <p className="text-sm font-semibold text-white">
+                            {data.result.studentProfile?.gpa || "Tidak tersedia"}
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.6, duration: 0.3 }}
+                      className="group/item relative overflow-hidden rounded-xl bg-gradient-to-br from-orange-500/10 to-red-500/10 p-4 backdrop-blur-sm transition-all hover:from-orange-500/20 hover:to-red-500/20"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-orange-500 to-red-500 shadow-lg">
+                          <Calendar className="h-4 w-4 text-white" />
+                        </div>
+                        <div>
+                          <span className="text-xs text-zinc-400">Angkatan</span>
+                          <p className="text-sm font-semibold text-white">
+                            {data.result.studentProfile?.entryYear || "Tidak tersedia"}
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </div>
+
+                  {/* Additional Info */}
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.7, duration: 0.3 }}
+                      className="group/item relative overflow-hidden rounded-xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10 p-4 backdrop-blur-sm transition-all hover:from-indigo-500/20 hover:to-purple-500/20"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 shadow-lg">
+                          <Code2 className="h-4 w-4 text-white" />
+                        </div>
+                        <div>
+                          <span className="text-xs text-zinc-400">Program Studi</span>
+                          <p className="text-sm font-semibold text-white">
+                            {data.result.studentProfile?.studyProgram || "Tidak tersedia"}
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.8, duration: 0.3 }}
+                      className="group/item relative overflow-hidden rounded-xl bg-gradient-to-br from-cyan-500/10 to-blue-500/10 p-4 backdrop-blur-sm transition-all hover:from-cyan-500/20 hover:to-blue-500/20"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 shadow-lg">
+                          <ExternalLink className="h-4 w-4 text-white" />
+                        </div>
+                        <div>
+                          <span className="text-xs text-zinc-400">Email</span>
+                          <p className="text-sm font-semibold text-white">
+                            {data.result.studentProfile?.email || "Tidak tersedia"}
+                          </p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </div>
+
+                  {/* Student Summary */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.9, duration: 0.3 }}
+                    className="rounded-xl bg-gradient-to-r from-zinc-800/30 to-zinc-900/30 p-4 backdrop-blur-sm"
+                  >
+                    <div className="mb-3 flex items-center space-x-3">
+                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-500 shadow-lg">
+                        <Brain className="h-3 w-3 text-white" />
+                      </div>
+                      <span className="text-sm font-semibold text-white">Ringkasan Profil</span>
+                    </div>
+                    <TypographyP className="leading-relaxed text-zinc-300">
+                      {data.result.studentSummary}
+                    </TypographyP>
+                  </motion.div>
+                </div>
               </CardContent>
             </Card>
           </motion.div>

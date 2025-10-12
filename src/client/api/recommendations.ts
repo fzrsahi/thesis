@@ -26,6 +26,7 @@ export type CompetitionRecommendationGroup = {
 export type StudentRecommendationGroup = {
   student: {
     id: number;
+    userId: number;
     name: string;
     email: string;
     studentId?: string;
@@ -34,6 +35,7 @@ export type StudentRecommendationGroup = {
       name: string;
     };
     entryYear: number;
+    gpa?: string;
   };
   competitions: CompetitionRecommendationSummary[];
   statistics: {
@@ -53,6 +55,7 @@ export type StudentRecommendationGroup = {
 export type StudentRecommendationSummary = {
   student: {
     id: number;
+    userId: number;
     name: string;
     email: string;
     studentId?: string;

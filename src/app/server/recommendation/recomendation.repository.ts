@@ -247,6 +247,7 @@ export const getRecommendationsOverview = async (
           student: {
             select: {
               id: true,
+              userId: true,
               studentId: true,
               entryYear: true,
               user: {
@@ -288,6 +289,7 @@ export const getRecommendationsOverview = async (
           return {
             student: {
               id: rec.student!.id,
+              userId: rec.student!.userId,
               name: rec.student!.user.name,
               email: rec.student!.user.email,
               studentId: rec.student!.studentId,
@@ -380,6 +382,7 @@ type StudentGroup = {
       name: string;
     };
     entryYear: number;
+    gpa: string | null;
   };
   competitions: Array<{
     competition: {
@@ -450,6 +453,7 @@ export const getRecommendationsByStudent = async (
           { studentId: { contains: keywords, mode: "insensitive" } },
         ],
       }),
+      // Only show students who have recommendations
       recommendations: {
         some: {
           competitionRecommendations: {
@@ -463,8 +467,10 @@ export const getRecommendationsByStudent = async (
     },
     select: {
       id: true,
+      userId: true,
       studentId: true,
       entryYear: true,
+      gpa: true,
       user: {
         select: {
           name: true,
@@ -573,11 +579,13 @@ export const getRecommendationsByStudent = async (
       return {
         student: {
           id: student.id,
+          userId: student.userId,
           name: student.user.name,
           email: student.user.email,
           studentId: student.studentId,
           studyProgram: student.studyProgram,
           entryYear: student.entryYear,
+          gpa: student.gpa,
         },
         competitions: studentCompetitions,
         statistics,

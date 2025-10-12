@@ -144,7 +144,7 @@ export const CompetitionOverview = ({
               <div className="space-y-2">
                 <div className="flex items-center gap-2 text-zinc-400">
                   <Target className="h-4 w-4" />
-                  <span className="text-sm">Min GPA</span>
+                  <span className="text-sm">Min IPK</span>
                 </div>
                 <p className="font-medium text-white">{competition.minGPA || "N/A"}</p>
               </div>

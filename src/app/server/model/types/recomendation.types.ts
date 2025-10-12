@@ -148,7 +148,17 @@ export const DevelopmentSuggestionSchema = z.object({
     .describe("Alasan mengapa sumber daya ini penting untuk pengembangan mahasiswa"),
 });
 
+export const StudentProfileSchema = z.object({
+  name: z.string().describe("Nama lengkap mahasiswa"),
+  email: z.string().email().describe("Email mahasiswa"),
+  studentId: z.string().nullable().describe("Nomor Induk Mahasiswa (NIM)"),
+  entryYear: z.number().describe("Tahun masuk mahasiswa"),
+  gpa: z.string().nullable().describe("Indeks Prestasi Kumulatif (IPK)"),
+  studyProgram: z.string().describe("Program studi mahasiswa"),
+});
+
 export const RecommendationResponseSchema = z.object({
+  studentProfile: StudentProfileSchema.describe("Profil dasar mahasiswa"),
   studentSummary: z
     .string()
     .describe("Ringkasan profil mahasiswa yang mencakup kekuatan utama dan karakteristik"),

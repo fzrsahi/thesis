@@ -21,4 +21,14 @@ const myRecommendation = createQueryKeys("my-recommendation", {
   create: () => ["create-my-recommendation"],
 });
 
-export const queryKeys = mergeQueryKeys(personalData, academicData, transcript, myRecommendation);
+const studentCompetitionDetail = createQueryKeys("student-competition-detail", {
+  data: (studentId: number) => ["student-competition-detail", studentId],
+});
+
+export const queryKeys = mergeQueryKeys(
+  personalData,
+  academicData,
+  transcript,
+  myRecommendation,
+  studentCompetitionDetail
+);

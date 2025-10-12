@@ -177,7 +177,7 @@ const CompetitionDetailPage = () => {
                     </Field>
                   </div>
                   <div className="space-y-2 rounded-lg bg-zinc-800/30 p-4 backdrop-blur-sm">
-                    <Label className="text-zinc-300">Minimal GPA</Label>
+                    <Label className="text-zinc-300">Minimal IPK</Label>
                     <Field className="flex items-center gap-2 text-zinc-100">
                       <Star className="h-4 w-4 text-orange-400" />
                       {item?.minGPA ? item.minGPA : "-"}

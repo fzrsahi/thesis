@@ -110,6 +110,26 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/recomendations/students/{id}": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get student recommendations by ID
+     * @description Retrieves recommendations for a specific student, including personalized competition matches and related statistics.
+     */
+    get: operations["getStudentRecommendationsById"];
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
   "/recomendations/competitions/{id}": {
     parameters: {
       query?: never;
@@ -1102,6 +1122,67 @@ export interface paths {
     patch?: never;
     trace?: never;
   };
+  "/dashboard/stats": {
+    parameters: {
+      query?: never;
+      header?: never;
+      path?: never;
+      cookie?: never;
+    };
+    /**
+     * Get dashboard statistics
+     * @description Retrieve comprehensive statistics for the dashboard including student counts, active competitions, recommendations, and upcoming deadlines.
+     */
+    get: {
+      parameters: {
+        query?: never;
+        header?: never;
+        path?: never;
+        cookie?: never;
+      };
+      requestBody?: never;
+      responses: {
+        /** @description Dashboard statistics retrieved successfully */
+        200: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": {
+              /** @example true */
+              success: boolean;
+              data: components["schemas"]["DashboardStats"];
+            };
+          };
+        };
+        /** @description Unauthorized */
+        401: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["ErrorResponse"];
+          };
+        };
+        /** @description Internal server error */
+        500: {
+          headers: {
+            [name: string]: unknown;
+          };
+          content: {
+            "application/json": components["schemas"]["ErrorResponse"];
+          };
+        };
+      };
+    };
+    put?: never;
+    post?: never;
+    delete?: never;
+    options?: never;
+    head?: never;
+    patch?: never;
+    trace?: never;
+  };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1302,6 +1383,40 @@ export interface components {
         email: string;
       };
       result: {
+        /** @description Profil dasar mahasiswa */
+        studentProfile?: {
+          /**
+           * @description Nama lengkap mahasiswa
+           * @example John Doe
+           */
+          name: string;
+          /**
+           * Format: email
+           * @description Email mahasiswa
+           * @example john.doe@student.ung.ac.id
+           */
+          email: string;
+          /**
+           * @description Nomor Induk Mahasiswa (NIM)
+           * @example 1234567890
+           */
+          studentId?: string | null;
+          /**
+           * @description Tahun masuk mahasiswa
+           * @example 2021
+           */
+          entryYear: number;
+          /**
+           * @description Indeks Prestasi Kumulatif (IPK)
+           * @example 3.66
+           */
+          gpa?: string | null;
+          /**
+           * @description Program studi mahasiswa
+           * @example Teknik Informatika
+           */
+          studyProgram: string;
+        };
         /**
          * @description Comprehensive summary of the student's academic and professional background
          * @example Mahasiswa Teknik Informatika dengan IPK 3.66, menonjol dalam penguasaan pemrograman, pengelolaan sistem, dan teknologi berbasis data. Berpengalaman sebagai Software Developer di Jepang dan beberapa magang sebelumnya. Memiliki minat utama di bidang Programming, Backend Development, dan Software Engineering.
@@ -1590,6 +1705,7 @@ export interface components {
     StudentRecommendationGroup: {
       student: {
         id: number;
+        userId: number;
         name: string;
         email: string;
         studentId?: string | null;
@@ -1637,6 +1753,7 @@ export interface components {
     StudentRecommendationSummary: {
       student: {
         id: number;
+        userId: number;
         name: string;
         email: string;
         studentId?: string | null;
@@ -1723,6 +1840,7 @@ export interface components {
     StudentRecommendationDetail: {
       student: {
         id: number;
+        userId: number;
         name: string;
         email: string;
         studentId?: string | null;
@@ -1750,6 +1868,132 @@ export interface components {
         };
         /** Format: date-time */
         createdAt: string;
+      };
+    };
+    DashboardStats: {
+      overview: {
+        /**
+         * @description Total number of students in the system
+         * @example 1250
+         */
+        totalStudents: number;
+        /**
+         * @description Number of active competitions
+         * @example 45
+         */
+        activeCompetitions: number;
+        /**
+         * @description Total number of recommendations given
+         * @example 890
+         */
+        totalRecommendations: number;
+        /**
+         * @description Number of competitions with deadlines within 7 days
+         * @example 8
+         */
+        upcomingDeadlines: number;
+      };
+      /** @description Top 5 most popular competitions by recommendation count */
+      popularCompetitions: {
+        /**
+         * @description Competition name
+         * @example PKM
+         */
+        name: string;
+        /**
+         * @description Number of students recommended for this competition
+         * @example 45
+         */
+        count: number;
+        /**
+         * @description Percentage of total recommendations
+         * @example 25.5
+         */
+        percentage: number;
+      }[];
+      /** @description Recent activities in the system (last 10) */
+      recentActivity: {
+        /** @description Activity ID */
+        id: number;
+        /**
+         * @description Type of activity
+         * @enum {string}
+         */
+        type: "competition" | "registration" | "upload" | "recommendation";
+        /**
+         * @description Description of the activity
+         * @example Kompetisi baru ditambahkan
+         */
+        action: string;
+        /**
+         * @description Name of the competition (if applicable)
+         * @example PKM 2024
+         */
+        competitionName?: string | null;
+        /**
+         * @description Name of the student (if applicable)
+         * @example Ahmad Rizki
+         */
+        studentName?: string | null;
+        /**
+         * Format: date-time
+         * @description When the activity occurred
+         * @example 2024-01-15T10:30:00.000Z
+         */
+        timestamp: string;
+      }[];
+      statistics: {
+        studentGrowth: {
+          /**
+           * @description Number of new students this month
+           * @example 25
+           */
+          currentMonth: number;
+          /**
+           * @description Number of new students last month
+           * @example 20
+           */
+          previousMonth: number;
+          /**
+           * @description Percentage growth compared to previous month
+           * @example 25
+           */
+          growthPercentage: number;
+        };
+        competitionGrowth: {
+          /**
+           * @description Number of new competitions this month
+           * @example 5
+           */
+          currentMonth: number;
+          /**
+           * @description Number of new competitions last month
+           * @example 3
+           */
+          previousMonth: number;
+          /**
+           * @description Percentage growth compared to previous month
+           * @example 66.7
+           */
+          growthPercentage: number;
+        };
+        recommendationGrowth: {
+          /**
+           * @description Number of recommendations given this month
+           * @example 150
+           */
+          currentMonth: number;
+          /**
+           * @description Number of recommendations given last month
+           * @example 120
+           */
+          previousMonth: number;
+          /**
+           * @description Percentage growth compared to previous month
+           * @example 25
+           */
+          growthPercentage: number;
+        };
       };
     };
   };
@@ -1968,6 +2212,65 @@ export interface operations {
       };
       /** @description Unauthorized */
       401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+    };
+  };
+  getStudentRecommendationsById: {
+    parameters: {
+      query?: never;
+      header?: never;
+      path: {
+        /** @description Student ID */
+        id: number;
+      };
+      cookie?: never;
+    };
+    requestBody?: never;
+    responses: {
+      /** @description Student recommendations retrieved successfully */
+      200: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["SuccessResponse"];
+        };
+      };
+      /** @description Bad request - invalid parameters */
+      400: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Unauthorized */
+      401: {
+        headers: {
+          [name: string]: unknown;
+        };
+        content: {
+          "application/json": components["schemas"]["ErrorResponse"];
+        };
+      };
+      /** @description Student or recommendations not found */
+      404: {
         headers: {
           [name: string]: unknown;
         };
