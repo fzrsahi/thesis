@@ -1878,20 +1878,15 @@ export interface components {
          */
         totalStudents: number;
         /**
-         * @description Number of active competitions
+         * @description Total number of competitions in the system
          * @example 45
          */
-        activeCompetitions: number;
+        totalCompetitions: number;
         /**
          * @description Total number of recommendations given
          * @example 890
          */
         totalRecommendations: number;
-        /**
-         * @description Number of competitions with deadlines within 7 days
-         * @example 8
-         */
-        upcomingDeadlines: number;
       };
       /** @description Top 5 most popular competitions by recommendation count */
       popularCompetitions: {

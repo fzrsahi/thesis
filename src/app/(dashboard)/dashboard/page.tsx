@@ -1,10 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Users, Trophy, BookOpen, Calendar, Target, BarChart3, Activity } from "lucide-react";
+import { Users, Trophy, BookOpen, Target, BarChart3, Activity } from "lucide-react";
 import { useState, useEffect } from "react";
 
 import { TypographyH2, TypographyP } from "@/components/ui/typography";
+
+import { useDashboardStats } from "./hooks/useDashboardStats";
 
 const staggerContainer = {
   hidden: { opacity: 0 },
@@ -126,9 +128,13 @@ const SimpleBarChart = ({
       <h3 className="mb-4 text-lg font-semibold text-white">{title}</h3>
       <div className="space-y-3">
         {data.map((item) => (
-          <div key={item.label} className="flex items-center space-x-3">
-            <div className="w-20 truncate text-sm text-zinc-300">{item.label}</div>
-            <div className="relative h-6 flex-1 overflow-hidden rounded-full bg-zinc-700/50">
+          <div key={item.label} className="group relative flex items-center space-x-3">
+            <div className="min-w-0 flex-1">
+              <div className="text-sm text-zinc-300 transition-colors group-hover:text-white">
+                {item.label}
+              </div>
+            </div>
+            <div className="relative h-6 w-32 overflow-hidden rounded-full bg-zinc-700/50">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${(item.value / maxValue) * 100}%` }}
@@ -139,6 +145,12 @@ const SimpleBarChart = ({
                 {item.value}
               </span>
             </div>
+            {/* Tooltip */}
+            <div className="absolute bottom-full left-0 z-10 mb-2 hidden rounded-lg bg-zinc-800 px-3 py-2 text-sm text-white shadow-lg group-hover:block">
+              <div className="font-medium">{item.label}</div>
+              <div className="text-zinc-300">{item.value} rekomendasi</div>
+              <div className="absolute top-full left-4 h-0 w-0 border-t-4 border-r-4 border-l-4 border-transparent border-t-zinc-800" />
+            </div>
           </div>
         ))}
       </div>
@@ -147,38 +159,33 @@ const SimpleBarChart = ({
 };
 
 // Recent Activity Component
-const RecentActivity = () => {
-  const activities = [
-    {
-      id: 1,
-      action: "Kompetisi baru ditambahkan",
-      competition: "PKM 2024",
-      time: "2 jam yang lalu",
-      type: "competition",
-    },
-    {
-      id: 2,
-      action: "Mahasiswa mendaftar",
-      student: "Ahmad Rizki",
-      competition: "Hackathon Nasional",
-      time: "4 jam yang lalu",
-      type: "registration",
-    },
-    {
-      id: 3,
-      action: "Dokumen diupload",
-      competition: "Lomba Robotik",
-      time: "6 jam yang lalu",
-      type: "upload",
-    },
-    {
-      id: 4,
-      action: "Rekomendasi diberikan",
-      student: "Siti Nurhaliza",
-      time: "8 jam yang lalu",
-      type: "recommendation",
-    },
-  ];
+const RecentActivity = ({
+  activities,
+}: {
+  activities: Array<{
+    id: number;
+    type: "competition" | "registration" | "upload" | "recommendation";
+    action: string;
+    competitionName?: string | null;
+    studentName?: string | null;
+    timestamp: string;
+  }>;
+}) => {
+  const formatTimeAgo = (timestamp: string) => {
+    const now = new Date();
+    const activityTime = new Date(timestamp);
+    const diffInMinutes = Math.floor((now.getTime() - activityTime.getTime()) / (1000 * 60));
+
+    if (diffInMinutes < 60) {
+      return `${diffInMinutes} menit yang lalu`;
+    }
+    if (diffInMinutes < 1440) {
+      const hours = Math.floor(diffInMinutes / 60);
+      return `${hours} jam yang lalu`;
+    }
+    const days = Math.floor(diffInMinutes / 1440);
+    return `${days} hari yang lalu`;
+  };
 
   const getActivityIcon = (type: string) => {
     switch (type) {
@@ -217,77 +224,158 @@ const RecentActivity = () => {
     >
       <h3 className="mb-4 text-lg font-semibold text-white">Aktivitas Terbaru</h3>
       <div className="space-y-4">
-        {activities.map((activity) => {
-          const Icon = getActivityIcon(activity.type);
-          return (
-            <div key={activity.id} className="flex items-start space-x-3">
-              <div
-                className={`flex h-8 w-8 items-center justify-center rounded-full ${getActivityColor(activity.type)}`}
-              >
-                <Icon className="h-4 w-4" />
+        {activities.length > 0 ? (
+          activities.map((activity) => {
+            const Icon = getActivityIcon(activity.type);
+            return (
+              <div key={activity.id} className="flex items-start space-x-3">
+                <div
+                  className={`flex h-8 w-8 items-center justify-center rounded-full ${getActivityColor(activity.type)}`}
+                >
+                  <Icon className="h-4 w-4" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-medium text-white">
+                    {activity.action}
+                    {activity.competitionName && (
+                      <span className="text-zinc-300"> - {activity.competitionName}</span>
+                    )}
+                    {activity.studentName && (
+                      <span className="text-zinc-300"> ({activity.studentName})</span>
+                    )}
+                  </p>
+                  <p className="text-xs text-zinc-400">{formatTimeAgo(activity.timestamp)}</p>
+                </div>
               </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-medium text-white">
-                  {activity.action}
-                  {activity.competition && (
-                    <span className="text-zinc-300"> - {activity.competition}</span>
-                  )}
-                  {activity.student && <span className="text-zinc-300"> ({activity.student})</span>}
-                </p>
-                <p className="text-xs text-zinc-400">{activity.time}</p>
-              </div>
+            );
+          })
+        ) : (
+          <div className="flex items-center justify-center py-8">
+            <div className="text-center">
+              <Activity className="mx-auto h-12 w-12 text-zinc-500" />
+              <p className="mt-2 text-sm text-zinc-400">Belum ada aktivitas terbaru</p>
             </div>
-          );
-        })}
+          </div>
+        )}
       </div>
     </motion.div>
   );
 };
 
 const DashboardPage = () => {
-  // Mock data - nanti bisa diganti dengan data real dari API
-  const statsData = [
-    {
-      icon: Users,
-      title: "Total Mahasiswa",
-      value: 1250,
-      change: "+12%",
-      changeType: "positive" as const,
-      color: "blue" as const,
-    },
-    {
-      icon: Trophy,
-      title: "Kompetisi Aktif",
-      value: 45,
-      change: "+5",
-      changeType: "positive" as const,
-      color: "green" as const,
-    },
-    {
-      icon: Target,
-      title: "Rekomendasi Diberikan",
-      value: 890,
-      change: "+15%",
-      changeType: "positive" as const,
-      color: "orange" as const,
-    },
-    {
-      icon: Calendar,
-      title: "Deadline Mendekat",
-      value: 8,
-      change: "&lt; 7 hari",
-      changeType: "neutral" as const,
-      color: "red" as const,
-    },
-  ];
+  const { data: dashboardStats, isLoading, error } = useDashboardStats();
 
-  const chartData = [
-    { label: "PKM", value: 45, color: "bg-blue-500" },
-    { label: "Hackathon", value: 32, color: "bg-green-500" },
-    { label: "Robotik", value: 28, color: "bg-purple-500" },
-    { label: "Desain", value: 24, color: "bg-orange-500" },
-    { label: "Lainnya", value: 18, color: "bg-gray-500" },
-  ];
+  // Transform API data to component format
+  const statsData = dashboardStats
+    ? [
+        {
+          icon: Users,
+          title: "Total Mahasiswa",
+          value: dashboardStats.overview.totalStudents,
+          change: `+${dashboardStats.statistics.studentGrowth.growthPercentage.toFixed(1)}%`,
+          changeType:
+            dashboardStats.statistics.studentGrowth.growthPercentage >= 0
+              ? ("positive" as const)
+              : ("negative" as const),
+          color: "blue" as const,
+        },
+        {
+          icon: Trophy,
+          title: "Total Kompetisi",
+          value: dashboardStats.overview.totalCompetitions,
+          change: `+${dashboardStats.statistics.competitionGrowth.growthPercentage.toFixed(1)}%`,
+          changeType:
+            dashboardStats.statistics.competitionGrowth.growthPercentage >= 0
+              ? ("positive" as const)
+              : ("negative" as const),
+          color: "green" as const,
+        },
+        {
+          icon: Target,
+          title: "Rekomendasi Diberikan",
+          value: dashboardStats.overview.totalRecommendations,
+          change: `+${dashboardStats.statistics.recommendationGrowth.growthPercentage.toFixed(1)}%`,
+          changeType:
+            dashboardStats.statistics.recommendationGrowth.growthPercentage >= 0
+              ? ("positive" as const)
+              : ("negative" as const),
+          color: "orange" as const,
+        },
+      ]
+    : [];
+
+  const chartData =
+    dashboardStats?.popularCompetitions.map((comp, index) => ({
+      label: comp.name,
+      value: comp.count,
+      color:
+        ["bg-blue-500", "bg-green-500", "bg-purple-500", "bg-orange-500", "bg-gray-500"][index] ||
+        "bg-gray-500",
+    })) || [];
+
+  if (isLoading) {
+    return (
+      <div className="w-full">
+        <div className="mb-6">
+          <TypographyH2 className="flex items-center gap-2 truncate text-zinc-900">
+            <BarChart3 className="h-10 w-10 font-extrabold" />
+            Dashboard Statistik
+          </TypographyH2>
+          <TypographyP className="border-b border-gray-300 pb-4 text-zinc-900">
+            Selamat datang di dashboard sistem rekomendasi kompetisi akademik
+          </TypographyP>
+          <div className="mb-6 border-t border-gray-500" />
+        </div>
+
+        <div className="flex justify-center">
+          <div className="w-full space-y-8">
+            {/* Loading Stats Cards */}
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 3 }, (_, index) => (
+                <div
+                  key={`loading-card-${Date.now()}-${index}`}
+                  className="h-32 w-full animate-pulse rounded-lg bg-zinc-200"
+                />
+              ))}
+            </div>
+
+            {/* Loading Charts */}
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+              <div className="h-80 w-full animate-pulse rounded-lg bg-zinc-200" />
+              <div className="h-80 w-full animate-pulse rounded-lg bg-zinc-200" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full">
+        <div className="mb-6">
+          <TypographyH2 className="flex items-center gap-2 truncate text-zinc-900">
+            <BarChart3 className="h-10 w-10 font-extrabold" />
+            Dashboard Statistik
+          </TypographyH2>
+          <TypographyP className="border-b border-gray-300 pb-4 text-zinc-900">
+            Selamat datang di dashboard sistem rekomendasi kompetisi akademik
+          </TypographyP>
+          <div className="mb-6 border-t border-gray-500" />
+        </div>
+
+        <div className="flex justify-center">
+          <div className="w-full">
+            <div className="rounded-lg bg-red-50 p-6 text-center">
+              <TypographyP className="text-red-600">
+                Gagal memuat data dashboard. Silakan coba lagi.
+              </TypographyP>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">
@@ -309,7 +397,7 @@ const DashboardPage = () => {
             variants={staggerContainer}
             initial="hidden"
             animate="show"
-            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4"
+            className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
           >
             {statsData.map((stat) => (
               <StatsCard key={stat.title} {...stat} />
@@ -327,7 +415,7 @@ const DashboardPage = () => {
             <SimpleBarChart data={chartData} title="Kompetisi Populer" />
 
             {/* Recent Activity */}
-            <RecentActivity />
+            <RecentActivity activities={dashboardStats?.recentActivity || []} />
           </motion.div>
         </div>
       </div>

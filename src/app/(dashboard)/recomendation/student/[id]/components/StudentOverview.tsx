@@ -204,7 +204,7 @@ export const StudentOverview = ({ student, statistics, isLoading }: StudentOverv
         transition={{ duration: 0.5, delay: 0.1 }}
         className="mb-8"
       >
-        <Card className="group relative overflow-hidden border border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50 backdrop-blur-sm transition-all hover:border-zinc-700/50">
+        <Card className="group relative overflow-hidden border border-zinc-700 bg-gradient-to-br from-zinc-900 to-zinc-800 transition-all hover:border-zinc-600">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
           <CardHeader>
             <CardTitle className="flex items-center space-x-3 text-white">

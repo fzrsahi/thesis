@@ -1,16 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import {
-  Award,
-  Briefcase,
-  GraduationCap,
-  Mail,
-  User2,
-  FileText,
-  Info,
-  ExternalLink,
-} from "lucide-react";
+import { Award, Briefcase, GraduationCap, Mail, User2, FileText } from "lucide-react";
 import { useParams } from "next/navigation";
 
 import { getStudentDetail } from "@/client/api/students";
@@ -321,125 +312,6 @@ const StudentDetailPage = () => {
                               .join(" - ")}
                           </Field>
                         </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Rekomendasi */}
-          <Card className="border border-zinc-600/50 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 text-white shadow-xl backdrop-blur-sm">
-            <CardHeader className="border-b border-zinc-600/30 bg-gradient-to-r from-zinc-800/50 to-zinc-700/30">
-              <h4 className="flex items-center gap-3 text-xl font-bold">
-                <div className="rounded-full bg-gradient-to-r from-indigo-500 to-blue-600 p-2">
-                  <Info className="h-5 w-5 text-white" />
-                </div>
-                Rekomendasi
-              </h4>
-            </CardHeader>
-            <CardContent className="space-y-6 py-6">
-              {isLoading ? (
-                <>
-                  <Skeleton className="h-6 w-2/3 bg-zinc-700" />
-                  <Skeleton className="h-6 w-1/2 bg-zinc-700" />
-                </>
-              ) : (student?.recommendations ?? []).length === 0 ? (
-                <div className="py-8 text-center text-zinc-400">Belum ada rekomendasi</div>
-              ) : (
-                <div className="space-y-6">
-                  {(student?.recommendations ?? []).map((r) => (
-                    <div
-                      key={r?.id}
-                      className="rounded-lg border border-zinc-600/30 bg-zinc-800/20 p-6 backdrop-blur-sm"
-                    >
-                      <div className="grid gap-6 md:grid-cols-2">
-                        <div className="space-y-2">
-                          <Label className="text-zinc-300">Ringkasan Mahasiswa</Label>
-                          <Field className="text-zinc-100">{r?.studentSummary ?? "-"}</Field>
-                        </div>
-                        <div className="space-y-2">
-                          <Label className="text-zinc-300">Assessment Umum</Label>
-                          <Field className="text-zinc-100">{r?.overallAssessment ?? "-"}</Field>
-                        </div>
-                      </div>
-
-                      <div className="mt-6 space-y-3">
-                        <Label className="text-zinc-300">Saran Pengembangan</Label>
-                        {(r?.developmentSuggestions ?? []).length === 0 ? (
-                          <div className="text-zinc-400">-</div>
-                        ) : (
-                          <div className="space-y-3">
-                            {(r?.developmentSuggestions ?? []).map((d) => (
-                              <div
-                                key={d?.id}
-                                className="rounded-lg border border-zinc-600/20 bg-zinc-800/30 p-4 backdrop-blur-sm"
-                              >
-                                <div className="flex items-start gap-3">
-                                  <span className="rounded-full bg-gradient-to-r from-emerald-500 to-teal-600 px-3 py-1 text-xs font-medium tracking-wide text-white uppercase">
-                                    {d?.type ?? ""}
-                                  </span>
-                                  <div className="flex-1">
-                                    <a
-                                      href={d?.link ?? "#"}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="inline-flex items-center gap-2 text-blue-400 transition-colors hover:text-blue-300"
-                                    >
-                                      {d?.title ?? "Sumber"}
-                                      <ExternalLink className="h-4 w-4" />
-                                    </a>
-                                    {d?.reason ? (
-                                      <p className="mt-1 text-sm text-zinc-300">{d.reason}</p>
-                                    ) : null}
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="mt-6 space-y-3">
-                        <Label className="text-zinc-300">Profil Keahlian</Label>
-                        {(r?.skillsProfiles ?? []).length === 0 ? (
-                          <div className="text-zinc-400">-</div>
-                        ) : (
-                          <div className="grid gap-3 md:grid-cols-2">
-                            {(r?.skillsProfiles ?? []).map((s) => (
-                              <div
-                                key={s?.id}
-                                className="rounded-lg border border-zinc-600/20 bg-zinc-800/30 p-4 backdrop-blur-sm"
-                              >
-                                <div className="mb-2 flex items-center justify-between">
-                                  <div className="font-medium text-zinc-100">
-                                    {s?.skillName ?? "-"}
-                                  </div>
-                                  <div className="text-sm font-bold text-blue-400">
-                                    {typeof s?.score === "number" ? s.score.toFixed(2) : "-"}
-                                  </div>
-                                </div>
-                                {s?.breakdown ? (
-                                  <div className="text-sm text-zinc-300">{s.breakdown}</div>
-                                ) : null}
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="mt-6 space-y-3">
-                        <Label className="text-zinc-300">Rekomendasi Kompetisi (Raw)</Label>
-                        {(r?.competitionRecommendations ?? []).length === 0 ? (
-                          <div className="text-zinc-400">-</div>
-                        ) : (
-                          <div className="max-h-64 overflow-y-auto">
-                            <pre className="rounded-lg border border-zinc-600/50 bg-zinc-900/50 p-4 text-xs whitespace-pre-wrap text-zinc-200 backdrop-blur-sm">
-                              {JSON.stringify(r?.competitionRecommendations, null, 2)}
-                            </pre>
-                          </div>
-                        )}
                       </div>
                     </div>
                   ))}
