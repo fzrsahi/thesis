@@ -176,7 +176,8 @@ const generateRecommendation = async (
 ): Promise<RecommendationResponse> => {
   const model = createOpenAIClient();
   const structuredModel = model.withStructuredOutput<RecommendationResponse>(
-    RecommendationResponseSchema
+    RecommendationResponseSchema,
+    { strict: true }
   );
 
   const prompt = new PromptTemplate({

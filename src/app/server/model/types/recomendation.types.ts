@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const SkillsProfileItemSchema = z.object({
-  score: z
+  score: z.coerce
     .number()
     .min(0)
     .max(1)
@@ -56,7 +56,7 @@ export const OverallAssessmentSchema = z.object({
 });
 
 export const MatchScoreSchema = z.object({
-  score: z
+  score: z.coerce
     .number()
     .min(0)
     .max(1)
@@ -67,7 +67,7 @@ export const MatchScoreSchema = z.object({
 });
 
 export const SkillRequirementItemSchema = z.object({
-  weight: z
+  weight: z.coerce
     .number()
     .min(0)
     .max(1)
@@ -119,11 +119,13 @@ export const ReasoningSchema = z.object({
 });
 
 export const RecommendationSchema = z.object({
-  id: z
+  id: z.coerce
     .number()
     .describe("ID kompetisi sesuai dengan urutan dalam daftar kompetisi yang diberikan"),
   competitionName: z.string().describe("Nama kompetisi yang direkomendasikan"),
-  rank: z.number().describe("Peringkat rekomendasi berdasarkan kesesuaian dan nilai strategis"),
+  rank: z.coerce
+    .number()
+    .describe("Peringkat rekomendasi berdasarkan kesesuaian dan nilai strategis"),
   matchScore: MatchScoreSchema.describe("Skor dan alasan kesesuaian mahasiswa dengan kompetisi"),
   skillRequirements: SkillRequirementsSchema.describe(
     "Analisis kebutuhan skill untuk kompetisi ini"
@@ -152,8 +154,8 @@ export const StudentProfileSchema = z.object({
   name: z.string().describe("Nama lengkap mahasiswa"),
   email: z.string().email().describe("Email mahasiswa"),
   studentId: z.string().nullable().describe("Nomor Induk Mahasiswa (NIM)"),
-  entryYear: z.number().describe("Tahun masuk mahasiswa"),
-  gpa: z.string().nullable().describe("Indeks Prestasi Kumulatif (IPK)"),
+  entryYear: z.coerce.number().describe("Tahun masuk mahasiswa"),
+  gpa: z.coerce.string().nullable().describe("Indeks Prestasi Kumulatif (IPK)"),
   studyProgram: z.string().describe("Program studi mahasiswa"),
 });
 
