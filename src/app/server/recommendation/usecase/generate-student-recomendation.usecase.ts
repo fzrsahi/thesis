@@ -175,7 +175,7 @@ const generateRecommendation = async (
   competitionsData: competitions[]
 ): Promise<RecommendationResponse> => {
   const model = createOpenAIClient();
-  const structuredModel = model.withStructuredOutput<RecommendationResponse>(
+  const strictStructuredModel = model.withStructuredOutput<RecommendationResponse>(
     RecommendationResponseSchema,
     { strict: true }
   );
@@ -206,12 +206,31 @@ const generateRecommendation = async (
     )
     .join("\n");
 
-  const chain = prompt.pipe(structuredModel);
-
-  const result = await chain.invoke({
-    studentProfile: generateStudentProfileText(studentProfile),
-    competitions: competitionContext,
-  });
+  const chainStrict = prompt.pipe(strictStructuredModel);
+  let result: RecommendationResponse;
+  try {
+    result = await chainStrict.invoke({
+      studentProfile: generateStudentProfileText(studentProfile),
+      competitions: competitionContext,
+    });
+  } catch (error: unknown) {
+    const message =
+      typeof error === "object" && error !== null
+        ? (error as { code?: string; type?: string }).code ||
+          (error as { code?: string; type?: string }).type
+        : undefined;
+    const isSchemaError =
+      message === "invalid_function_parameters" || message === "invalid_request_error";
+    if (!isSchemaError) throw error;
+    const nonStrictModel = model.withStructuredOutput<RecommendationResponse>(
+      RecommendationResponseSchema
+    );
+    const chainNonStrict = prompt.pipe(nonStrictModel);
+    result = await chainNonStrict.invoke({
+      studentProfile: generateStudentProfileText(studentProfile),
+      competitions: competitionContext,
+    });
+  }
 
   const competitionMap = new Map(competitionsData.map((comp) => [comp.title, comp.id]));
   result.recommendations = result.recommendations.map((rec) => ({
