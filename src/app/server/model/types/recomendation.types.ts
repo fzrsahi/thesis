@@ -150,7 +150,7 @@ export const DevelopmentSuggestionSchema = z.object({
 
 export const StudentProfileSchema = z.object({
   name: z.string().describe("Nama lengkap mahasiswa"),
-  email: z.string().email().describe("Email mahasiswa"),
+  email: z.string().email().or(z.literal("")).nullable().describe("Email mahasiswa"),
   studentId: z.string().nullable().describe("Nomor Induk Mahasiswa (NIM)"),
   entryYear: z.number().describe("Tahun masuk mahasiswa"),
   gpa: z.string().nullable().describe("Indeks Prestasi Kumulatif (IPK)"),
