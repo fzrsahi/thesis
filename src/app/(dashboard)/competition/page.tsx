@@ -23,6 +23,7 @@ import { formatDate } from "@/lib/utils";
 
 import { CompetitionAddModal } from "./components/competition-add-modal";
 import { CompetitionDeleteModal } from "./components/competition-delete-modal";
+import { CompetitionEditModal } from "./components/competition-edit-modal";
 import { useGenerateCompetition } from "./hooks/useGenerateCompetition";
 
 export type Competition = {
@@ -113,7 +114,10 @@ const CompetitionPage = () => {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [open, setOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<Competition | null>(null);
+  const [editDefaults, setEditDefaults] =
+    useState<Partial<CreateCompetitionGeneratePayload> | null>(null);
   const [page, setPage] = useState(1);
   const [showFilters, setShowFilters] = useState(false);
   const [competitionType, setCompetitionType] = useState<string>("");
@@ -211,7 +215,18 @@ const CompetitionPage = () => {
     router.push(`/competition/${item.id}`);
   };
 
-  const handleEdit = (_item: Competition) => {};
+  const handleEdit = (item: Competition) => {
+    // Map existing fields to edit form (we reuse generate-style fields)
+    setEditDefaults({
+      title: item.title,
+      description: item.description,
+      website: item.sourceUrl ?? "",
+      additionalDetails: undefined,
+      startPage: undefined,
+      endPage: undefined,
+    });
+    setEditOpen(true);
+  };
 
   const handleDelete = (item: Competition) => {
     setSelectedItem(item);
@@ -373,6 +388,17 @@ const CompetitionPage = () => {
           return true;
         }}
         data={selectedItem}
+      />
+      <CompetitionEditModal
+        open={editOpen}
+        onOpenChange={(v) => {
+          setEditOpen(v);
+          if (!v) setEditDefaults(null);
+        }}
+        onSubmit={async () => true}
+        defaultValues={editDefaults ?? undefined}
+        title="Edit Kompetisi"
+        submitText="Simpan"
       />
     </>
   );

@@ -23,19 +23,30 @@ import { TypographyH2, TypographyP } from "@/components/ui/typography";
 import { StudentAddModal } from "./components/StudentAddModal";
 import { StudentDeleteModal } from "./components/StudentDeleteModal";
 import { StudentDetailModal } from "./components/StudentDetailModal";
+import { StudentEditModal } from "./components/StudentEditModal";
 import { useStudentList } from "./hooks/useStudentList";
 
 const StudentPage = () => {
   const { data: session } = useSession();
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
   const [entryYear, setEntryYear] = useState<string>("");
   const [studyProgramId, setStudyProgramId] = useState<string>("");
   const [showFilters, setShowFilters] = useState(false);
+  const [editDefaults, setEditDefaults] = useState<Partial<StudentPayload> | null>(null);
   const { search, setSearch, tableRef, tableData, columns, pagination, handlePageChange } =
     useStudentList({
       onDelete: (id: number) => {
         setSelectedId(id);
         setDeleteOpen(true);
+      },
+      onEdit: (item) => {
+        setEditDefaults({
+          name: item.name,
+          email: item.email,
+          studentId: item.nim,
+        });
+        setEditOpen(true);
       },
       entryYear: entryYear ? Number(entryYear) : undefined,
       studyProgramId: studyProgramId ? Number(studyProgramId) : undefined,
@@ -229,6 +240,17 @@ const StudentPage = () => {
         }}
         data={detailData ?? null}
         isLoading={isDetailLoading}
+      />
+      <StudentEditModal
+        open={editOpen}
+        onOpenChange={(v) => {
+          setEditOpen(v);
+          if (!v) setEditDefaults(null);
+        }}
+        onSubmit={async () => true}
+        defaultValues={editDefaults ?? undefined}
+        title="Edit Mahasiswa"
+        submitText="Simpan"
       />
       <StudentDeleteModal
         open={deleteOpen}

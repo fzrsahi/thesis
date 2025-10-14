@@ -14,6 +14,7 @@ import { Student } from "../types";
 // eslint-disable-next-line no-empty-pattern
 type UseStudentListOptions = {
   onDelete?: (id: number) => void;
+  onEdit?: (item: Student) => void;
   entryYear?: number;
   studyProgramId?: number;
 };
@@ -123,7 +124,9 @@ export const useStudentList = (options?: UseStudentListOptions) => {
             variant="outline"
             size="sm"
             className="border-zinc-700 bg-zinc-900 p-2 text-white hover:bg-zinc-800"
-            onClick={() => {}}
+            onClick={() => {
+              options?.onEdit?.(row.original);
+            }}
             aria-label="Edit"
           >
             <Pencil className="h-4 w-4" />

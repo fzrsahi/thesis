@@ -18,13 +18,16 @@ import { TypographyH2, TypographyP } from "@/components/ui/typography";
 
 import { AdvisorAddModal } from "./components/AdvisorAddModal";
 import { AdvisorDeleteModal } from "./components/AdvisorDeleteModal";
+import { AdvisorEditModal } from "./components/AdvisorEditModal";
 import { useAdvisorList } from "./hooks/useAdvisorList";
 
 const AdvisorPage = () => {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [editDefaults, setEditDefaults] = useState<Partial<AdvisorPayload> | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [advisorType, setAdvisorType] = useState<string>("");
 
@@ -33,6 +36,15 @@ const AdvisorPage = () => {
       onDelete: (id: number) => {
         setSelectedId(id);
         setDeleteOpen(true);
+      },
+      onEdit: (item) => {
+        setEditDefaults({
+          name: item.name,
+          email: item.email,
+          type: (item.type ?? "HeadOfDepartment") as AdvisorPayload["type"],
+          studyProgramId: item.studyProgramId ?? null,
+        });
+        setEditOpen(true);
       },
       advisorType: advisorType || undefined,
     });
@@ -81,6 +93,9 @@ const AdvisorPage = () => {
     const res = await doDelete(selectedId);
     return res?.success === true;
   };
+
+  // keep original columns; edit handled via hook's action button
+  const columnsWithEdit = displayColumns;
 
   return (
     <div className="w-full">
@@ -163,7 +178,7 @@ const AdvisorPage = () => {
           <CardContent ref={tableRef} className="bg-zinc-900 p-0 md:p-4">
             <div className="w-full">
               <DataTable
-                columns={displayColumns as unknown as ColumnDef<AdvisorListItem, unknown>[]}
+                columns={columnsWithEdit as unknown as ColumnDef<AdvisorListItem, unknown>[]}
                 data={tableData as unknown as AdvisorListItem[]}
               />
             </div>
@@ -185,6 +200,17 @@ const AdvisorPage = () => {
         }}
         onConfirm={handleConfirmDelete}
         confirmText="Hapus"
+      />
+      <AdvisorEditModal
+        open={editOpen}
+        onOpenChange={(v) => {
+          setEditOpen(v);
+          if (!v) setEditDefaults(null);
+        }}
+        onSubmit={async () => true}
+        defaultValues={editDefaults ?? undefined}
+        title="Edit Dosen"
+        submitText="Simpan"
       />
     </div>
   );

@@ -6,7 +6,7 @@ import { Route } from "./auth-routes.type";
 
 export const routes: Route[] = [
   { name: "Dashboard", href: "/dashboard", roles: [ROLES.ADVISOR, ROLES.ADMIN], icon: Home },
-  { name: "Dosen", href: "/advisor", roles: [ROLES.ADMIN], icon: User },
+  { name: "Pengelola", href: "/advisor", roles: [ROLES.ADMIN], icon: User },
   { name: "Mahasiswa", href: "/student", roles: [ROLES.ADVISOR, ROLES.ADMIN], icon: User },
   {
     name: "Kompetisi",

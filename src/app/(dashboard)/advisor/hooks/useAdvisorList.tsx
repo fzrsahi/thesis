@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
-import { Eye, Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import { useState, useMemo, useRef, useEffect } from "react";
 
 import { getAdvisors, type GetAdvisorsResponse } from "@/client/api/advisors";
@@ -14,6 +14,7 @@ export type Advisor = {
   email: string;
   type?: string;
   studyProgramName?: string;
+  studyProgramId?: number | null;
   phone?: string;
   specialization?: string[];
   department?: string;
@@ -22,6 +23,7 @@ export type Advisor = {
 
 type UseAdvisorListOptions = {
   onDelete?: (id: number) => void;
+  onEdit?: (item: Advisor) => void;
   advisorType?: string;
 };
 
@@ -71,6 +73,7 @@ export const useAdvisorList = (options?: UseAdvisorListOptions) => {
       email: item.user?.email ?? "-",
       type: item.type ?? "-",
       studyProgramName: item.studyProgram?.name ?? "-",
+      studyProgramId: item.studyProgram?.id ?? null,
       phone: undefined,
       specialization: [],
       department: undefined,
@@ -89,8 +92,9 @@ export const useAdvisorList = (options?: UseAdvisorListOptions) => {
     setPage(1);
   }, [debouncedSearch]);
 
-  const handleView = (_item: Advisor) => {};
-  const handleEdit = (_item: Advisor) => {};
+  const handleEdit = (item: Advisor) => {
+    options?.onEdit?.(item);
+  };
   const handleDelete = (item: Advisor) => {
     const { id } = item;
     if (typeof id === "number") options?.onDelete?.(id);
@@ -106,15 +110,6 @@ export const useAdvisorList = (options?: UseAdvisorListOptions) => {
       accessorKey: "actions",
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="border-zinc-700 bg-zinc-900 p-2 text-white hover:bg-zinc-800"
-            onClick={() => handleView(row.original)}
-            aria-label="Detail"
-          >
-            <Eye className="h-4 w-4" />
-          </Button>
           <Button
             variant="outline"
             size="sm"
