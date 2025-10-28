@@ -25,7 +25,16 @@ const studentFields: Prisma.StudentSelect = {
       transcriptText: true,
     },
   },
-  achievements: true,
+  achievements: {
+    select: {
+      id: true,
+      title: true,
+      description: true,
+      date: true,
+      createdAt: true,
+      fileUrl: true,
+    },
+  },
   experiences: {
     select: {
       id: true,
@@ -34,6 +43,7 @@ const studentFields: Prisma.StudentSelect = {
       startDate: true,
       endDate: true,
       description: true,
+      fileUrl: true,
     },
   },
   gpa: true,
@@ -87,16 +97,34 @@ export const getStudentDetailUsecase = async (id: number) => {
     );
   }
 
+  const achievementsWithUrls = await Promise.all(
+    (student.achievements ?? []).map(async (a) => ({
+      ...a,
+      fileUrl: a.fileUrl && !a.fileUrl.startsWith("http") ? await getFileUrl(a.fileUrl) : a.fileUrl,
+    }))
+  );
+
+  const experiencesWithUrls = await Promise.all(
+    (student.experiences ?? []).map(async (e) => ({
+      ...e,
+      fileUrl: e.fileUrl && !e.fileUrl.startsWith("http") ? await getFileUrl(e.fileUrl) : e.fileUrl,
+    }))
+  );
+
+  const transcriptWithUrls = await Promise.all(
+    (student.transcript ?? []).map(async (transcript) => ({
+      id: transcript.id,
+      fileId: transcript.fileId,
+      semester: transcript.semester,
+      transcriptText: transcript.transcriptText,
+      fileUrl: await getFileUrl(transcript.fileId),
+    }))
+  );
+
   return {
     ...student,
-    transcript: await Promise.all(
-      (student.transcript ?? []).map(async (transcript) => ({
-        id: transcript.id,
-        fileId: transcript.fileId,
-        semester: transcript.semester,
-        transcriptText: transcript.transcriptText,
-        fileUrl: await getFileUrl(transcript.fileId),
-      }))
-    ),
+    achievements: achievementsWithUrls,
+    experiences: experiencesWithUrls,
+    transcript: transcriptWithUrls,
   };
 };

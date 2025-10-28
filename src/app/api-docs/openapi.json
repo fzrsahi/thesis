@@ -760,6 +760,7 @@
                               "title": { "type": "string" },
                               "description": { "type": "string" },
                               "date": { "type": "string", "format": "date-time" },
+                              "fileUrl": { "type": "string" },
                               "createdAt": { "type": "string", "format": "date-time" }
                             }
                           }
@@ -774,7 +775,8 @@
                               "position": { "type": "string" },
                               "startDate": { "type": "string", "format": "date-time" },
                               "endDate": { "type": "string", "format": "date-time" },
-                              "description": { "type": "string" }
+                              "description": { "type": "string" },
+                              "fileUrl": { "type": "string" }
                             }
                           }
                         },

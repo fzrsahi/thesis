@@ -349,6 +349,7 @@ export interface paths {
                   description?: string;
                   /** Format: date-time */
                   date?: string;
+                  fileUrl?: string;
                   /** Format: date-time */
                   createdAt?: string;
                 }[];
@@ -361,6 +362,7 @@ export interface paths {
                   /** Format: date-time */
                   endDate?: string;
                   description?: string;
+                  fileUrl?: string;
                 }[];
                 gpa?: string;
                 interests?: string[];
@@ -555,7 +557,7 @@ export interface paths {
     };
     /**
      * Update student academic data
-     * @description Update student's academic information including achievements and memberships
+     * @description Update student's academic information including achievements and memberships. Accepts multipart/form-data with a JSON payload and optional files.
      */
     put: {
       parameters: {
@@ -566,7 +568,18 @@ export interface paths {
       };
       requestBody: {
         content: {
-          "application/json": components["schemas"]["StudentAcademicDataUpdate"];
+          "multipart/form-data": {
+            /** @description JSON string matching StudentAcademicDataUpdate */
+            payload: string;
+            /** Format: binary */
+            "achievementFiles[0]"?: string;
+            /** Format: binary */
+            "achievementFiles[1]"?: string;
+            /** Format: binary */
+            "experienceFiles[0]"?: string;
+            /** Format: binary */
+            "experienceFiles[1]"?: string;
+          };
         };
       };
       responses: {
@@ -1444,17 +1457,21 @@ export interface components {
         };
         /** @description Overall assessment of student's profile */
         overallAssessment: {
-          /** @example [
+          /**
+           * @example [
            *       "Kemampuan teknis yang sangat baik dalam pengembangan backend.",
            *       "Kemandirian belajar sangat tinggi.",
            *       "Kemampuan problem solving yang solid dalam konteks teknis."
-           *     ] */
+           *     ]
+           */
           strengths: string[];
-          /** @example [
+          /**
+           * @example [
            *       "Minim pengalaman dalam penulisan ilmiah.",
            *       "Kurangnya paparan dalam design thinking.",
            *       "Belum ada pengalaman dalam kewirausahaan dan bisnis."
-           *     ] */
+           *     ]
+           */
           weaknesses: string[];
         };
         /** @description List of recommended competitions */
@@ -1474,12 +1491,14 @@ export interface components {
             /** @example Mahasiswa memiliki kemampuan teknis yang kuat dan pengalaman dalam pengembangan prototipe yang mendukung kesuksesan di kompetisi ini. Namun, perlu meningkatkan kreativitas dan kemampuan menulis ilmiah untuk mendukung laporan. */
             reason: string;
           };
-          /** @example {
+          /**
+           * @example {
            *       "technicalExpertise": {
            *         "weight": 0.8,
            *         "breakdown": "Kompetisi ini memerlukan kemampuan teknis tinggi untuk merancang dan membangun prototipe yang inovatif."
            *       }
-           *     } */
+           *     }
+           */
           skillRequirements: {
             [key: string]: {
               /** Format: float */
@@ -1490,35 +1509,45 @@ export interface components {
           reasoning: {
             /** @example Kompetisi ini sesuai dengan kekuatan teknis mahasiswa dan memberikan peluang untuk mengasah kreativitas serta kemampuan ilmiah. */
             summary: string;
-            /** @example [
+            /**
+             * @example [
              *       "Kemampuan teknis mahasiswa mendukung pembangunan prototipe.",
              *       "Pengalaman dalam tim relevan dengan kebutuhan kerja sama kompetisi."
-             *     ] */
+             *     ]
+             */
             pros: string[];
-            /** @example [
+            /**
+             * @example [
              *       "Kurangnya pengalaman dalam kreativitas tingkat tinggi.",
              *       "Minimnya pengalaman dalam penulisan laporan ilmiah."
-             *     ] */
+             *     ]
+             */
             cons: string[];
           };
-          /** @example [
+          /**
+           * @example [
            *       "Kemampuan teknis dalam prototyping.",
            *       "Kreativitas dalam menghasilkan ide inovatif.",
            *       "Kemampuan menyusun laporan akhir yang berkualitas."
-           *     ] */
+           *     ]
+           */
           keyFactors: string[];
-          /** @example [
+          /**
+           * @example [
            *       "Ikuti pelatihan penulisan ilmiah untuk meningkatkan kualitas laporan.",
            *       "Latih brainstorming untuk meningkatkan kreativitas ide.",
            *       "Perkuat kerja sama tim dengan simulasi proyek bersama."
-           *     ] */
+           *     ]
+           */
           preparationTips: string[];
           competition: {
             /** @example PKM KC adalah singkatan dari Program Kreativitas Mahasiswa bidang Karsa Cipta. Ini adalah salah satu jenis Program Kreativitas Mahasiswa (PKM) yang diselenggarakan oleh Direktorat Pembelajaran dan Kemahasiswaan, Direktorat Jenderal Pendidikan Tinggi, Kementerian Pendidikan dan Kebudayaan (Kemendikbud) Republik Indonesia. */
             description: string;
-            /** @example [
+            /**
+             * @example [
              *       "Semua bidang keilmuan"
-             *     ] */
+             *     ]
+             */
             field: string[];
             /** @example Rancang Bangun Prototipe */
             type: string;
@@ -1540,31 +1569,39 @@ export interface components {
             endDate: string | null;
             /** @example simbelmawa.kemdikbud.go.id */
             sourceUrl: string;
-            /** @example [
+            /**
+             * @example [
              *       "Kewirausahaan",
              *       "Teknik Mesin",
              *       "Teknik Elektro",
              *       "Teknik Informatika"
-             *     ] */
+             *     ]
+             */
             relevantCourses: string[];
-            /** @example [
+            /**
+             * @example [
              *       "Rancang Bangun",
              *       "Problem Solving",
              *       "Kreativitas",
              *       "Kerja Tim"
-             *     ] */
+             *     ]
+             */
             relevantSkills: string[];
-            /** @example {
+            /**
+             * @example {
              *       "other": null,
              *       "originality": null,
              *       "teamComposition": null
-             *     } */
+             *     }
+             */
             requirements: Record<string, never> | null;
-            /** @example {
+            /**
+             * @example {
              *       "other": "Kelengkapan laporan akhir.",
              *       "finalRound": "Kualitas prototipe, penguasaan materi, dan presentasi.",
              *       "preliminaryRound": "Kreativitas, keaslian ide, dan potensi implementasi."
-             *     } */
+             *     }
+             */
             evaluationCriteria: Record<string, never> | null;
             competitionStats: {
               /** @description A brief overview of historical participation data, including years and sources */
@@ -1635,7 +1672,6 @@ export interface components {
       message?: string;
     };
     StudentAcademicDataUpdate: {
-      gpa?: string;
       interests?: string[];
       achievements?: components["schemas"]["AchievementCreate"][];
       experiences?: components["schemas"]["ExperienceCreate"][];
@@ -1646,12 +1682,19 @@ export interface components {
       description?: string;
       /** Format: date */
       date?: string;
+      /**
+       * Format: uri
+       * @description Uploaded file id or URL
+       */
+      fileUrl?: string | null;
     };
     AchievementCreate: {
       title: string;
       description: string;
       /** Format: date */
       date: string;
+      /** @description Optional existing file id or URL */
+      fileUrl?: string | null;
     };
     Experience: {
       id?: number;
@@ -1662,6 +1705,11 @@ export interface components {
       startDate?: string;
       /** Format: date-time */
       endDate?: string;
+      /**
+       * Format: uri
+       * @description Uploaded file id or URL
+       */
+      fileUrl?: string | null;
     };
     ExperienceCreate: {
       organization: string;
@@ -1671,6 +1719,8 @@ export interface components {
       startDate: string;
       /** Format: date-time */
       endDate?: string;
+      /** @description Optional existing file id or URL */
+      fileUrl?: string | null;
     };
     ErrorResponse: {
       error?: string;
@@ -1878,15 +1928,20 @@ export interface components {
          */
         totalStudents: number;
         /**
-         * @description Total number of competitions in the system
+         * @description Number of active competitions
          * @example 45
          */
-        totalCompetitions: number;
+        activeCompetitions: number;
         /**
          * @description Total number of recommendations given
          * @example 890
          */
         totalRecommendations: number;
+        /**
+         * @description Number of competitions with deadlines within 7 days
+         * @example 8
+         */
+        upcomingDeadlines: number;
       };
       /** @description Top 5 most popular competitions by recommendation count */
       popularCompetitions: {

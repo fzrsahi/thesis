@@ -282,7 +282,7 @@ const DashboardPage = () => {
         {
           icon: Trophy,
           title: "Total Kompetisi",
-          value: dashboardStats.overview.totalCompetitions,
+          value: dashboardStats.overview.activeCompetitions ?? 0,
           change: `+${dashboardStats.statistics.competitionGrowth.growthPercentage.toFixed(1)}%`,
           changeType:
             dashboardStats.statistics.competitionGrowth.growthPercentage >= 0

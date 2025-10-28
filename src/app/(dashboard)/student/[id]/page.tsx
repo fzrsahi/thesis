@@ -260,6 +260,19 @@ const StudentDetailPage = () => {
                           </div>
                         </div>
                       </div>
+                      {a?.fileUrl && (
+                        <div className="mt-3 flex items-center justify-between rounded-md border border-zinc-700 bg-zinc-900/50 p-2">
+                          <span className="text-xs text-zinc-300">Bukti prestasi</span>
+                          <a
+                            href={a.fileUrl as string}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="rounded-md bg-zinc-700 px-3 py-1 text-xs text-white hover:bg-zinc-600"
+                          >
+                            View
+                          </a>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -313,6 +326,19 @@ const StudentDetailPage = () => {
                           </Field>
                         </div>
                       </div>
+                      {e?.fileUrl && (
+                        <div className="mt-3 flex items-center justify-between rounded-md border border-zinc-700 bg-zinc-900/50 p-2">
+                          <span className="text-xs text-zinc-300">Bukti pengalaman</span>
+                          <a
+                            href={e.fileUrl as string}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="rounded-md bg-zinc-700 px-3 py-1 text-xs text-white hover:bg-zinc-600"
+                          >
+                            View
+                          </a>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
