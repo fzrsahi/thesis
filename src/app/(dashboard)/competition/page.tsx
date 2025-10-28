@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useState, useMemo, useRef, useEffect } from "react";
 import { toast } from "sonner";
 
+import { CreateCompetitionGeneratePayload } from "@/app/shared/schema/competition/CompetitionGenerateSchema";
 import {
   deleteCompetition,
   getCompetitions,
