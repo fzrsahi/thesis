@@ -13,7 +13,7 @@
     "prisma:push": "npx prisma db push",
     "generate:migration": "npx prisma migrate dev",
     "create:account": "tsx src/script/createAccount.ts",
-    "seed": "tsx src/script/seed.ts",
+    "seed": "tsx src/script/seed.ts && npm run create:account",
     "postinstall": "npx prisma generate"
   },
   "dependencies": {

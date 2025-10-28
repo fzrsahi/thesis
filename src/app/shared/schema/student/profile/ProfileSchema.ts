@@ -12,9 +12,6 @@ export const personalDataSchema = z.object({
 }) satisfies z.ZodType<UpdatePersonalDataRequest>;
 
 export const academicDataSchema = z.object({
-  gpa: z
-    .string()
-    .regex(/^(?:[1-3]\.\d{2}|4\.00)$/, { message: "GPA must be between 1.00 and 4.00" }),
   achievements: z
     .array(
       z.object({

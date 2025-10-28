@@ -35,7 +35,6 @@ const RECOMMENDATION_PROMPT_TEMPLATE = `
     EKSEKUSI LANGKAH-DEMI-LANGKAH : 
     1.  Langkah 1: Analisis Profil Mendalam (Proses Berpikir Internal): Secara diam-diam, analisis PROFIL_MAHASISWA menggunakan Kerangka Analisis Inti. Sintesiskan kelima dimensi ini untuk membentuk pemahaman holistik dan strategis tentang posisi mahasiswa sebagai bagian dari Teknik Informatika UNG.
     2.  Langkah 2: Penilaian Skor & Kemampuan: Berdasarkan analisis dari Langkah 1, nilai secara kuantitatif kemampuan mahasiswa di 10 area keterampilan yang ditentukan dalam skema output. Gunakan RUBRIK PENILAIAN di bawah ini sebagai panduan mutlak Anda. Semua kolom breakdown harus berisi bukti spesifik.
-    3.  Langkah 3: Analisis Kompetisi & Pencocokan Strategis: Untuk setiap kompetisi di DAFTAR_KOMPETISI, terutama untuk kompetisi penting seperti GEMASTIK dan LIDM, tentukan keterampilan yang dibutuhkan dan bobot kepentingannya (skillRequirements.weight). Kemudian, hasilkan matchScore holistik dan pering
 
     RUBRIK PENILAIAN:
     -   Technical Expertise (0.85-1.0): Juara nasional (misal, GEMASTIK); kontributor inti proyek open-source; pengalaman kerja/magang di perusahaan teknologi ternama dengan dampak terukur. (0.70-0.84): Finalis kompetisi teknis nasional; portofolio proyek kompleks; peran teknis utama di organisasi (misal, Kelompok Studi Linux - KSL). (0.50-0.69): Pengalaman praktis dari tugas kuliah atau proyek pribadi sederhana.
@@ -49,12 +48,22 @@ const RECOMMENDATION_PROMPT_TEMPLATE = `
     -   Design Thinking (0.85-1.0): Juara lomba UI/UX; portofolio desain produk digital yang human-centered. (0.70-0.84): Mampu menerapkan proses design thinking (empathize, define, ideate, prototype, test) dalam proyek. (0.50-0.69): Memahami prinsip-prinsip dasar UI/UX.
     -   Self-Learning (0.85-1.0): Secara mandiri menguasai teknologi/framework baru yang kompleks dan menerapkannya dalam sebuah proyek besar/kompetisi. (0.70-0.84): Aktif mengikuti kursus online dan cepat beradaptasi dengan teknologi baru untuk tugas. (0.50-0.69): Menunjukkan kemauan untuk belajar hal baru ketika diwajibkan.
 
+    PENTING UNTUK SCORING MATCHSCORE:
+    - Analisis setiap detail profil mahasiswa secara mendalam dan spesifik
+    - Pertimbangkan IPK, prestasi, pengalaman, minat, dan keterampilan dalam perhitungan
+    - Dalam reason, jelaskan secara detail mengapa skor tersebut diberikan berdasarkan bukti konkret dari profil
+    - Berikan skor yang berbeda untuk setiap mahasiswa berdasarkan profil unik mereka
+    - Jika Mahasiswa Sudah memiliki Pengalaman dalam kompetisi tersebut, Kasih dia Score yang tinggi, dan jika tidak, Kasih dia Score yang rendah.jika belum pertimbangkan profil lain.
+    - rentan matchscore ini dengan nilai 0.50-0.90
+
     Aturan : 
     1.  OUTPUT JSON KETAT: Seluruh output harus dalam satu blok JSON tunggal yang valid. Jangan ada teks di luar struktur JSON.
     2.  BERBASIS DATA & KONTEKSTUAL: Semua breakdown dan reasoning harus didasarkan pada bukti dari profil dan relevan dengan konteks mahasiswa UNG.
     3.  PENALARAN STRATEGIS: Jangan hanya mencocokkan. Jelaskan *mengapa* sebuah kompetisi adalah langkah strategis bagi mahasiswa pada tahap karir mereka saat ini.
     4.  NADA BICARA & BAHASA: Gunakan Bahasa Indonesia yang profesional, namun tetap suportif, strategis, dan memberdayakan. Posisikan diri Anda sebagai konselor ahli yang peduli dengan kesuksesan mahasiswa.
-
+    5.  JUMLAH REKOMENDASI: WAJIB memberikan TEPAT 3 rekomendasi kompetisi yang diurutkan berdasarkan kesesuaian tertinggi (rank 1, 2, 3). Jangan lebih atau kurang dari 3 rekomendasi.
+    6.  SCORING UNIK: Setiap mahasiswa HARUS memiliki skor yang berbeda untuk setiap kompetisi berdasarkan profil unik mereka. Jangan memberikan skor yang sama untuk mahasiswa yang berbeda.
+    
     PROFIL_MAHASISWA:
     {studentProfile}
 

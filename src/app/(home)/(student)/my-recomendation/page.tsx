@@ -157,7 +157,6 @@ const EmptyState = ({
           {[
             { icon: Brain, text: "AI-Powered Analysis", color: "from-blue-500 to-cyan-500" },
             { icon: Target, text: "Personalized Matches", color: "from-purple-500 to-pink-500" },
-            { icon: TrendingUp, text: "Success Tracking", color: "from-green-500 to-emerald-500" },
           ].map((feature, index) => (
             <motion.div
               key={feature.text}
@@ -540,13 +539,13 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                 <TypographyEmphasis className="text-pink-300">tujuan</TypographyEmphasis> Anda
               </TypographyP>
             </div>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            {/* <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button className="group relative overflow-hidden border border-zinc-700/50 bg-gradient-to-r from-zinc-800/50 to-zinc-900/50 text-white backdrop-blur-sm transition-all hover:border-zinc-600/50 hover:from-zinc-700/50 hover:to-zinc-800/50">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 to-purple-500/10 opacity-0 transition-opacity group-hover:opacity-100" />
                 <Activity className="mr-2 h-4 w-4" />
                 Perbarui Analisis
               </Button>
-            </motion.div>
+            </motion.div> */}
           </div>
 
           {/* Student Profile */}
@@ -813,553 +812,567 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
           </motion.div>
 
           {/* Section 3: Kekuatan Profil */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8, duration: 0.8 }}
-          >
-            <Card className="group relative overflow-hidden border border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50 backdrop-blur-sm transition-all hover:border-zinc-700/50">
-              <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-emerald-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3 text-white">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-emerald-600 shadow-lg">
-                      <Target className="h-5 w-5" />
-                    </div>
-                    <span className="text-xl">Kekuatan Profil</span>
-                    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => toggleSection("strengths")}
-                        className="bg-zinc-800/50 text-white backdrop-blur-sm hover:bg-zinc-700/50"
-                      >
-                        {collapsedSections.strengths ? (
-                          <ChevronDown className="h-4 w-4" />
-                        ) : (
-                          <ChevronUp className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </motion.div>
-                  </div>
-                </CardTitle>
-              </CardHeader>
-              <AnimatePresence>
-                {!collapsedSections.strengths && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <CardContent className="p-6">
-                      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-                        <div className="space-y-4">
-                          <div className="flex items-center space-x-3">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-emerald-500 shadow-lg">
-                              <Star className="h-4 w-4 text-white" />
-                            </div>
-                            <TypographyH3 className="text-lg text-white">Kelebihan</TypographyH3>
-                          </div>
-                          <div className="space-y-3">
-                            {data.result.overallAssessment.strengths.map((strength, index) => (
-                              <motion.div
-                                key={`strength-${strength.slice(0, 20)}`}
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: index * 0.1, duration: 0.3 }}
-                                className="group flex items-start space-x-3 rounded-lg bg-gradient-to-r from-green-500/10 to-emerald-500/10 p-3 backdrop-blur-sm transition-all hover:from-green-500/20 hover:to-emerald-500/20"
-                              >
-                                <div className="mt-1 h-2 w-2 rounded-full bg-gradient-to-r from-green-400 to-emerald-400 shadow-sm" />
-                                <TypographyP className="text-sm leading-relaxed text-zinc-300">
-                                  {strength}
-                                </TypographyP>
-                              </motion.div>
-                            ))}
-                          </div>
-                        </div>
-
-                        <div className="space-y-4">
-                          <div className="flex items-center space-x-3">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-yellow-500 to-orange-500 shadow-lg">
-                              <TrendingUp className="h-4 w-4 text-white" />
-                            </div>
-                            <TypographyH3 className="text-lg text-white">
-                              Area Pengembangan
-                            </TypographyH3>
-                          </div>
-                          <div className="space-y-3">
-                            {data.result.overallAssessment.weaknesses.map((weakness, index) => (
-                              <motion.div
-                                key={`weakness-${weakness.slice(0, 20)}`}
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: index * 0.1, duration: 0.3 }}
-                                className="group flex items-start space-x-3 rounded-lg bg-gradient-to-r from-yellow-500/10 to-orange-500/10 p-3 backdrop-blur-sm transition-all hover:from-yellow-500/20 hover:to-orange-500/20"
-                              >
-                                <div className="mt-1 h-2 w-2 rounded-full bg-gradient-to-r from-yellow-400 to-orange-400 shadow-sm" />
-                                <TypographyP className="text-sm leading-relaxed text-zinc-300">
-                                  {weakness}
-                                </TypographyP>
-                              </motion.div>
-                            ))}
-                          </div>
-                        </div>
+          {(data.result.overallAssessment?.strengths?.length > 0 || data.result.overallAssessment?.weaknesses?.length > 0) && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8, duration: 0.8 }}
+            >
+              <Card className="group relative overflow-hidden border border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50 backdrop-blur-sm transition-all hover:border-zinc-700/50">
+                <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-emerald-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3 text-white">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-emerald-600 shadow-lg">
+                        <Target className="h-5 w-5" />
                       </div>
-                    </CardContent>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </Card>
-          </motion.div>
+                      <span className="text-xl">Kekuatan Profil</span>
+                      <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => toggleSection("strengths")}
+                          className="bg-zinc-800/50 text-white backdrop-blur-sm hover:bg-zinc-700/50"
+                        >
+                          {collapsedSections.strengths ? (
+                            <ChevronDown className="h-4 w-4" />
+                          ) : (
+                            <ChevronUp className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </motion.div>
+                    </div>
+                  </CardTitle>
+                </CardHeader>
+                <AnimatePresence>
+                  {!collapsedSections.strengths && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <CardContent className="p-6">
+                        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+                          {data.result.overallAssessment?.strengths?.length > 0 && (
+                            <div className="space-y-4">
+                              <div className="flex items-center space-x-3">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-emerald-500 shadow-lg">
+                                  <Star className="h-4 w-4 text-white" />
+                                </div>
+                                <TypographyH3 className="text-lg text-white">Kelebihan</TypographyH3>
+                              </div>
+                              <div className="space-y-3">
+                                {data.result.overallAssessment.strengths.map((strength, index) => (
+                                  <motion.div
+                                    key={`strength-${strength.slice(0, 20)}`}
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: index * 0.1, duration: 0.3 }}
+                                    className="group flex items-start space-x-3 rounded-lg bg-gradient-to-r from-green-500/10 to-emerald-500/10 p-3 backdrop-blur-sm transition-all hover:from-green-500/20 hover:to-emerald-500/20"
+                                  >
+                                    <div className="mt-1 h-2 w-2 rounded-full bg-gradient-to-r from-green-400 to-emerald-400 shadow-sm" />
+                                    <TypographyP className="text-sm leading-relaxed text-zinc-300">
+                                      {strength}
+                                    </TypographyP>
+                                  </motion.div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {data.result.overallAssessment?.weaknesses?.length > 0 && (
+                            <div className="space-y-4">
+                              <div className="flex items-center space-x-3">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-yellow-500 to-orange-500 shadow-lg">
+                                  <TrendingUp className="h-4 w-4 text-white" />
+                                </div>
+                                <TypographyH3 className="text-lg text-white">
+                                  Area Pengembangan
+                                </TypographyH3>
+                              </div>
+                              <div className="space-y-3">
+                                {data.result.overallAssessment.weaknesses.map((weakness, index) => (
+                                  <motion.div
+                                    key={`weakness-${weakness.slice(0, 20)}`}
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    transition={{ delay: index * 0.1, duration: 0.3 }}
+                                    className="group flex items-start space-x-3 rounded-lg bg-gradient-to-r from-yellow-500/10 to-orange-500/10 p-3 backdrop-blur-sm transition-all hover:from-yellow-500/20 hover:to-orange-500/20"
+                                  >
+                                    <div className="mt-1 h-2 w-2 rounded-full bg-gradient-to-r from-yellow-400 to-orange-400 shadow-sm" />
+                                    <TypographyP className="text-sm leading-relaxed text-zinc-300">
+                                      {weakness}
+                                    </TypographyP>
+                                  </motion.div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </CardContent>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </Card>
+            </motion.div>
+          )}
 
           {/* Section 4: Sumber Pengembangan */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.0, duration: 0.8 }}
-          >
-            <Card className="group relative overflow-hidden border border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50 backdrop-blur-sm transition-all hover:border-zinc-700/50">
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-blue-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
-              <CardHeader>
-                <CardTitle className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3 text-white">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 shadow-lg">
-                      <Lightbulb className="h-5 w-5" />
-                    </div>
-                    <span className="text-xl">Sumber Pengembangan</span>
-                    <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => toggleSection("developmentSources")}
-                        className="bg-zinc-800/50 text-white backdrop-blur-sm hover:bg-zinc-700/50"
-                      >
-                        {collapsedSections.developmentSources ? (
-                          <ChevronDown className="h-4 w-4" />
-                        ) : (
-                          <ChevronUp className="h-4 w-4" />
-                        )}
-                      </Button>
-                    </motion.div>
-                  </div>
-                </CardTitle>
-              </CardHeader>
-              <AnimatePresence>
-                {!collapsedSections.developmentSources && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <CardContent className="p-6">
-                      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                        {data.result.developmentSuggestions.map((suggestion, index) => {
-                          let icon;
-                          let gradientClass;
-                          switch (suggestion.type) {
-                            case "course":
-                              icon = <BookOpen className="h-5 w-5 text-white" />;
-                              gradientClass = "from-blue-500 to-cyan-500";
-                              break;
-                            case "practice":
-                              icon = <Code2 className="h-5 w-5 text-white" />;
-                              gradientClass = "from-green-500 to-emerald-500";
-                              break;
-                            case "certification":
-                              icon = <Trophy className="h-5 w-5 text-white" />;
-                              gradientClass = "from-yellow-500 to-orange-500";
-                              break;
-                            default:
-                              icon = <Lightbulb className="h-5 w-5 text-white" />;
-                              gradientClass = "from-purple-500 to-pink-500";
-                          }
-
-                          return (
-                            <motion.div
-                              key={`suggestion-${suggestion.title}`}
-                              initial={{ opacity: 0, scale: 0.8 }}
-                              animate={{ opacity: 1, scale: 1 }}
-                              transition={{ delay: index * 0.1, duration: 0.3 }}
-                              className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-zinc-800/50 to-zinc-900/50 p-6 backdrop-blur-sm transition-all hover:from-zinc-700/50 hover:to-zinc-800/50 hover:shadow-lg hover:shadow-cyan-500/10"
-                            >
-                              <div
-                                className={`absolute inset-0 bg-gradient-to-r ${gradientClass} opacity-0 transition-opacity group-hover:opacity-5`}
-                              />
-                              <div className="relative">
-                                <div className="mb-4 flex items-center space-x-3">
-                                  <div
-                                    className={`flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r ${gradientClass} shadow-lg`}
-                                  >
-                                    {icon}
-                                  </div>
-                                  <TypographyH3 className="text-sm font-semibold text-white">
-                                    {suggestion.title}
-                                  </TypographyH3>
-                                </div>
-                                <TypographyP className="mb-4 text-sm leading-relaxed text-zinc-400">
-                                  {suggestion.reason}
-                                </TypographyP>
-                                <motion.a
-                                  href={suggestion.link}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="group/link inline-flex items-center text-sm font-medium text-cyan-400 transition-colors hover:text-cyan-300"
-                                  whileHover={{ scale: 1.05 }}
-                                  whileTap={{ scale: 0.95 }}
-                                >
-                                  Kunjungi Sumber
-                                  <ExternalLink className="ml-2 h-3 w-3 transition-transform group-hover/link:translate-x-1" />
-                                </motion.a>
-                              </div>
-                            </motion.div>
-                          );
-                        })}
+          {data.result.developmentSuggestions?.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.0, duration: 0.8 }}
+            >
+              <Card className="group relative overflow-hidden border border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50 backdrop-blur-sm transition-all hover:border-zinc-700/50">
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-blue-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
+                <CardHeader>
+                  <CardTitle className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3 text-white">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 shadow-lg">
+                        <Lightbulb className="h-5 w-5" />
                       </div>
-                    </CardContent>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </Card>
-          </motion.div>
+                      <span className="text-xl">Sumber Pengembangan</span>
+                      <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => toggleSection("developmentSources")}
+                          className="bg-zinc-800/50 text-white backdrop-blur-sm hover:bg-zinc-700/50"
+                        >
+                          {collapsedSections.developmentSources ? (
+                            <ChevronDown className="h-4 w-4" />
+                          ) : (
+                            <ChevronUp className="h-4 w-4" />
+                          )}
+                        </Button>
+                      </motion.div>
+                    </div>
+                  </CardTitle>
+                </CardHeader>
+                <AnimatePresence>
+                  {!collapsedSections.developmentSources && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      <CardContent className="p-6">
+                        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                          {data.result.developmentSuggestions.map((suggestion, index) => {
+                            let icon;
+                            let gradientClass;
+                            switch (suggestion.type) {
+                              case "course":
+                                icon = <BookOpen className="h-5 w-5 text-white" />;
+                                gradientClass = "from-blue-500 to-cyan-500";
+                                break;
+                              case "practice":
+                                icon = <Code2 className="h-5 w-5 text-white" />;
+                                gradientClass = "from-green-500 to-emerald-500";
+                                break;
+                              case "certification":
+                                icon = <Trophy className="h-5 w-5 text-white" />;
+                                gradientClass = "from-yellow-500 to-orange-500";
+                                break;
+                              default:
+                                icon = <Lightbulb className="h-5 w-5 text-white" />;
+                                gradientClass = "from-purple-500 to-pink-500";
+                            }
+
+                            return (
+                              <motion.div
+                                key={`suggestion-${suggestion.title}`}
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: index * 0.1, duration: 0.3 }}
+                                className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-zinc-800/50 to-zinc-900/50 p-6 backdrop-blur-sm transition-all hover:from-zinc-700/50 hover:to-zinc-800/50 hover:shadow-lg hover:shadow-cyan-500/10"
+                              >
+                                <div
+                                  className={`absolute inset-0 bg-gradient-to-r ${gradientClass} opacity-0 transition-opacity group-hover:opacity-5`}
+                                />
+                                <div className="relative">
+                                  <div className="mb-4 flex items-center space-x-3">
+                                    <div
+                                      className={`flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r ${gradientClass} shadow-lg`}
+                                    >
+                                      {icon}
+                                    </div>
+                                    <TypographyH3 className="text-sm font-semibold text-white">
+                                      {suggestion.title}
+                                    </TypographyH3>
+                                  </div>
+                                  <TypographyP className="mb-4 text-sm leading-relaxed text-zinc-400">
+                                    {suggestion.reason}
+                                  </TypographyP>
+                                  <motion.a
+                                    href={suggestion.link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="group/link inline-flex items-center text-sm font-medium text-cyan-400 transition-colors hover:text-cyan-300"
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                  >
+                                    Kunjungi Sumber
+                                    <ExternalLink className="ml-2 h-3 w-3 transition-transform group-hover/link:translate-x-1" />
+                                  </motion.a>
+                                </div>
+                              </motion.div>
+                            );
+                          })}
+                        </div>
+                      </CardContent>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </Card>
+            </motion.div>
+          )}
 
           {/* Daftar Rekomendasi */}
-          <motion.div
-            ref={recommendationsRef}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.2, duration: 0.8 }}
-          >
-            <div className="mb-8 space-y-2">
-              <TypographyH3 className="bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-2xl font-bold text-transparent md:text-3xl">
-                Rekomendasi Terbaik untuk Anda
-              </TypographyH3>
-              <TypographyP className="text-zinc-400">
-                Kompetisi yang paling sesuai dengan profil dan tujuan Anda
-              </TypographyP>
-            </div>
-            <div className="space-y-6">
-              {data.result.recommendations.map((rec, index) => (
-                <motion.div
-                  key={rec.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 1.4 + index * 0.1, duration: 0.5 }}
-                >
-                  <Card
-                    className={`group relative cursor-pointer overflow-hidden border transition-all hover:shadow-2xl ${
-                      selectedCompetition?.id === rec.id
-                        ? "border-blue-500/50 bg-gradient-to-br from-blue-900/20 to-purple-900/20 ring-2 shadow-blue-500/25 ring-blue-500/50"
-                        : "border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50 hover:border-zinc-700/50 hover:from-zinc-800/50 hover:to-zinc-700/50"
-                    } backdrop-blur-sm`}
-                    onClick={() => setSelectedCompetition(rec)}
+          {data.result.recommendations?.length > 0 && (
+            <motion.div
+              ref={recommendationsRef}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.2, duration: 0.8 }}
+            >
+              <div className="mb-8 space-y-2">
+                <TypographyH3 className="bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-2xl font-bold text-transparent md:text-3xl">
+                  Rekomendasi Terbaik untuk Anda
+                </TypographyH3>
+                <TypographyP className="text-zinc-400">
+                  Kompetisi yang paling sesuai dengan profil dan tujuan Anda
+                </TypographyP>
+              </div>
+              <div className="space-y-6">
+                {data.result.recommendations.map((rec, index) => (
+                  <motion.div
+                    key={rec.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.4 + index * 0.1, duration: 0.5 }}
                   >
-                    <div
-                      className={`absolute inset-0 bg-gradient-to-r opacity-0 transition-opacity group-hover:opacity-5 ${
+                    <Card
+                      className={`group relative cursor-pointer overflow-hidden border transition-all hover:shadow-2xl ${
                         selectedCompetition?.id === rec.id
-                          ? "from-blue-500 to-purple-500"
-                          : "from-zinc-500 to-zinc-600"
-                      }`}
-                    />
+                          ? "border-blue-500/50 bg-gradient-to-br from-blue-900/20 to-purple-900/20 ring-2 shadow-blue-500/25 ring-blue-500/50"
+                          : "border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50 hover:border-zinc-700/50 hover:from-zinc-800/50 hover:to-zinc-700/50"
+                      } backdrop-blur-sm`}
+                      onClick={() => setSelectedCompetition(rec)}
+                    >
+                      <div
+                        className={`absolute inset-0 bg-gradient-to-r opacity-0 transition-opacity group-hover:opacity-5 ${
+                          selectedCompetition?.id === rec.id
+                            ? "from-blue-500 to-purple-500"
+                            : "from-zinc-500 to-zinc-600"
+                        }`}
+                      />
 
-                    <CardHeader className="relative">
-                      <div className="flex items-start justify-between">
-                        <div className="space-y-3">
-                          <div className="flex items-center space-x-3">
-                            <div
-                              className={`flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r ${getRankGradientClass(
-                                rec.rank
-                              )} shadow-xl`}
-                            >
-                              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white/95">
-                                <span className="text-base font-extrabold text-zinc-900">
-                                  #{rec.rank}
-                                </span>
-                              </div>
-                            </div>
-                            <div>
-                              <CardTitle className="text-xl text-white">
-                                {rec.competitionName}
-                              </CardTitle>
-                              <div className="mt-1 flex items-center space-x-2">
-                                <Badge
-                                  className={`text-xs text-white ${getMatchScoreColor(rec.matchScore.score)}`}
-                                >
-                                  <Shield className="mr-1 h-3 w-3" />
-                                  {(rec.matchScore.score * 10).toFixed(1)}/10 Kecocokan
-                                </Badge>
-                              </div>
-                            </div>
-                          </div>
-                          <CardDescription className="leading-relaxed text-zinc-300">
-                            {rec.matchScore.reason}
-                          </CardDescription>
-                        </div>
-                        <motion.div
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          className="flex items-center space-x-2"
-                        >
-                          <div
-                            className={`h-3 w-3 rounded-full transition-colors ${
-                              selectedCompetition?.id === rec.id ? "bg-blue-500" : "bg-zinc-500"
-                            }`}
-                          />
-                          <span className="text-xs text-zinc-400">
-                            {selectedCompetition?.id === rec.id ? "Dipilih" : "Klik untuk detail"}
-                          </span>
-                        </motion.div>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="relative">
-                      <Accordion type="single" collapsible className="space-y-4">
-                        <AccordionItem value="match-explanation" className="border-zinc-700/50">
-                          <AccordionTrigger className="group text-white hover:no-underline">
+                      <CardHeader className="relative">
+                        <div className="flex items-start justify-between">
+                          <div className="space-y-3">
                             <div className="flex items-center space-x-3">
-                              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-500 shadow-lg">
-                                <BarChart3 className="h-4 w-4" />
-                              </div>
-                              <span className="font-semibold">Penjelasan Kecocokan</span>
-                            </div>
-                          </AccordionTrigger>
-                          <AccordionContent>
-                            <div className="space-y-6 pl-11">
-                              <TypographyP className="text-sm leading-relaxed text-zinc-300">
-                                {rec.matchScore.reason}
-                              </TypographyP>
-                              <div className="space-y-6">
-                                <div>
-                                  <TypographyH3 className="mb-3 flex items-center space-x-2 text-sm text-white">
-                                    <div className="h-2 w-2 rounded-full bg-gradient-to-r from-green-400 to-emerald-400" />
-                                    <span>Kelebihan</span>
-                                  </TypographyH3>
-                                  <ul className="space-y-3">
-                                    {rec.reasoning.pros.map((pro, proIndex) => (
-                                      <motion.li
-                                        key={`pro-${pro.slice(0, 20)}`}
-                                        initial={{ opacity: 0, x: -20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: proIndex * 0.1, duration: 0.3 }}
-                                        className="flex items-start space-x-3 rounded-lg bg-gradient-to-r from-green-500/10 to-emerald-500/10 p-3 backdrop-blur-sm"
-                                      >
-                                        <div className="mt-1 h-1.5 w-1.5 rounded-full bg-gradient-to-r from-green-400 to-emerald-400" />
-                                        <TypographyP className="text-sm leading-relaxed text-zinc-300">
-                                          {pro}
-                                        </TypographyP>
-                                      </motion.li>
-                                    ))}
-                                  </ul>
-                                </div>
-                                <div>
-                                  <TypographyH3 className="mb-3 flex items-center space-x-2 text-sm text-white">
-                                    <div className="h-2 w-2 rounded-full bg-gradient-to-r from-yellow-400 to-orange-400" />
-                                    <span>Kekurangan</span>
-                                  </TypographyH3>
-                                  <ul className="space-y-3">
-                                    {rec.reasoning.cons.map((con, conIndex) => (
-                                      <motion.li
-                                        key={`con-${con.slice(0, 20)}`}
-                                        initial={{ opacity: 0, x: -20 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                        transition={{ delay: conIndex * 0.1, duration: 0.3 }}
-                                        className="flex items-start space-x-3 rounded-lg bg-gradient-to-r from-yellow-500/10 to-orange-500/10 p-3 backdrop-blur-sm"
-                                      >
-                                        <div className="mt-1 h-1.5 w-1.5 rounded-full bg-gradient-to-r from-yellow-400 to-orange-400" />
-                                        <TypographyP className="text-sm leading-relaxed text-zinc-300">
-                                          {con}
-                                        </TypographyP>
-                                      </motion.li>
-                                    ))}
-                                  </ul>
+                              <div
+                                className={`flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r ${getRankGradientClass(
+                                  rec.rank
+                                )} shadow-xl`}
+                              >
+                                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white/95">
+                                  <span className="text-base font-extrabold text-zinc-900">
+                                    #{rec.rank}
+                                  </span>
                                 </div>
                               </div>
-                            </div>
-                          </AccordionContent>
-                        </AccordionItem>
-
-                        <AccordionItem value="skill-breakdown" className="border-zinc-700/50">
-                          <AccordionTrigger className="group text-white hover:no-underline">
-                            <div className="flex items-center space-x-3">
-                              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg">
-                                <RadarIcon className="h-4 w-4" />
-                              </div>
-                              <span className="font-semibold">Kebutuhan Keterampilan</span>
-                            </div>
-                          </AccordionTrigger>
-                          <AccordionContent>
-                            <div className="space-y-6 pl-11">
-                              <div className="overflow-hidden rounded-xl border border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50 p-6 backdrop-blur-sm">
-                                <div className="mb-6 flex items-center justify-between">
-                                  <div>
-                                    <TypographyH3 className="text-lg text-white">
-                                      Tingkat Kepentingan Keterampilan
-                                    </TypographyH3>
-                                    <TypographyP className="mt-1 text-sm text-zinc-400">
-                                      Visualisasi kebutuhan keterampilan untuk kompetisi ini
-                                    </TypographyP>
-                                  </div>
-                                  <div className="flex items-center space-x-4">
-                                    <div className="flex items-center space-x-2">
-                                      <div className="h-3 w-3 rounded-full bg-gradient-to-r from-green-400 to-green-500" />
-                                      <span className="text-xs text-zinc-400">Tinggi (8-10)</span>
-                                    </div>
-                                    <div className="flex items-center space-x-2">
-                                      <div className="h-3 w-3 rounded-full bg-gradient-to-r from-blue-400 to-blue-500" />
-                                      <span className="text-xs text-zinc-400">Sedang (6-7.9)</span>
-                                    </div>
-                                    <div className="flex items-center space-x-2">
-                                      <div className="h-3 w-3 rounded-full bg-gradient-to-r from-orange-400 to-orange-500" />
-                                      <span className="text-xs text-zinc-400">Rendah (0-5.9)</span>
-                                    </div>
-                                  </div>
-                                </div>
-                                <SkillRequirementsChart requirements={rec.skillRequirements} />
-                              </div>
-                            </div>
-                          </AccordionContent>
-                        </AccordionItem>
-
-                        <AccordionItem value="competition-details" className="border-zinc-700/50">
-                          <AccordionTrigger className="group text-white hover:no-underline">
-                            <div className="flex items-center space-x-3">
-                              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 shadow-lg">
-                                <Calendar className="h-4 w-4" />
-                              </div>
-                              <span className="font-semibold">Detail Kompetisi</span>
-                            </div>
-                          </AccordionTrigger>
-                          <AccordionContent>
-                            <div className="space-y-6 pl-11">
-                              <div className="space-y-6">
-                                <TypographyP className="text-sm leading-relaxed text-zinc-300">
-                                  {rec.competition.description}
-                                </TypographyP>
-
-                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                  <div className="flex items-center space-x-3 rounded-lg bg-gradient-to-r from-emerald-500/10 to-teal-500/10 p-3 backdrop-blur-sm">
-                                    <Calendar className="h-4 w-4 text-emerald-400" />
-                                    <div>
-                                      <span className="text-xs text-zinc-400">Mulai</span>
-                                      <p className="text-sm font-medium text-zinc-300">
-                                        {formatDate(rec.competition.startDate)}
-                                      </p>
-                                    </div>
-                                  </div>
-                                  <div className="flex items-center space-x-3 rounded-lg bg-gradient-to-r from-emerald-500/10 to-teal-500/10 p-3 backdrop-blur-sm">
-                                    <Calendar className="h-4 w-4 text-emerald-400" />
-                                    <div>
-                                      <span className="text-xs text-zinc-400">Selesai</span>
-                                      <p className="text-sm font-medium text-zinc-300">
-                                        {formatDate(rec.competition.endDate)}
-                                      </p>
-                                    </div>
-                                  </div>
-                                  <div className="flex items-center space-x-3 rounded-lg bg-gradient-to-r from-emerald-500/10 to-teal-500/10 p-3 backdrop-blur-sm">
-                                    <MapPin className="h-4 w-4 text-emerald-400" />
-                                    <div>
-                                      <span className="text-xs text-zinc-400">Lokasi</span>
-                                      <p className="text-sm font-medium text-zinc-300">
-                                        {rec.competition.location || "Daring"}
-                                      </p>
-                                    </div>
-                                  </div>
-                                  <div className="flex items-center space-x-3 rounded-lg bg-gradient-to-r from-emerald-500/10 to-teal-500/10 p-3 backdrop-blur-sm">
-                                    <Users className="h-4 w-4 text-emerald-400" />
-                                    <div>
-                                      <span className="text-xs text-zinc-400">Organizer</span>
-                                      <p className="text-sm font-medium text-zinc-300">
-                                        {rec.competition.organizer}
-                                      </p>
-                                    </div>
-                                  </div>
-                                </div>
-
-                                {rec.competition.sourceUrl && (
-                                  <motion.div
-                                    whileHover={{ scale: 1.02 }}
-                                    whileTap={{ scale: 0.98 }}
+                              <div>
+                                <CardTitle className="text-xl text-white">
+                                  {rec.competitionName}
+                                </CardTitle>
+                                <div className="mt-1 flex items-center space-x-2">
+                                  <Badge
+                                    className={`text-xs text-white ${getMatchScoreColor(rec.matchScore.score)}`}
                                   >
-                                    <a
-                                      href={rec.competition.sourceUrl}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="group/link inline-flex items-center space-x-2 rounded-lg bg-gradient-to-r from-blue-500/10 to-purple-500/10 p-3 text-blue-400 transition-all hover:from-blue-500/20 hover:to-purple-500/20 hover:text-blue-300"
+                                    <Shield className="mr-1 h-3 w-3" />
+                                    {(rec.matchScore.score * 10).toFixed(1)}/10 Kecocokan
+                                  </Badge>
+                                </div>
+                              </div>
+                            </div>
+                            <CardDescription className="leading-relaxed text-zinc-300">
+                              {rec.matchScore.reason}
+                            </CardDescription>
+                          </div>
+                          <motion.div
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="flex items-center space-x-2"
+                          >
+                            <div
+                              className={`h-3 w-3 rounded-full transition-colors ${
+                                selectedCompetition?.id === rec.id ? "bg-blue-500" : "bg-zinc-500"
+                              }`}
+                            />
+                            <span className="text-xs text-zinc-400">
+                              {selectedCompetition?.id === rec.id ? "Dipilih" : "Klik untuk detail"}
+                            </span>
+                          </motion.div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="relative">
+                        <Accordion type="single" collapsible className="space-y-4">
+                          <AccordionItem value="match-explanation" className="border-zinc-700/50">
+                            <AccordionTrigger className="group text-white hover:no-underline">
+                              <div className="flex items-center space-x-3">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-500 shadow-lg">
+                                  <BarChart3 className="h-4 w-4" />
+                                </div>
+                                <span className="font-semibold">Penjelasan Kecocokan</span>
+                              </div>
+                            </AccordionTrigger>
+                            <AccordionContent>
+                              <div className="space-y-6 pl-11">
+                                <TypographyP className="text-sm leading-relaxed text-zinc-300">
+                                  {rec.matchScore.reason}
+                                </TypographyP>
+                                <div className="space-y-6">
+                                  <div>
+                                    <TypographyH3 className="mb-3 flex items-center space-x-2 text-sm text-white">
+                                      <div className="h-2 w-2 rounded-full bg-gradient-to-r from-green-400 to-emerald-400" />
+                                      <span>Kelebihan</span>
+                                    </TypographyH3>
+                                    <ul className="space-y-3">
+                                      {rec.reasoning?.pros?.map((pro, proIndex) => (
+                                        <motion.li
+                                          key={`pro-${pro.slice(0, 20)}`}
+                                          initial={{ opacity: 0, x: -20 }}
+                                          animate={{ opacity: 1, x: 0 }}
+                                          transition={{ delay: proIndex * 0.1, duration: 0.3 }}
+                                          className="flex items-start space-x-3 rounded-lg bg-gradient-to-r from-green-500/10 to-emerald-500/10 p-3 backdrop-blur-sm"
+                                        >
+                                          <div className="mt-1 h-1.5 w-1.5 rounded-full bg-gradient-to-r from-green-400 to-emerald-400" />
+                                          <TypographyP className="text-sm leading-relaxed text-zinc-300">
+                                            {pro}
+                                          </TypographyP>
+                                        </motion.li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                  <div>
+                                    <TypographyH3 className="mb-3 flex items-center space-x-2 text-sm text-white">
+                                      <div className="h-2 w-2 rounded-full bg-gradient-to-r from-yellow-400 to-orange-400" />
+                                      <span>Kekurangan</span>
+                                    </TypographyH3>
+                                    <ul className="space-y-3">
+                                      {rec.reasoning?.cons?.map((con, conIndex) => (
+                                        <motion.li
+                                          key={`con-${con.slice(0, 20)}`}
+                                          initial={{ opacity: 0, x: -20 }}
+                                          animate={{ opacity: 1, x: 0 }}
+                                          transition={{ delay: conIndex * 0.1, duration: 0.3 }}
+                                          className="flex items-start space-x-3 rounded-lg bg-gradient-to-r from-yellow-500/10 to-orange-500/10 p-3 backdrop-blur-sm"
+                                        >
+                                          <div className="mt-1 h-1.5 w-1.5 rounded-full bg-gradient-to-r from-yellow-400 to-orange-400" />
+                                          <TypographyP className="text-sm leading-relaxed text-zinc-300">
+                                            {con}
+                                          </TypographyP>
+                                        </motion.li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                </div>
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+
+                          <AccordionItem value="skill-breakdown" className="border-zinc-700/50">
+                            <AccordionTrigger className="group text-white hover:no-underline">
+                              <div className="flex items-center space-x-3">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg">
+                                  <RadarIcon className="h-4 w-4" />
+                                </div>
+                                <span className="font-semibold">Kebutuhan Keterampilan</span>
+                              </div>
+                            </AccordionTrigger>
+                            <AccordionContent>
+                              <div className="space-y-6 pl-11">
+                                <div className="overflow-hidden rounded-xl border border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50 p-6 backdrop-blur-sm">
+                                  <div className="mb-6 flex items-center justify-between">
+                                    <div>
+                                      <TypographyH3 className="text-lg text-white">
+                                        Tingkat Kepentingan Keterampilan
+                                      </TypographyH3>
+                                      <TypographyP className="mt-1 text-sm text-zinc-400">
+                                        Visualisasi kebutuhan keterampilan untuk kompetisi ini
+                                      </TypographyP>
+                                    </div>
+                                    <div className="flex items-center space-x-4">
+                                      <div className="flex items-center space-x-2">
+                                        <div className="h-3 w-3 rounded-full bg-gradient-to-r from-green-400 to-green-500" />
+                                        <span className="text-xs text-zinc-400">Tinggi (8-10)</span>
+                                      </div>
+                                      <div className="flex items-center space-x-2">
+                                        <div className="h-3 w-3 rounded-full bg-gradient-to-r from-blue-400 to-blue-500" />
+                                        <span className="text-xs text-zinc-400">Sedang (6-7.9)</span>
+                                      </div>
+                                      <div className="flex items-center space-x-2">
+                                        <div className="h-3 w-3 rounded-full bg-gradient-to-r from-orange-400 to-orange-500" />
+                                        <span className="text-xs text-zinc-400">Rendah (0-5.9)</span>
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <SkillRequirementsChart requirements={rec.skillRequirements} />
+                                </div>
+                              </div>
+                            </AccordionContent>
+                          </AccordionItem>
+
+                          <AccordionItem value="competition-details" className="border-zinc-700/50">
+                            <AccordionTrigger className="group text-white hover:no-underline">
+                              <div className="flex items-center space-x-3">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 shadow-lg">
+                                  <Calendar className="h-4 w-4" />
+                                </div>
+                                <span className="font-semibold">Detail Kompetisi</span>
+                              </div>
+                            </AccordionTrigger>
+                            <AccordionContent>
+                              <div className="space-y-6 pl-11">
+                                <div className="space-y-6">
+                                  <TypographyP className="text-sm leading-relaxed text-zinc-300">
+                                    {rec.competition?.description || "Deskripsi kompetisi tidak tersedia"}
+                                  </TypographyP>
+
+                                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                    <div className="flex items-center space-x-3 rounded-lg bg-gradient-to-r from-emerald-500/10 to-teal-500/10 p-3 backdrop-blur-sm">
+                                      <Calendar className="h-4 w-4 text-emerald-400" />
+                                      <div>
+                                        <span className="text-xs text-zinc-400">Mulai</span>
+                                        <p className="text-sm font-medium text-zinc-300">
+                                          {rec.competition?.startDate ? formatDate(rec.competition.startDate) : "Tidak tersedia"}
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center space-x-3 rounded-lg bg-gradient-to-r from-emerald-500/10 to-teal-500/10 p-3 backdrop-blur-sm">
+                                      <Calendar className="h-4 w-4 text-emerald-400" />
+                                      <div>
+                                        <span className="text-xs text-zinc-400">Selesai</span>
+                                        <p className="text-sm font-medium text-zinc-300">
+                                          {rec.competition?.endDate ? formatDate(rec.competition.endDate) : "Tidak tersedia"}
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center space-x-3 rounded-lg bg-gradient-to-r from-emerald-500/10 to-teal-500/10 p-3 backdrop-blur-sm">
+                                      <MapPin className="h-4 w-4 text-emerald-400" />
+                                      <div>
+                                        <span className="text-xs text-zinc-400">Lokasi</span>
+                                        <p className="text-sm font-medium text-zinc-300">
+                                          {rec.competition?.location || "Daring"}
+                                        </p>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center space-x-3 rounded-lg bg-gradient-to-r from-emerald-500/10 to-teal-500/10 p-3 backdrop-blur-sm">
+                                      <Users className="h-4 w-4 text-emerald-400" />
+                                      <div>
+                                        <span className="text-xs text-zinc-400">Organizer</span>
+                                        <p className="text-sm font-medium text-zinc-300">
+                                          {rec.competition?.organizer || "Tidak tersedia"}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {rec.competition?.sourceUrl && (
+                                    <motion.div
+                                      whileHover={{ scale: 1.02 }}
+                                      whileTap={{ scale: 0.98 }}
                                     >
-                                      <ExternalLink className="h-4 w-4" />
-                                      <span className="font-medium">Kunjungi Website</span>
-                                    </a>
-                                  </motion.div>
-                                )}
+                                      <a
+                                        href={rec.competition?.sourceUrl || "#"}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="group/link inline-flex items-center space-x-2 rounded-lg bg-gradient-to-r from-blue-500/10 to-purple-500/10 p-3 text-blue-400 transition-all hover:from-blue-500/20 hover:to-purple-500/20 hover:text-blue-300"
+                                      >
+                                        <ExternalLink className="h-4 w-4" />
+                                        <span className="font-medium">Kunjungi Website</span>
+                                      </a>
+                                    </motion.div>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                          </AccordionContent>
-                        </AccordionItem>
+                            </AccordionContent>
+                          </AccordionItem>
 
-                        <AccordionItem value="key-factors" className="border-zinc-700/50">
-                          <AccordionTrigger className="group text-white hover:no-underline">
-                            <div className="flex items-center space-x-3">
-                              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-orange-500 to-red-500 shadow-lg">
-                                <Target className="h-4 w-4" />
-                              </div>
-                              <span className="font-semibold">Faktor Kunci Keberhasilan</span>
-                            </div>
-                          </AccordionTrigger>
-                          <AccordionContent>
-                            <div className="space-y-4 pl-11">
-                              {rec.keyFactors.map((factor, factorIndex) => (
-                                <motion.div
-                                  key={`factor-${factor.slice(0, 20)}`}
-                                  initial={{ opacity: 0, x: -20 }}
-                                  animate={{ opacity: 1, x: 0 }}
-                                  transition={{ delay: factorIndex * 0.1, duration: 0.3 }}
-                                  className="flex items-start space-x-3 rounded-lg bg-gradient-to-r from-orange-500/10 to-red-500/10 p-3 backdrop-blur-sm"
-                                >
-                                  <div className="mt-1 h-1.5 w-1.5 rounded-full bg-gradient-to-r from-orange-400 to-red-400" />
-                                  <TypographyP className="text-sm leading-relaxed text-zinc-300">
-                                    {factor}
-                                  </TypographyP>
-                                </motion.div>
-                              ))}
-                            </div>
-                          </AccordionContent>
-                        </AccordionItem>
+                          {rec.keyFactors && rec.keyFactors.length > 0 && (
+                            <AccordionItem value="key-factors" className="border-zinc-700/50">
+                              <AccordionTrigger className="group text-white hover:no-underline">
+                                <div className="flex items-center space-x-3">
+                                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-orange-500 to-red-500 shadow-lg">
+                                    <Target className="h-4 w-4" />
+                                  </div>
+                                  <span className="font-semibold">Faktor Kunci Keberhasilan</span>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent>
+                                <div className="space-y-4 pl-11">
+                                  {rec.keyFactors.map((factor, factorIndex) => (
+                                    <motion.div
+                                      key={`factor-${factor.slice(0, 20)}`}
+                                      initial={{ opacity: 0, x: -20 }}
+                                      animate={{ opacity: 1, x: 0 }}
+                                      transition={{ delay: factorIndex * 0.1, duration: 0.3 }}
+                                      className="flex items-start space-x-3 rounded-lg bg-gradient-to-r from-orange-500/10 to-red-500/10 p-3 backdrop-blur-sm"
+                                    >
+                                      <div className="mt-1 h-1.5 w-1.5 rounded-full bg-gradient-to-r from-orange-400 to-red-400" />
+                                      <TypographyP className="text-sm leading-relaxed text-zinc-300">
+                                        {factor}
+                                      </TypographyP>
+                                    </motion.div>
+                                  ))}
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                          )}
 
-                        <AccordionItem value="preparation" className="border-zinc-700/50">
-                          <AccordionTrigger className="group text-white hover:no-underline">
-                            <div className="flex items-center space-x-3">
-                              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 shadow-lg">
-                                <BookOpen className="h-4 w-4" />
-                              </div>
-                              <span className="font-semibold">Tips Persiapan</span>
-                            </div>
-                          </AccordionTrigger>
-                          <AccordionContent>
-                            <div className="space-y-4 pl-11">
-                              {rec.preparationTips.map((tip, tipIndex) => (
-                                <motion.div
-                                  key={`tip-${tip.slice(0, 20)}`}
-                                  initial={{ opacity: 0, x: -20 }}
-                                  animate={{ opacity: 1, x: 0 }}
-                                  transition={{ delay: tipIndex * 0.1, duration: 0.3 }}
-                                  className="flex items-start space-x-3 rounded-lg bg-gradient-to-r from-indigo-500/10 to-purple-500/10 p-3 backdrop-blur-sm"
-                                >
-                                  <ArrowRight className="mt-1 h-4 w-4 text-indigo-400" />
-                                  <TypographyP className="text-sm leading-relaxed text-zinc-300">
-                                    {tip}
-                                  </TypographyP>
-                                </motion.div>
-                              ))}
-                            </div>
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Accordion>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
+                          {rec.preparationTips && rec.preparationTips.length > 0 && (
+                            <AccordionItem value="preparation" className="border-zinc-700/50">
+                              <AccordionTrigger className="group text-white hover:no-underline">
+                                <div className="flex items-center space-x-3">
+                                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 shadow-lg">
+                                    <BookOpen className="h-4 w-4" />
+                                  </div>
+                                  <span className="font-semibold">Tips Persiapan</span>
+                                </div>
+                              </AccordionTrigger>
+                              <AccordionContent>
+                                <div className="space-y-4 pl-11">
+                                  {rec.preparationTips.map((tip, tipIndex) => (
+                                    <motion.div
+                                      key={`tip-${tip.slice(0, 20)}`}
+                                      initial={{ opacity: 0, x: -20 }}
+                                      animate={{ opacity: 1, x: 0 }}
+                                      transition={{ delay: tipIndex * 0.1, duration: 0.3 }}
+                                      className="flex items-start space-x-3 rounded-lg bg-gradient-to-r from-indigo-500/10 to-purple-500/10 p-3 backdrop-blur-sm"
+                                    >
+                                      <ArrowRight className="mt-1 h-4 w-4 text-indigo-400" />
+                                      <TypographyP className="text-sm leading-relaxed text-zinc-300">
+                                        {tip}
+                                      </TypographyP>
+                                    </motion.div>
+                                  ))}
+                                </div>
+                              </AccordionContent>
+                            </AccordionItem>
+                          )}
+                        </Accordion>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          )}
         </div>
       </div>
 

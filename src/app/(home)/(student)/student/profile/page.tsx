@@ -1,7 +1,7 @@
 "use client";
 
 import { Separator } from "@radix-ui/react-dropdown-menu";
-import { Plus, X, User, GraduationCap } from "lucide-react";
+import { Plus, X, User, GraduationCap, AlertCircle } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 
@@ -40,6 +40,7 @@ import { useAcademicData } from "./_hooks/useAcademicData";
 import { useAcademicDataForm } from "./_hooks/useAcademicDataForm";
 import { usePersonalData } from "./_hooks/usePersonalData";
 import { usePersonalDataForm } from "./_hooks/usePersonalDataForm";
+import { useTranscript } from "./_hooks/useTranscript";
 
 const UserProfilePage = () => {
   const { data: session } = useSession();
@@ -52,6 +53,7 @@ const UserProfilePage = () => {
   } = usePersonalData();
 
   const { data: academicData, isLoading: isLoadingAcademic } = useAcademicData();
+  const { transcripts, isLoadingTranscripts } = useTranscript();
 
   const {
     form: personalForm,
@@ -404,28 +406,25 @@ const UserProfilePage = () => {
                       resetAcademicForm();
                     }}
                   >
-                    {/* GPA Section */}
-                    <FormField
-                      control={academicForm.control}
-                      name="gpa"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-zinc-300">IPK</FormLabel>
-                          <FormControl>
-                            {isLoadingAcademic ? (
-                              <Skeleton className="h-10 w-full" />
-                            ) : (
-                              <Input
-                                placeholder="IPK"
-                                {...field}
-                                className="border-zinc-700 bg-zinc-800 text-white"
-                              />
-                            )}
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
+                    {/* IPK (GPA) Display - Readonly from transcript/GET */}
+                    <div className="space-y-1">
+                      <FormLabel className="text-zinc-300">IPK</FormLabel>
+                      {isLoadingAcademic ? (
+                        <Skeleton className="h-10 w-full" />
+                      ) : (
+                        <Input
+                          value={academicData?.gpa ?? "-"}
+                          readOnly
+                          className="border-zinc-700 bg-zinc-800 text-white"
+                        />
                       )}
-                    />
+                      {!(isLoadingTranscripts || isLoadingAcademic) && transcripts.length === 0 && (
+                        <div className="flex items-center gap-2 text-xs text-zinc-400">
+                          <AlertCircle className="h-3 w-3 text-yellow-400" />
+                          <span>IPK akan muncul setelah Anda mengunggah transcript PDF.</span>
+                        </div>
+                      )}
+                    </div>
 
                     {/* Transcript Management Section */}
                     <TranscriptManagement isLoading={isLoadingAcademic} />

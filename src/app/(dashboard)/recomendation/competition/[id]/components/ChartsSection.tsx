@@ -155,7 +155,7 @@ export const ChartsSection = ({ statistics }: ChartsSectionProps) => (
           Top Performers
         </CardTitle>
         <p className="mt-2 text-sm text-zinc-400">
-          Menampilkan 5 mahasiswa dengan skor kecocokan tertinggi untuk kompetisi ini.
+          Menampilkan Top mahasiswa dengan skor kecocokan tertinggi untuk kompetisi ini.
         </p>
       </CardHeader>
       <CardContent>

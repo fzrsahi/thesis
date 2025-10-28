@@ -319,7 +319,7 @@ export const CompetitionAddModal = ({
               name="file"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-zinc-200">File (opsional)</FormLabel>
+                  <FormLabel className="text-zinc-200">File</FormLabel>
                   <FormControl>
                     <input
                       type="file"
@@ -338,7 +338,7 @@ export const CompetitionAddModal = ({
                 name="startPage"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-zinc-200">Halaman Mulai (opsional)</FormLabel>
+                    <FormLabel className="text-zinc-200">Halaman Mulai</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -359,7 +359,7 @@ export const CompetitionAddModal = ({
                 name="endPage"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-zinc-200">Halaman Akhir (opsional)</FormLabel>
+                    <FormLabel className="text-zinc-200">Halaman Akhir</FormLabel>
                     <FormControl>
                       <Input
                         type="number"

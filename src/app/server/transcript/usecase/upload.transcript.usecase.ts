@@ -11,10 +11,34 @@ import { STUDENT_ERROR_RESPONSE } from "../../user/student.error";
 import { customError } from "../../utils/error/custom-error";
 import { TRANSCRIPT_ERROR_RESPONSE } from "../transcript.error";
 import { createTranscript } from "../transcript.repository";
+import { updateStudentGPA } from "../transcript.repository";
+
+
+const extractIPK = (text: string): number | null => {
+  const match = text.match(
+    /(?:Indeks\s+Prestasi\s+Kumulatif\s*\(IPK\)|\bIPK\b)\s*[:\-]?\s*([0-4](?:[.,]\d{1,3})?)/i
+  );
+  if (!match) return null;
+  const num = parseFloat(match[1].replace(",", "."));
+  return isFinite(num) ? Number(num.toFixed(2)) : null;
+};
+
+
+const extractIPKFromTotals = (text: string): number | null => {
+  const sksMatch = text.match(/Jumlah\s+SKS\s*[:\-]?\s*(\d+)/i);
+  const totalMatch = text.match(/Jumlah\s+SKS\s*[x×]\s*Mutu\s*[:\-]?\s*(\d+(?:[.,]\d+)?)/i);
+  if (!sksMatch || !totalMatch) return null;
+
+  const totalSks = parseInt(sksMatch[1], 10);
+  const totalWeighted = parseFloat(totalMatch[1].replace(",", "."));
+  if (!totalSks || !isFinite(totalWeighted)) return null;
+
+  return Number((totalWeighted / totalSks).toFixed(2));
+};
+
 
 export const uploadTranscript = async (userId: number, payload: UploadTranscriptPayload) => {
   const student = await findStudentByUserId(userId);
-
   if (!student) {
     throw customError(
       STUDENT_ERROR_RESPONSE.STUDENT_NOT_FOUND.code,
@@ -23,12 +47,12 @@ export const uploadTranscript = async (userId: number, payload: UploadTranscript
     );
   }
 
-  const [transcriptText, { id }] = await Promise.all([
+  const [{ summary, ipk }, { id }] = await Promise.all([
     extractTranscriptToText(payload.transcript),
     uploadFile(payload.transcript),
   ]);
 
-  if (!transcriptText) {
+  if (!summary) {
     throw customError(
       TRANSCRIPT_ERROR_RESPONSE.ERROR_PROCESSING_TRANSCRIPT.code,
       TRANSCRIPT_ERROR_RESPONSE.ERROR_PROCESSING_TRANSCRIPT.message,
@@ -36,31 +60,32 @@ export const uploadTranscript = async (userId: number, payload: UploadTranscript
     );
   }
 
-  await createTranscript(student.id, {
-    fileId: id,
-    semester: payload.semester,
-    transcriptText: transcriptText as string,
-  });
+  await Promise.all([
+    createTranscript(student.id, {
+      fileId: id,
+      semester: payload.semester,
+      transcriptText: summary,
+    }),
+    updateStudentGPA(student.id, ipk?.toString() ?? "")
+  ]);
 };
 
-const extractTranscriptToText = async (transcript: File) => {
+
+const extractTranscriptToText = async (
+  transcript: File
+): Promise<{ summary: string; ipk: number | null }> => {
   const arrayBuffer = await transcript.arrayBuffer();
   const pdfDataAsUint8Array = new Uint8Array(arrayBuffer);
-
   const pdfDocument = await getDocument({ data: pdfDataAsUint8Array }).promise;
-
-  let extractedText = "";
 
   const pagePromises = Array.from({ length: pdfDocument.numPages }, (_, i) =>
     pdfDocument.getPage(i + 1)
   );
-
   const pages = await Promise.all(pagePromises);
-  const textContentPromises = pages.map((page) => page.getTextContent());
-  const textContents = await Promise.all(textContentPromises);
+  const textContents = await Promise.all(pages.map((p) => p.getTextContent()));
 
-  extractedText = textContents
-    .map((textContent) => textContent.items.map((item) => (item as TextItem).str).join(" "))
+  const extractedText = textContents
+    .map((t) => t.items.map((item) => (item as TextItem).str).join(" "))
     .join("\n");
 
   const requiredElements = [
@@ -72,9 +97,7 @@ const extractTranscriptToText = async (transcript: File) => {
     "Laman: www.ung.ac.id",
     "Sistem Informasi Akademik",
   ];
-
-  const hasRequiredFormat = requiredElements.some((element) => extractedText.includes(element));
-
+  const hasRequiredFormat = requiredElements.some((el) => extractedText.includes(el));
   if (!hasRequiredFormat) {
     throw customError(
       TRANSCRIPT_ERROR_RESPONSE.FORMAT_PDF_TRANSCRIPT.code,
@@ -97,19 +120,28 @@ const extractTranscriptToText = async (transcript: File) => {
     .replace(/\s+/g, " ")
     .trim();
 
-  return transcriptTextToSummary(formattedText);
+  const ipk = extractIPK(formattedText) ?? extractIPKFromTotals(formattedText);
+
+  const summary = await transcriptTextToSummary(formattedText);
+
+  return { summary, ipk };
 };
+
 
 const transcriptTextToSummary = async (transcriptText: string) =>
   sendChatCompletion(
     `
     Anda adalah seorang analis akademik yang ahli dalam mengidentifikasi potensi mahasiswa berdasarkan transkrip nilai.
     Tugas Anda adalah membuat ringkasan naratif dari transkrip nilai seorang mahasiswa Teknik Informatika.
-    Konteks Penting: Ringkasan ini akan diubah menjadi vector embedding untuk mencocokkan mahasiswa dengan kompetisi IT yang relevan. Oleh karena itu, ringkasan harus padat dengan informasi yang menyoroti keahlian dan kekuatan mahasiswa.
+    Konteks Penting: Ringkasan ini akan diubah menjadi vector embedding untuk mencocokkan mahasiswa dengan kompetisi IT yang relevan.
+    Oleh karena itu, ringkasan harus padat dengan informasi yang menyoroti keahlian dan kekuatan mahasiswa.
+
     Instruksi:
-    1.  **Fokus Utama**: Identifikasi dan sebutkan mata kuliah di bidang teknis (seperti Pemrograman, Algoritma, Jaringan Komputer, Kecerdasan Buatan, Basis Data, Keamanan Siber, Desain UI/UX) di mana mahasiswa mendapatkan nilai tinggi (A atau B).
-    2.  **Sintesis Keahlian**: Jangan hanya mendaftar mata kuliah. Simpulkan menjadi sebuah paragraf yang menjelaskan kekuatan dan potensi keahlian mahasiswa. Contoh: "Mahasiswa ini menunjukkan keunggulan di bidang pengembangan perangkat lunak, terbukti dari nilai A pada mata kuliah Algoritma dan Pemrograman Lanjut."
-    3.  **Abaikan yang Tidak Relevan**: Abaikan sepenuhnya mata kuliah umum dan non-teknis (seperti Pendidikan Agama, Kewarganegaraan, Bahasa Indonesia) karena tidak relevan untuk pencocokan kompetisi IT.
-    4.  **Format**: Respons harus berupa satu paragraf ringkas dalam format teks biasa (plain text) dan dalam bahasa Indonesia.
-    Berikut adalah teks transkripnya: ${transcriptText}`
+    1. **Fokus Utama**: Identifikasi dan sebutkan mata kuliah di bidang teknis (Pemrograman, Algoritma, AI, Jaringan, Basis Data, dsb) di mana mahasiswa mendapat nilai tinggi (A/B).
+    2. **Sintesis Keahlian**: Gabungkan jadi paragraf yang menjelaskan kekuatan mahasiswa.
+    3. **Abaikan Non-Teknis**: Abaikan mata kuliah umum seperti Agama, Kewarganegaraan, Bahasa.
+    4. **Format**: Satu paragraf ringkas dalam bahasa Indonesia.
+
+    Berikut teks transkrip: ${transcriptText}
+    `
   );

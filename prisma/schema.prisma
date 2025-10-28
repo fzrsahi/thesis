@@ -38,25 +38,25 @@ model Admin {
 }
 
 model Student {
-  id        Int      @id @default(autoincrement())
-  userId    Int      @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  gpa       String? // IPK mahasiswa
-  interests String[] // Array minat, contoh: ["AI","Desain"]
-  skills    String[] // Array keterampilan, contoh: ["Python","Java"]
-  studentId String? // ID mahasiswa
+  id             Int      @id @default(autoincrement())
+  userId         Int      @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gpa            String? // IPK mahasiswa
+  interests      String[] // Array minat, contoh: ["AI","Desain"]
+  skills         String[] // Array keterampilan, contoh: ["Python","Java"]
+  studentId      String? // ID mahasiswa
   studyProgramId Int
-  entryYear Int
-  
+  entryYear      Int
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  achievements    Achievement[]
-  experiences     Experience[]
-  recommendations Recommendation[]
-  transcript      Transcript[]
+  achievements          Achievement[]
+  experiences           Experience[]
+  recommendations       Recommendation[]
+  transcript            Transcript[]
   studentDocumentChunks StudentDocumentChunk[]
-  studyProgram StudyProgram @relation(fields: [studyProgramId], references: [id], onDelete: Cascade)
+  studyProgram          StudyProgram           @relation(fields: [studyProgramId], references: [id], onDelete: Cascade)
 
   @@map("students")
 }
@@ -84,7 +84,7 @@ model Advisor {
   updatedAt DateTime @updatedAt
 
   studyProgramId Int?
-  studyProgram StudyProgram? @relation(fields: [studyProgramId], references: [id], onDelete: Cascade)
+  studyProgram   StudyProgram? @relation(fields: [studyProgramId], references: [id], onDelete: Cascade)
 
   @@map("advisors")
 }
@@ -96,6 +96,7 @@ model Achievement {
   title       String // Judul prestasi
   description String? // Deskripsi detail
   date        DateTime // Tanggal prestasi
+  photoUrl    String? // URL foto prestasi
   createdAt   DateTime @default(now())
 
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
@@ -111,6 +112,7 @@ model Experience {
   description  String? // Deskripsi pengalaman
   startDate    DateTime // Mulai pengalaman
   endDate      DateTime? // Selesai (opsional)
+  photoUrl     String? // URL foto pengalaman
   createdAt    DateTime  @default(now())
 
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
@@ -257,11 +259,11 @@ model RecommendationDevelopmentSuggestion {
 
 model LLMChatSession {
   id        Int      @id @default(autoincrement())
-  userId Int
+  userId    Int
   title     String?
   createdAt DateTime @default(now())
 
-  user  User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
   messages LLMChatMessage[]
 
   @@map("llmChatSessions")
@@ -281,17 +283,16 @@ model LLMChatMessage {
 
 /// Student-specific vectorized knowledge base
 model StudentDocumentChunk {
-  id        String   @id @default(uuid())
+  id        String                 @id @default(uuid())
   studentId Int
-  content   String   @db.Text
+  content   String                 @db.Text
   vector    Unsupported("vector")?
-  createdAt DateTime @default(now())
+  createdAt DateTime               @default(now())
 
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   @@map("studentDocumentChunks")
 }
-
 
 model StudyProgram {
   id        Int      @id @default(autoincrement())
@@ -299,8 +300,8 @@ model StudyProgram {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("studyPrograms")
-
   students Student[]
   advisors Advisor[]
+
+  @@map("studyPrograms")
 }

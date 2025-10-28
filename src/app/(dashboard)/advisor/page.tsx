@@ -102,10 +102,10 @@ const AdvisorPage = () => {
       <div className="mb-6">
         <TypographyH2 className="flex items-center gap-2 truncate text-zinc-900">
           <UserCheck className="h-10 w-10 font-extrabold" />
-          Daftar Dosen
+          Daftar Pengelola Jurusan dan Koordinator Prodi
         </TypographyH2>
         <TypographyP className="border-b border-gray-300 pb-4 text-zinc-900">
-          Kelola data dosen dengan mudah dan efisien.
+          Kelola data pengelola jurusan dan koordinator prodi 
         </TypographyP>
         <div className="mb-6 border-t border-gray-500" />
       </div>

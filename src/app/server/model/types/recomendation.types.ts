@@ -5,11 +5,11 @@ export const SkillsProfileItemSchema = z.object({
     .number()
     .min(0)
     .max(1)
-    .describe("Skor kemampuan mahasiswa pada skill tertentu, rentang 0.00-1.00"),
+    .describe("Skor kemampuan mahasiswa pada skill tertentu, rentang 0.00-1.00. Berikan skor yang berbeda untuk setiap mahasiswa berdasarkan bukti konkret dari prestasi, pengalaman, dan kemampuan mereka."),
   breakdown: z
     .string()
     .describe(
-      "Penjelasan detail bagaimana skor dihitung berdasarkan bukti konkret dari profil mahasiswa"
+      "Penjelasan detail bagaimana skor dihitung berdasarkan bukti konkret dari profil mahasiswa. Sebutkan prestasi, pengalaman, atau bukti spesifik yang mendukung skor tersebut."
     ),
 });
 
@@ -60,10 +60,10 @@ export const MatchScoreSchema = z.object({
     .number()
     .min(0)
     .max(1)
-    .describe("Skor kesesuaian mahasiswa dengan kompetisi, rentang 0.00-1.00"),
+    .describe("Skor kesesuaian mahasiswa dengan kompetisi, rentang 0.00-1.00. WAJIB memberikan skor yang berbeda untuk setiap mahasiswa berdasarkan profil unik mereka. Gunakan rentang yang bervariasi (0.20-0.95) untuk menunjukkan perbedaan yang jelas."),
   reason: z
     .string()
-    .describe("Penjelasan logis bagaimana skor kesesuaian dihitung berdasarkan analisis skill"),
+    .describe("Penjelasan detail mengapa skor kesesuaian diberikan berdasarkan bukti konkret dari profil mahasiswa. Jelaskan secara spesifik skill-skill yang relevan dan bagaimana profil mahasiswa cocok dengan kebutuhan kompetisi."),
 });
 
 export const SkillRequirementItemSchema = z.object({
@@ -71,10 +71,10 @@ export const SkillRequirementItemSchema = z.object({
     .number()
     .min(0)
     .max(1)
-    .describe("Bobot kepentingan skill untuk sukses di kompetisi, rentang 0.00-1.00"),
+    .describe("Bobot kepentingan skill untuk sukses di kompetisi, rentang 0.00-1.00. Berikan bobot yang berbeda untuk setiap kompetisi berdasarkan karakteristik dan kebutuhan spesifik kompetisi tersebut."),
   breakdown: z
     .string()
-    .describe("Penjelasan mengapa skill ini penting untuk kompetisi dan seberapa krusial perannya"),
+    .describe("Penjelasan detail mengapa skill ini penting untuk kompetisi dan seberapa krusial perannya. Jelaskan bagaimana skill ini berkontribusi pada kesuksesan di kompetisi tersebut."),
 });
 
 export const SkillRequirementsSchema = z.object({
@@ -123,8 +123,8 @@ export const RecommendationSchema = z.object({
     .number()
     .describe("ID kompetisi sesuai dengan urutan dalam daftar kompetisi yang diberikan"),
   competitionName: z.string().describe("Nama kompetisi yang direkomendasikan"),
-  rank: z.number().describe("Peringkat rekomendasi berdasarkan kesesuaian dan nilai strategis"),
-  matchScore: MatchScoreSchema.describe("Skor dan alasan kesesuaian mahasiswa dengan kompetisi"),
+  rank: z.number().describe("Peringkat rekomendasi berdasarkan kesesuaian dan nilai strategis. WAJIB memberikan peringkat yang berbeda untuk setiap kompetisi (1, 2, 3)"),
+  matchScore: MatchScoreSchema.describe("Skor dan alasan kesesuaian mahasiswa dengan kompetisi. WAJIB memberikan skor yang berbeda untuk setiap kompetisi berdasarkan profil unik mahasiswa"),
   skillRequirements: SkillRequirementsSchema.describe(
     "Analisis kebutuhan skill untuk kompetisi ini"
   ),
@@ -132,10 +132,12 @@ export const RecommendationSchema = z.object({
   keyFactors: z
     .array(z.string())
     .nullable()
+    .optional()
     .describe("Faktor-faktor kunci yang menentukan kesuksesan di kompetisi ini"),
   preparationTips: z
     .array(z.string())
     .nullable()
+    .optional()
     .describe("Tips konkret untuk mempersiapkan diri mengikuti kompetisi"),
 });
 

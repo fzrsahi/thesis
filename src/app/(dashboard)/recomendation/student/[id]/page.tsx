@@ -29,7 +29,7 @@ const StudentCompetitionDetailPage = () => {
           </TypographyH2>
         </div>
         <TypographyP className="border-b border-gray-300 pb-4 text-zinc-900">
-          Detailed analysis and competition recommendations for this student.
+          Detail Mahasiswa dan rekomendasi untuk mahasiswa ini.
         </TypographyP>
         <div className="mb-6 border-t border-gray-500" />
       </div>

@@ -56,7 +56,6 @@ const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
   const form = useForm({
     resolver: zodResolver(academicDataSchema),
     defaultValues: {
-      gpa: "",
       interests: [],
       skills: [],
       achievements: [],
@@ -236,7 +235,6 @@ const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
         })) || [];
 
       form.reset({
-        gpa: data.gpa || "",
         interests: data.interests || [],
         skills: data.skills || [],
         achievements: formatAchievements,

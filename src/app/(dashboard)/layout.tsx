@@ -17,20 +17,22 @@ const DashboardContent = ({ children }: { children: React.ReactNode }) => {
   const { data: session } = useSession();
 
   return (
-    <div className="flex">
+    <div className="flex h-screen overflow-hidden">
       <Sidebar />
-      <main className="min-h-screen flex-1 bg-gray-300 p-6 text-zinc-900">
-        <div className="mb-4">
-          <BreadcrumbNav items={breadcrumbItems} isHome={isHome} />
+      <main className="flex-1 bg-gray-300 text-zinc-900 overflow-y-auto">
+        <div className="p-6">
+          <div className="mb-4">
+            <BreadcrumbNav items={breadcrumbItems} isHome={isHome} />
+          </div>
+          {children}
+          <UserAvatar
+            user={{
+              name: session?.user?.name,
+              email: session?.user?.email,
+              image: "https://github.com/shadcn.png",
+            }}
+          />
         </div>
-        {children}
-        <UserAvatar
-          user={{
-            name: session?.user?.name,
-            email: session?.user?.email,
-            image: "https://github.com/shadcn.png",
-          }}
-        />
       </main>
     </div>
   );

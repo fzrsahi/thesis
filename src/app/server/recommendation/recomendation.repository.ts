@@ -194,29 +194,32 @@ export const getRecommendationsOverview = async (
 ): Promise<RecommendationsOverviewResult> => {
   const { studyProgramId, entryYear, competitionId, minMatchScore, keywords } = filter;
 
+  // ✅ gunakan nullish check agar nilai 0 tidak diabaikan
   const recommendationWhereClause: Prisma.RecommendationWhereInput = {
     competitionRecommendations: {
       some: {
-        ...(competitionId && { competitionId }),
-        ...(minMatchScore && { matchScore: { gte: minMatchScore } }),
+        ...(competitionId != null && { competitionId }),
+        ...(minMatchScore != null && { matchScore: { gte: minMatchScore } }),
       },
     },
     student: {
-      ...(studyProgramId && { studyProgramId }),
-      ...(entryYear && { entryYear }),
-      ...(keywords && {
-        OR: [
-          { user: { name: { contains: keywords, mode: "insensitive" } } },
-          { user: { email: { contains: keywords, mode: "insensitive" } } },
-          { studentId: { contains: keywords, mode: "insensitive" } },
-        ],
-      }),
+      ...(studyProgramId != null && { studyProgramId }),
+      ...(entryYear != null && { entryYear }),
+      ...(keywords
+        ? {
+            OR: [
+              { user: { name: { contains: keywords, mode: "insensitive" } } },
+              { user: { email: { contains: keywords, mode: "insensitive" } } },
+              { studentId: { contains: keywords, mode: "insensitive" } },
+            ],
+          }
+        : {}),
     },
   };
 
   const competitions = await prisma.competitions.findMany({
     where: {
-      ...(competitionId && { id: competitionId }),
+      ...(competitionId != null && { id: competitionId }),
     },
     select: {
       id: true,
@@ -236,7 +239,7 @@ export const getRecommendationsOverview = async (
           competitionRecommendations: {
             some: {
               competitionId: competition.id,
-              ...(minMatchScore && { matchScore: { gte: minMatchScore } }),
+              ...(minMatchScore != null && { matchScore: { gte: minMatchScore } }),
             },
           },
         },
@@ -265,9 +268,8 @@ export const getRecommendationsOverview = async (
             },
           },
           competitionRecommendations: {
-            where: {
-              competitionId: competition.id,
-            },
+            where: { competitionId: competition.id },
+            orderBy: { createdAt: "desc" }, // ✅ urutkan agar [0] selalu terbaru
             select: {
               id: true,
               rank: true,
@@ -276,9 +278,7 @@ export const getRecommendationsOverview = async (
             },
           },
         },
-        orderBy: {
-          createdAt: "desc",
-        },
+        orderBy: { createdAt: "desc" },
       });
 
       const students = recommendations
@@ -312,7 +312,9 @@ export const getRecommendationsOverview = async (
       const statistics = {
         totalStudents: students.length,
         averageMatchScore:
-          matchScores.length > 0 ? matchScores.reduce((a, b) => a + b, 0) / matchScores.length : 0,
+          matchScores.length > 0
+            ? matchScores.reduce((a, b) => a + b, 0) / matchScores.length
+            : 0,
         highestScore: matchScores.length > 0 ? Math.max(...matchScores) : 0,
         lowestScore: matchScores.length > 0 ? Math.min(...matchScores) : 0,
         scoreDistribution: {
@@ -331,9 +333,10 @@ export const getRecommendationsOverview = async (
     })
   );
 
-  const filteredGroups = competitionGroups.filter((group) => group.students.length > 0);
+  // ✅ jangan buang kompetisi yang tidak punya student agar jumlah tetap utuh
+  const filteredGroups = competitionGroups;
 
-  // Use pagination utility for competitions
+  // ✅ tetap gunakan pagination
   const paginatedResult = await paginate(
     {
       count: async () => filteredGroups.length,
@@ -370,6 +373,7 @@ export const getRecommendationsOverview = async (
     summary,
   };
 };
+
 
 type StudentGroup = {
   student: {

@@ -24,12 +24,14 @@ import { StudentAddModal } from "./components/StudentAddModal";
 import { StudentDeleteModal } from "./components/StudentDeleteModal";
 import { StudentDetailModal } from "./components/StudentDetailModal";
 import { StudentEditModal } from "./components/StudentEditModal";
+import { StudentResetPasswordModal } from "./components/StudentResetPasswordModal";
 import { useStudentList } from "./hooks/useStudentList";
 
 const StudentPage = () => {
   const { data: session } = useSession();
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
+  const [resetPasswordOpen, setResetPasswordOpen] = useState(false);
   const [entryYear, setEntryYear] = useState<string>("");
   const [studyProgramId, setStudyProgramId] = useState<string>("");
   const [showFilters, setShowFilters] = useState(false);
@@ -48,6 +50,14 @@ const StudentPage = () => {
         });
         setEditOpen(true);
       },
+      onResetPassword: (item) => {
+        setResetPasswordData({
+          id: item.id,
+          name: item.name,
+          studentId: item.nim,
+        });
+        setResetPasswordOpen(true);
+      },
       entryYear: entryYear ? Number(entryYear) : undefined,
       studyProgramId: studyProgramId ? Number(studyProgramId) : undefined,
     });
@@ -56,6 +66,11 @@ const StudentPage = () => {
   const [open, setOpen] = useState(false);
   const [detailOpen, setDetailOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [resetPasswordData, setResetPasswordData] = useState<{
+    id: number;
+    name: string;
+    studentId: string;
+  } | null>(null);
 
   const { data: detailData, isLoading: isDetailLoading } = useQuery({
     queryKey: ["student-detail", selectedId],
@@ -119,9 +134,21 @@ const StudentPage = () => {
     return res?.success === true;
   };
 
+  const handleResetPassword = async () => {
+    if (!resetPasswordData) return false;
+    // TODO: Implement actual reset password API call
+    console.log("Resetting password for student:", resetPasswordData.id);
+    
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // For now, just return true to simulate success
+    return true;
+  };
+
   return (
-    <div className="w-full">
-      <div className="mb-6">
+    <div className="h-full flex flex-col">
+      <div className="mb-6 flex-shrink-0">
         <TypographyH2 className="flex items-center gap-2 truncate text-zinc-900">
           <Users className="h-10 w-10 font-extrabold" />
           Daftar Mahasiswa
@@ -132,9 +159,9 @@ const StudentPage = () => {
         <div className="mb-6 border-t border-gray-500" />
       </div>
 
-      <div className="flex justify-center">
-        <Card className="w-full border-2 border-zinc-700 bg-zinc-900 text-zinc-100 shadow-lg">
-          <CardHeader className="flex flex-col gap-4 border-b border-zinc-700 bg-zinc-900 pb-4 md:flex-row md:items-center md:justify-between">
+      <div className="flex-1 flex flex-col min-h-0">
+        <Card className="flex flex-col h-full border-2 border-zinc-700 bg-zinc-900 text-zinc-100 shadow-lg">
+          <CardHeader className="flex-shrink-0 flex flex-col gap-4 border-b border-zinc-700 bg-zinc-900 pb-4 md:flex-row md:items-center md:justify-between">
             {/* Search and Filters */}
             <div className="flex gap-2">
               <Input
@@ -162,7 +189,7 @@ const StudentPage = () => {
 
           {/* Filters Panel */}
           {showFilters && (
-            <div className="border-b border-zinc-700 bg-zinc-800 p-4">
+            <div className="flex-shrink-0 border-b border-zinc-700 bg-zinc-800 p-4">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
                   <label
@@ -218,11 +245,13 @@ const StudentPage = () => {
               </div>
             </div>
           )}
-          <CardContent ref={tableRef} className="bg-zinc-900 p-0 md:p-4">
-            <div className="w-full">
+          <CardContent ref={tableRef} className="flex-1 flex flex-col bg-zinc-900 p-0 md:p-4 min-h-0">
+            <div className="flex-1 overflow-auto">
               <DataTable columns={columns} data={tableData} />
             </div>
-            <Pagination pagination={pagination} onPageChange={handlePageChange} />
+            <div className="flex-shrink-0">
+              <Pagination pagination={pagination} onPageChange={handlePageChange} />
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -260,6 +289,17 @@ const StudentPage = () => {
         }}
         onConfirm={handleConfirmDelete}
         confirmText={isDeleting ? "Menghapus..." : "Hapus"}
+      />
+      <StudentResetPasswordModal
+        open={resetPasswordOpen}
+        onOpenChange={(v) => {
+          setResetPasswordOpen(v);
+          if (!v) setResetPasswordData(null);
+        }}
+        onSubmit={handleResetPassword}
+        studentName={resetPasswordData?.name}
+        studentId={resetPasswordData?.studentId}
+        submitText="Reset Password"
       />
     </div>
   );

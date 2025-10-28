@@ -45,14 +45,13 @@ const createStudent = async () => {
     const nim1 = "531421066";
     const extracted1 = extractStudentId(nim1);
 
-    const password = "password";
-    const hashedPassword = await hash(password, 10);
+    const student1Password = await hash(nim1, 10);
 
     const user1 = await prisma.user.create({
       data: {
-        email: "student@gmail.com",
-        password: hashedPassword,
-        name: "student",
+        email: "fazrul.anugrah17@gmail.com",
+        password: student1Password,
+        name: "Fazrul Anugrah Sahi",
       },
     });
 
@@ -69,10 +68,12 @@ const createStudent = async () => {
     const nim2 = "532421032";
     const extracted2 = extractStudentId(nim2);
 
+    const student2Password = await hash(nim2, 10);
+
     const user2 = await prisma.user.create({
       data: {
         email: "student2@gmail.com",
-        password: hashedPassword,
+        password: student2Password,
         name: "student2",
       },
     });

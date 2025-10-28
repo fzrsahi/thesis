@@ -26,6 +26,8 @@ export const createEmbeddingClient = () =>
     azureOpenAIApiInstanceName: AZURE_CONFIG.instanceName,
     azureOpenAIApiEmbeddingsDeploymentName: AZURE_CONFIG.embeddingsDeployment,
     azureOpenAIApiVersion: AZURE_CONFIG.embeddingsApiVersion,
+    timeout: 60000, // 60 seconds timeout
+    maxRetries: 3, // Retry up to 3 times
   });
 
 export const sendChatCompletion = async (prompt: string) => {

@@ -59,3 +59,9 @@ export const deleteTranscriptByIdAndStudentId = (id: number, studentId: number) 
       studentId,
     },
   });
+
+  export const updateStudentGPA = (studentId: number, gpa: string) =>
+    prisma.student.update({
+    where: { id: studentId },
+    data: { gpa: gpa },
+  });

@@ -317,7 +317,7 @@ export const CompetitionEditModal = ({
               name="file"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-zinc-200">File (opsional)</FormLabel>
+                  <FormLabel className="text-zinc-200">File</FormLabel>
                   <FormControl>
                     <input
                       type="file"

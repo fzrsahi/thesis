@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
-import { Eye, Pencil, Trash2 } from "lucide-react";
+import { Eye, Pencil, Trash2, Shield } from "lucide-react";
 import Link from "next/link";
 import { useState, useMemo, useRef, useEffect } from "react";
 
@@ -15,6 +15,7 @@ import { Student } from "../types";
 type UseStudentListOptions = {
   onDelete?: (id: number) => void;
   onEdit?: (item: Student) => void;
+  onResetPassword?: (item: Student) => void;
   entryYear?: number;
   studyProgramId?: number;
 };
@@ -130,6 +131,17 @@ export const useStudentList = (options?: UseStudentListOptions) => {
             aria-label="Edit"
           >
             <Pencil className="h-4 w-4" />
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            className="border-zinc-700 bg-zinc-900 p-2 text-orange-400 hover:bg-zinc-800"
+            onClick={() => {
+              options?.onResetPassword?.(row.original);
+            }}
+            aria-label="Reset Password"
+          >
+            <Shield className="h-4 w-4" />
           </Button>
           <Button
             variant="outline"

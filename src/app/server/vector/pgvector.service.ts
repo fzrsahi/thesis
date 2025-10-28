@@ -24,6 +24,7 @@ export const getDocumentChunksVectorStore = () =>
     columns: {
       id: PrismaVectorStore.IdColumn,
       content: PrismaVectorStore.ContentColumn,
+      competitionId: true,
     },
   });
 

@@ -2475,9 +2475,6 @@
       "StudentAcademicDataUpdate": {
         "type": "object",
         "properties": {
-          "gpa": {
-            "type": "string"
-          },
           "interests": {
             "type": "array",
             "items": {

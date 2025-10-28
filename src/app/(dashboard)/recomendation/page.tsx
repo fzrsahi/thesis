@@ -134,7 +134,7 @@ const studentColumnsDef = (
       <div className="space-y-1">
         <div className="font-medium text-white">{row.original.student.name}</div>
         <div className="text-sm text-zinc-400">
-          User ID: {row.original.student.userId} | Student ID:{" "}
+          ID: {row.original.student.userId} | NIM:{" "}
           {row.original.student.studentId || "N/A"}
         </div>
         <div className="text-xs text-zinc-500">
@@ -278,8 +278,8 @@ const RecomendationPage = () => {
   const studentColumns = useMemo(() => studentColumnsDef(handleViewStudent), [handleViewStudent]);
 
   return (
-    <div className="w-full">
-      <div className="mb-6">
+    <div className="h-full flex flex-col">
+      <div className="mb-6 flex-shrink-0">
         <TypographyH2 className="flex items-center gap-2 truncate text-zinc-900">
           <Trophy className="h-10 w-10 font-extrabold" />
           Rekomendasi Mahasiswa
@@ -290,9 +290,9 @@ const RecomendationPage = () => {
         <div className="mb-6 border-t border-gray-500" />
       </div>
 
-      <div className="flex justify-center">
-        <Card className="w-full border-2 border-zinc-700 bg-zinc-900 text-zinc-100 shadow-lg">
-          <CardHeader className="flex flex-col gap-4 border-b border-zinc-700 bg-zinc-900 pb-4 md:flex-row md:items-center md:justify-between">
+      <div className="flex-1 flex flex-col min-h-0">
+        <Card className="flex flex-col h-full border-2 border-zinc-700 bg-zinc-900 text-zinc-100 shadow-lg">
+          <CardHeader className="flex-shrink-0 flex flex-col gap-4 border-b border-zinc-700 bg-zinc-900 pb-4 md:flex-row md:items-center md:justify-between">
             {/* View Mode Toggle */}
             <div className="flex gap-2">
               <div className="flex rounded-lg bg-zinc-800 p-1">
@@ -345,7 +345,7 @@ const RecomendationPage = () => {
 
           {/* Filters Panel */}
           {showFilters && (
-            <div className="border-b border-zinc-700 bg-zinc-800 p-4">
+            <div className="flex-shrink-0 border-b border-zinc-700 bg-zinc-800 p-4">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 {viewMode === "students" && (
                   <div>
@@ -409,8 +409,8 @@ const RecomendationPage = () => {
             </div>
           )}
 
-          <CardContent ref={tableRef} className="bg-zinc-900 p-0 md:p-4">
-            <div className="w-full">
+          <CardContent ref={tableRef} className="flex-1 flex flex-col bg-zinc-900 p-0 md:p-4 min-h-0">
+            <div className="flex-1 overflow-auto">
               {isLoading ? (
                 <div className="flex items-center justify-center py-8">
                   <div className="text-zinc-400">Loading...</div>
@@ -422,17 +422,19 @@ const RecomendationPage = () => {
               )}
             </div>
             {currentData && (
-              <Pagination
-                pagination={{
-                  total: currentData.pagination?.total ?? 0,
-                  page: currentData.pagination?.page ?? page,
-                  limit: currentData.pagination?.limit ?? pageSize,
-                  totalPages: currentData.pagination?.totalPages ?? 1,
-                  hasNextPage: currentData.pagination?.hasNextPage ?? false,
-                  hasPrevPage: currentData.pagination?.hasPrevPage ?? false,
-                }}
-                onPageChange={handlePageChange}
-              />
+              <div className="flex-shrink-0">
+                <Pagination
+                  pagination={{
+                    total: currentData.pagination?.total ?? 0,
+                    page: currentData.pagination?.page ?? page,
+                    limit: currentData.pagination?.limit ?? pageSize,
+                    totalPages: currentData.pagination?.totalPages ?? 1,
+                    hasNextPage: currentData.pagination?.hasNextPage ?? false,
+                    hasPrevPage: currentData.pagination?.hasPrevPage ?? false,
+                  }}
+                  onPageChange={handlePageChange}
+                />
+              </div>
             )}
           </CardContent>
         </Card>

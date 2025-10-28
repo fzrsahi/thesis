@@ -36,7 +36,7 @@ export const createStudentUsecase = async (payload: StudentPayload) => {
     );
   }
 
-  const hashedPassword = await generateHash(payload.email);
+  const hashedPassword = await generateHash(payload.studentId);
   const newUser = await createUser({
     ...payload,
     password: hashedPassword,

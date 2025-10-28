@@ -5,7 +5,28 @@ import { CreateCompetitionPayload } from "@/app/shared/schema/competition/Compet
 import { prisma } from "../../prisma/prisma";
 import { getLogger } from "../../utils/helpers/pino.helper";
 import { getCompetitionVectorStore } from "../../vector/pgvector.service";
-import { checkCompetitionSimilarity } from "../service/similarity-check.service";
+// Inline similarity checker since the previous service has been removed
+const checkCompetitionSimilarity = async (
+  competitionText: string,
+  currentCompetitionId: number
+) => {
+  const vectorStore = getCompetitionVectorStore();
+
+  // Query the most similar existing competition (exclude current)
+  const results = await vectorStore.similaritySearchWithScore(competitionText, 1);
+
+  if (!results || results.length === 0) {
+    return { isSimilar: false, similarityScore: null as number | null, existingCompetitionId: null as number | null };
+  }
+
+  const [doc, score] = results[0];
+  const existingCompetitionId = (doc.metadata as any)?.id ?? null;
+
+  // Conservative threshold assuming score is a distance (lower means more similar)
+  const isSimilar = typeof score === "number" ? score <= 0.2 : false;
+
+  return { isSimilar, similarityScore: score, existingCompetitionId } as const;
+};
 
 export const generateCompetitionText = (competitionData: CreateCompetitionPayload) => {
   const competitionTextParts = [

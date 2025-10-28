@@ -26,7 +26,7 @@ const CompetitionDetailPage = () => {
           </TypographyH2>
         </div>
         <TypographyP className="border-b border-gray-300 pb-4 text-zinc-900">
-          Detailed analysis and recommendations for this competition.
+          Detail Kompetisi dan rekomendasi untuk kompetisi ini.
         </TypographyP>
         <div className="mb-6 border-t border-gray-500" />
       </div>
