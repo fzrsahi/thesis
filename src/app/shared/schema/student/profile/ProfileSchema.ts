@@ -18,6 +18,7 @@ export const academicDataSchema = z.object({
         title: z.string().nonempty({ message: "Title is required" }),
         description: z.string().nonempty({ message: "Description is required" }),
         date: z.string().nonempty({ message: "Date is required" }),
+        fileUrl: z.string().optional().nullable(),
       })
     )
     .default([]),
@@ -31,6 +32,7 @@ export const academicDataSchema = z.object({
         description: z.string().nonempty({ message: "Description is required" }),
         startDate: z.string().nonempty({ message: "Start date is required" }),
         endDate: z.string().optional(),
+        fileUrl: z.string().optional().nullable(),
       })
     )
     .default([]),

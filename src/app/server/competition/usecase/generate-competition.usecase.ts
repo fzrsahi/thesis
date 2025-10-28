@@ -1,6 +1,6 @@
 import { Document } from "@langchain/core/documents";
 import { PromptTemplate } from "@langchain/core/prompts";
-import { competitions, documentChunks } from "@prisma/client";
+import { competitions } from "@prisma/client";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { getDocument } from "pdfjs-serverless";
 
@@ -241,10 +241,7 @@ const looksLikeHeading = (line: string): boolean => {
 const saveChunksToPostgres = async (chunks: Document[], competitionId: number): Promise<void> => {
   const logger = getLogger({ module: "usecase/generate-competition" });
 
-  logger.info(
-    { competitionId, totalChunks: chunks.length },
-    "Saving chunks to database"
-  );
+  logger.info({ competitionId, totalChunks: chunks.length }, "Saving chunks to database");
 
   // Simpan semua chunks ke database
   const documents = chunks.map((chunk) => ({
@@ -263,10 +260,7 @@ const saveChunksToPostgres = async (chunks: Document[], competitionId: number): 
   // Embedding untuk semua chunks
   const vectorStore = getDocumentChunksVectorStore();
   const t0 = Date.now();
-  logger.info(
-    { competitionId, readyToEmbed: savedDocuments.length },
-    "Embedding start"
-  );
+  logger.info({ competitionId, readyToEmbed: savedDocuments.length }, "Embedding start");
   await vectorStore.addModels(savedDocuments);
   const t1 = Date.now();
   logger.info(
@@ -290,7 +284,6 @@ const saveChunksToPostgres = async (chunks: Document[], competitionId: number): 
       "Failed to count non-null vectors in documentChunks"
     );
   }
-
 };
 
 const getContextText = async (title: string, competitionId: number): Promise<string> => {

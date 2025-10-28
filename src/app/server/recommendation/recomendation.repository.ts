@@ -312,9 +312,7 @@ export const getRecommendationsOverview = async (
       const statistics = {
         totalStudents: students.length,
         averageMatchScore:
-          matchScores.length > 0
-            ? matchScores.reduce((a, b) => a + b, 0) / matchScores.length
-            : 0,
+          matchScores.length > 0 ? matchScores.reduce((a, b) => a + b, 0) / matchScores.length : 0,
         highestScore: matchScores.length > 0 ? Math.max(...matchScores) : 0,
         lowestScore: matchScores.length > 0 ? Math.min(...matchScores) : 0,
         scoreDistribution: {
@@ -373,7 +371,6 @@ export const getRecommendationsOverview = async (
     summary,
   };
 };
-
 
 type StudentGroup = {
   student: {

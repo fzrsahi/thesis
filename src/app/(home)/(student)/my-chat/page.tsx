@@ -56,7 +56,8 @@ const MyChatPage = () => {
     <div>
       <h1 className="mb-2 text-2xl font-bold">Mengobrol Dengan Asisten AI</h1>
       <p className="mb-6 text-zinc-400">
-        Silakan gunakan fitur chat ini untuk bertanya atau berdiskusi seputar data dan informasi kompetisi. Asisten AI siap membantu kebutuhan Anda terkait kompetisi mahasiswa!
+        Silakan gunakan fitur chat ini untuk bertanya atau berdiskusi seputar data dan informasi
+        kompetisi. Asisten AI siap membantu kebutuhan Anda terkait kompetisi mahasiswa!
       </p>
 
       <div className="max-h-[60vh] space-y-4 overflow-y-auto pr-2">

@@ -105,7 +105,7 @@ const AdvisorPage = () => {
           Daftar Pengelola Jurusan dan Koordinator Prodi
         </TypographyH2>
         <TypographyP className="border-b border-gray-300 pb-4 text-zinc-900">
-          Kelola data pengelola jurusan dan koordinator prodi 
+          Kelola data pengelola jurusan dan koordinator prodi
         </TypographyP>
         <div className="mb-6 border-t border-gray-500" />
       </div>

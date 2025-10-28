@@ -96,7 +96,7 @@ model Achievement {
   title       String // Judul prestasi
   description String? // Deskripsi detail
   date        DateTime // Tanggal prestasi
-  photoUrl    String? // URL foto prestasi
+  fileUrl    String? // URL foto prestasi
   createdAt   DateTime @default(now())
 
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
@@ -112,7 +112,7 @@ model Experience {
   description  String? // Deskripsi pengalaman
   startDate    DateTime // Mulai pengalaman
   endDate      DateTime? // Selesai (opsional)
-  photoUrl     String? // URL foto pengalaman
+  fileUrl     String? // URL file bukti pengalaman
   createdAt    DateTime  @default(now())
 
   student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)

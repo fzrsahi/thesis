@@ -984,7 +984,7 @@
       "put": {
         "tags": ["Student"],
         "summary": "Update student academic data",
-        "description": "Update student's academic information including achievements and memberships",
+        "description": "Update student's academic information including achievements and memberships. Accepts multipart/form-data with a JSON payload and optional files.",
         "security": [
           {
             "bearerAuth": []
@@ -993,9 +993,20 @@
         "requestBody": {
           "required": true,
           "content": {
-            "application/json": {
+            "multipart/form-data": {
               "schema": {
-                "$ref": "#/components/schemas/StudentAcademicDataUpdate"
+                "type": "object",
+                "properties": {
+                  "payload": {
+                    "type": "string",
+                    "description": "JSON string matching StudentAcademicDataUpdate"
+                  },
+                  "achievementFiles[0]": { "type": "string", "format": "binary" },
+                  "achievementFiles[1]": { "type": "string", "format": "binary" },
+                  "experienceFiles[0]": { "type": "string", "format": "binary" },
+                  "experienceFiles[1]": { "type": "string", "format": "binary" }
+                },
+                "required": ["payload"]
               }
             }
           }
@@ -2510,6 +2521,11 @@
           "date": {
             "type": "string",
             "format": "date"
+          },
+          "fileUrl": {
+            "type": ["string", "null"],
+            "description": "Uploaded file id or URL",
+            "format": "uri"
           }
         }
       },
@@ -2525,6 +2541,10 @@
           "date": {
             "type": "string",
             "format": "date"
+          },
+          "fileUrl": {
+            "type": ["string", "null"],
+            "description": "Optional existing file id or URL"
           }
         },
         "required": ["title", "description", "date"]
@@ -2551,6 +2571,11 @@
           "endDate": {
             "type": "string",
             "format": "date-time"
+          },
+          "fileUrl": {
+            "type": ["string", "null"],
+            "description": "Uploaded file id or URL",
+            "format": "uri"
           }
         }
       },
@@ -2573,6 +2598,10 @@
           "endDate": {
             "type": "string",
             "format": "date-time"
+          },
+          "fileUrl": {
+            "type": ["string", "null"],
+            "description": "Optional existing file id or URL"
           }
         },
         "required": ["organization", "position", "startDate", "description"]

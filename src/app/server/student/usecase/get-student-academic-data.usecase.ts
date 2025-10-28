@@ -1,5 +1,6 @@
 import { HttpStatusCode } from "axios";
 
+import { getFileUrl } from "../../google-storage/google-storage.service";
 import { customError } from "../../utils/error/custom-error";
 import { STUDENT_ERROR_RESPONSE } from "../student.error";
 import { findStudentByUserId } from "../student.repository";
@@ -15,6 +16,7 @@ export const getStudentAcademicDataUsecase = async (userId: number) => {
         title: true,
         description: true,
         date: true,
+        fileUrl: true,
       },
     },
     experiences: {
@@ -25,6 +27,7 @@ export const getStudentAcademicDataUsecase = async (userId: number) => {
         startDate: true,
         endDate: true,
         description: true,
+        fileUrl: true,
       },
     },
   });
@@ -37,5 +40,23 @@ export const getStudentAcademicDataUsecase = async (userId: number) => {
     );
   }
 
-  return student;
+  // Resolve signed URLs like transcript behavior if a file identifier is stored
+  const achievements = await Promise.all(
+    (student.achievements || []).map(async (a) => ({
+      ...a,
+      fileUrl: a.fileUrl && !a.fileUrl.startsWith("http") ? await getFileUrl(a.fileUrl) : a.fileUrl,
+    }))
+  );
+  const experiences = await Promise.all(
+    (student.experiences || []).map(async (e) => ({
+      ...e,
+      fileUrl: e.fileUrl && !e.fileUrl.startsWith("http") ? await getFileUrl(e.fileUrl) : e.fileUrl,
+    }))
+  );
+
+  return {
+    ...student,
+    achievements,
+    experiences,
+  };
 };

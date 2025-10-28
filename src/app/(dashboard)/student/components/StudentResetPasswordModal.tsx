@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { Shield, AlertTriangle } from "lucide-react";
+import { useState } from "react";
 
 import Button from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -76,21 +76,21 @@ export const StudentResetPasswordModal = ({
             <div className="space-y-6">
               {/* Error Message */}
               {error && (
-                <div className="rounded-lg bg-red-500/10 border border-red-500/20 p-3">
+                <div className="rounded-lg border border-red-500/20 bg-red-500/10 p-3">
                   <TypographyP className="text-sm text-red-400">{error}</TypographyP>
                 </div>
               )}
 
               {/* Warning Message */}
-              <div className="rounded-lg bg-orange-500/10 border border-orange-500/20 p-4">
+              <div className="rounded-lg border border-orange-500/20 bg-orange-500/10 p-4">
                 <div className="flex items-start space-x-3">
-                  <AlertTriangle className="h-5 w-5 text-orange-400 mt-0.5 flex-shrink-0" />
+                  <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-orange-400" />
                   <div className="space-y-2">
                     <TypographyH3 className="text-sm font-semibold text-orange-300">
                       Konfirmasi Reset Password
                     </TypographyH3>
                     <TypographyP className="text-sm text-zinc-300">
-                     Password akan di reset menjadi NIM mahasiswa
+                      Password akan di reset menjadi NIM mahasiswa
                     </TypographyP>
                   </div>
                 </div>

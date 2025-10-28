@@ -147,36 +147,6 @@ const EmptyState = ({
           </TypographyP>
         </motion.div>
 
-        {/* Feature Highlights */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6, duration: 0.8 }}
-          className="grid grid-cols-1 gap-4 md:grid-cols-3"
-        >
-          {[
-            { icon: Brain, text: "AI-Powered Analysis", color: "from-blue-500 to-cyan-500" },
-            { icon: Target, text: "Personalized Matches", color: "from-purple-500 to-pink-500" },
-          ].map((feature, index) => (
-            <motion.div
-              key={feature.text}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.8 + index * 0.1, duration: 0.5 }}
-              className="group relative overflow-hidden rounded-xl border border-zinc-800/50 bg-zinc-900/50 p-4 backdrop-blur-sm transition-all hover:border-zinc-700/50 hover:bg-zinc-800/50"
-            >
-              <div
-                className={`mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-r ${feature.color} shadow-lg`}
-              >
-                <feature.icon className="h-6 w-6 text-white" />
-              </div>
-              <TypographyP className="text-sm font-medium text-zinc-200">
-                {feature.text}
-              </TypographyP>
-            </motion.div>
-          ))}
-        </motion.div>
-
         {/* CTA Button */}
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
@@ -812,7 +782,8 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
           </motion.div>
 
           {/* Section 3: Kekuatan Profil */}
-          {(data.result.overallAssessment?.strengths?.length > 0 || data.result.overallAssessment?.weaknesses?.length > 0) && (
+          {(data.result.overallAssessment?.strengths?.length > 0 ||
+            data.result.overallAssessment?.weaknesses?.length > 0) && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -860,7 +831,9 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-emerald-500 shadow-lg">
                                   <Star className="h-4 w-4 text-white" />
                                 </div>
-                                <TypographyH3 className="text-lg text-white">Kelebihan</TypographyH3>
+                                <TypographyH3 className="text-lg text-white">
+                                  Kelebihan
+                                </TypographyH3>
                               </div>
                               <div className="space-y-3">
                                 {data.result.overallAssessment.strengths.map((strength, index) => (
@@ -1214,11 +1187,15 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                                       </div>
                                       <div className="flex items-center space-x-2">
                                         <div className="h-3 w-3 rounded-full bg-gradient-to-r from-blue-400 to-blue-500" />
-                                        <span className="text-xs text-zinc-400">Sedang (6-7.9)</span>
+                                        <span className="text-xs text-zinc-400">
+                                          Sedang (6-7.9)
+                                        </span>
                                       </div>
                                       <div className="flex items-center space-x-2">
                                         <div className="h-3 w-3 rounded-full bg-gradient-to-r from-orange-400 to-orange-500" />
-                                        <span className="text-xs text-zinc-400">Rendah (0-5.9)</span>
+                                        <span className="text-xs text-zinc-400">
+                                          Rendah (0-5.9)
+                                        </span>
                                       </div>
                                     </div>
                                   </div>
@@ -1241,7 +1218,8 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                               <div className="space-y-6 pl-11">
                                 <div className="space-y-6">
                                   <TypographyP className="text-sm leading-relaxed text-zinc-300">
-                                    {rec.competition?.description || "Deskripsi kompetisi tidak tersedia"}
+                                    {rec.competition?.description ||
+                                      "Deskripsi kompetisi tidak tersedia"}
                                   </TypographyP>
 
                                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -1250,7 +1228,9 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                                       <div>
                                         <span className="text-xs text-zinc-400">Mulai</span>
                                         <p className="text-sm font-medium text-zinc-300">
-                                          {rec.competition?.startDate ? formatDate(rec.competition.startDate) : "Tidak tersedia"}
+                                          {rec.competition?.startDate
+                                            ? formatDate(rec.competition.startDate)
+                                            : "Tidak tersedia"}
                                         </p>
                                       </div>
                                     </div>
@@ -1259,7 +1239,9 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                                       <div>
                                         <span className="text-xs text-zinc-400">Selesai</span>
                                         <p className="text-sm font-medium text-zinc-300">
-                                          {rec.competition?.endDate ? formatDate(rec.competition.endDate) : "Tidak tersedia"}
+                                          {rec.competition?.endDate
+                                            ? formatDate(rec.competition.endDate)
+                                            : "Tidak tersedia"}
                                         </p>
                                       </div>
                                     </div>

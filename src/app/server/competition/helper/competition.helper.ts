@@ -8,7 +8,7 @@ import { getCompetitionVectorStore } from "../../vector/pgvector.service";
 // Inline similarity checker since the previous service has been removed
 const checkCompetitionSimilarity = async (
   competitionText: string,
-  currentCompetitionId: number
+  _currentCompetitionId: number
 ) => {
   const vectorStore = getCompetitionVectorStore();
 
@@ -16,11 +16,15 @@ const checkCompetitionSimilarity = async (
   const results = await vectorStore.similaritySearchWithScore(competitionText, 1);
 
   if (!results || results.length === 0) {
-    return { isSimilar: false, similarityScore: null as number | null, existingCompetitionId: null as number | null };
+    return {
+      isSimilar: false,
+      similarityScore: null as number | null,
+      existingCompetitionId: null as number | null,
+    };
   }
 
   const [doc, score] = results[0];
-  const existingCompetitionId = (doc.metadata as any)?.id ?? null;
+  const existingCompetitionId = (doc.metadata as { id?: number } | undefined)?.id ?? null;
 
   // Conservative threshold assuming score is a distance (lower means more similar)
   const isSimilar = typeof score === "number" ? score <= 0.2 : false;

@@ -68,14 +68,15 @@ export const updateStudentAcademicData = async (studentId: number, data: Academi
   return prisma.student.update({
     where: { id: studentId },
     data: {
-      gpa: data.gpa,
       interests: data.interests,
       skills: data.skills,
       achievements: {
         createMany: {
           data:
             data.achievements?.map((achievement) => ({
-              ...achievement,
+              title: achievement.title,
+              description: achievement.description,
+              fileUrl: (achievement as { fileUrl?: string | null }).fileUrl ?? null,
               date: new Date(achievement.date),
             })) || [],
         },
@@ -84,7 +85,10 @@ export const updateStudentAcademicData = async (studentId: number, data: Academi
         createMany: {
           data:
             data.experiences?.map((experience) => ({
-              ...experience,
+              organization: experience.organization,
+              position: experience.position,
+              description: experience.description,
+              fileUrl: (experience as { fileUrl?: string | null }).fileUrl ?? null,
               startDate: new Date(experience.startDate),
               endDate: experience.endDate ? new Date(experience.endDate) : undefined,
             })) || [],

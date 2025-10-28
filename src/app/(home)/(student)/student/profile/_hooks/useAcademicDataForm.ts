@@ -199,13 +199,38 @@ const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
     toast.success("Pengalaman baru ditambahkan");
   };
 
+  // Local state to hold optional files per item index
+  const [achievementFiles, setAchievementFiles] = useState<(File | null)[]>([]);
+  const [experienceFiles, setExperienceFiles] = useState<(File | null)[]>([]);
+
+  const setAchievementFileAt = (index: number, file: File | null) => {
+    setAchievementFiles((prev) => {
+      const next = [...prev];
+      next[index] = file;
+      return next;
+    });
+  };
+  const setExperienceFileAt = (index: number, file: File | null) => {
+    setExperienceFiles((prev) => {
+      const next = [...prev];
+      next[index] = file;
+      return next;
+    });
+  };
+
   const handleSubmit = (formData: AcademicDataPayload) => {
-    const formDataWithSkillsAndInterests: AcademicDataPayload = {
+    const dataWithArrays: AcademicDataPayload = {
       ...formData,
       skills,
       interests,
     };
-    putAcademicData(formDataWithSkillsAndInterests);
+    putAcademicData({
+      data: dataWithArrays,
+      files: {
+        achievementFiles,
+        experienceFiles,
+      },
+    });
   };
 
   const resetForm = () => {
@@ -214,15 +239,34 @@ const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
 
   useEffect(() => {
     if (data) {
+      const getFileUrlFromApiItem = (item: unknown): string | null => {
+        if (
+          item &&
+          typeof item === "object" &&
+          "fileUrl" in item &&
+          typeof (item as { fileUrl?: unknown }).fileUrl === "string"
+        ) {
+          return (item as { fileUrl?: string }).fileUrl ?? null;
+        }
+        return null;
+      };
       const formatAchievements =
-        data.achievements?.map((achievement) => ({
+        (data.achievements?.map((achievement) => ({
           title: achievement.title || "",
           description: achievement.description || "",
           date: achievement.date ? new Date(achievement.date).toISOString().split("T")[0] : "",
-        })) || [];
+        })) as Array<{
+          title: string;
+          description: string;
+          date: string;
+          fileUrl?: string | null;
+        }>) || [];
+      data.achievements?.forEach((a, i) => {
+        if (formatAchievements[i]) formatAchievements[i].fileUrl = getFileUrlFromApiItem(a);
+      });
 
       const formatExperiences =
-        data.experiences?.map((experience) => ({
+        (data.experiences?.map((experience) => ({
           organization: experience.organization || "",
           position: experience.position || "",
           description: experience.description || "",
@@ -232,7 +276,17 @@ const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
           endDate: experience.endDate
             ? new Date(experience.endDate).toISOString().split("T")[0]
             : "",
-        })) || [];
+        })) as Array<{
+          organization: string;
+          position: string;
+          description: string;
+          startDate: string;
+          endDate: string;
+          fileUrl?: string | null;
+        }>) || [];
+      data.experiences?.forEach((e, i) => {
+        if (formatExperiences[i]) formatExperiences[i].fileUrl = getFileUrlFromApiItem(e);
+      });
 
       form.reset({
         interests: data.interests || [],
@@ -244,6 +298,8 @@ const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
       // Set interests state
       setSkills(data.skills || []);
       setInterests(data.interests || []);
+      setAchievementFiles([]);
+      setExperienceFiles([]);
     }
   }, [data, form]);
 
@@ -296,6 +352,10 @@ const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
     handleDeleteExperienceClick,
     handleConfirmDeleteExperience,
     handleCancelDeleteExperience,
+
+    // Files
+    setAchievementFileAt,
+    setExperienceFileAt,
   };
 };
 

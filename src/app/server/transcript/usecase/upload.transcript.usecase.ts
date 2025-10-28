@@ -10,32 +10,28 @@ import { findStudentByUserId } from "../../student/student.repository";
 import { STUDENT_ERROR_RESPONSE } from "../../user/student.error";
 import { customError } from "../../utils/error/custom-error";
 import { TRANSCRIPT_ERROR_RESPONSE } from "../transcript.error";
-import { createTranscript } from "../transcript.repository";
-import { updateStudentGPA } from "../transcript.repository";
-
+import { createTranscript, updateStudentGPA } from "../transcript.repository";
 
 const extractIPK = (text: string): number | null => {
   const match = text.match(
-    /(?:Indeks\s+Prestasi\s+Kumulatif\s*\(IPK\)|\bIPK\b)\s*[:\-]?\s*([0-4](?:[.,]\d{1,3})?)/i
+    /(?:Indeks\s+Prestasi\s+Kumulatif\s*\(IPK\)|\bIPK\b)\s*[:-]?\s*([0-4](?:[.,]\d{1,3})?)/i
   );
   if (!match) return null;
   const num = parseFloat(match[1].replace(",", "."));
-  return isFinite(num) ? Number(num.toFixed(2)) : null;
+  return Number.isFinite(num) ? Number(num.toFixed(2)) : null;
 };
 
-
 const extractIPKFromTotals = (text: string): number | null => {
-  const sksMatch = text.match(/Jumlah\s+SKS\s*[:\-]?\s*(\d+)/i);
-  const totalMatch = text.match(/Jumlah\s+SKS\s*[x×]\s*Mutu\s*[:\-]?\s*(\d+(?:[.,]\d+)?)/i);
+  const sksMatch = text.match(/Jumlah\s+SKS\s*[:-]?\s*(\d+)/i);
+  const totalMatch = text.match(/Jumlah\s+SKS\s*[x×]\s*Mutu\s*[:-]?\s*(\d+(?:[.,]\d+)?)/i);
   if (!sksMatch || !totalMatch) return null;
 
   const totalSks = parseInt(sksMatch[1], 10);
   const totalWeighted = parseFloat(totalMatch[1].replace(",", "."));
-  if (!totalSks || !isFinite(totalWeighted)) return null;
+  if (!totalSks || !Number.isFinite(totalWeighted)) return null;
 
   return Number((totalWeighted / totalSks).toFixed(2));
 };
-
 
 export const uploadTranscript = async (userId: number, payload: UploadTranscriptPayload) => {
   const student = await findStudentByUserId(userId);
@@ -66,10 +62,9 @@ export const uploadTranscript = async (userId: number, payload: UploadTranscript
       semester: payload.semester,
       transcriptText: summary,
     }),
-    updateStudentGPA(student.id, ipk?.toString() ?? "")
+    updateStudentGPA(student.id, ipk?.toString() ?? ""),
   ]);
 };
-
 
 const extractTranscriptToText = async (
   transcript: File
@@ -126,7 +121,6 @@ const extractTranscriptToText = async (
 
   return { summary, ipk };
 };
-
 
 const transcriptTextToSummary = async (transcriptText: string) =>
   sendChatCompletion(

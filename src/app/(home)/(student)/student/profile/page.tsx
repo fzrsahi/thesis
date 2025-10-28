@@ -1,7 +1,7 @@
 "use client";
 
 import { Separator } from "@radix-ui/react-dropdown-menu";
-import { Plus, X, User, GraduationCap, AlertCircle } from "lucide-react";
+import { Plus, X, User, GraduationCap, AlertCircle, Upload } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 
@@ -97,6 +97,8 @@ const UserProfilePage = () => {
     skills,
     handleAddSkill,
     handleRemoveSkill,
+    setAchievementFileAt,
+    setExperienceFileAt,
   } = useAcademicDataForm(academicData);
 
   const onSubmitPersonal = (data: PersonalDataPayload) => {
@@ -601,6 +603,66 @@ const UserProfilePage = () => {
                                 </FormItem>
                               )}
                             />
+                            {!academicForm.getValues(`achievements.${index}.fileUrl`) && (
+                              <div className="mt-2">
+                                <label
+                                  htmlFor={`achievement-file-${index}`}
+                                  className="block cursor-pointer rounded-lg border-2 border-dashed border-zinc-600 bg-zinc-800/60 p-4 text-center transition-colors hover:border-zinc-500 hover:bg-zinc-800"
+                                >
+                                  <Upload className="mx-auto h-5 w-5 text-zinc-400" />
+                                  <p className="mt-2 text-sm text-white">Klik untuk unggah bukti</p>
+                                  <p className="text-xs text-zinc-400">
+                                    PDF atau Gambar (maks 2MB)
+                                  </p>
+                                </label>
+                                <input
+                                  id={`achievement-file-${index}`}
+                                  type="file"
+                                  accept=".pdf,image/*"
+                                  onChange={(e) =>
+                                    setAchievementFileAt(index, e.target.files?.[0] || null)
+                                  }
+                                  className="hidden"
+                                />
+                              </div>
+                            )}
+                            {academicForm.getValues(`achievements.${index}.fileUrl`) && (
+                              <div className="mt-2 flex items-center justify-between rounded-md border border-zinc-700 bg-zinc-800 p-2">
+                                <div className="flex items-center gap-3">
+                                  <div className="h-10 w-10 overflow-hidden rounded bg-black">
+                                    {/* Thumbnail for images */}
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img
+                                      src={
+                                        academicForm.getValues(
+                                          `achievements.${index}.fileUrl`
+                                        ) as string
+                                      }
+                                      alt="preview"
+                                      className="h-10 w-10 object-cover"
+                                      onError={(e) => {
+                                        // Hide thumbnail if not an image
+                                        (e.currentTarget as HTMLImageElement).style.display =
+                                          "none";
+                                      }}
+                                    />
+                                  </div>
+                                  <span className="text-xs text-zinc-300">File terunggah</span>
+                                </div>
+                                <a
+                                  href={
+                                    academicForm.getValues(
+                                      `achievements.${index}.fileUrl`
+                                    ) as string
+                                  }
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="rounded-md bg-zinc-700 px-3 py-1 text-xs text-white hover:bg-zinc-600"
+                                >
+                                  View
+                                </a>
+                              </div>
+                            )}
                           </div>
                         ))
                       )}
@@ -749,6 +811,62 @@ const UserProfilePage = () => {
                                 </FormItem>
                               )}
                             />
+                            {!academicForm.getValues(`experiences.${index}.fileUrl`) && (
+                              <div className="mt-2">
+                                <label
+                                  htmlFor={`experience-file-${index}`}
+                                  className="block cursor-pointer rounded-lg border-2 border-dashed border-zinc-600 bg-zinc-800/60 p-4 text-center transition-colors hover:border-zinc-500 hover:bg-zinc-800"
+                                >
+                                  <Upload className="mx-auto h-5 w-5 text-zinc-400" />
+                                  <p className="mt-2 text-sm text-white">Klik untuk unggah bukti</p>
+                                  <p className="text-xs text-zinc-400">
+                                    PDF atau Gambar (maks 2MB)
+                                  </p>
+                                </label>
+                                <input
+                                  id={`experience-file-${index}`}
+                                  type="file"
+                                  accept=".pdf,image/*"
+                                  onChange={(e) =>
+                                    setExperienceFileAt(index, e.target.files?.[0] || null)
+                                  }
+                                  className="hidden"
+                                />
+                              </div>
+                            )}
+                            {academicForm.getValues(`experiences.${index}.fileUrl`) && (
+                              <div className="mt-2 flex items-center justify-between rounded-md border border-zinc-700 bg-zinc-800 p-2">
+                                <div className="flex items-center gap-3">
+                                  <div className="h-10 w-10 overflow-hidden rounded bg-black">
+                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                    <img
+                                      src={
+                                        academicForm.getValues(
+                                          `experiences.${index}.fileUrl`
+                                        ) as string
+                                      }
+                                      alt="preview"
+                                      className="h-10 w-10 object-cover"
+                                      onError={(e) => {
+                                        (e.currentTarget as HTMLImageElement).style.display =
+                                          "none";
+                                      }}
+                                    />
+                                  </div>
+                                  <span className="text-xs text-zinc-300">File terunggah</span>
+                                </div>
+                                <a
+                                  href={
+                                    academicForm.getValues(`experiences.${index}.fileUrl`) as string
+                                  }
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="rounded-md bg-zinc-700 px-3 py-1 text-xs text-white hover:bg-zinc-600"
+                                >
+                                  View
+                                </a>
+                              </div>
+                            )}
                           </div>
                         ))
                       )}

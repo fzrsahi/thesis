@@ -7,10 +7,7 @@ import { getStudentAcademicDataUsecase } from "@/app/server/student/usecase/get-
 import { updateStudentAcademicDataUsecase } from "@/app/server/student/usecase/update-student-academic-data.usecase";
 import { customErrorToResponse, isCustomError } from "@/app/server/utils/error/custom-error";
 import { ROLES } from "@/app/shared/const/role";
-import {
-  AcademicDataPayload,
-  academicDataSchema,
-} from "@/app/shared/schema/student/profile/ProfileSchema";
+import { academicDataSchema } from "@/app/shared/schema/student/profile/ProfileSchema";
 
 export const GET = withAuth(
   async (_request: NextRequest, session) => {
@@ -43,16 +40,22 @@ export const GET = withAuth(
 export const PUT = withAuth(
   async (request: NextRequest, session) => {
     try {
-      const body: AcademicDataPayload = await request.json();
-      const result = academicDataSchema.safeParse(body);
-
+      const formData = await request.formData();
+      const payload = formData.get("payload");
+      if (typeof payload !== "string") {
+        return NextResponse.json(STUDENT_ERROR_RESPONSE.BAD_REQUEST, {
+          status: HttpStatusCode.BadRequest,
+        });
+      }
+      const parsed = JSON.parse(payload);
+      const result = academicDataSchema.safeParse(parsed);
       if (!result.success) {
         return NextResponse.json(STUDENT_ERROR_RESPONSE.BAD_REQUEST, {
           status: HttpStatusCode.BadRequest,
         });
       }
 
-      await updateStudentAcademicDataUsecase(Number(session.user.id), result.data);
+      await updateStudentAcademicDataUsecase(Number(session.user.id), formData);
 
       return NextResponse.json({
         success: true,

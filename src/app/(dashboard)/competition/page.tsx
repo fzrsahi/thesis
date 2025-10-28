@@ -258,7 +258,7 @@ const CompetitionPage = () => {
 
   return (
     <>
-      <div className="h-full flex flex-col">
+      <div className="flex h-full flex-col">
         <div className="mb-6 flex-shrink-0">
           <TypographyH2 className="flex items-center gap-2 truncate text-zinc-900">
             <BookOpen className="h-10 w-10 font-extrabold" />
@@ -270,9 +270,9 @@ const CompetitionPage = () => {
           <div className="mb-6 border-t border-gray-500" />
         </div>
 
-        <div className="flex-1 flex flex-col min-h-0">
-          <Card className="flex flex-col h-full border-2 border-zinc-700 bg-zinc-900 text-zinc-100 shadow-lg">
-            <CardHeader className="flex-shrink-0 flex flex-col gap-4 border-b border-zinc-700 bg-zinc-900 pb-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex min-h-0 flex-1 flex-col">
+          <Card className="flex h-full flex-col border-2 border-zinc-700 bg-zinc-900 text-zinc-100 shadow-lg">
+            <CardHeader className="flex flex-shrink-0 flex-col gap-4 border-b border-zinc-700 bg-zinc-900 pb-4 md:flex-row md:items-center md:justify-between">
               {/* Search and Filters */}
               <div className="flex gap-2">
                 <Input
@@ -358,7 +358,10 @@ const CompetitionPage = () => {
                 </div>
               </div>
             )}
-            <CardContent ref={tableRef} className="flex-1 flex flex-col bg-zinc-900 p-0 md:p-4 min-h-0">
+            <CardContent
+              ref={tableRef}
+              className="flex min-h-0 flex-1 flex-col bg-zinc-900 p-0 md:p-4"
+            >
               <div className="flex-1 overflow-auto">
                 <DataTable columns={columns} data={tableData} />
               </div>
