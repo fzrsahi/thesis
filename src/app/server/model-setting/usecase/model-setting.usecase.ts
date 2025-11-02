@@ -1,5 +1,3 @@
-import { HttpStatusCode } from "axios";
-
 import { getLogger } from "@/app/server/utils/helpers/pino.helper";
 import { ModelSettingUpdatePayload } from "@/app/shared/validations/schema/modelSettingSchema";
 
@@ -7,7 +5,6 @@ import {
   createModelSetting,
   findActiveModelSetting,
   getAllModelSettings,
-  updateModelSetting,
 } from "../model-setting.repository";
 
 export const getActiveModelSettingUsecase = async () => {
@@ -50,4 +47,3 @@ export const updateModelSettingUsecase = async (
   logger.info({ provider, model }, "Updating model setting - success");
   return updated;
 };
-

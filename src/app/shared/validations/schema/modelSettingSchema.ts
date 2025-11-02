@@ -10,4 +10,3 @@ export const modelSettingUpdateSchema = z.object({
 });
 
 export type ModelSettingUpdatePayload = z.infer<typeof modelSettingUpdateSchema>;
-

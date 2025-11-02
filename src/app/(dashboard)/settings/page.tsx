@@ -18,7 +18,6 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 import { type ProfileUpdatePayload } from "@/app/shared/validations/schema/profileSchema";
-import { type ModelSettingUpdatePayload } from "@/app/shared/validations/schema/modelSettingSchema";
 import Button from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Input from "@/components/ui/input";

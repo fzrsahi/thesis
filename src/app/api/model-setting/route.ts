@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { withAuth } from "@/app/server/auth/with-auth";
 import {
-  getAllModelSettingsUsecase,
   getActiveModelSettingUsecase,
   updateModelSettingUsecase,
 } from "@/app/server/model-setting/usecase/model-setting.usecase";

@@ -10,8 +10,8 @@ const AZURE_CONFIG = {
   embeddingsApiVersion: "2024-04-01-preview",
 };
 
-export const createOpenAIClient = () => {
-  return new AzureChatOpenAI({
+export const createOpenAIClient = () =>
+  new AzureChatOpenAI({
     modelName: AZURE_CONFIG.chatDeployment,
     temperature: 0.7,
     azureOpenAIApiKey: AZURE_CONFIG.apiKey,
@@ -19,10 +19,9 @@ export const createOpenAIClient = () => {
     azureOpenAIApiDeploymentName: AZURE_CONFIG.chatDeployment,
     azureOpenAIApiVersion: AZURE_CONFIG.apiVersion,
   });
-};
 
-export const createEmbeddingClient = () => {
-  return new AzureOpenAIEmbeddings({
+export const createEmbeddingClient = () =>
+  new AzureOpenAIEmbeddings({
     azureOpenAIApiKey: AZURE_CONFIG.apiKey,
     azureOpenAIApiInstanceName: AZURE_CONFIG.instanceName || undefined,
     azureOpenAIApiEmbeddingsDeploymentName: AZURE_CONFIG.embeddingsDeployment,
@@ -30,7 +29,6 @@ export const createEmbeddingClient = () => {
     timeout: 60000, // 60 seconds timeout
     maxRetries: 3, // Retry up to 3 times
   });
-};
 
 export const sendChatCompletion = async (prompt: string) => {
   const model = createOpenAIClient();

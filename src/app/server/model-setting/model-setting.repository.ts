@@ -1,9 +1,7 @@
-import { Prisma } from "@prisma/client";
-
 import { prisma } from "../prisma/prisma";
 
-export const findActiveModelSetting = async () => {
-  return prisma.modelSetting.findFirst({
+export const findActiveModelSetting = async () =>
+  prisma.modelSetting.findFirst({
     where: {
       isActive: true,
       provider: "azure-openai",
@@ -12,27 +10,21 @@ export const findActiveModelSetting = async () => {
       updatedAt: "desc",
     },
   });
-};
 
-export const findModelSettingByProviderAndModel = async (
-  provider: string,
-  model: string
-) => {
-  return prisma.modelSetting.findFirst({
+export const findModelSettingByProviderAndModel = async (provider: string, model: string) =>
+  prisma.modelSetting.findFirst({
     where: {
       provider,
       model,
     },
   });
-};
 
-export const getAllModelSettings = async () => {
-  return prisma.modelSetting.findMany({
+export const getAllModelSettings = async () =>
+  prisma.modelSetting.findMany({
     orderBy: {
       updatedAt: "desc",
     },
   });
-};
 
 export const createModelSetting = async (data: {
   apiKey?: string | null;
@@ -126,4 +118,3 @@ export const updateModelSetting = async (
     data,
   });
 };
-
