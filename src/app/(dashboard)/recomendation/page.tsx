@@ -29,12 +29,21 @@ type CompetitionActionsProps = {
   onView: (item: CompetitionRecommendationGroup) => void;
 };
 
-const CompetitionActions = ({ item, onView }: CompetitionActionsProps) => (
+const CompetitionActions = ({
+  item,
+  onView,
+  isLight = false,
+}: CompetitionActionsProps & { isLight?: boolean }) => (
   <div className="flex items-center gap-2">
     <Button
       variant="outline"
       size="sm"
-      className="border-zinc-700 bg-zinc-900 p-2 text-white hover:bg-zinc-800"
+      className={cn(
+        "p-2 transition-colors",
+        isLight
+          ? "border-stone-300/70 bg-white/80 text-[#2F2A24] hover:bg-stone-100/80"
+          : "border-zinc-700 bg-zinc-900 text-white hover:bg-zinc-800"
+      )}
       onClick={() => onView(item)}
       aria-label="Detail"
     >
@@ -47,14 +56,20 @@ const CompetitionActions = ({ item, onView }: CompetitionActionsProps) => (
 type StudentActionsProps = {
   item: StudentRecommendationGroup;
   onView: (item: StudentRecommendationGroup) => void;
+  isLight?: boolean;
 };
 
-const StudentActions = ({ item, onView }: StudentActionsProps) => (
+const StudentActions = ({ item, onView, isLight = false }: StudentActionsProps) => (
   <div className="flex items-center gap-2">
     <Button
       variant="outline"
       size="sm"
-      className="border-zinc-700 bg-zinc-900 p-2 text-white hover:bg-zinc-800"
+      className={cn(
+        "p-2 transition-colors",
+        isLight
+          ? "border-stone-300/70 bg-white/80 text-[#2F2A24] hover:bg-stone-100/80"
+          : "border-zinc-700 bg-zinc-900 text-white hover:bg-zinc-800"
+      )}
       onClick={() => onView(item)}
       aria-label="Detail"
     >
@@ -65,130 +80,117 @@ const StudentActions = ({ item, onView }: StudentActionsProps) => (
 
 // Competition Columns
 const competitionColumnsDef = (
-  handleView: (item: CompetitionRecommendationGroup) => void
+  handleView: (item: CompetitionRecommendationGroup) => void,
+  isLight = false
 ): ColumnDef<CompetitionRecommendationGroup>[] => [
   {
     header: "Kompetisi",
     accessorKey: "competition.title",
-    cell: ({ row }) => (
-      <div className="space-y-1">
-        <div className="font-medium text-white">{row.original.competition.title}</div>
-        <div className="text-sm text-zinc-400">{row.original.competition.field.join(", ")}</div>
-        {row.original.competition.organizer && (
-          <div className="text-xs text-zinc-500">{row.original.competition.organizer}</div>
-        )}
-      </div>
-    ),
+    cell: ({ row }) => {
+      const textPrimary = isLight ? "text-[#2F2A24]" : "text-white";
+      const textSecondary = isLight ? "text-[#5C5245]" : "text-zinc-400";
+      const textTertiary = isLight ? "text-[#7A6B5B]" : "text-zinc-500";
+      return (
+        <div className="space-y-1">
+          <div className={cn("font-medium", textPrimary)}>{row.original.competition.title}</div>
+          <div className={cn("text-sm", textSecondary)}>
+            {row.original.competition.field.join(", ")}
+          </div>
+          {row.original.competition.organizer && (
+            <div className={cn("text-xs", textTertiary)}>{row.original.competition.organizer}</div>
+          )}
+        </div>
+      );
+    },
   },
   {
-    header: "Jumlah Mahasiswa",
+    header: () => <div className="w-full text-center">Jumlah Mahasiswa</div>,
     accessorKey: "statistics.totalStudents",
-    cell: ({ row }) => (
-      <div className="text-center">
-        <div className="text-lg font-semibold text-white">
-          {row.original.statistics.totalStudents}
+    meta: {
+      headerClassName: "text-center",
+    },
+    cell: ({ row }) => {
+      const textPrimary = isLight ? "text-[#2F2A24]" : "text-white";
+      const textSecondary = isLight ? "text-[#5C5245]" : "text-zinc-400";
+      return (
+        <div className="text-center">
+          <div className={cn("text-lg font-semibold", textPrimary)}>
+            {row.original.statistics.totalStudents}
+          </div>
+          <div className={cn("text-sm", textSecondary)}>mahasiswa</div>
         </div>
-        <div className="text-sm text-zinc-400">mahasiswa</div>
-      </div>
-    ),
-  },
-  {
-    header: "Rata-rata Skor",
-    accessorKey: "statistics.averageMatchScore",
-    cell: ({ row }) => (
-      <div className="text-center">
-        <div className="text-lg font-semibold text-green-400">
-          {parseFloat(row.original.statistics.averageMatchScore.toFixed(3))}
-        </div>
-        <div className="text-sm text-zinc-400">match score</div>
-      </div>
-    ),
-  },
-  {
-    header: "Skor Tertinggi",
-    accessorKey: "statistics.highestScore",
-    cell: ({ row }) => (
-      <div className="text-center">
-        <div className="text-lg font-semibold text-yellow-400">
-          {parseFloat(row.original.statistics.highestScore.toFixed(3))}
-        </div>
-        <div className="text-sm text-zinc-400">tertinggi</div>
-      </div>
-    ),
+      );
+    },
   },
   {
     header: "Aksi",
     accessorKey: "actions",
-    cell: ({ row }) => <CompetitionActions item={row.original} onView={handleView} />,
+    cell: ({ row }) => (
+      <CompetitionActions item={row.original} onView={handleView} isLight={isLight} />
+    ),
   },
 ];
 
 // Student Columns
 const studentColumnsDef = (
-  handleView: (item: StudentRecommendationGroup) => void
+  handleView: (item: StudentRecommendationGroup) => void,
+  isLight = false
 ): ColumnDef<StudentRecommendationGroup>[] => [
   {
     header: "Mahasiswa",
     accessorKey: "student.name",
-    cell: ({ row }) => (
-      <div className="space-y-1">
-        <div className="font-medium text-white">{row.original.student.name}</div>
-        <div className="text-sm text-zinc-400">
-          ID: {row.original.student.userId} | NIM: {row.original.student.studentId || "N/A"}
+    cell: ({ row }) => {
+      const textPrimary = isLight ? "text-[#2F2A24]" : "text-white";
+      const textSecondary = isLight ? "text-[#5C5245]" : "text-zinc-400";
+      const textTertiary = isLight ? "text-[#7A6B5B]" : "text-zinc-500";
+      return (
+        <div className="space-y-1">
+          <div className={cn("font-medium", textPrimary)}>{row.original.student.name}</div>
+          <div className={cn("text-sm", textSecondary)}>
+            ID: {row.original.student.userId} | NIM: {row.original.student.studentId || "N/A"}
+          </div>
+          <div className={cn("text-xs", textTertiary)}>
+            Program Studi: {row.original.student.studyProgram.name}
+          </div>
+          <div className={cn("text-xs", textTertiary)}>
+            Tahun Masuk: {row.original.student.entryYear}
+          </div>
+          <div className={cn("text-xs", textTertiary)}>
+            IPK: {row.original.student.gpa || "N/A"}
+          </div>
         </div>
-        <div className="text-xs text-zinc-500">
-          Program Studi: {row.original.student.studyProgram.name}
-        </div>
-        <div className="text-xs text-zinc-500">Tahun Masuk: {row.original.student.entryYear}</div>
-        <div className="text-xs text-zinc-500">IPK: {row.original.student.gpa || "N/A"}</div>
-      </div>
-    ),
+      );
+    },
   },
   {
-    header: "Jumlah Kompetisi",
+    header: () => <div className="w-full text-center">Jumlah Kompetisi</div>,
     accessorKey: "statistics.totalCompetitions",
-    cell: ({ row }) => (
-      <div className="text-center">
-        <div className="text-lg font-semibold text-white">
-          {row.original.statistics.totalCompetitions}
+    meta: {
+      headerClassName: "text-center",
+    },
+    cell: ({ row }) => {
+      const textPrimary = isLight ? "text-[#2F2A24]" : "text-white";
+      const textSecondary = isLight ? "text-[#5C5245]" : "text-zinc-400";
+      return (
+        <div className="text-center">
+          <div className={cn("text-lg font-semibold", textPrimary)}>
+            {row.original.statistics.totalCompetitions}
+          </div>
+          <div className={cn("text-sm", textSecondary)}>kompetisi</div>
         </div>
-        <div className="text-sm text-zinc-400">kompetisi</div>
-      </div>
-    ),
-  },
-  {
-    header: "Rata-rata Skor",
-    accessorKey: "statistics.averageMatchScore",
-    cell: ({ row }) => (
-      <div className="text-center">
-        <div className="text-lg font-semibold text-green-400">
-          {parseFloat(row.original.statistics.averageMatchScore.toFixed(3))}
-        </div>
-        <div className="text-sm text-zinc-400">match score</div>
-      </div>
-    ),
-  },
-  {
-    header: "Skor Tertinggi",
-    accessorKey: "statistics.highestScore",
-    cell: ({ row }) => (
-      <div className="text-center">
-        <div className="text-lg font-semibold text-yellow-400">
-          {parseFloat(row.original.statistics.highestScore.toFixed(3))}
-        </div>
-        <div className="text-sm text-zinc-400">tertinggi</div>
-      </div>
-    ),
+      );
+    },
   },
   {
     header: "Aksi",
     accessorKey: "actions",
-    cell: ({ row }) => <StudentActions item={row.original} onView={handleView} />,
+    cell: ({ row }) => <StudentActions item={row.original} onView={handleView} isLight={isLight} />,
   },
 ];
 
 const RecomendationPage = () => {
   const router = useRouter();
+  const [isLight, setIsLight] = useState<boolean>(true);
   const [viewMode, setViewMode] = useState<ViewMode>("competitions");
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -198,6 +200,22 @@ const RecomendationPage = () => {
 
   const pageSize = 10;
   const tableRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const stored = typeof window !== "undefined" ? localStorage.getItem("scout-theme") : null;
+    if (stored) setIsLight(stored === "light");
+  }, []);
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const customEvent = e as CustomEvent<{ theme: string }>;
+      const theme = customEvent?.detail?.theme;
+      if (!theme) return;
+      setIsLight(theme === "light");
+    };
+    window.addEventListener("scout-theme-change", handler as EventListener);
+    return () => window.removeEventListener("scout-theme-change", handler as EventListener);
+  }, []);
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 400);
@@ -270,39 +288,76 @@ const RecomendationPage = () => {
 
   // Use columnsDef factory to avoid defining components during render
   const competitionColumns = useMemo(
-    () => competitionColumnsDef(handleViewCompetition),
-    [handleViewCompetition]
+    () => competitionColumnsDef(handleViewCompetition, isLight),
+    [handleViewCompetition, isLight]
   );
 
-  const studentColumns = useMemo(() => studentColumnsDef(handleViewStudent), [handleViewStudent]);
+  const studentColumns = useMemo(
+    () => studentColumnsDef(handleViewStudent, isLight),
+    [handleViewStudent, isLight]
+  );
+
+  const textPrimary = isLight ? "text-[#2F2A24]" : "text-white";
+  const textSecondary = isLight ? "text-[#5C5245]" : "text-zinc-400";
+  const borderColor = isLight ? "border-stone-300" : "border-gray-500";
+  const cardBorder = isLight ? "border-stone-300/70" : "border-zinc-700";
+  const cardBg = isLight ? "bg-white/90" : "bg-zinc-900";
+  const cardText = isLight ? "text-[#2F2A24]" : "text-zinc-100";
+  const headerBorder = isLight ? "border-stone-300/70" : "border-zinc-700";
+  const filterBg = isLight ? "bg-stone-50/80" : "bg-zinc-800";
+  const filterBorder = isLight ? "border-stone-300/70" : "border-zinc-700";
+  const filterLabel = isLight ? "text-[#5C5245]" : "text-zinc-300";
+  const filterInput = isLight
+    ? "border-stone-300/70 bg-white text-[#2F2A24]"
+    : "border-zinc-700 bg-zinc-900 text-zinc-100";
+  const toggleActiveBg = isLight ? "bg-white text-black" : "bg-white text-black";
+  const toggleInactive = isLight
+    ? "text-[#5C5245] hover:bg-stone-100/80 hover:text-[#2F2A24]"
+    : "text-zinc-400 hover:bg-zinc-700 hover:text-white";
 
   return (
     <div className="flex h-full flex-col">
       <div className="mb-6 flex-shrink-0">
-        <TypographyH2 className="flex items-center gap-2 truncate text-zinc-900">
+        <TypographyH2 className={cn("flex items-center gap-2 truncate", textPrimary)}>
           <Trophy className="h-10 w-10 font-extrabold" />
           Rekomendasi Mahasiswa
         </TypographyH2>
-        <TypographyP className="border-b border-gray-300 pb-4 text-zinc-900">
+        <TypographyP className={cn("border-b pb-4", borderColor, textSecondary)}>
           Lihat rekomendasi kompetisi untuk mahasiswa berdasarkan analisis kecocokan.
         </TypographyP>
-        <div className="mb-6 border-t border-gray-500" />
+        <div className={cn("mb-6 border-t", borderColor)} />
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col">
-        <Card className="flex h-full flex-col border-2 border-zinc-700 bg-zinc-900 text-zinc-100 shadow-lg">
-          <CardHeader className="flex flex-shrink-0 flex-col gap-4 border-b border-zinc-700 bg-zinc-900 pb-4 md:flex-row md:items-center md:justify-between">
+        <Card
+          className={cn(
+            "flex h-full flex-col border-2 shadow-lg transition-colors",
+            cardBorder,
+            cardBg,
+            cardText
+          )}
+        >
+          <CardHeader
+            className={cn(
+              "flex flex-shrink-0 flex-col gap-4 border-b pb-4 md:flex-row md:items-center md:justify-between",
+              headerBorder,
+              cardBg
+            )}
+          >
             {/* View Mode Toggle */}
             <div className="flex gap-2">
-              <div className="flex rounded-lg bg-zinc-800 p-1">
+              <div
+                className={cn(
+                  "flex rounded-lg p-1 transition-colors",
+                  isLight ? "bg-stone-200/60" : "bg-zinc-800"
+                )}
+              >
                 <button
                   type="button"
                   onClick={() => setViewMode("competitions")}
                   className={cn(
                     "flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-all",
-                    viewMode === "competitions"
-                      ? "bg-white text-black shadow-sm"
-                      : "text-zinc-400 hover:bg-zinc-700 hover:text-white"
+                    viewMode === "competitions" ? toggleActiveBg : toggleInactive
                   )}
                 >
                   <Trophy className="h-4 w-4" />
@@ -313,9 +368,7 @@ const RecomendationPage = () => {
                   onClick={() => setViewMode("students")}
                   className={cn(
                     "flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium transition-all",
-                    viewMode === "students"
-                      ? "bg-white text-black shadow-sm"
-                      : "text-zinc-400 hover:bg-zinc-700 hover:text-white"
+                    viewMode === "students" ? toggleActiveBg : toggleInactive
                   )}
                 >
                   <Users className="h-4 w-4" />
@@ -335,7 +388,12 @@ const RecomendationPage = () => {
               <Button
                 variant="outline"
                 onClick={() => setShowFilters(!showFilters)}
-                className="border-zinc-700 bg-gradient-to-r from-zinc-800 to-zinc-900 text-white hover:bg-zinc-700 hover:ring-2 hover:ring-blue-400"
+                className={cn(
+                  "transition-colors hover:ring-2 hover:ring-blue-400",
+                  isLight
+                    ? "border-stone-300/70 bg-white/80 text-[#2F2A24] hover:bg-stone-100/80"
+                    : "border-zinc-700 bg-gradient-to-r from-zinc-800 to-zinc-900 text-white hover:bg-zinc-700"
+                )}
               >
                 <Filter className="h-4 w-4" />
               </Button>
@@ -344,13 +402,13 @@ const RecomendationPage = () => {
 
           {/* Filters Panel */}
           {showFilters && (
-            <div className="flex-shrink-0 border-b border-zinc-700 bg-zinc-800 p-4">
+            <div className={cn("flex-shrink-0 border-b p-4", filterBorder, filterBg)}>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 {viewMode === "students" && (
                   <div>
                     <label
                       htmlFor="entry-year"
-                      className="mb-2 block text-sm font-medium text-zinc-300"
+                      className={cn("mb-2 block text-sm font-medium", filterLabel)}
                     >
                       Tahun Masuk
                     </label>
@@ -365,14 +423,14 @@ const RecomendationPage = () => {
                           entryYear: e.target.value ? parseInt(e.target.value, 10) : undefined,
                         }))
                       }
-                      className="border-zinc-700 bg-zinc-900 text-white"
+                      className={cn("transition-colors", filterInput)}
                     />
                   </div>
                 )}
                 <div>
                   <label
                     htmlFor="min-score"
-                    className="mb-2 block text-sm font-medium text-zinc-300"
+                    className={cn("mb-2 block text-sm font-medium", filterLabel)}
                   >
                     Skor Minimum (0-1)
                   </label>
@@ -392,14 +450,19 @@ const RecomendationPage = () => {
                         minMatchScore: e.target.value ? parseFloat(e.target.value) : undefined,
                       }))
                     }
-                    className="border-zinc-700 bg-zinc-900 text-white"
+                    className={cn("transition-colors", filterInput)}
                   />
                 </div>
                 <div className="flex items-end">
                   <Button
                     variant="outline"
                     onClick={() => setFilters({})}
-                    className="border-zinc-700 bg-zinc-900 text-white hover:bg-zinc-700"
+                    className={cn(
+                      "transition-colors",
+                      isLight
+                        ? "border-stone-300/70 bg-white/80 text-[#2F2A24] hover:bg-stone-100/80"
+                        : "border-zinc-700 bg-zinc-900 text-white hover:bg-zinc-700"
+                    )}
                   >
                     Reset Filter
                   </Button>
@@ -410,17 +473,25 @@ const RecomendationPage = () => {
 
           <CardContent
             ref={tableRef}
-            className="flex min-h-0 flex-1 flex-col bg-zinc-900 p-0 md:p-4"
+            className={cn("flex min-h-0 flex-1 flex-col p-0 transition-colors md:p-4", cardBg)}
           >
             <div className="flex-1 overflow-auto">
               {isLoading ? (
                 <div className="flex items-center justify-center py-8">
-                  <div className="text-zinc-400">Loading...</div>
+                  <div className={cn("transition-colors", textSecondary)}>Loading...</div>
                 </div>
               ) : viewMode === "competitions" ? (
-                <DataTable columns={competitionColumns} data={competitionsData?.data ?? []} />
+                <DataTable
+                  columns={competitionColumns}
+                  data={competitionsData?.data ?? []}
+                  isLight={isLight}
+                />
               ) : (
-                <DataTable columns={studentColumns} data={studentsData?.data ?? []} />
+                <DataTable
+                  columns={studentColumns}
+                  data={studentsData?.data ?? []}
+                  isLight={isLight}
+                />
               )}
             </div>
             {currentData && (

@@ -3,7 +3,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ColumnDef } from "@tanstack/react-table";
 import { UserCheck, Filter } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 
 import { AdvisorListItem } from "@/app/server/advisor/advisor.repository";
 import { ADVISOR_TYPES_ID_LABEL } from "@/app/shared/const/role";
@@ -15,6 +15,7 @@ import { DataTable } from "@/components/ui/data-table";
 import Input from "@/components/ui/input";
 import Pagination from "@/components/ui/pagination";
 import { TypographyH2, TypographyP } from "@/components/ui/typography";
+import { cn } from "@/lib/utils";
 
 import { AdvisorAddModal } from "./components/AdvisorAddModal";
 import { AdvisorDeleteModal } from "./components/AdvisorDeleteModal";
@@ -22,6 +23,23 @@ import { AdvisorEditModal } from "./components/AdvisorEditModal";
 import { useAdvisorList } from "./hooks/useAdvisorList";
 
 const AdvisorPage = () => {
+  const [isLight, setIsLight] = useState<boolean>(true);
+
+  useEffect(() => {
+    const stored = typeof window !== "undefined" ? localStorage.getItem("scout-theme") : null;
+    if (stored) setIsLight(stored === "light");
+  }, []);
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const customEvent = e as CustomEvent<{ theme: string }>;
+      const theme = customEvent?.detail?.theme;
+      if (!theme) return;
+      setIsLight(theme === "light");
+    };
+    window.addEventListener("scout-theme-change", handler as EventListener);
+    return () => window.removeEventListener("scout-theme-change", handler as EventListener);
+  }, []);
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -47,6 +65,7 @@ const AdvisorPage = () => {
         setEditOpen(true);
       },
       advisorType: advisorType || undefined,
+      isLight,
     });
 
   const displayColumns = useMemo(
@@ -97,22 +116,49 @@ const AdvisorPage = () => {
   // keep original columns; edit handled via hook's action button
   const columnsWithEdit = displayColumns;
 
+  const textPrimary = isLight ? "text-[#2F2A24]" : "text-white";
+  const textSecondary = isLight ? "text-[#5C5245]" : "text-zinc-400";
+  const borderColor = isLight ? "border-stone-300" : "border-gray-500";
+  const cardBorder = isLight ? "border-stone-300/70" : "border-zinc-700";
+  const cardBg = isLight ? "bg-white/90" : "bg-zinc-900";
+  const cardText = isLight ? "text-[#2F2A24]" : "text-zinc-100";
+  const headerBorder = isLight ? "border-stone-300/70" : "border-zinc-700";
+  const filterBg = isLight ? "bg-stone-50/80" : "bg-zinc-800";
+  const filterBorder = isLight ? "border-stone-300/70" : "border-zinc-700";
+  const filterLabel = isLight ? "text-[#5C5245]" : "text-zinc-300";
+  const filterInput = isLight
+    ? "border-stone-300/70 bg-white text-[#2F2A24]"
+    : "border-zinc-700 bg-zinc-900 text-zinc-100";
+
   return (
     <div className="w-full">
       <div className="mb-6">
-        <TypographyH2 className="flex items-center gap-2 truncate text-zinc-900">
+        <TypographyH2 className={cn("flex items-center gap-2 truncate", textPrimary)}>
           <UserCheck className="h-10 w-10 font-extrabold" />
           Daftar Pengelola Jurusan dan Koordinator Prodi
         </TypographyH2>
-        <TypographyP className="border-b border-gray-300 pb-4 text-zinc-900">
+        <TypographyP className={cn("border-b pb-4", borderColor, textSecondary)}>
           Kelola data pengelola jurusan dan koordinator prodi
         </TypographyP>
-        <div className="mb-6 border-t border-gray-500" />
+        <div className={cn("mb-6 border-t", borderColor)} />
       </div>
 
       <div className="flex justify-center">
-        <Card className="w-full border-2 border-zinc-700 bg-zinc-900 text-zinc-100 shadow-lg">
-          <CardHeader className="flex flex-col gap-4 border-b border-zinc-700 bg-zinc-900 pb-4 md:flex-row md:items-center md:justify-between">
+        <Card
+          className={cn(
+            "w-full border-2 shadow-lg transition-colors",
+            cardBorder,
+            cardBg,
+            cardText
+          )}
+        >
+          <CardHeader
+            className={cn(
+              "flex flex-col gap-4 border-b pb-4 md:flex-row md:items-center md:justify-between",
+              headerBorder,
+              cardBg
+            )}
+          >
             {/* Search and Filters */}
             <div className="flex gap-2">
               <Input
@@ -124,14 +170,24 @@ const AdvisorPage = () => {
               <Button
                 variant="outline"
                 onClick={() => setShowFilters(!showFilters)}
-                className="border-zinc-700 bg-gradient-to-r from-zinc-800 to-zinc-900 text-white hover:bg-zinc-700 hover:ring-2 hover:ring-blue-400"
+                className={cn(
+                  "transition-colors hover:ring-2 hover:ring-blue-400",
+                  isLight
+                    ? "border-stone-300/70 bg-white/80 text-[#2F2A24] hover:bg-stone-100/80"
+                    : "border-zinc-700 bg-gradient-to-r from-zinc-800 to-zinc-900 text-white hover:bg-zinc-700"
+                )}
               >
                 <Filter className="h-4 w-4" />
               </Button>
             </div>
             <Button
               variant="outline"
-              className="border-gray-600 bg-gray-600 text-white hover:border-gray-700 hover:bg-gray-700 hover:text-white"
+              className={cn(
+                "transition-colors",
+                isLight
+                  ? "border-stone-400/70 bg-gradient-to-r from-[#F6A964] to-[#E36C3A] text-white hover:from-[#F2A558] hover:to-[#D86330]"
+                  : "border-gray-600 bg-gray-600 text-white hover:border-gray-700 hover:bg-gray-700"
+              )}
               onClick={() => setOpen(true)}
             >
               + Tambah Dosen
@@ -140,12 +196,12 @@ const AdvisorPage = () => {
 
           {/* Filters Panel */}
           {showFilters && (
-            <div className="border-b border-zinc-700 bg-zinc-800 p-4">
+            <div className={cn("border-b p-4", filterBorder, filterBg)}>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
                   <label
                     htmlFor="advisor-type"
-                    className="mb-2 block text-sm font-medium text-zinc-300"
+                    className={cn("mb-2 block text-sm font-medium", filterLabel)}
                   >
                     Tipe Dosen
                   </label>
@@ -153,7 +209,7 @@ const AdvisorPage = () => {
                     id="advisor-type"
                     value={advisorType}
                     onChange={(e) => setAdvisorType(e.target.value)}
-                    className="w-full rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100"
+                    className={cn("w-full rounded-md border px-3 py-2", filterInput)}
                   >
                     <option value="">Semua Tipe</option>
                     {Object.entries(ADVISOR_TYPES_ID_LABEL).map(([key, label]) => (
@@ -167,7 +223,12 @@ const AdvisorPage = () => {
                   <Button
                     variant="outline"
                     onClick={() => setAdvisorType("")}
-                    className="border-zinc-700 bg-zinc-900 text-white hover:bg-zinc-700"
+                    className={cn(
+                      "transition-colors",
+                      isLight
+                        ? "border-stone-300/70 bg-white/80 text-[#2F2A24] hover:bg-stone-100/80"
+                        : "border-zinc-700 bg-zinc-900 text-white hover:bg-zinc-700"
+                    )}
                   >
                     Reset Filter
                   </Button>
@@ -175,11 +236,12 @@ const AdvisorPage = () => {
               </div>
             </div>
           )}
-          <CardContent ref={tableRef} className="bg-zinc-900 p-0 md:p-4">
+          <CardContent ref={tableRef} className={cn("p-0 transition-colors md:p-4", cardBg)}>
             <div className="w-full">
               <DataTable
                 columns={columnsWithEdit as unknown as ColumnDef<AdvisorListItem, unknown>[]}
                 data={tableData as unknown as AdvisorListItem[]}
+                isLight={isLight}
               />
             </div>
             <Pagination pagination={pagination} onPageChange={handlePageChange} />

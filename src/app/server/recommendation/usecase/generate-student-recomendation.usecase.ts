@@ -37,16 +37,26 @@ const RECOMMENDATION_PROMPT_TEMPLATE = `
     2.  Langkah 2: Penilaian Skor & Kemampuan: Berdasarkan analisis dari Langkah 1, nilai secara kuantitatif kemampuan mahasiswa di 10 area keterampilan yang ditentukan dalam skema output. Gunakan RUBRIK PENILAIAN di bawah ini sebagai panduan mutlak Anda. Semua kolom breakdown harus berisi bukti spesifik.
 
     RUBRIK PENILAIAN:
-    -   Technical Expertise (0.85-1.0): Juara nasional (misal, GEMASTIK); kontributor inti proyek open-source; pengalaman kerja/magang di perusahaan teknologi ternama dengan dampak terukur. (0.70-0.84): Finalis kompetisi teknis nasional; portofolio proyek kompleks; peran teknis utama di organisasi (misal, Kelompok Studi Linux - KSL). (0.50-0.69): Pengalaman praktis dari tugas kuliah atau proyek pribadi sederhana.
-    -   Scientific Writing (0.85-1.0): Pemenang/Finalis PIMNAS (dari PKM); publikasi di jurnal/konferensi. (0.70-0.84): Berpengalaman menyusun proposal PKM/LIDM yang didanai atau lolos tahap awal. (0.50-0.69): Mampu menyusun laporan tugas akhir/kerja praktik dengan baik.
-    -   Problem Solving (0.85-1.0): Mampu memecahkan masalah non-standar di kompetisi (misal, soal algoritmik kompleks di GEMASTIK). (0.70-0.84): Aktif dalam studi kasus atau proyek yang menuntut analisis masalah mendalam. (0.50-0.69): Dapat menerapkan solusi standar untuk masalah yang familiar dari perkuliahan.
-    -   Creativity & Innovation (0.85-1.0): Juara lomba inovasi (misal, LIDM); menghasilkan produk/ide orisinal dengan potensi pasar/dampak sosial. (0.70-0.84): Mengajukan ide-ide unik dalam proyek tim atau proposal PKM. (0.50-0.69): Mampu memberikan sentuhan kreatif pada tugas-tugas standar.
-    -   Communication (0.85-1.0): Pemenang lomba debat/presentasi; presenter terbaik di konferensi/final lomba. (0.70-0.84): Aktif sebagai pembicara atau memimpin presentasi proyek dengan sangat baik. (0.50-0.69): Mampu presentasi di depan kelas dengan jelas.
-    -   Teamwork & Collaboration (0.85-1.0): Memimpin proyek tim besar hingga sukses; menjadi pengurus inti BEM/HMJ lebih dari satu periode dengan pencapaian jelas. (0.70-0.84): Anggota aktif dalam beberapa proyek kelompok atau kepanitiaan dengan kontribusi positif. (0.50-0.69): Dapat bekerja sama dalam tim untuk tugas kuliah.
-    -   Project Management (0.85-1.0): Berpengalaman mengelola proyek dengan metodologi seperti Agile/Scrum dari awal hingga akhir. (0.70-0.84): Pernah menjadi ketua panitia atau koordinator divisi dalam sebuah acara/proyek. (0.50-0.69): Mampu mengelola timeline tugas pribadi atau kelompok kecil.
-    -   Business Acumen (0.85-1.0): Pemenang kompetisi bisnis plan; memiliki startup yang sudah berjalan. (0.70-0.84): Memiliki pemahaman baik tentang model bisnis, sering ditunjukkan dalam proposal PKM-Kewirausahaan. (0.50-0.69): Memahami konsep dasar bisnis dari mata kuliah kewirausahaan.
-    -   Design Thinking (0.85-1.0): Juara lomba UI/UX; portofolio desain produk digital yang human-centered. (0.70-0.84): Mampu menerapkan proses design thinking (empathize, define, ideate, prototype, test) dalam proyek. (0.50-0.69): Memahami prinsip-prinsip dasar UI/UX.
-    -   Self-Learning (0.85-1.0): Secara mandiri menguasai teknologi/framework baru yang kompleks dan menerapkannya dalam sebuah proyek besar/kompetisi. (0.70-0.84): Aktif mengikuti kursus online dan cepat beradaptasi dengan teknologi baru untuk tugas. (0.50-0.69): Menunjukkan kemauan untuk belajar hal baru ketika diwajibkan.
+    Rubrik ini memberikan panduan umum untuk penilaian, namun ANDA HARUS FLEKSIBEL dalam memberikan nilai berdasarkan profil mahasiswa yang sebenarnya. Rentang nilai yang tercantum adalah PANDUAN, bukan batasan kaku. Berikan nilai yang paling sesuai dengan profil mahasiswa, meskipun tidak persis berada di rentang yang tercantum.
+    
+    -   Technical Expertise (0.80-0.90): Juara nasional (misal, GEMASTIK); kontributor inti proyek open-source; pengalaman kerja/magang di perusahaan teknologi ternama dengan dampak terukur. (0.60-0.79): Finalis kompetisi teknis nasional; portofolio proyek kompleks; peran teknis utama di organisasi (misal, Kelompok Studi Linux - KSL). (0.10-0.59): Pengalaman praktis dari tugas kuliah atau proyek pribadi sederhana.
+    -   Scientific Writing (0.80-0.90): Pemenang/Finalis PIMNAS (dari PKM); publikasi di jurnal/konferensi. (0.60-0.79): Berpengalaman menyusun proposal PKM/LIDM yang didanai atau lolos tahap awal. (0.10-0.59): Mampu menyusun laporan tugas akhir/kerja praktik dengan baik.
+    -   Problem Solving (0.80-0.90): Mampu memecahkan masalah non-standar di kompetisi (misal, soal algoritmik kompleks di GEMASTIK). (0.60-0.79): Aktif dalam studi kasus atau proyek yang menuntut analisis masalah mendalam. (0.10-0.59): Dapat menerapkan solusi standar untuk masalah yang familiar dari perkuliahan.
+    -   Creativity & Innovation (0.80-0.90): Juara lomba inovasi (misal, LIDM); menghasilkan produk/ide orisinal dengan potensi pasar/dampak sosial. (0.60-0.79): Mengajukan ide-ide unik dalam proyek tim atau proposal PKM. (0.10-0.59): Mampu memberikan sentuhan kreatif pada tugas-tugas standar.
+    -   Communication (0.80-0.90): Pemenang lomba debat/presentasi; presenter terbaik di konferensi/final lomba. (0.60-0.79): Aktif sebagai pembicara atau memimpin presentasi proyek dengan sangat baik. (0.10-0.59): Mampu presentasi di depan kelas dengan jelas.
+    -   Teamwork & Collaboration (0.80-0.90): Memimpin proyek tim besar hingga sukses; menjadi pengurus inti BEM/HMJ lebih dari satu periode dengan pencapaian jelas. (0.60-0.79): Anggota aktif dalam beberapa proyek kelompok atau kepanitiaan dengan kontribusi positif. (0.10-0.59): Dapat bekerja sama dalam tim untuk tugas kuliah.
+    -   Project Management (0.80-0.90): Berpengalaman mengelola proyek dengan metodologi seperti Agile/Scrum dari awal hingga akhir. (0.60-0.79): Pernah menjadi ketua panitia atau koordinator divisi dalam sebuah acara/proyek. (0.10-0.59): Mampu mengelola timeline tugas pribadi atau kelompok kecil.
+    -   Business Acumen (0.80-0.90): Pemenang kompetisi bisnis plan; memiliki startup yang sudah berjalan. (0.60-0.79): Memiliki pemahaman baik tentang model bisnis, sering ditunjukkan dalam proposal PKM-Kewirausahaan. (0.10-0.59): Memahami konsep dasar bisnis dari mata kuliah kewirausahaan.
+    -   Design Thinking (0.80-0.90): Juara lomba UI/UX; portofolio desain produk digital yang human-centered. (0.60-0.79): Mampu menerapkan proses design thinking (empathize, define, ideate, prototype, test) dalam proyek. (0.10-0.59): Memahami prinsip-prinsip dasar UI/UX.
+    -   Self-Learning (0.80-0.90): Secara mandiri menguasai teknologi/framework baru yang kompleks dan menerapkannya dalam sebuah proyek besar/kompetisi. (0.60-0.79): Aktif mengikuti kursus online dan cepat beradaptasi dengan teknologi baru untuk tugas. (0.10-0.59): Menunjukkan kemauan untuk belajar hal baru ketika diwajibkan.
+
+    CATATAN PENTING TENTANG FLEKSIBILITAS PENILAIAN:
+    - Rentang nilai di atas adalah PANDUAN UMUM, bukan aturan mutlak
+    - Nilai dapat diberikan di LUAR rentang yang tercantum jika profil mahasiswa menunjukkan karakteristik yang tidak sepenuhnya cocok dengan kategori tertentu
+    - Contoh: Jika mahasiswa memiliki pengalaman yang lebih baik dari kategori "Sedang" tetapi belum mencapai kategori "Tinggi", berikan nilai di antara 0.75-0.79 (lebih tinggi dari rentang sedang)
+    - Contoh: Jika mahasiswa memiliki kemampuan yang lebih rendah dari kategori "Rendah" minimum, berikan nilai di bawah 0.10 (misalnya 0.05-0.09)
+    - Contoh: Jika mahasiswa memiliki kemampuan yang sangat luar biasa melebihi kategori "Tinggi", berikan nilai mendekati 0.90 (misalnya 0.85-0.90)
+    - Fokus pada KECOCOKAN dengan profil aktual, bukan mengikuti rentang secara kaku
 
     PENTING UNTUK SCORING MATCHSCORE:
     - Analisis setiap detail profil mahasiswa secara mendalam dan spesifik
@@ -54,7 +64,7 @@ const RECOMMENDATION_PROMPT_TEMPLATE = `
     - Dalam reason, jelaskan secara detail mengapa skor tersebut diberikan berdasarkan bukti konkret dari profil
     - Berikan skor yang berbeda untuk setiap mahasiswa berdasarkan profil unik mereka
     - Jika Mahasiswa Sudah memiliki Pengalaman dalam kompetisi tersebut, Kasih dia Score yang tinggi, dan jika tidak, Kasih dia Score yang rendah.jika belum pertimbangkan profil lain.
-    - rentan matchscore ini dengan nilai 0.50-0.90
+    - rentan matchscore ini dengan nilai 0.10-0.90
 
     Aturan : 
     1.  OUTPUT JSON KETAT: Seluruh output harus dalam satu blok JSON tunggal yang valid. Jangan ada teks di luar struktur JSON.

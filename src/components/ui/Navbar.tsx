@@ -468,68 +468,7 @@ const Navbar = () => {
 
           <ul
             className={`hidden gap-8 text-sm font-medium ${isLight ? "text-[#2F2A24]" : "text-white"} lg:flex`}
-          >
-            <li>
-              <a
-                href="#features"
-                className={`group relative flex items-center gap-2 rounded-lg px-4 py-2 transition-all ${
-                  isLight
-                    ? "hover:bg-[#F5D5BF] hover:text-[#2F2A24]"
-                    : "hover:bg-gradient-to-r hover:from-purple-500/10 hover:to-pink-500/10 hover:text-zinc-300"
-                }`}
-              >
-                <Zap className={`h-4 w-4 ${isLight ? "text-[#D97742]" : "text-purple-400"}`} />
-                <span>Demo AI</span>
-                <div
-                  className={`absolute inset-0 rounded-lg opacity-0 transition-opacity group-hover:opacity-100 ${
-                    isLight
-                      ? "bg-gradient-to-r from-[#F4C49B]/40 to-[#E6A36B]/40"
-                      : "bg-gradient-to-r from-purple-500/5 to-pink-500/5"
-                  }`}
-                />
-              </a>
-            </li>
-            <li>
-              <a
-                href="#about"
-                className={`group relative flex items-center gap-2 rounded-lg px-4 py-2 transition-all ${
-                  isLight
-                    ? "hover:bg-[#F0CCB0] hover:text-[#2F2A24]"
-                    : "hover:bg-gradient-to-r hover:from-pink-500/10 hover:to-red-500/10 hover:text-zinc-300"
-                }`}
-              >
-                <Sparkles className={`h-4 w-4 ${isLight ? "text-[#C4602E]" : "text-pink-400"}`} />
-                <span>Platform</span>
-                <div
-                  className={`absolute inset-0 rounded-lg opacity-0 transition-opacity group-hover:opacity-100 ${
-                    isLight
-                      ? "bg-gradient-to-r from-[#F2B88C]/40 to-[#DF8756]/40"
-                      : "bg-gradient-to-r from-pink-500/5 to-red-500/5"
-                  }`}
-                />
-              </a>
-            </li>
-            <li>
-              <a
-                href="#technology"
-                className={`group relative flex items-center gap-2 rounded-lg px-4 py-2 transition-all ${
-                  isLight
-                    ? "hover:bg-[#EED4BC] hover:text-[#2F2A24]"
-                    : "hover:bg-gradient-to-r hover:from-cyan-500/10 hover:to-blue-500/10 hover:text-zinc-300"
-                }`}
-              >
-                <Brain className={`h-4 w-4 ${isLight ? "text-[#D97742]" : "text-cyan-400"}`} />
-                <span>AI Canggih</span>
-                <div
-                  className={`absolute inset-0 rounded-lg opacity-0 transition-opacity group-hover:opacity-100 ${
-                    isLight
-                      ? "bg-gradient-to-r from-[#F4C49B]/40 to-[#E6A36B]/40"
-                      : "bg-gradient-to-r from-cyan-500/5 to-blue-500/5"
-                  }`}
-                />
-              </a>
-            </li>
-          </ul>
+          />
 
           <div className="flex items-center gap-2">
             {renderUserMenu()}

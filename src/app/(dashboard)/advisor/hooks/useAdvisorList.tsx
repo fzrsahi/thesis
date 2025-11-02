@@ -7,6 +7,7 @@ import { useState, useMemo, useRef, useEffect } from "react";
 
 import { getAdvisors, type GetAdvisorsResponse } from "@/client/api/advisors";
 import Button from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 export type Advisor = {
   id: number;
@@ -25,6 +26,7 @@ type UseAdvisorListOptions = {
   onDelete?: (id: number) => void;
   onEdit?: (item: Advisor) => void;
   advisorType?: string;
+  isLight?: boolean;
 };
 
 export const useAdvisorList = (options?: UseAdvisorListOptions) => {
@@ -100,6 +102,8 @@ export const useAdvisorList = (options?: UseAdvisorListOptions) => {
     if (typeof id === "number") options?.onDelete?.(id);
   };
 
+  const isLight = options?.isLight ?? false;
+
   const columns: ColumnDef<Advisor>[] = [
     { header: "Nama", accessorKey: "name" },
     { header: "Email", accessorKey: "email" },
@@ -113,7 +117,12 @@ export const useAdvisorList = (options?: UseAdvisorListOptions) => {
           <Button
             variant="outline"
             size="sm"
-            className="border-zinc-700 bg-zinc-900 p-2 text-white hover:bg-zinc-800"
+            className={cn(
+              "p-2 transition-colors",
+              isLight
+                ? "border-stone-300/70 bg-white/80 text-[#2F2A24] hover:bg-stone-100/80"
+                : "border-zinc-700 bg-zinc-900 text-white hover:bg-zinc-800"
+            )}
             onClick={() => handleEdit(row.original)}
             aria-label="Edit"
           >
@@ -122,7 +131,12 @@ export const useAdvisorList = (options?: UseAdvisorListOptions) => {
           <Button
             variant="outline"
             size="sm"
-            className="border-zinc-700 bg-zinc-900 p-2 text-red-400 hover:bg-zinc-800"
+            className={cn(
+              "p-2 transition-colors",
+              isLight
+                ? "border-stone-300/70 bg-white/80 text-red-600 hover:bg-red-50/80"
+                : "border-zinc-700 bg-zinc-900 text-red-400 hover:bg-zinc-800"
+            )}
             onClick={() => handleDelete(row.original)}
             aria-label="Hapus"
           >

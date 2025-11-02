@@ -1,99 +1,229 @@
 "use client";
 
 import { BookOpen } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown, { Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 import { useChat } from "@/app/(home)/(student)/my-chat/hooks/useChat";
 import Button from "@/components/ui/button";
 import { TypographyH2, TypographyP } from "@/components/ui/typography";
+import { cn } from "@/lib/utils";
 
-const mdComponents: Components = {
+// Markdown components moved outside to avoid nested component warnings
+const createMarkdownComponents = (
+  isLight: boolean,
+  tableBorder: string,
+  cellBorder: string
+): Components => ({
   table: (props) => (
-    <table {...props} className="w-full border-collapse border border-zinc-700 [&_*]:align-top" />
+    <table {...props} className={cn("w-full border-collapse [&_*]:align-top", tableBorder)} />
   ),
-  thead: (props) => <thead {...props} className="bg-zinc-900/60" />,
-  tbody: (props) => <tbody {...props} className="divide-y divide-zinc-700/60" />,
-  tr: (props) => <tr {...props} className="hover:bg-zinc-800/40" />,
+  thead: (props) => (
+    <thead
+      {...props}
+      className={cn(
+        "text-left",
+        isLight ? "bg-[#F6E9DB] text-[#2F2A24]" : "bg-zinc-900/60 text-white"
+      )}
+    />
+  ),
+  tbody: (props) => (
+    <tbody
+      {...props}
+      className={cn(isLight ? "divide-y divide-stone-200" : "divide-y divide-zinc-700/60")}
+    />
+  ),
+  tr: (props) => (
+    <tr
+      {...props}
+      className={cn(
+        "transition-colors",
+        isLight ? "hover:bg-[#F4E4D4]/60" : "hover:bg-zinc-800/40"
+      )}
+    />
+  ),
   th: (props) => (
-    <th {...props} className="border border-zinc-700 px-3 py-2 text-left text-zinc-200" />
+    <th
+      {...props}
+      className={cn(
+        "px-3 py-2 text-sm font-semibold",
+        isLight ? `border ${cellBorder} text-[#2F2A24]` : `border ${cellBorder} text-zinc-200`
+      )}
+    />
   ),
-  td: (props) => <td {...props} className="border border-zinc-700 px-3 py-2 text-zinc-300" />,
+  td: (props) => (
+    <td
+      {...props}
+      className={cn(
+        "px-3 py-2 text-sm",
+        isLight ? `border ${cellBorder} text-[#5C5245]` : `border ${cellBorder} text-zinc-300`
+      )}
+    />
+  ),
   code: ({ children, ...props }) => (
-    <code {...props} className="rounded bg-zinc-800/80 px-1.5 py-0.5 text-[0.9em] text-zinc-200">
+    <code
+      {...props}
+      className={cn(
+        "rounded px-1.5 py-0.5 text-[0.9em]",
+        isLight ? "bg-[#F4E4D4] text-[#2F2A24]" : "bg-zinc-800/80 text-zinc-200"
+      )}
+    >
       {children}
     </code>
   ),
   pre: (props) => (
     <pre
       {...props}
-      className="overflow-auto rounded-lg border border-zinc-700 bg-zinc-900/70 p-3 text-zinc-200"
+      className={cn(
+        "overflow-auto rounded-lg border p-3 text-sm",
+        isLight ? "border-stone-300 bg-white" : "border-zinc-700 bg-zinc-900/70 text-zinc-200"
+      )}
     />
   ),
   a: ({ children, ...props }) => (
     <a
       {...props}
-      className="text-blue-400 underline decoration-blue-400/40 underline-offset-2 hover:decoration-blue-400"
+      className={cn(
+        "underline underline-offset-2 transition-colors",
+        isLight
+          ? "text-[#E36C3A] decoration-[#E36C3A]/40 hover:text-[#D65A27] hover:decoration-[#D65A27]"
+          : "text-blue-400 decoration-blue-400/40 hover:decoration-blue-400"
+      )}
     >
       {children}
     </a>
   ),
-  ul: (props) => <ul {...props} className="list-disc pl-5 marker:text-zinc-500" />,
-  ol: (props) => <ol {...props} className="list-decimal pl-5 marker:text-zinc-500" />,
-  li: (props) => <li {...props} className="my-1" />,
-};
+  ul: (props) => (
+    <ul
+      {...props}
+      className={cn("list-disc pl-5", isLight ? "marker:text-[#C4A68B]" : "marker:text-zinc-500")}
+    />
+  ),
+  ol: (props) => (
+    <ol
+      {...props}
+      className={cn(
+        "list-decimal pl-5",
+        isLight ? "marker:text-[#C4A68B]" : "marker:text-zinc-500"
+      )}
+    />
+  ),
+  li: (props) => (
+    <li {...props} className={cn("my-1", isLight ? "text-[#5C5245]" : "text-zinc-300")} />
+  ),
+});
 
 const AdminChatPage = () => {
   const { messages, input, isSending, setInput, sendMessage, stopChat, isTyping } = useChat();
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const [isLight, setIsLight] = useState(true);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isSending, isTyping]);
 
+  useEffect(() => {
+    const stored = typeof window !== "undefined" ? localStorage.getItem("scout-theme") : null;
+    if (stored) {
+      setIsLight(stored === "light");
+    }
+  }, []);
+
+  useEffect(() => {
+    const handler = (event: Event) => {
+      const detail = (event as CustomEvent)?.detail as { theme?: string } | undefined;
+      if (!detail?.theme) return;
+      setIsLight(detail.theme === "light");
+    };
+
+    window.addEventListener("scout-theme-change", handler as EventListener);
+    return () => window.removeEventListener("scout-theme-change", handler as EventListener);
+  }, []);
+
+  const textPrimary = isLight ? "text-[#2F2A24]" : "text-white";
+  const textSecondary = isLight ? "text-[#5C5245]" : "text-zinc-400";
+  const borderColor = isLight ? "border-stone-300" : "border-gray-500";
+  const cardBorder = isLight ? "border-stone-300/70" : "border-zinc-700";
+  const cardBg = isLight ? "bg-white/90" : "bg-zinc-900";
+  const userAvatarClass = isLight ? "bg-[#E36C3A] text-white" : "bg-zinc-700 text-white";
+  const aiAvatarClass = isLight ? "bg-[#2F2A24] text-white" : "bg-zinc-800 text-white";
+  const userBubbleClass = isLight
+    ? "bg-[#F4E4D4] border border-stone-300 text-[#2F2A24]"
+    : "bg-zinc-700/70 text-white";
+  const aiBubbleClass = isLight
+    ? "bg-white/90 border border-stone-300 text-[#2F2A24]"
+    : "bg-zinc-800/70 text-zinc-200";
+  const typingBubbleClass = isLight ? "bg-white/85 border border-stone-300" : "bg-zinc-800/70";
+  const inputClass = isLight
+    ? "flex-1 rounded-lg border border-stone-300 bg-white/90 px-4 py-2.5 text-sm text-[#2F2A24] outline-none transition-colors focus:border-stone-400 focus:ring-2 focus:ring-stone-300/40"
+    : "flex-1 rounded-lg border border-zinc-700/50 bg-zinc-800/70 px-4 py-2.5 text-sm text-white outline-none transition-colors focus:border-zinc-600";
+  const stopButtonClass = isLight
+    ? "rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-600"
+    : "rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-500";
+  const sendButtonClass = isLight
+    ? "rounded-lg bg-gradient-to-r from-[#F6A964] to-[#E36C3A] px-4 py-2 text-sm font-medium text-white shadow-md transition-all hover:brightness-105 disabled:opacity-60"
+    : "rounded-lg bg-zinc-700 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-600 disabled:opacity-50";
+  const typingDotClass = isLight ? "bg-[#7A6B5B]" : "bg-zinc-400";
+
+  const tableBorder = isLight ? "border border-stone-300" : "border border-zinc-700";
+  const cellBorder = isLight ? "border-stone-200" : "border-zinc-700";
+
+  const mdComponents = useMemo<Components>(
+    () => createMarkdownComponents(isLight, tableBorder, cellBorder),
+    [cellBorder, isLight, tableBorder]
+  );
+
+  const proseClass = cn(
+    "max-w-none",
+    isLight
+      ? "prose prose-headings:text-[#2F2A24] prose-p:text-[#5C5245] prose-strong:text-[#2F2A24] prose-code:text-[#2F2A24]"
+      : "prose prose-invert prose-headings:text-white prose-p:text-zinc-300 prose-li:marker:text-zinc-500"
+  );
+
   return (
     <div className="w-full">
       <div className="mb-6">
-        <TypographyH2 className="flex items-center gap-2 truncate text-zinc-900">
+        <TypographyH2 className={cn("flex items-center gap-2 truncate", textPrimary)}>
           <BookOpen className="h-10 w-10 font-extrabold" />
           Chat Admin
         </TypographyH2>
-        <TypographyP className="border-b border-gray-300 pb-4 text-zinc-900">
+        <TypographyP className={cn("border-b pb-4", borderColor, textSecondary)}>
           Chat dengan endpoint dan logika yang sama seperti halaman student.
         </TypographyP>
-        <div className="mb-6 border-t border-gray-500" />
+        <div className={cn("mb-6 border-t", borderColor)} />
       </div>
 
-      <div className="w-full rounded-xl border-2 border-zinc-700 bg-zinc-900 p-4 text-white shadow-lg">
+      <div
+        className={cn(
+          "w-full rounded-xl border-2 p-4 shadow-lg transition-colors",
+          cardBorder,
+          cardBg
+        )}
+      >
         <div className="max-h-[75vh] space-y-4 overflow-y-auto pr-3">
           {messages.map((m) => (
-            <div
-              key={m.id}
-              className={m.role === "user" ? "flex flex-row-reverse gap-4" : "flex gap-4"}
-            >
+            <div key={m.id} className={cn("flex gap-4", m.role === "user" && "flex-row-reverse")}>
               <div
-                className={
-                  m.role === "user"
-                    ? "flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-zinc-700 text-xs"
-                    : "flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-zinc-800 text-xs"
-                }
+                className={cn(
+                  "flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-xs font-semibold",
+                  m.role === "user" ? userAvatarClass : aiAvatarClass
+                )}
               >
                 {m.role === "user" ? "You" : "AI"}
               </div>
               <div
-                className={
-                  m.role === "user"
-                    ? "flex-1 rounded-xl bg-zinc-700/70 p-4"
-                    : "flex-1 rounded-xl bg-zinc-800/70 p-4"
-                }
+                className={cn(
+                  "flex-1 rounded-xl p-4 shadow-sm transition-colors",
+                  m.role === "user" ? userBubbleClass : aiBubbleClass
+                )}
               >
                 {m.role === "user" ? (
-                  <p className="text-sm text-white">{m.content}</p>
+                  <p className={cn("text-sm", textPrimary)}>{m.content}</p>
                 ) : (
-                  <div className="prose prose-invert prose-headings:text-white prose-p:text-zinc-300 prose-li:marker:text-zinc-500 max-w-none">
-                    <div className="overflow-x-auto">
+                  <div className="overflow-x-auto">
+                    <div className={proseClass}>
                       <ReactMarkdown remarkPlugins={[remarkGfm]} components={mdComponents}>
                         {m.content}
                       </ReactMarkdown>
@@ -106,16 +236,38 @@ const AdminChatPage = () => {
 
           {isSending && !isTyping && (
             <div className="flex gap-4">
-              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-zinc-800 text-xs">
+              <div
+                className={cn(
+                  "flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-xs font-semibold",
+                  aiAvatarClass
+                )}
+              >
                 AI
               </div>
               <div
-                className="flex items-center space-x-2 rounded-xl bg-zinc-800/70 px-4 py-3"
+                className={cn(
+                  "flex items-center space-x-2 rounded-xl px-4 py-3",
+                  typingBubbleClass
+                )}
                 aria-label="AI sedang mengetik"
               >
-                <span className="inline-block h-2 w-2 animate-bounce rounded-full bg-zinc-400 [animation-delay:-0.3s]" />
-                <span className="inline-block h-2 w-2 animate-bounce rounded-full bg-zinc-400 [animation-delay:-0.15s]" />
-                <span className="inline-block h-2 w-2 animate-bounce rounded-full bg-zinc-400" />
+                <span
+                  className={cn(
+                    "inline-block h-2 w-2 animate-bounce rounded-full",
+                    typingDotClass,
+                    "[animation-delay:-0.3s]"
+                  )}
+                />
+                <span
+                  className={cn(
+                    "inline-block h-2 w-2 animate-bounce rounded-full",
+                    typingDotClass,
+                    "[animation-delay:-0.15s]"
+                  )}
+                />
+                <span
+                  className={cn("inline-block h-2 w-2 animate-bounce rounded-full", typingDotClass)}
+                />
               </div>
             </div>
           )}
@@ -129,7 +281,7 @@ const AdminChatPage = () => {
               ref={inputRef}
               type="text"
               placeholder="Ketik pesan..."
-              className="flex-1 rounded-lg border border-zinc-700/50 bg-zinc-800/70 px-4 py-2.5 text-sm text-white outline-none focus:border-zinc-600"
+              className={inputClass}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => {
@@ -152,7 +304,7 @@ const AdminChatPage = () => {
             {isSending || isTyping ? (
               <Button
                 type="button"
-                className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-red-500"
+                className={stopButtonClass}
                 onClick={() => {
                   stopChat();
                   inputRef.current?.focus();
@@ -163,7 +315,7 @@ const AdminChatPage = () => {
             ) : (
               <Button
                 type="button"
-                className="rounded-lg bg-zinc-700 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-600 disabled:opacity-50"
+                className={sendButtonClass}
                 onClick={() => {
                   Promise.resolve(sendMessage())
                     .then(() => {

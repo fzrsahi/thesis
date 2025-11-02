@@ -6,6 +6,7 @@ import { useState } from "react";
 
 import Button from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 import { SkillComparisonChart, TopCompetitionsList } from "./Charts";
 
@@ -97,9 +98,14 @@ interface CompetitionData {
 interface ChartsSectionProps {
   statistics: StatisticsData | null;
   competitions?: CompetitionData[];
+  isLight?: boolean;
 }
 
-export const ChartsSection = ({ statistics, competitions }: ChartsSectionProps) => {
+export const ChartsSection = ({
+  statistics,
+  competitions,
+  isLight = false,
+}: ChartsSectionProps) => {
   const [selectedCompetition, setSelectedCompetition] = useState<CompetitionData | null>(null);
 
   return (
@@ -110,15 +116,24 @@ export const ChartsSection = ({ statistics, competitions }: ChartsSectionProps) 
       className="space-y-8"
     >
       {/* Skill Comparison */}
-      <Card className="border border-zinc-700 bg-gradient-to-br from-zinc-900 to-zinc-800 text-white">
+      <Card
+        className={cn(
+          "border transition-colors",
+          isLight
+            ? "border-stone-300/70 bg-white/90 text-[#2F2A24]"
+            : "border-zinc-700 bg-gradient-to-br from-zinc-900 to-zinc-800 text-white"
+        )}
+      >
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle className="flex items-center gap-2 text-white">
+              <CardTitle
+                className={cn("flex items-center gap-2", isLight ? "text-[#2F2A24]" : "text-white")}
+              >
                 <Target className="h-5 w-5" />
                 Perbandingan Keterampilan
               </CardTitle>
-              <p className="mt-2 text-sm text-zinc-400">
+              <p className={cn("mt-2 text-sm", isLight ? "text-[#5C5245]" : "text-zinc-400")}>
                 {selectedCompetition
                   ? `Membandingkan keterampilan mahasiswa dengan kebutuhan kompetisi "${selectedCompetition.title}"`
                   : "Klik kompetisi di bawah untuk melihat perbandingan keterampilan"}
@@ -129,7 +144,12 @@ export const ChartsSection = ({ statistics, competitions }: ChartsSectionProps) 
                 variant="ghost"
                 size="sm"
                 onClick={() => setSelectedCompetition(null)}
-                className="bg-gradient-to-r from-zinc-800/50 to-zinc-900/50 text-xs text-white backdrop-blur-sm hover:from-zinc-700/50 hover:to-zinc-800/50"
+                className={cn(
+                  "text-xs backdrop-blur-sm transition-colors",
+                  isLight
+                    ? "bg-stone-100/80 text-[#2F2A24] hover:bg-stone-200/80"
+                    : "bg-gradient-to-r from-zinc-800/50 to-zinc-900/50 text-white hover:from-zinc-700/50 hover:to-zinc-800/50"
+                )}
               >
                 <Zap className="mr-1 h-3 w-3" />
                 Reset
@@ -141,20 +161,30 @@ export const ChartsSection = ({ statistics, competitions }: ChartsSectionProps) 
           <SkillComparisonChart
             data={statistics?.skillComparison || []}
             selectedCompetition={selectedCompetition}
+            isLight={isLight}
           />
         </CardContent>
       </Card>
 
       {/* Top Competitions */}
-      <Card className="border border-zinc-700 bg-gradient-to-br from-zinc-900 to-zinc-800 text-white">
+      <Card
+        className={cn(
+          "border transition-colors",
+          isLight
+            ? "border-stone-300/70 bg-white/90 text-[#2F2A24]"
+            : "border-zinc-700 bg-gradient-to-br from-zinc-900 to-zinc-800 text-white"
+        )}
+      >
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-white">
+          <CardTitle
+            className={cn("flex items-center gap-2", isLight ? "text-[#2F2A24]" : "text-white")}
+          >
             <Star className="h-5 w-5" />
             Top Rekomendasi Kompetisi
           </CardTitle>
-          <p className="mt-2 text-sm text-zinc-400">
-            Menampilkan kompetisi dengan skor kecocokan tertinggi untuk mahasiswa ini. Klik untuk
-            melihat perbandingan keterampilan.
+          <p className={cn("mt-2 text-sm", isLight ? "text-[#5C5245]" : "text-zinc-400")}>
+            Menampilkan kompetisi dengan kecocokan tertinggi untuk mahasiswa ini. Klik untuk melihat
+            perbandingan keterampilan.
           </p>
         </CardHeader>
         <CardContent>
@@ -163,6 +193,7 @@ export const ChartsSection = ({ statistics, competitions }: ChartsSectionProps) 
             competitions={competitions || []}
             onCompetitionSelect={setSelectedCompetition}
             selectedCompetition={selectedCompetition}
+            isLight={isLight}
           />
         </CardContent>
       </Card>

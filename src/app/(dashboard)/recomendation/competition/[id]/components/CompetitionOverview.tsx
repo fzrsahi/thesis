@@ -1,20 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import {
-  Users,
-  TrendingUp,
-  Award,
-  Target,
-  Calendar,
-  MapPin,
-  Building2,
-  ExternalLink,
-} from "lucide-react";
+import { Users, Target, Calendar, MapPin, Building2, ExternalLink } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
 interface CompetitionData {
   title?: string;
@@ -43,12 +35,14 @@ interface CompetitionOverviewProps {
   competition: CompetitionData | null;
   statistics: StatisticsData | null;
   isLoading: boolean;
+  isLight?: boolean;
 }
 
 export const CompetitionOverview = ({
   competition,
   statistics,
   isLoading,
+  isLight = false,
 }: CompetitionOverviewProps) => {
   if (isLoading) {
     return (
@@ -88,14 +82,38 @@ export const CompetitionOverview = ({
         transition={{ duration: 0.5 }}
         className="mb-8"
       >
-        <Card className="border-2 border-zinc-700 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 text-white shadow-xl">
-          <CardHeader className="border-b border-zinc-700">
+        <Card
+          className={cn(
+            "border-2 shadow-xl transition-colors",
+            isLight
+              ? "border-stone-300/70 bg-white/90 text-[#2F2A24]"
+              : "border-zinc-700 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 text-white"
+          )}
+        >
+          <CardHeader
+            className={cn(
+              "border-b transition-colors",
+              isLight ? "border-stone-300/70" : "border-zinc-700"
+            )}
+          >
             <div className="flex items-start justify-between">
               <div className="space-y-2">
-                <CardTitle className="text-2xl font-bold text-white">{competition.title}</CardTitle>
+                <CardTitle
+                  className={cn("text-2xl font-bold", isLight ? "text-[#2F2A24]" : "text-white")}
+                >
+                  {competition.title}
+                </CardTitle>
                 <div className="flex flex-wrap gap-2">
                   {competition.field?.map((field: string) => (
-                    <Badge key={field} variant="secondary" className="bg-zinc-700 text-zinc-200">
+                    <Badge
+                      key={field}
+                      variant="secondary"
+                      className={cn(
+                        isLight
+                          ? "border-stone-300/70 bg-stone-100 text-[#2F2A24]"
+                          : "bg-zinc-700 text-zinc-200"
+                      )}
+                    >
                       {field}
                     </Badge>
                   ))}
@@ -106,7 +124,12 @@ export const CompetitionOverview = ({
                   variant="outline"
                   size="sm"
                   onClick={() => window.open(competition.sourceUrl, "_blank")}
-                  className="border-zinc-600 bg-zinc-800 text-white hover:bg-zinc-700"
+                  className={cn(
+                    "transition-colors",
+                    isLight
+                      ? "border-stone-300/70 bg-white/80 text-[#2F2A24] hover:bg-stone-100/80"
+                      : "border-zinc-600 bg-zinc-800 text-white hover:bg-zinc-700"
+                  )}
                 >
                   <ExternalLink className="mr-2 h-4 w-4" />
                   Visit Competition
@@ -117,36 +140,62 @@ export const CompetitionOverview = ({
           <CardContent className="pt-6">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
               <div className="space-y-2">
-                <div className="flex items-center gap-2 text-zinc-400">
+                <div
+                  className={cn(
+                    "flex items-center gap-2",
+                    isLight ? "text-[#5C5245]" : "text-zinc-400"
+                  )}
+                >
                   <Building2 className="h-4 w-4" />
                   <span className="text-sm">Organizer</span>
                 </div>
-                <p className="font-medium text-white">{competition.organizer || "N/A"}</p>
+                <p className={cn("font-medium", isLight ? "text-[#2F2A24]" : "text-white")}>
+                  {competition.organizer || "N/A"}
+                </p>
               </div>
               <div className="space-y-2">
-                <div className="flex items-center gap-2 text-zinc-400">
+                <div
+                  className={cn(
+                    "flex items-center gap-2",
+                    isLight ? "text-[#5C5245]" : "text-zinc-400"
+                  )}
+                >
                   <MapPin className="h-4 w-4" />
                   <span className="text-sm">Location</span>
                 </div>
-                <p className="font-medium text-white">{competition.location || "N/A"}</p>
+                <p className={cn("font-medium", isLight ? "text-[#2F2A24]" : "text-white")}>
+                  {competition.location || "N/A"}
+                </p>
               </div>
               <div className="space-y-2">
-                <div className="flex items-center gap-2 text-zinc-400">
+                <div
+                  className={cn(
+                    "flex items-center gap-2",
+                    isLight ? "text-[#5C5245]" : "text-zinc-400"
+                  )}
+                >
                   <Calendar className="h-4 w-4" />
                   <span className="text-sm">Start Date</span>
                 </div>
-                <p className="font-medium text-white">
+                <p className={cn("font-medium", isLight ? "text-[#2F2A24]" : "text-white")}>
                   {competition.startDate
                     ? new Date(competition.startDate).toLocaleDateString()
                     : "N/A"}
                 </p>
               </div>
               <div className="space-y-2">
-                <div className="flex items-center gap-2 text-zinc-400">
+                <div
+                  className={cn(
+                    "flex items-center gap-2",
+                    isLight ? "text-[#5C5245]" : "text-zinc-400"
+                  )}
+                >
                   <Target className="h-4 w-4" />
                   <span className="text-sm">Min IPK</span>
                 </div>
-                <p className="font-medium text-white">{competition.minGPA || "N/A"}</p>
+                <p className={cn("font-medium", isLight ? "text-[#2F2A24]" : "text-white")}>
+                  {competition.minGPA || "N/A"}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -160,77 +209,33 @@ export const CompetitionOverview = ({
         transition={{ duration: 0.5, delay: 0.1 }}
         className="mb-8"
       >
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <Card className="border border-zinc-700 bg-gradient-to-br from-zinc-900 to-zinc-800 text-white">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-1 lg:grid-cols-1">
+          <Card
+            className={cn(
+              "border-2 transition-colors",
+              isLight
+                ? "border-stone-300/70 bg-white/90 text-[#2F2A24]"
+                : "border-zinc-700 bg-gradient-to-br from-zinc-900 to-zinc-800 text-white"
+            )}
+          >
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-zinc-400">Total Students</p>
-                  <p className="text-3xl font-bold text-white">
+                  <p
+                    className={cn(
+                      "text-sm font-medium",
+                      isLight ? "text-[#5C5245]" : "text-zinc-400"
+                    )}
+                  >
+                    Total Students
+                  </p>
+                  <p
+                    className={cn("text-3xl font-bold", isLight ? "text-[#2F2A24]" : "text-white")}
+                  >
                     {statistics?.overview?.totalStudents || statistics?.totalStudents || 0}
                   </p>
                 </div>
-                <Users className="h-8 w-8 text-blue-400" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border border-zinc-700 bg-gradient-to-br from-zinc-900 to-zinc-800 text-white">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-zinc-400">Average Score</p>
-                  <p className="text-3xl font-bold text-green-400">
-                    {parseFloat(
-                      (
-                        statistics?.overview?.averageMatchScore ||
-                        statistics?.averageMatchScore ||
-                        0
-                      ).toFixed(3)
-                    )}
-                  </p>
-                </div>
-                <TrendingUp className="h-8 w-8 text-green-400" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border border-zinc-700 bg-gradient-to-br from-zinc-900 to-zinc-800 text-white">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-zinc-400">Highest Score</p>
-                  <p className="text-3xl font-bold text-yellow-400">
-                    {parseFloat(
-                      (
-                        statistics?.overview?.highestMatchScore ||
-                        statistics?.highestScore ||
-                        0
-                      ).toFixed(3)
-                    )}
-                  </p>
-                </div>
-                <Award className="h-8 w-8 text-yellow-400" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border border-zinc-700 bg-gradient-to-br from-zinc-900 to-zinc-800 text-white">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-zinc-400">Lowest Score</p>
-                  <p className="text-3xl font-bold text-red-400">
-                    {parseFloat(
-                      (
-                        statistics?.overview?.lowestMatchScore ||
-                        statistics?.lowestScore ||
-                        0
-                      ).toFixed(3)
-                    )}
-                  </p>
-                </div>
-                <Target className="h-8 w-8 text-red-400" />
+                <Users className={cn("h-8 w-8", isLight ? "text-blue-600" : "text-blue-400")} />
               </div>
             </CardContent>
           </Card>

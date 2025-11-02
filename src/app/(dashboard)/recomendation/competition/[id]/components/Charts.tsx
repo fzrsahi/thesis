@@ -1,6 +1,6 @@
 "use client";
 
-import { Trophy, PieChart, BarChart3, Activity } from "lucide-react";
+import { BarChart3, Activity, PieChart } from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -13,6 +13,8 @@ import {
   Pie,
   Cell,
 } from "recharts";
+
+import { cn } from "@/lib/utils";
 
 const COLORS = {
   excellent: "#10b981", // emerald-500
@@ -34,11 +36,25 @@ interface CustomTooltipProps {
   label?: string;
 }
 
-const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
+const CustomTooltip = ({
+  active,
+  payload,
+  label,
+  isLight = false,
+}: CustomTooltipProps & { isLight?: boolean }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="rounded-lg border border-zinc-700 bg-zinc-900 p-3 shadow-lg">
-        <p className="text-sm font-medium text-white">{label}</p>
+      <div
+        className={cn(
+          "rounded-lg border p-3 shadow-lg",
+          isLight
+            ? "border-stone-300/70 bg-white text-[#2F2A24]"
+            : "border-zinc-700 bg-zinc-900 text-white"
+        )}
+      >
+        <p className={cn("text-sm font-medium", isLight ? "text-[#2F2A24]" : "text-white")}>
+          {label}
+        </p>
         {payload.map((entry) => (
           <p key={entry.name} className="text-sm" style={{ color: entry.color }}>
             {entry.name}: {entry.value}
@@ -57,7 +73,13 @@ interface ScoreDistributionData {
   poor?: number;
 }
 
-export const ScoreDistributionChart = ({ data }: { data: ScoreDistributionData | null }) => {
+export const ScoreDistributionChart = ({
+  data,
+  isLight = false,
+}: {
+  data: ScoreDistributionData | null;
+  isLight?: boolean;
+}) => {
   if (!data) {
     return (
       <div className="flex h-80 w-full items-center justify-center">
@@ -104,7 +126,7 @@ export const ScoreDistributionChart = ({ data }: { data: ScoreDistributionData |
               <Cell key={`cell-${entry.name}`} fill={entry.color} />
             ))}
           </Pie>
-          <Tooltip content={<CustomTooltip />} />
+          <Tooltip content={<CustomTooltip isLight={isLight} />} />
         </RechartsPieChart>
       </ResponsiveContainer>
     </div>
@@ -120,7 +142,13 @@ interface StudyProgramData {
   percentage: number;
 }
 
-export const StudyProgramChart = ({ data }: { data: StudyProgramData[] }) => {
+export const StudyProgramChart = ({
+  data,
+  isLight = false,
+}: {
+  data: StudyProgramData[];
+  isLight?: boolean;
+}) => {
   // Create initial data for Sistem Informasi and Pendidikan Teknologi Informasi
   const initialData = [
     { name: "Sistem Informasi", students: 0, averageScore: 0, percentage: 0 },
@@ -132,14 +160,20 @@ export const StudyProgramChart = ({ data }: { data: StudyProgramData[] }) => {
       <div className="h-80 w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={initialData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke={isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)"}
+            />
             <XAxis
               dataKey="name"
-              tick={{ fill: "#e4e4e7", fontSize: 12 }}
-              stroke="rgba(255,255,255,0.1)"
+              tick={{ fill: isLight ? "#2F2A24" : "#e4e4e7", fontSize: 12 }}
+              stroke={isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)"}
             />
-            <YAxis tick={{ fill: "#e4e4e7", fontSize: 12 }} stroke="rgba(255,255,255,0.1)" />
-            <Tooltip content={<CustomTooltip />} />
+            <YAxis
+              tick={{ fill: isLight ? "#2F2A24" : "#e4e4e7", fontSize: 12 }}
+              stroke={isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)"}
+            />
+            <Tooltip content={<CustomTooltip isLight={isLight} />} />
             <Bar dataKey="students" fill="url(#programGradient)" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
@@ -177,14 +211,20 @@ export const StudyProgramChart = ({ data }: { data: StudyProgramData[] }) => {
     <div className="h-80 w-full">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart data={mergedData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke={isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)"}
+          />
           <XAxis
             dataKey="name"
-            tick={{ fill: "#e4e4e7", fontSize: 12 }}
-            stroke="rgba(255,255,255,0.1)"
+            tick={{ fill: isLight ? "#2F2A24" : "#e4e4e7", fontSize: 12 }}
+            stroke={isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)"}
           />
-          <YAxis tick={{ fill: "#e4e4e7", fontSize: 12 }} stroke="rgba(255,255,255,0.1)" />
-          <Tooltip content={<CustomTooltip />} />
+          <YAxis
+            tick={{ fill: isLight ? "#2F2A24" : "#e4e4e7", fontSize: 12 }}
+            stroke={isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)"}
+          />
+          <Tooltip content={<CustomTooltip isLight={isLight} />} />
           <Bar dataKey="students" fill="url(#programGradient)" radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
@@ -199,7 +239,13 @@ interface EntryYearData {
   percentage: number;
 }
 
-export const EntryYearChart = ({ data }: { data: EntryYearData[] }) => {
+export const EntryYearChart = ({
+  data,
+  isLight = false,
+}: {
+  data: EntryYearData[];
+  isLight?: boolean;
+}) => {
   if (!data || data.length === 0) {
     return (
       <div className="flex h-80 w-full items-center justify-center">
@@ -241,14 +287,20 @@ export const EntryYearChart = ({ data }: { data: EntryYearData[] }) => {
               <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0.9} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+          <CartesianGrid
+            strokeDasharray="3 3"
+            stroke={isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)"}
+          />
           <XAxis
             dataKey="year"
-            tick={{ fill: "#e4e4e7", fontSize: 12 }}
-            stroke="rgba(255,255,255,0.1)"
+            tick={{ fill: isLight ? "#2F2A24" : "#e4e4e7", fontSize: 12 }}
+            stroke={isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)"}
           />
-          <YAxis tick={{ fill: "#e4e4e7", fontSize: 12 }} stroke="rgba(255,255,255,0.1)" />
-          <Tooltip content={<CustomTooltip />} />
+          <YAxis
+            tick={{ fill: isLight ? "#2F2A24" : "#e4e4e7", fontSize: 12 }}
+            stroke={isLight ? "rgba(0,0,0,0.1)" : "rgba(255,255,255,0.1)"}
+          />
+          <Tooltip content={<CustomTooltip isLight={isLight} />} />
           <Bar dataKey="students" fill="url(#yearGradient)" radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
@@ -268,12 +320,23 @@ interface TopPerformerData {
   matchScore: number;
 }
 
-export const TopPerformersList = ({ data }: { data: TopPerformerData[] }) => {
+export const TopPerformersList = ({
+  data,
+  isLight = false,
+}: {
+  data: TopPerformerData[];
+  isLight?: boolean;
+}) => {
   if (!data || data.length === 0) {
     return (
-      <div className="flex h-80 w-full items-center justify-center">
-        <div className="text-center text-zinc-400">
-          <Trophy className="mx-auto mb-2 h-12 w-12 opacity-50" />
+      <div
+        className={cn(
+          "flex h-80 w-full items-center justify-center",
+          isLight ? "bg-stone-50/80" : "bg-zinc-800/30"
+        )}
+      >
+        <div className={cn("text-center", isLight ? "text-[#5C5245]" : "text-zinc-400")}>
+          <BarChart3 className="mx-auto mb-2 h-12 w-12 opacity-50" />
           <p>No performance data available</p>
         </div>
       </div>
@@ -285,22 +348,26 @@ export const TopPerformersList = ({ data }: { data: TopPerformerData[] }) => {
       (performer) =>
         performer &&
         performer.student &&
-        typeof performer.matchScore === "number" &&
-        !Number.isNaN(performer.matchScore)
+        typeof performer.rank === "number" &&
+        !Number.isNaN(performer.rank)
     )
     .map((performer) => ({
       rank: performer.rank,
       name: performer.student.name || "Unknown",
-      score: Number(performer.matchScore) || 0,
       studentId: performer.student.studentId || "N/A",
       studyProgram: performer.student.studyProgram?.name || "N/A",
     }));
 
   if (performers.length === 0) {
     return (
-      <div className="flex h-80 w-full items-center justify-center">
-        <div className="text-center text-zinc-400">
-          <Trophy className="mx-auto mb-2 h-12 w-12 opacity-50" />
+      <div
+        className={cn(
+          "flex h-80 w-full items-center justify-center",
+          isLight ? "bg-stone-50/80" : "bg-zinc-800/30"
+        )}
+      >
+        <div className={cn("text-center", isLight ? "text-[#5C5245]" : "text-zinc-400")}>
+          <BarChart3 className="mx-auto mb-2 h-12 w-12 opacity-50" />
           <p>No performance data available</p>
         </div>
       </div>
@@ -312,23 +379,35 @@ export const TopPerformersList = ({ data }: { data: TopPerformerData[] }) => {
       {performers.map((performer) => (
         <div
           key={performer.studentId}
-          className="flex items-center justify-between rounded-lg border border-zinc-600/30 bg-zinc-800/30 p-4 backdrop-blur-sm"
+          className={cn(
+            "flex items-center justify-between rounded-lg border p-4 backdrop-blur-sm transition-colors",
+            isLight
+              ? "border-stone-300/70 bg-stone-50/80 hover:bg-stone-100/80"
+              : "border-zinc-600/30 bg-zinc-800/30 hover:bg-zinc-800/40"
+          )}
         >
           <div className="flex items-center gap-4">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-yellow-500 to-orange-500 text-sm font-bold text-white">
+            <div
+              className={cn(
+                "flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold transition-colors",
+                isLight
+                  ? "bg-gradient-to-r from-yellow-400 to-orange-400 text-white"
+                  : "bg-gradient-to-r from-yellow-500 to-orange-500 text-white"
+              )}
+            >
               {performer.rank}
             </div>
             <div>
-              <h4 className="font-medium text-white">{performer.name}</h4>
-              <p className="text-sm text-zinc-400">NIM: {performer.studentId}</p>
-              <p className="text-xs text-zinc-500">Program: {performer.studyProgram}</p>
+              <h4 className={cn("font-medium", isLight ? "text-[#2F2A24]" : "text-white")}>
+                {performer.name}
+              </h4>
+              <p className={cn("text-sm", isLight ? "text-[#5C5245]" : "text-zinc-400")}>
+                NIM: {performer.studentId}
+              </p>
+              <p className={cn("text-xs", isLight ? "text-[#7A6B5B]" : "text-zinc-500")}>
+                Program: {performer.studyProgram}
+              </p>
             </div>
-          </div>
-          <div className="text-right">
-            <p className="text-lg font-bold text-green-400">
-              {parseFloat(performer.score.toFixed(3))}
-            </p>
-            <p className="text-xs text-zinc-400">Match Score</p>
           </div>
         </div>
       ))}

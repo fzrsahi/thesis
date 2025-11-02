@@ -26,7 +26,6 @@ import {
   Zap,
   Star,
   TrendingUp,
-  Shield,
   Rocket,
 } from "lucide-react";
 import { useEffect, useRef, useMemo, useState } from "react";
@@ -37,7 +36,7 @@ import {
   PolarAngleAxis,
   PolarRadiusAxis,
   ResponsiveContainer,
-  Tooltip,
+  Tooltip as RechartsTooltip,
   Radar as RadarChartComponent,
   BarChart,
   Bar,
@@ -53,9 +52,9 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Badge } from "@/components/ui/badge";
 import Button from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   TypographyH1,
   TypographyH3,
@@ -67,7 +66,6 @@ import { cn } from "@/lib/utils";
 import {
   useMyRecomendation,
   formatDate,
-  getMatchScoreColor,
   type RecommendationResponse,
 } from "./hooks/useMyRecomendation";
 import { usePostMyRecomendation } from "./hooks/usePostMyRecomendation";
@@ -361,7 +359,7 @@ const ComparisonSpiderChart = ({
                 strokeWidth={2}
               />
             )}
-            <Tooltip
+            <RechartsTooltip
               contentStyle={{
                 backgroundColor: isLight ? "rgba(255, 255, 255, 0.95)" : "rgba(24, 24, 27, 0.95)",
                 border: isLight
@@ -374,10 +372,10 @@ const ComparisonSpiderChart = ({
                   ? "0 18px 32px rgba(214, 188, 160, 0.25)"
                   : "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
               }}
-              formatter={(value: number, name: string) => [
-                `${value.toFixed(1)}/10`,
-                name === "student" ? "Keterampilan Anda" : "Keterampilan yang Dibutuhkan",
-              ]}
+              formatter={(value: number, name: string) =>
+                // name sudah berisi "Keterampilan Anda" atau "Keterampilan yang Dibutuhkan" dari Radar component
+                [`${value.toFixed(1)}/10`, name]
+              }
             />
           </RadarChart>
         </ResponsiveContainer>
@@ -515,7 +513,7 @@ const SkillRequirementsChart = ({
               tickLine={false}
               axisLine={false}
             />
-            <Tooltip content={<CustomTooltip isLight={isLight} />} />
+            <RechartsTooltip content={<CustomTooltip isLight={isLight} />} />
             <Bar
               dataKey="value"
               radius={[0, 14, 14, 0]}
@@ -927,18 +925,7 @@ const RecommendationContent = ({
                 </CardTitle>
                 <CardDescription className={textSecondary}>
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-                    <div className="flex items-center space-x-2">
-                      <div className="h-2 w-2 rounded-full bg-gradient-to-r from-green-400 to-green-500 shadow-sm" />
-                      <span className={chipLabelClass}>Tinggi</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="h-2 w-2 rounded-full bg-gradient-to-r from-blue-400 to-blue-500 shadow-sm" />
-                      <span className={chipLabelClass}>Sedang</span>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div className="h-2 w-2 rounded-full bg-gradient-to-r from-orange-400 to-orange-500 shadow-sm" />
-                      <span className={chipLabelClass}>Rendah</span>
-                    </div>
+                    {/* Legend Labels */}
                   </div>
                 </CardDescription>
               </CardHeader>
@@ -951,6 +938,175 @@ const RecommendationContent = ({
                     transition={{ duration: 0.3 }}
                   >
                     <CardContent className="p-6">
+                      {/* Description Cards */}
+                      <div className="mb-6 grid grid-cols-1 gap-3 md:grid-cols-3">
+                        {/* Tinggi Card */}
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.1 }}
+                          className={cn(
+                            "group relative overflow-hidden rounded-lg border-l-4 p-3.5 backdrop-blur-sm transition-all",
+                            isLight
+                              ? "border-l-green-500 bg-gradient-to-r from-green-50/80 via-green-50/60 to-green-50/40 hover:shadow-[0_8px_20px_rgba(34,197,94,0.15)]"
+                              : "border-l-green-400 bg-gradient-to-r from-green-900/20 via-green-900/15 to-green-900/10 hover:from-green-900/30 hover:via-green-900/20 hover:to-green-900/15"
+                          )}
+                        >
+                          <div
+                            className={cn(
+                              "absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity group-hover:opacity-100",
+                              isLight
+                                ? "from-green-100/30 to-emerald-100/20"
+                                : "from-green-500/5 to-emerald-500/5"
+                            )}
+                          />
+                          <div className="relative">
+                            <div className="mb-2 flex items-center gap-2">
+                              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-r from-green-400 to-green-500 shadow-sm">
+                                <Star className="h-3.5 w-3.5 text-white" />
+                              </div>
+                              <span
+                                className={cn(
+                                  "text-sm font-semibold",
+                                  isLight ? "text-green-700" : "text-green-300"
+                                )}
+                              >
+                                Tinggi (0.80-0.90)
+                              </span>
+                            </div>
+                            <p
+                              className={cn(
+                                "text-xs leading-relaxed",
+                                isLight ? "text-[#5C5245]" : "text-zinc-300"
+                              )}
+                            >
+                              Kemampuan sangat baik dengan bukti prestasi dan pengalaman yang
+                              menonjol.
+                            </p>
+                            <p
+                              className={cn(
+                                "mt-1.5 text-[10px] leading-relaxed",
+                                isLight ? "text-[#7A6B5B]" : "text-zinc-400"
+                              )}
+                            >
+                              <span className="font-medium">Contoh:</span> Juara kompetisi nasional,
+                              pengalaman kerja/magang di perusahaan ternama, atau kontribusi
+                              signifikan pada proyek besar.
+                            </p>
+                          </div>
+                        </motion.div>
+
+                        {/* Sedang Card */}
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.2 }}
+                          className={cn(
+                            "group relative overflow-hidden rounded-lg border-l-4 p-3.5 backdrop-blur-sm transition-all",
+                            isLight
+                              ? "border-l-blue-500 bg-gradient-to-r from-blue-50/80 via-blue-50/60 to-blue-50/40 hover:shadow-[0_8px_20px_rgba(59,130,246,0.15)]"
+                              : "border-l-blue-400 bg-gradient-to-r from-blue-900/20 via-blue-900/15 to-blue-900/10 hover:from-blue-900/30 hover:via-blue-900/20 hover:to-blue-900/15"
+                          )}
+                        >
+                          <div
+                            className={cn(
+                              "absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity group-hover:opacity-100",
+                              isLight
+                                ? "from-blue-100/30 to-cyan-100/20"
+                                : "from-blue-500/5 to-cyan-500/5"
+                            )}
+                          />
+                          <div className="relative">
+                            <div className="mb-2 flex items-center gap-2">
+                              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-r from-blue-400 to-blue-500 shadow-sm">
+                                <Activity className="h-3.5 w-3.5 text-white" />
+                              </div>
+                              <span
+                                className={cn(
+                                  "text-sm font-semibold",
+                                  isLight ? "text-blue-700" : "text-blue-300"
+                                )}
+                              >
+                                Sedang (0.60-0.79)
+                              </span>
+                            </div>
+                            <p
+                              className={cn(
+                                "text-xs leading-relaxed",
+                                isLight ? "text-[#5C5245]" : "text-zinc-300"
+                              )}
+                            >
+                              Kemampuan baik dengan beberapa pengalaman dan prestasi yang relevan.
+                            </p>
+                            <p
+                              className={cn(
+                                "mt-1.5 text-[10px] leading-relaxed",
+                                isLight ? "text-[#7A6B5B]" : "text-zinc-400"
+                              )}
+                            >
+                              <span className="font-medium">Contoh:</span> Finalis kompetisi, aktif
+                              dalam organisasi/proyek tim, atau portofolio proyek yang cukup
+                              kompleks.
+                            </p>
+                          </div>
+                        </motion.div>
+
+                        {/* Rendah Card */}
+                        <motion.div
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.3 }}
+                          className={cn(
+                            "group relative overflow-hidden rounded-lg border-l-4 p-3.5 backdrop-blur-sm transition-all",
+                            isLight
+                              ? "border-l-orange-500 bg-gradient-to-r from-orange-50/80 via-orange-50/60 to-orange-50/40 hover:shadow-[0_8px_20px_rgba(239,68,68,0.15)]"
+                              : "border-l-orange-400 bg-gradient-to-r from-orange-900/20 via-orange-900/15 to-orange-900/10 hover:from-orange-900/30 hover:via-orange-900/20 hover:to-orange-900/15"
+                          )}
+                        >
+                          <div
+                            className={cn(
+                              "absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity group-hover:opacity-100",
+                              isLight
+                                ? "from-orange-100/30 to-red-100/20"
+                                : "from-orange-500/5 to-red-500/5"
+                            )}
+                          />
+                          <div className="relative">
+                            <div className="mb-2 flex items-center gap-2">
+                              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-r from-orange-400 to-orange-500 shadow-sm">
+                                <TrendingUp className="h-3.5 w-3.5 text-white" />
+                              </div>
+                              <span
+                                className={cn(
+                                  "text-sm font-semibold",
+                                  isLight ? "text-orange-700" : "text-orange-300"
+                                )}
+                              >
+                                Rendah (0.10-0.59)
+                              </span>
+                            </div>
+                            <p
+                              className={cn(
+                                "text-xs leading-relaxed",
+                                isLight ? "text-[#5C5245]" : "text-zinc-300"
+                              )}
+                            >
+                              Kemampuan dasar dengan pengalaman dari tugas kuliah atau proyek
+                              sederhana.
+                            </p>
+                            <p
+                              className={cn(
+                                "mt-1.5 text-[10px] leading-relaxed",
+                                isLight ? "text-[#7A6B5B]" : "text-zinc-400"
+                              )}
+                            >
+                              <span className="font-medium">Contoh:</span> Dapat menyelesaikan tugas
+                              standar, memahami konsep dasar, atau baru memulai pengembangan
+                              keterampilan.
+                            </p>
+                          </div>
+                        </motion.div>
+                      </div>
                       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                         {Object.entries(data.result.skillsProfile).map(
                           ([skill, { score, breakdown }], index) => (
@@ -981,15 +1137,170 @@ const RecommendationContent = ({
                                   >
                                     {skillNameMapping[skill] || skill}
                                   </span>
-                                  <span className="ml-2 text-sm font-bold text-purple-400">
+                                  <span
+                                    className={cn(
+                                      "ml-2 text-sm font-bold",
+                                      score >= 0.8
+                                        ? "text-green-400"
+                                        : score >= 0.6
+                                          ? "text-blue-400"
+                                          : "text-orange-400"
+                                    )}
+                                  >
                                     {(score * 10).toFixed(1)}/10
                                   </span>
                                 </div>
-                                <div className="relative mb-3 h-2 overflow-hidden rounded-full bg-zinc-700/50">
-                                  <div
-                                    className="absolute top-0 left-0 h-full rounded-full bg-gradient-to-r from-purple-500 to-pink-500 shadow-sm transition-all"
-                                    style={{ width: `${score * 100}%` }}
-                                  />
+                                <div className="relative mb-3">
+                                  {/* Progress Bar dengan Skala */}
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <div
+                                        className={cn(
+                                          "relative h-2.5 cursor-help overflow-hidden rounded-full",
+                                          isLight ? "bg-stone-200" : "bg-zinc-700/50"
+                                        )}
+                                      >
+                                        {/* Background dengan zona warna */}
+                                        <div className="absolute inset-0 flex">
+                                          {/* Zona Rendah (0-0.59) */}
+                                          <div
+                                            className="h-full"
+                                            style={{
+                                              width: "60%",
+                                              backgroundColor: isLight
+                                                ? "rgba(239, 68, 68, 0.2)"
+                                                : "rgba(239, 68, 68, 0.3)",
+                                            }}
+                                          />
+                                          {/* Zona Sedang (0.6-0.79) */}
+                                          <div
+                                            className="h-full"
+                                            style={{
+                                              width: "20%",
+                                              backgroundColor: isLight
+                                                ? "rgba(59, 130, 246, 0.2)"
+                                                : "rgba(59, 130, 246, 0.3)",
+                                            }}
+                                          />
+                                          {/* Zona Tinggi (0.8-1.0) */}
+                                          <div
+                                            className="h-full"
+                                            style={{
+                                              width: "20%",
+                                              backgroundColor: isLight
+                                                ? "rgba(34, 197, 94, 0.2)"
+                                                : "rgba(34, 197, 94, 0.3)",
+                                            }}
+                                          />
+                                        </div>
+
+                                        {/* Progress Fill */}
+                                        <div
+                                          className={cn(
+                                            "absolute top-0 left-0 z-10 h-full rounded-full shadow-sm transition-all",
+                                            score >= 0.8
+                                              ? "bg-gradient-to-r from-green-400 to-green-500"
+                                              : score >= 0.6
+                                                ? "bg-gradient-to-r from-blue-400 to-blue-500"
+                                                : "bg-gradient-to-r from-orange-400 to-orange-500"
+                                          )}
+                                          style={{ width: `${score * 100}%` }}
+                                        />
+
+                                        {/* Skala Markers */}
+                                        <div className="absolute inset-0 z-20 flex">
+                                          {/* Marker di 0% */}
+                                          <div
+                                            className={cn(
+                                              "absolute top-0 left-0 h-full w-[1px]",
+                                              isLight ? "bg-[#7A6B5B]/40" : "bg-zinc-500/50"
+                                            )}
+                                          />
+                                          {/* Marker di 60% (batas Rendah-Sedang) */}
+                                          <div
+                                            className={cn(
+                                              "absolute top-0 left-[60%] h-full w-[1px]",
+                                              isLight ? "bg-[#7A6B5B]/40" : "bg-zinc-500/50"
+                                            )}
+                                          />
+                                          {/* Marker di 80% (batas Sedang-Tinggi) */}
+                                          <div
+                                            className={cn(
+                                              "absolute top-0 left-[80%] h-full w-[1px]",
+                                              isLight ? "bg-[#7A6B5B]/40" : "bg-zinc-500/50"
+                                            )}
+                                          />
+                                          {/* Marker di 100% */}
+                                          <div
+                                            className={cn(
+                                              "absolute top-0 right-0 h-full w-[1px]",
+                                              isLight ? "bg-[#7A6B5B]/40" : "bg-zinc-500/50"
+                                            )}
+                                          />
+                                        </div>
+                                      </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent
+                                      side="top"
+                                      className={cn(
+                                        "max-w-xs",
+                                        isLight
+                                          ? "border-stone-300/70 bg-white text-[#2F2A24]"
+                                          : "border-zinc-700 bg-zinc-900 text-white"
+                                      )}
+                                    >
+                                      <div className="space-y-1">
+                                        <p
+                                          className={cn(
+                                            "font-semibold",
+                                            isLight ? "text-[#2F2A24]" : "text-white"
+                                          )}
+                                        >
+                                          {score >= 0.8
+                                            ? "Tinggi (0.80-0.90)"
+                                            : score >= 0.6
+                                              ? "Sedang (0.60-0.79)"
+                                              : "Rendah (0.10-0.59)"}
+                                        </p>
+                                        <p
+                                          className={cn(
+                                            "text-xs",
+                                            isLight ? "text-[#5C5245]" : "text-zinc-300"
+                                          )}
+                                        >
+                                          {score >= 0.8
+                                            ? "Kemampuan sangat baik dengan bukti prestasi dan pengalaman yang menonjol."
+                                            : score >= 0.6
+                                              ? "Kemampuan baik dengan beberapa pengalaman dan prestasi yang relevan."
+                                              : "Kemampuan dasar dengan pengalaman dari tugas kuliah atau proyek sederhana."}
+                                        </p>
+                                      </div>
+                                    </TooltipContent>
+                                  </Tooltip>
+
+                                  {/* Skala Label di bawah */}
+                                  <div className="mt-1 flex justify-between text-[10px]">
+                                    <span
+                                      className={cn(isLight ? "text-[#7A6B5B]" : "text-zinc-500")}
+                                    >
+                                      0
+                                    </span>
+                                    <span
+                                      className={cn(isLight ? "text-[#7A6B5B]" : "text-zinc-500")}
+                                    >
+                                      0.6
+                                    </span>
+                                    <span
+                                      className={cn(isLight ? "text-[#7A6B5B]" : "text-zinc-500")}
+                                    >
+                                      0.8
+                                    </span>
+                                    <span
+                                      className={cn(isLight ? "text-[#7A6B5B]" : "text-zinc-500")}
+                                    >
+                                      1.0
+                                    </span>
+                                  </div>
                                 </div>
                                 <TypographyP
                                   className={cn("text-sm leading-relaxed", textSecondary)}
@@ -1353,14 +1664,6 @@ const RecommendationContent = ({
                                 <CardTitle className={cn("text-xl", textPrimary)}>
                                   {rec.competitionName}
                                 </CardTitle>
-                                <div className="mt-1 flex items-center space-x-2">
-                                  <Badge
-                                    className={`text-xs text-white ${getMatchScoreColor(rec.matchScore.score)}`}
-                                  >
-                                    <Shield className="mr-1 h-3 w-3" />
-                                    {(rec.matchScore.score * 10).toFixed(1)}/10 Kecocokan
-                                  </Badge>
-                                </div>
                               </div>
                             </div>
                             <CardDescription className={cn("leading-relaxed", textSecondary)}>

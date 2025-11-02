@@ -1,6 +1,6 @@
 "use client";
 
-import { LogOut, User } from "lucide-react";
+import { LogOut, User, Sun, Moon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 
@@ -20,10 +20,13 @@ interface UserAvatarProps {
     email?: string;
     image?: string;
   };
+  isLight?: boolean;
+  setIsLight?: (value: boolean) => void;
 }
 
-export const UserAvatar = ({ user }: UserAvatarProps) => {
+export const UserAvatar = ({ user, isLight = false, setIsLight }: UserAvatarProps) => {
   const router = useRouter();
+
   const getInitials = () => {
     if (user?.name) {
       return user.name
@@ -41,6 +44,19 @@ export const UserAvatar = ({ user }: UserAvatarProps) => {
   const handleSignOut = async () => {
     await signOut();
     router.push("/auth/login");
+  };
+
+  const handleThemeToggle = () => {
+    if (setIsLight) {
+      const newTheme = !isLight;
+      setIsLight(newTheme);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("scout-theme", newTheme ? "light" : "dark");
+        window.dispatchEvent(
+          new CustomEvent("scout-theme-change", { detail: { theme: newTheme ? "light" : "dark" } })
+        );
+      }
+    }
   };
 
   return (
@@ -65,6 +81,20 @@ export const UserAvatar = ({ user }: UserAvatarProps) => {
           <DropdownMenuItem onClick={() => router.push("/profile")}>
             <User className="mr-2 h-4 w-4" />
             <span>Profile</span>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={handleThemeToggle}>
+            {isLight ? (
+              <>
+                <Moon className="mr-2 h-4 w-4" />
+                <span>Dark Mode</span>
+              </>
+            ) : (
+              <>
+                <Sun className="mr-2 h-4 w-4" />
+                <span>Light Mode</span>
+              </>
+            )}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem className="text-red-600" onClick={handleSignOut}>

@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import Input from "@/components/ui/input";
 import Label from "@/components/ui/label";
 import { TypographyH2, TypographyP } from "@/components/ui/typography";
+import { cn } from "@/lib/utils";
 
 const staggerContainer = {
   hidden: { opacity: 0 },
@@ -29,6 +30,7 @@ const staggerItem = {
 };
 
 const ProfilePage = () => {
+  const [isLight, setIsLight] = useState<boolean>(true);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -49,6 +51,22 @@ const ProfilePage = () => {
 
   useEffect(() => {
     fetchProfileData();
+  }, []);
+
+  useEffect(() => {
+    const stored = typeof window !== "undefined" ? localStorage.getItem("scout-theme") : null;
+    if (stored) setIsLight(stored === "light");
+  }, []);
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const customEvent = e as CustomEvent<{ theme: string }>;
+      const theme = customEvent?.detail?.theme;
+      if (!theme) return;
+      setIsLight(theme === "light");
+    };
+    window.addEventListener("scout-theme-change", handler as EventListener);
+    return () => window.removeEventListener("scout-theme-change", handler as EventListener);
   }, []);
 
   const fetchProfileData = async () => {
@@ -169,46 +187,81 @@ const ProfilePage = () => {
     );
   }
 
+  const textPrimary = isLight ? "text-[#2F2A24]" : "text-white";
+  const textSecondary = isLight ? "text-[#5C5245]" : "text-zinc-400";
+  const borderColor = isLight ? "border-stone-300" : "border-gray-500";
+  const cardBorder = isLight ? "border-stone-300/70" : "border-zinc-600/50";
+  const cardBg = isLight
+    ? "bg-white/90 backdrop-blur-sm"
+    : "bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900";
+  const cardText = isLight ? "text-[#2F2A24]" : "text-white";
+  const cardDesc = isLight ? "text-[#5C5245]" : "text-zinc-300";
+  const inputBorder = isLight ? "border-stone-300/70" : "border-zinc-600";
+  const inputBg = isLight ? "bg-white" : "bg-zinc-800";
+  const inputText = isLight ? "text-[#2F2A24]" : "text-white";
+  const inputPlaceholder = isLight ? "placeholder-zinc-400" : "placeholder-zinc-400";
+  const inputFocus = isLight ? "focus:border-[#F6A964]" : "focus:border-blue-500";
+  const labelText = isLight ? "text-[#5C5245]" : "text-zinc-300";
+  const iconText = isLight ? "text-zinc-500" : "text-zinc-400";
+
   return (
     <div className="w-full">
       <div className="mb-6">
-        <TypographyH2 className="flex items-center gap-2 text-zinc-900">
+        <TypographyH2 className={cn("flex items-center gap-2", textPrimary)}>
           <User className="h-10 w-10 font-extrabold" />
           Profile Settings
         </TypographyH2>
-        <TypographyP className="border-b border-gray-300 pb-4 text-zinc-900">
+        <TypographyP className={cn("border-b pb-4", borderColor, textSecondary)}>
           Kelola informasi profil dan keamanan akun Anda
         </TypographyP>
-        <div className="mb-6 border-t border-gray-500" />
+        <div className={cn("mb-6 border-t", borderColor)} />
       </div>
 
       <motion.div variants={staggerContainer} initial="hidden" animate="show" className="space-y-6">
         {/* Profile Information Card */}
         <motion.div variants={staggerItem}>
-          <Card className="border border-zinc-600/50 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 shadow-xl backdrop-blur-sm">
+          <Card
+            className={cn(
+              "border shadow-xl backdrop-blur-sm transition-colors",
+              cardBorder,
+              cardBg
+            )}
+          >
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-white">
+              <CardTitle className={cn("flex items-center gap-2", cardText)}>
                 <User className="h-5 w-5" />
                 Informasi Profil
               </CardTitle>
-              <CardDescription className="text-zinc-300">
+              <CardDescription className={cardDesc}>
                 Update informasi dasar profil Anda
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-zinc-300">
+                  <Label htmlFor="name" className={labelText}>
                     Nama Lengkap
                   </Label>
                   <div className="relative">
-                    <User className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-zinc-400" />
+                    <User
+                      className={cn(
+                        "absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform",
+                        iconText
+                      )}
+                    />
                     <Input
                       id="name"
                       type="text"
                       value={name}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
-                      className="border-zinc-600 bg-zinc-800 pl-10 text-white placeholder-zinc-400 focus:border-blue-500"
+                      className={cn(
+                        "pl-10 transition-colors",
+                        inputBorder,
+                        inputBg,
+                        inputText,
+                        inputPlaceholder,
+                        inputFocus
+                      )}
                       placeholder="Masukkan nama lengkap"
                     />
                   </div>
@@ -221,11 +274,16 @@ const ProfilePage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-zinc-300">
+                  <Label htmlFor="email" className={labelText}>
                     Email
                   </Label>
                   <div className="relative">
-                    <Mail className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-zinc-400" />
+                    <Mail
+                      className={cn(
+                        "absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform",
+                        iconText
+                      )}
+                    />
                     <Input
                       id="email"
                       type="email"
@@ -233,7 +291,14 @@ const ProfilePage = () => {
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                         setEmail(e.target.value)
                       }
-                      className="border-zinc-600 bg-zinc-800 pl-10 text-white placeholder-zinc-400 focus:border-blue-500"
+                      className={cn(
+                        "pl-10 transition-colors",
+                        inputBorder,
+                        inputBg,
+                        inputText,
+                        inputPlaceholder,
+                        inputFocus
+                      )}
                       placeholder="Masukkan email"
                     />
                   </div>
@@ -251,23 +316,34 @@ const ProfilePage = () => {
 
         {/* Password Change Card */}
         <motion.div variants={staggerItem}>
-          <Card className="border border-zinc-600/50 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 shadow-xl backdrop-blur-sm">
+          <Card
+            className={cn(
+              "border shadow-xl backdrop-blur-sm transition-colors",
+              cardBorder,
+              cardBg
+            )}
+          >
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-white">
+              <CardTitle className={cn("flex items-center gap-2", cardText)}>
                 <Shield className="h-5 w-5" />
                 Ubah Password
               </CardTitle>
-              <CardDescription className="text-zinc-300">
+              <CardDescription className={cardDesc}>
                 Kosongkan jika tidak ingin mengubah password
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="currentPassword" className="text-zinc-300">
+                <Label htmlFor="currentPassword" className={labelText}>
                   Password Saat Ini
                 </Label>
                 <div className="relative">
-                  <Lock className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-zinc-400" />
+                  <Lock
+                    className={cn(
+                      "absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform",
+                      iconText
+                    )}
+                  />
                   <Input
                     id="currentPassword"
                     type={showCurrentPassword ? "text" : "password"}
@@ -275,13 +351,23 @@ const ProfilePage = () => {
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                       setCurrentPassword(e.target.value)
                     }
-                    className="border-zinc-600 bg-zinc-800 pr-10 pl-10 text-white placeholder-zinc-400 focus:border-blue-500"
+                    className={cn(
+                      "pr-10 pl-10 transition-colors",
+                      inputBorder,
+                      inputBg,
+                      inputText,
+                      inputPlaceholder,
+                      inputFocus
+                    )}
                     placeholder="Masukkan password saat ini"
                   />
                   <button
                     type="button"
                     onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                    className="absolute top-1/2 right-3 -translate-y-1/2 transform text-zinc-400 hover:text-zinc-300"
+                    className={cn(
+                      "absolute top-1/2 right-3 -translate-y-1/2 transform transition-colors hover:opacity-70",
+                      iconText
+                    )}
                   >
                     {showCurrentPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -300,11 +386,16 @@ const ProfilePage = () => {
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="newPassword" className="text-zinc-300">
+                  <Label htmlFor="newPassword" className={labelText}>
                     Password Baru
                   </Label>
                   <div className="relative">
-                    <Lock className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-zinc-400" />
+                    <Lock
+                      className={cn(
+                        "absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform",
+                        iconText
+                      )}
+                    />
                     <Input
                       id="newPassword"
                       type={showNewPassword ? "text" : "password"}
@@ -312,13 +403,23 @@ const ProfilePage = () => {
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                         setNewPassword(e.target.value)
                       }
-                      className="border-zinc-600 bg-zinc-800 pr-10 pl-10 text-white placeholder-zinc-400 focus:border-blue-500"
+                      className={cn(
+                        "pr-10 pl-10 transition-colors",
+                        inputBorder,
+                        inputBg,
+                        inputText,
+                        inputPlaceholder,
+                        inputFocus
+                      )}
                       placeholder="Masukkan password baru"
                     />
                     <button
                       type="button"
                       onClick={() => setShowNewPassword(!showNewPassword)}
-                      className="absolute top-1/2 right-3 -translate-y-1/2 transform text-zinc-400 hover:text-zinc-300"
+                      className={cn(
+                        "absolute top-1/2 right-3 -translate-y-1/2 transform transition-colors hover:opacity-70",
+                        iconText
+                      )}
                     >
                       {showNewPassword ? (
                         <EyeOff className="h-4 w-4" />
@@ -336,11 +437,16 @@ const ProfilePage = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="confirmPassword" className="text-zinc-300">
+                  <Label htmlFor="confirmPassword" className={labelText}>
                     Konfirmasi Password
                   </Label>
                   <div className="relative">
-                    <Lock className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-zinc-400" />
+                    <Lock
+                      className={cn(
+                        "absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform",
+                        iconText
+                      )}
+                    />
                     <Input
                       id="confirmPassword"
                       type={showConfirmPassword ? "text" : "password"}
@@ -348,13 +454,23 @@ const ProfilePage = () => {
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                         setConfirmPassword(e.target.value)
                       }
-                      className="border-zinc-600 bg-zinc-800 pr-10 pl-10 text-white placeholder-zinc-400 focus:border-blue-500"
+                      className={cn(
+                        "pr-10 pl-10 transition-colors",
+                        inputBorder,
+                        inputBg,
+                        inputText,
+                        inputPlaceholder,
+                        inputFocus
+                      )}
                       placeholder="Konfirmasi password baru"
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute top-1/2 right-3 -translate-y-1/2 transform text-zinc-400 hover:text-zinc-300"
+                      className={cn(
+                        "absolute top-1/2 right-3 -translate-y-1/2 transform transition-colors hover:opacity-70",
+                        iconText
+                      )}
                     >
                       {showConfirmPassword ? (
                         <EyeOff className="h-4 w-4" />
@@ -380,7 +496,12 @@ const ProfilePage = () => {
           <Button
             onClick={handleSaveProfile}
             disabled={saving}
-            className="rounded-lg bg-gradient-to-r from-black to-black px-8 py-2 font-medium text-white transition-all duration-200 hover:from-black hover:to-black disabled:cursor-not-allowed disabled:opacity-50"
+            className={cn(
+              "rounded-lg px-8 py-2 font-medium text-white transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50",
+              isLight
+                ? "bg-gradient-to-r from-[#F6A964] to-[#E36C3A] hover:from-[#F2A558] hover:to-[#D86330]"
+                : "bg-gradient-to-r from-black to-black hover:from-black hover:to-black"
+            )}
           >
             {saving ? (
               <div className="flex items-center gap-2">

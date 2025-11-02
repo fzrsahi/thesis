@@ -5,6 +5,7 @@ import { Users, Trophy, BookOpen, Target, BarChart3, Activity } from "lucide-rea
 import { useState, useEffect } from "react";
 
 import { TypographyH2, TypographyP } from "@/components/ui/typography";
+import { cn } from "@/lib/utils";
 
 import { useDashboardStats } from "./hooks/useDashboardStats";
 
@@ -57,6 +58,7 @@ const StatsCard = ({
   change,
   changeType = "positive",
   color = "blue",
+  isLight = false,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   title: string;
@@ -64,6 +66,7 @@ const StatsCard = ({
   change?: string;
   changeType?: "positive" | "negative" | "neutral";
   color?: "blue" | "green" | "purple" | "orange" | "red";
+  isLight?: boolean;
 }) => {
   const colorClasses = {
     blue: "from-blue-500 to-blue-600",
@@ -74,21 +77,30 @@ const StatsCard = ({
   };
 
   const changeClasses = {
-    positive: "text-green-600 bg-green-100",
-    negative: "text-red-600 bg-red-100",
-    neutral: "text-gray-600 bg-gray-100",
+    positive: isLight ? "text-green-700 bg-green-100" : "text-green-600 bg-green-100",
+    negative: isLight ? "text-red-700 bg-red-100" : "text-red-600 bg-red-100",
+    neutral: isLight ? "text-gray-700 bg-gray-100" : "text-gray-600 bg-gray-100",
   };
 
   return (
     <motion.div
       variants={staggerItem}
-      className="group relative overflow-hidden rounded-xl border border-zinc-600/50 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 p-6 shadow-xl backdrop-blur-sm transition-all duration-300 hover:shadow-2xl"
+      className={cn(
+        "group relative overflow-hidden rounded-xl border p-6 shadow-xl backdrop-blur-sm transition-all duration-300 hover:shadow-2xl",
+        isLight
+          ? "border-stone-300/70 bg-white/90 hover:border-stone-400/80"
+          : "border-zinc-600/50 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900"
+      )}
     >
       <div className="flex items-center justify-between">
         <div className="flex-1">
-          <p className="mb-1 text-sm font-medium text-zinc-300">{title}</p>
+          <p
+            className={cn("mb-1 text-sm font-medium", isLight ? "text-[#5C5245]" : "text-zinc-300")}
+          >
+            {title}
+          </p>
           <div className="flex items-baseline space-x-2">
-            <p className="text-2xl font-bold text-white">
+            <p className={cn("text-2xl font-bold", isLight ? "text-[#2F2A24]" : "text-white")}>
               {typeof value === "number" ? <AnimatedCounter end={value} /> : value}
             </p>
             {change && (
@@ -114,42 +126,82 @@ const StatsCard = ({
 const SimpleBarChart = ({
   data,
   title,
+  isLight = false,
 }: {
   data: { label: string; value: number; color: string }[];
   title: string;
+  isLight?: boolean;
 }) => {
   const maxValue = Math.max(...data.map((d) => d.value));
 
   return (
     <motion.div
       variants={staggerItem}
-      className="rounded-xl border border-zinc-600/50 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 p-6 text-white shadow-xl backdrop-blur-sm"
+      className={cn(
+        "rounded-xl border p-6 shadow-xl backdrop-blur-sm",
+        isLight
+          ? "border-stone-300/70 bg-white/90"
+          : "border-zinc-600/50 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900"
+      )}
     >
-      <h3 className="mb-4 text-lg font-semibold text-white">{title}</h3>
+      <h3 className={cn("mb-4 text-lg font-semibold", isLight ? "text-[#2F2A24]" : "text-white")}>
+        {title}
+      </h3>
       <div className="space-y-3">
         {data.map((item) => (
           <div key={item.label} className="group relative flex items-center space-x-3">
             <div className="min-w-0 flex-1">
-              <div className="text-sm text-zinc-300 transition-colors group-hover:text-white">
+              <div
+                className={cn(
+                  "text-sm transition-colors",
+                  isLight
+                    ? "text-[#5C5245] group-hover:text-[#2F2A24]"
+                    : "text-zinc-300 group-hover:text-white"
+                )}
+              >
                 {item.label}
               </div>
             </div>
-            <div className="relative h-6 w-32 overflow-hidden rounded-full bg-zinc-700/50">
+            <div
+              className={cn(
+                "relative h-6 w-32 overflow-hidden rounded-full",
+                isLight ? "bg-stone-200" : "bg-zinc-700/50"
+              )}
+            >
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${(item.value / maxValue) * 100}%` }}
                 transition={{ duration: 1, delay: data.indexOf(item) * 0.1 }}
                 className={`h-full rounded-full ${item.color}`}
               />
-              <span className="absolute inset-0 flex items-center justify-center text-xs font-medium text-white">
+              <span
+                className={cn(
+                  "absolute inset-0 flex items-center justify-center text-xs font-medium",
+                  isLight ? "text-[#2F2A24]" : "text-white"
+                )}
+              >
                 {item.value}
               </span>
             </div>
             {/* Tooltip */}
-            <div className="absolute bottom-full left-0 z-10 mb-2 hidden rounded-lg bg-zinc-800 px-3 py-2 text-sm text-white shadow-lg group-hover:block">
+            <div
+              className={cn(
+                "absolute bottom-full left-0 z-10 mb-2 hidden rounded-lg px-3 py-2 text-sm shadow-lg group-hover:block",
+                isLight
+                  ? "border border-stone-300/70 bg-white/95 text-[#2F2A24]"
+                  : "bg-zinc-800 text-white"
+              )}
+            >
               <div className="font-medium">{item.label}</div>
-              <div className="text-zinc-300">{item.value} rekomendasi</div>
-              <div className="absolute top-full left-4 h-0 w-0 border-t-4 border-r-4 border-l-4 border-transparent border-t-zinc-800" />
+              <div className={isLight ? "text-[#5C5245]" : "text-zinc-300"}>
+                {item.value} rekomendasi
+              </div>
+              <div
+                className={cn(
+                  "absolute top-full left-4 h-0 w-0 border-t-4 border-r-4 border-l-4 border-transparent",
+                  isLight ? "border-t-white/95" : "border-t-zinc-800"
+                )}
+              />
             </div>
           </div>
         ))}
@@ -161,6 +213,7 @@ const SimpleBarChart = ({
 // Recent Activity Component
 const RecentActivity = ({
   activities,
+  isLight = false,
 }: {
   activities: Array<{
     id: number;
@@ -170,6 +223,7 @@ const RecentActivity = ({
     studentName?: string | null;
     timestamp: string;
   }>;
+  isLight?: boolean;
 }) => {
   const formatTimeAgo = (timestamp: string) => {
     const now = new Date();
@@ -205,24 +259,31 @@ const RecentActivity = ({
   const getActivityColor = (type: string) => {
     switch (type) {
       case "competition":
-        return "text-blue-600 bg-blue-100";
+        return isLight ? "text-blue-700 bg-blue-100" : "text-blue-600 bg-blue-100";
       case "registration":
-        return "text-green-600 bg-green-100";
+        return isLight ? "text-green-700 bg-green-100" : "text-green-600 bg-green-100";
       case "upload":
-        return "text-purple-600 bg-purple-100";
+        return isLight ? "text-purple-700 bg-purple-100" : "text-purple-600 bg-purple-100";
       case "recommendation":
-        return "text-orange-600 bg-orange-100";
+        return isLight ? "text-orange-700 bg-orange-100" : "text-orange-600 bg-orange-100";
       default:
-        return "text-gray-600 bg-gray-100";
+        return isLight ? "text-gray-700 bg-gray-100" : "text-gray-600 bg-gray-100";
     }
   };
 
   return (
     <motion.div
       variants={staggerItem}
-      className="rounded-xl border border-zinc-600/50 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900 p-6 text-white shadow-xl backdrop-blur-sm"
+      className={cn(
+        "rounded-xl border p-6 shadow-xl backdrop-blur-sm",
+        isLight
+          ? "border-stone-300/70 bg-white/90"
+          : "border-zinc-600/50 bg-gradient-to-br from-zinc-900 via-zinc-800 to-zinc-900"
+      )}
     >
-      <h3 className="mb-4 text-lg font-semibold text-white">Aktivitas Terbaru</h3>
+      <h3 className={cn("mb-4 text-lg font-semibold", isLight ? "text-[#2F2A24]" : "text-white")}>
+        Aktivitas Terbaru
+      </h3>
       <div className="space-y-4">
         {activities.length > 0 ? (
           activities.map((activity) => {
@@ -235,16 +296,20 @@ const RecentActivity = ({
                   <Icon className="h-4 w-4" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-white">
+                  <p
+                    className={cn("text-sm font-medium", isLight ? "text-[#2F2A24]" : "text-white")}
+                  >
                     {activity.action}
-                    {activity.competitionName && (
-                      <span className="text-zinc-300"> - {activity.competitionName}</span>
-                    )}
-                    {activity.studentName && (
-                      <span className="text-zinc-300"> ({activity.studentName})</span>
+                    {(activity.competitionName || activity.studentName) && (
+                      <span className={isLight ? "text-[#5C5245]" : "text-zinc-300"}>
+                        {activity.competitionName && ` - ${activity.competitionName}`}
+                        {activity.studentName && ` (${activity.studentName})`}
+                      </span>
                     )}
                   </p>
-                  <p className="text-xs text-zinc-400">{formatTimeAgo(activity.timestamp)}</p>
+                  <p className={cn("text-xs", isLight ? "text-[#7A6B5B]" : "text-zinc-400")}>
+                    {formatTimeAgo(activity.timestamp)}
+                  </p>
                 </div>
               </div>
             );
@@ -252,8 +317,12 @@ const RecentActivity = ({
         ) : (
           <div className="flex items-center justify-center py-8">
             <div className="text-center">
-              <Activity className="mx-auto h-12 w-12 text-zinc-500" />
-              <p className="mt-2 text-sm text-zinc-400">Belum ada aktivitas terbaru</p>
+              <Activity
+                className={cn("mx-auto h-12 w-12", isLight ? "text-[#7A6B5B]" : "text-zinc-500")}
+              />
+              <p className={cn("mt-2 text-sm", isLight ? "text-[#7A6B5B]" : "text-zinc-400")}>
+                Belum ada aktivitas terbaru
+              </p>
             </div>
           </div>
         )}
@@ -264,6 +333,23 @@ const RecentActivity = ({
 
 const DashboardPage = () => {
   const { data: dashboardStats, isLoading, error } = useDashboardStats();
+  const [isLight, setIsLight] = useState<boolean>(true);
+
+  useEffect(() => {
+    const stored = typeof window !== "undefined" ? localStorage.getItem("scout-theme") : null;
+    if (stored) setIsLight(stored === "light");
+  }, []);
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const customEvent = e as CustomEvent<{ theme: string }>;
+      const theme = customEvent?.detail?.theme;
+      if (!theme) return;
+      setIsLight(theme === "light");
+    };
+    window.addEventListener("scout-theme-change", handler as EventListener);
+    return () => window.removeEventListener("scout-theme-change", handler as EventListener);
+  }, []);
 
   // Transform API data to component format
   const statsData = dashboardStats
@@ -313,18 +399,23 @@ const DashboardPage = () => {
         "bg-gray-500",
     })) || [];
 
+  const textPrimary = isLight ? "text-[#2F2A24]" : "text-white";
+  const textSecondary = isLight ? "text-[#5C5245]" : "text-zinc-400";
+  const borderColor = isLight ? "border-stone-300" : "border-gray-500";
+  const loadingBg = isLight ? "bg-stone-200" : "bg-zinc-800";
+
   if (isLoading) {
     return (
       <div className="w-full">
         <div className="mb-6">
-          <TypographyH2 className="flex items-center gap-2 truncate text-zinc-900">
+          <TypographyH2 className={cn("flex items-center gap-2 truncate", textPrimary)}>
             <BarChart3 className="h-10 w-10 font-extrabold" />
             Dashboard Statistik
           </TypographyH2>
-          <TypographyP className="border-b border-gray-300 pb-4 text-zinc-900">
+          <TypographyP className={cn("border-b pb-4", borderColor, textSecondary)}>
             Selamat datang di dashboard sistem rekomendasi kompetisi akademik
           </TypographyP>
-          <div className="mb-6 border-t border-gray-500" />
+          <div className={cn("mb-6 border-t", borderColor)} />
         </div>
 
         <div className="flex justify-center">
@@ -334,15 +425,15 @@ const DashboardPage = () => {
               {Array.from({ length: 3 }, (_, index) => (
                 <div
                   key={`loading-card-${Date.now()}-${index}`}
-                  className="h-32 w-full animate-pulse rounded-lg bg-zinc-200"
+                  className={cn("h-32 w-full animate-pulse rounded-lg", loadingBg)}
                 />
               ))}
             </div>
 
             {/* Loading Charts */}
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-              <div className="h-80 w-full animate-pulse rounded-lg bg-zinc-200" />
-              <div className="h-80 w-full animate-pulse rounded-lg bg-zinc-200" />
+              <div className={cn("h-80 w-full animate-pulse rounded-lg", loadingBg)} />
+              <div className={cn("h-80 w-full animate-pulse rounded-lg", loadingBg)} />
             </div>
           </div>
         </div>
@@ -354,20 +445,22 @@ const DashboardPage = () => {
     return (
       <div className="w-full">
         <div className="mb-6">
-          <TypographyH2 className="flex items-center gap-2 truncate text-zinc-900">
+          <TypographyH2 className={cn("flex items-center gap-2 truncate", textPrimary)}>
             <BarChart3 className="h-10 w-10 font-extrabold" />
             Dashboard Statistik
           </TypographyH2>
-          <TypographyP className="border-b border-gray-300 pb-4 text-zinc-900">
+          <TypographyP className={cn("border-b pb-4", borderColor, textSecondary)}>
             Selamat datang di dashboard sistem rekomendasi kompetisi akademik
           </TypographyP>
-          <div className="mb-6 border-t border-gray-500" />
+          <div className={cn("mb-6 border-t", borderColor)} />
         </div>
 
         <div className="flex justify-center">
           <div className="w-full">
-            <div className="rounded-lg bg-red-50 p-6 text-center">
-              <TypographyP className="text-red-600">
+            <div
+              className={cn("rounded-lg p-6 text-center", isLight ? "bg-red-50" : "bg-red-900/20")}
+            >
+              <TypographyP className={isLight ? "text-red-600" : "text-red-400"}>
                 Gagal memuat data dashboard. Silakan coba lagi.
               </TypographyP>
             </div>
@@ -380,14 +473,14 @@ const DashboardPage = () => {
   return (
     <div className="w-full">
       <div className="mb-6">
-        <TypographyH2 className="flex items-center gap-2 truncate text-zinc-900">
+        <TypographyH2 className={cn("flex items-center gap-2 truncate", textPrimary)}>
           <BarChart3 className="h-10 w-10 font-extrabold" />
           Dashboard Statistik
         </TypographyH2>
-        <TypographyP className="border-b border-gray-300 pb-4 text-zinc-900">
+        <TypographyP className={cn("border-b pb-4", borderColor, textSecondary)}>
           Selamat datang di dashboard sistem rekomendasi kompetisi akademik
         </TypographyP>
-        <div className="mb-6 border-t border-gray-500" />
+        <div className={cn("mb-6 border-t", borderColor)} />
       </div>
 
       <div className="flex justify-center">
@@ -400,7 +493,7 @@ const DashboardPage = () => {
             className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
           >
             {statsData.map((stat) => (
-              <StatsCard key={stat.title} {...stat} />
+              <StatsCard key={stat.title} {...stat} isLight={isLight} />
             ))}
           </motion.div>
 
@@ -412,10 +505,10 @@ const DashboardPage = () => {
             className="grid grid-cols-1 gap-6 lg:grid-cols-2"
           >
             {/* Chart */}
-            <SimpleBarChart data={chartData} title="Kompetisi Populer" />
+            <SimpleBarChart data={chartData} title="Kompetisi Populer" isLight={isLight} />
 
             {/* Recent Activity */}
-            <RecentActivity activities={dashboardStats?.recentActivity || []} />
+            <RecentActivity activities={dashboardStats?.recentActivity || []} isLight={isLight} />
           </motion.div>
         </div>
       </div>

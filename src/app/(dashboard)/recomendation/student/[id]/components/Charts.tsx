@@ -38,9 +38,23 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { TypographyH3, TypographyP } from "@/components/ui/typography";
+import { cn } from "@/lib/utils";
+
+// Mapping nama skill ke bahasa Indonesia
+const skillNameMapping: Record<string, string> = {
+  technicalExpertise: "Keahlian Teknis",
+  scientificWriting: "Penulisan Ilmiah",
+  problemSolving: "Pemecahan Masalah",
+  creativityInnovation: "Kreativitas & Inovasi",
+  communication: "Komunikasi",
+  teamworkCollaboration: "Kerja Tim & Kolaborasi",
+  projectManagement: "Manajemen Proyek",
+  businessAcumen: "Pemahaman Bisnis",
+  designThinking: "Design Thinking",
+  selfLearning: "Pembelajaran Mandiri",
+};
 
 // Helper functions
 const formatDate = (dateString: string | null | undefined) => {
@@ -51,12 +65,6 @@ const formatDate = (dateString: string | null | undefined) => {
     month: "short",
     day: "numeric",
   }).format(date);
-};
-
-const getMatchScoreColor = (score: number) => {
-  if (score >= 0.8) return "bg-green-500";
-  if (score >= 0.6) return "bg-yellow-500";
-  return "bg-red-500";
 };
 
 // Score Distribution Chart
@@ -214,18 +222,34 @@ interface CompetitionData {
 export const SkillComparisonChart = ({
   data,
   selectedCompetition,
+  isLight = false,
 }: {
   data: SkillComparisonData[];
   selectedCompetition?: CompetitionData | null;
+  isLight?: boolean;
 }) => {
   if (!data || data.length === 0) {
     return (
-      <div className="flex h-[400px] items-center justify-center rounded-xl border border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50 backdrop-blur-sm">
+      <div
+        className={cn(
+          "flex h-[400px] items-center justify-center rounded-xl border backdrop-blur-sm",
+          isLight
+            ? "border-stone-300/70 bg-stone-50/80"
+            : "border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50"
+        )}
+      >
         <div className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-zinc-700 to-zinc-800">
-            <Target className="h-8 w-8 text-zinc-400" />
+          <div
+            className={cn(
+              "mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full",
+              isLight ? "bg-stone-200" : "bg-gradient-to-r from-zinc-700 to-zinc-800"
+            )}
+          >
+            <Target className={cn("h-8 w-8", isLight ? "text-[#5C5245]" : "text-zinc-400")} />
           </div>
-          <p className="text-sm text-zinc-400">Tidak ada data tersedia</p>
+          <p className={cn("text-sm", isLight ? "text-[#5C5245]" : "text-zinc-400")}>
+            Tidak ada data tersedia
+          </p>
         </div>
       </div>
     );
@@ -323,17 +347,26 @@ export const SkillComparisonChart = ({
   const competitionSkills = generateCompetitionSkills(selectedCompetition || null);
 
   const chartData = data.map((item) => ({
-    skill: item.skill.replace(/_/g, " "),
+    skill: skillNameMapping[item.skill] || item.skill.replace(/_/g, " "),
     student: item.studentScore,
     competition: competitionSkills[item.skill] || 0,
   }));
 
   return (
-    <div className="relative h-[400px] w-full overflow-hidden rounded-xl border border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50 backdrop-blur-sm">
+    <div
+      className={cn(
+        "relative h-[400px] w-full overflow-hidden rounded-xl border backdrop-blur-sm",
+        isLight
+          ? "border-stone-300/70 bg-stone-50/80"
+          : "border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50"
+      )}
+    >
       {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-500/20 via-transparent to-purple-500/20" />
-      </div>
+      {!isLight && (
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-500/20 via-transparent to-purple-500/20" />
+        </div>
+      )}
 
       <div className="relative h-full w-full p-6">
         <ResponsiveContainer width="100%" height="100%">
@@ -354,17 +387,25 @@ export const SkillComparisonChart = ({
                 <stop offset="100%" stopColor="#ef4444" stopOpacity={0.3} />
               </linearGradient>
             </defs>
-            <PolarGrid stroke="rgba(255, 255, 255, 0.1)" strokeWidth={1} strokeDasharray="2 2" />
+            <PolarGrid
+              stroke={isLight ? "rgba(0,0,0,0.1)" : "rgba(255, 255, 255, 0.1)"}
+              strokeWidth={1}
+              strokeDasharray="2 2"
+            />
             <PolarAngleAxis
               dataKey="skill"
-              tick={{ fill: "#e4e4e7", fontSize: 11, fontWeight: 500 }}
-              stroke="rgba(255, 255, 255, 0.1)"
+              tick={{
+                fill: isLight ? "#2F2A24" : "#e4e4e7",
+                fontSize: 11,
+                fontWeight: 500,
+              }}
+              stroke={isLight ? "rgba(0,0,0,0.1)" : "rgba(255, 255, 255, 0.1)"}
             />
             <PolarRadiusAxis
               angle={30}
               domain={[0, 10]}
-              tick={{ fill: "#a1a1aa", fontSize: 10 }}
-              stroke="rgba(255, 255, 255, 0.1)"
+              tick={{ fill: isLight ? "#5C5245" : "#a1a1aa", fontSize: 10 }}
+              stroke={isLight ? "rgba(0,0,0,0.1)" : "rgba(255, 255, 255, 0.1)"}
               tickCount={6}
             />
             <Radar
@@ -387,18 +428,22 @@ export const SkillComparisonChart = ({
             )}
             <Tooltip
               contentStyle={{
-                backgroundColor: "rgba(24, 24, 27, 0.95)",
-                border: "1px solid rgba(63, 63, 70, 0.5)",
+                backgroundColor: isLight ? "rgba(255, 255, 255, 0.95)" : "rgba(24, 24, 27, 0.95)",
+                border: isLight
+                  ? "1px solid rgba(214, 211, 209, 0.5)"
+                  : "1px solid rgba(63, 63, 70, 0.5)",
                 borderRadius: "0.75rem",
-                color: "#fff",
+                color: isLight ? "#2F2A24" : "#fff",
                 backdropFilter: "blur(10px)",
                 boxShadow:
                   "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
               }}
-              formatter={(value: number, name: string) => [
-                `${value.toFixed(1)}/10`,
-                name === "student" ? "Keterampilan Mahasiswa" : "Keterampilan yang Dibutuhkan",
-              ]}
+              formatter={(value: number, name: string) =>
+                // name sudah berisi "Keterampilan Mahasiswa" atau "Keterampilan yang Dibutuhkan" dari Radar component
+                // Tapi kita perlu memastikan menggunakan name yang benar berdasarkan dataKey
+                // Untuk keamanan, kita cek apakah name sudah sesuai, jika tidak, gunakan dataKey
+                [`${value.toFixed(1)}/10`, name]
+              }
             />
           </RadarChart>
         </ResponsiveContainer>
@@ -439,11 +484,13 @@ export const TopCompetitionsList = ({
   competitions,
   onCompetitionSelect,
   selectedCompetition,
+  isLight = false,
 }: {
   data: TopCompetitionData[];
   competitions: CompetitionData[];
   onCompetitionSelect?: (competition: CompetitionData) => void;
   selectedCompetition?: CompetitionData | null;
+  isLight?: boolean;
 }) => {
   const displayData =
     data.length > 0
@@ -473,10 +520,17 @@ export const TopCompetitionsList = ({
 
   if (!displayData || displayData.length === 0) {
     return (
-      <div className="flex h-64 items-center justify-center rounded-lg border border-zinc-600 bg-zinc-800/50">
+      <div
+        className={cn(
+          "flex h-64 items-center justify-center rounded-lg border",
+          isLight ? "border-stone-300/70 bg-stone-50/80" : "border-zinc-600 bg-zinc-800/50"
+        )}
+      >
         <div className="text-center">
-          <Star className="mx-auto h-12 w-12 text-zinc-400" />
-          <p className="mt-2 text-sm text-zinc-400">Tidak ada data tersedia</p>
+          <Star className={cn("mx-auto h-12 w-12", isLight ? "text-[#5C5245]" : "text-zinc-400")} />
+          <p className={cn("mt-2 text-sm", isLight ? "text-[#5C5245]" : "text-zinc-400")}>
+            Tidak ada data tersedia
+          </p>
         </div>
       </div>
     );
@@ -499,11 +553,16 @@ export const TopCompetitionsList = ({
           transition={{ delay: 0.1, duration: 0.3 }}
         >
           <Card
-            className={`group relative cursor-pointer overflow-hidden border transition-all hover:shadow-2xl ${
+            className={cn(
+              "group relative cursor-pointer overflow-hidden border backdrop-blur-sm transition-all hover:shadow-2xl",
               selectedCompetition?.id === item.competition.id
-                ? "border-blue-500/50 bg-gradient-to-br from-blue-900/20 to-purple-900/20 ring-2 shadow-blue-500/25 ring-blue-500/50"
-                : "border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50 hover:border-zinc-700/50 hover:from-zinc-800/50 hover:to-zinc-700/50"
-            } backdrop-blur-sm`}
+                ? isLight
+                  ? "border-blue-400/50 bg-blue-50/80 ring-2 ring-blue-400/30"
+                  : "border-blue-500/50 bg-gradient-to-br from-blue-900/20 to-purple-900/20 ring-2 shadow-blue-500/25 ring-blue-500/50"
+                : isLight
+                  ? "border-stone-300/70 bg-white/90 hover:border-stone-400/70 hover:bg-stone-50/90"
+                  : "border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50 hover:border-zinc-700/50 hover:from-zinc-800/50 hover:to-zinc-700/50"
+            )}
             onClick={() => {
               const selectedComp = competitions.find((c) => c.id === item.competition.id);
               if (selectedComp) {
@@ -552,17 +611,16 @@ export const TopCompetitionsList = ({
                       </div>
                     </div>
                     <div>
-                      <CardTitle className="text-xl text-white">{item.competition.title}</CardTitle>
-                      <div className="mt-1 flex items-center space-x-2">
-                        <Badge
-                          className={`text-xs text-white ${getMatchScoreColor(item.matchScore)}`}
-                        >
-                          {(item.matchScore * 10).toFixed(1)}/10 Kecocokan
-                        </Badge>
-                      </div>
+                      <CardTitle
+                        className={cn("text-xl", isLight ? "text-[#2F2A24]" : "text-white")}
+                      >
+                        {item.competition.title}
+                      </CardTitle>
                     </div>
                   </div>
-                  <CardDescription className="leading-relaxed text-zinc-300">
+                  <CardDescription
+                    className={cn("leading-relaxed", isLight ? "text-[#5C5245]" : "text-zinc-300")}
+                  >
                     {item.competition.description ||
                       "Kompetisi yang sangat cocok dengan profil mahasiswa ini."}
                   </CardDescription>
@@ -579,7 +637,7 @@ export const TopCompetitionsList = ({
                         : "bg-zinc-500"
                     }`}
                   />
-                  <span className="text-xs text-zinc-400">
+                  <span className={cn("text-xs", isLight ? "text-[#5C5245]" : "text-zinc-400")}>
                     {selectedCompetition?.id === item.competition.id
                       ? "Dipilih"
                       : "Klik untuk detail"}
@@ -589,8 +647,16 @@ export const TopCompetitionsList = ({
             </CardHeader>
             <CardContent className="relative">
               <Accordion type="single" collapsible className="space-y-4">
-                <AccordionItem value="competition-details" className="border-zinc-700/50">
-                  <AccordionTrigger className="group text-white hover:no-underline">
+                <AccordionItem
+                  value="competition-details"
+                  className={cn(isLight ? "border-stone-300/50" : "border-zinc-700/50")}
+                >
+                  <AccordionTrigger
+                    className={cn(
+                      "group hover:no-underline",
+                      isLight ? "text-[#2F2A24]" : "text-white"
+                    )}
+                  >
                     <div className="flex items-center space-x-3">
                       <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 shadow-lg">
                         <Calendar className="h-4 w-4" />
@@ -601,44 +667,145 @@ export const TopCompetitionsList = ({
                   <AccordionContent>
                     <div className="space-y-6 pl-11">
                       <div className="space-y-6">
-                        <TypographyP className="text-sm leading-relaxed text-zinc-300">
+                        <TypographyP
+                          className={cn(
+                            "text-sm leading-relaxed",
+                            isLight ? "text-[#5C5245]" : "text-zinc-300"
+                          )}
+                        >
                           {item.competition.description ||
                             "Kompetisi yang sangat cocok dengan profil mahasiswa ini."}
                         </TypographyP>
 
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                          <div className="flex items-center space-x-3 rounded-lg bg-gradient-to-r from-emerald-500/10 to-teal-500/10 p-3 backdrop-blur-sm">
-                            <Calendar className="h-4 w-4 text-emerald-400" />
+                          <div
+                            className={cn(
+                              "flex items-center space-x-3 rounded-lg p-3 backdrop-blur-sm",
+                              isLight
+                                ? "bg-emerald-50/80"
+                                : "bg-gradient-to-r from-emerald-500/10 to-teal-500/10"
+                            )}
+                          >
+                            <Calendar
+                              className={cn(
+                                "h-4 w-4",
+                                isLight ? "text-emerald-600" : "text-emerald-400"
+                              )}
+                            />
                             <div>
-                              <span className="text-xs text-zinc-400">Mulai</span>
-                              <p className="text-sm font-medium text-zinc-300">
+                              <span
+                                className={cn(
+                                  "text-xs",
+                                  isLight ? "text-[#5C5245]" : "text-zinc-400"
+                                )}
+                              >
+                                Mulai
+                              </span>
+                              <p
+                                className={cn(
+                                  "text-sm font-medium",
+                                  isLight ? "text-[#2F2A24]" : "text-zinc-300"
+                                )}
+                              >
                                 {formatDate(item.competition.startDate)}
                               </p>
                             </div>
                           </div>
-                          <div className="flex items-center space-x-3 rounded-lg bg-gradient-to-r from-emerald-500/10 to-teal-500/10 p-3 backdrop-blur-sm">
-                            <Calendar className="h-4 w-4 text-emerald-400" />
+                          <div
+                            className={cn(
+                              "flex items-center space-x-3 rounded-lg p-3 backdrop-blur-sm",
+                              isLight
+                                ? "bg-emerald-50/80"
+                                : "bg-gradient-to-r from-emerald-500/10 to-teal-500/10"
+                            )}
+                          >
+                            <Calendar
+                              className={cn(
+                                "h-4 w-4",
+                                isLight ? "text-emerald-600" : "text-emerald-400"
+                              )}
+                            />
                             <div>
-                              <span className="text-xs text-zinc-400">Selesai</span>
-                              <p className="text-sm font-medium text-zinc-300">
+                              <span
+                                className={cn(
+                                  "text-xs",
+                                  isLight ? "text-[#5C5245]" : "text-zinc-400"
+                                )}
+                              >
+                                Selesai
+                              </span>
+                              <p
+                                className={cn(
+                                  "text-sm font-medium",
+                                  isLight ? "text-[#2F2A24]" : "text-zinc-300"
+                                )}
+                              >
                                 {formatDate(item.competition.endDate)}
                               </p>
                             </div>
                           </div>
-                          <div className="flex items-center space-x-3 rounded-lg bg-gradient-to-r from-emerald-500/10 to-teal-500/10 p-3 backdrop-blur-sm">
-                            <MapPin className="h-4 w-4 text-emerald-400" />
+                          <div
+                            className={cn(
+                              "flex items-center space-x-3 rounded-lg p-3 backdrop-blur-sm",
+                              isLight
+                                ? "bg-emerald-50/80"
+                                : "bg-gradient-to-r from-emerald-500/10 to-teal-500/10"
+                            )}
+                          >
+                            <MapPin
+                              className={cn(
+                                "h-4 w-4",
+                                isLight ? "text-emerald-600" : "text-emerald-400"
+                              )}
+                            />
                             <div>
-                              <span className="text-xs text-zinc-400">Lokasi</span>
-                              <p className="text-sm font-medium text-zinc-300">
+                              <span
+                                className={cn(
+                                  "text-xs",
+                                  isLight ? "text-[#5C5245]" : "text-zinc-400"
+                                )}
+                              >
+                                Lokasi
+                              </span>
+                              <p
+                                className={cn(
+                                  "text-sm font-medium",
+                                  isLight ? "text-[#2F2A24]" : "text-zinc-300"
+                                )}
+                              >
                                 {item.competition.location || "Daring"}
                               </p>
                             </div>
                           </div>
-                          <div className="flex items-center space-x-3 rounded-lg bg-gradient-to-r from-emerald-500/10 to-teal-500/10 p-3 backdrop-blur-sm">
-                            <Users className="h-4 w-4 text-emerald-400" />
+                          <div
+                            className={cn(
+                              "flex items-center space-x-3 rounded-lg p-3 backdrop-blur-sm",
+                              isLight
+                                ? "bg-emerald-50/80"
+                                : "bg-gradient-to-r from-emerald-500/10 to-teal-500/10"
+                            )}
+                          >
+                            <Users
+                              className={cn(
+                                "h-4 w-4",
+                                isLight ? "text-emerald-600" : "text-emerald-400"
+                              )}
+                            />
                             <div>
-                              <span className="text-xs text-zinc-400">Organizer</span>
-                              <p className="text-sm font-medium text-zinc-300">
+                              <span
+                                className={cn(
+                                  "text-xs",
+                                  isLight ? "text-[#5C5245]" : "text-zinc-400"
+                                )}
+                              >
+                                Organizer
+                              </span>
+                              <p
+                                className={cn(
+                                  "text-sm font-medium",
+                                  isLight ? "text-[#2F2A24]" : "text-zinc-300"
+                                )}
+                              >
                                 {item.competition.organizer}
                               </p>
                             </div>
@@ -664,8 +831,16 @@ export const TopCompetitionsList = ({
                 </AccordionItem>
 
                 {item.reasoning && (
-                  <AccordionItem value="match-explanation" className="border-zinc-700/50">
-                    <AccordionTrigger className="group text-white hover:no-underline">
+                  <AccordionItem
+                    value="match-explanation"
+                    className={cn(isLight ? "border-stone-300/50" : "border-zinc-700/50")}
+                  >
+                    <AccordionTrigger
+                      className={cn(
+                        "group hover:no-underline",
+                        isLight ? "text-[#2F2A24]" : "text-white"
+                      )}
+                    >
                       <div className="flex items-center space-x-3">
                         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-500 shadow-lg">
                           <BarChart3 className="h-4 w-4" />
@@ -677,7 +852,12 @@ export const TopCompetitionsList = ({
                       <div className="space-y-6 pl-11">
                         <div className="space-y-6">
                           <div>
-                            <TypographyH3 className="mb-3 flex items-center space-x-2 text-sm text-white">
+                            <TypographyH3
+                              className={cn(
+                                "mb-3 flex items-center space-x-2 text-sm",
+                                isLight ? "text-[#2F2A24]" : "text-white"
+                              )}
+                            >
                               <div className="h-2 w-2 rounded-full bg-gradient-to-r from-green-400 to-emerald-400" />
                               <span>Kelebihan</span>
                             </TypographyH3>
@@ -688,10 +868,20 @@ export const TopCompetitionsList = ({
                                   initial={{ opacity: 0, x: -20 }}
                                   animate={{ opacity: 1, x: 0 }}
                                   transition={{ delay: proIndex * 0.1, duration: 0.3 }}
-                                  className="flex items-start space-x-3 rounded-lg bg-gradient-to-r from-green-500/10 to-emerald-500/10 p-3 backdrop-blur-sm"
+                                  className={cn(
+                                    "flex items-start space-x-3 rounded-lg p-3 backdrop-blur-sm",
+                                    isLight
+                                      ? "bg-green-50/80"
+                                      : "bg-gradient-to-r from-green-500/10 to-emerald-500/10"
+                                  )}
                                 >
                                   <div className="mt-1 h-1.5 w-1.5 rounded-full bg-gradient-to-r from-green-400 to-emerald-400" />
-                                  <TypographyP className="text-sm leading-relaxed text-zinc-300">
+                                  <TypographyP
+                                    className={cn(
+                                      "text-sm leading-relaxed",
+                                      isLight ? "text-[#5C5245]" : "text-zinc-300"
+                                    )}
+                                  >
                                     {pro}
                                   </TypographyP>
                                 </motion.li>
@@ -699,7 +889,12 @@ export const TopCompetitionsList = ({
                             </ul>
                           </div>
                           <div>
-                            <TypographyH3 className="mb-3 flex items-center space-x-2 text-sm text-white">
+                            <TypographyH3
+                              className={cn(
+                                "mb-3 flex items-center space-x-2 text-sm",
+                                isLight ? "text-[#2F2A24]" : "text-white"
+                              )}
+                            >
                               <div className="h-2 w-2 rounded-full bg-gradient-to-r from-yellow-400 to-orange-400" />
                               <span>Kekurangan</span>
                             </TypographyH3>
@@ -710,10 +905,20 @@ export const TopCompetitionsList = ({
                                   initial={{ opacity: 0, x: -20 }}
                                   animate={{ opacity: 1, x: 0 }}
                                   transition={{ delay: conIndex * 0.1, duration: 0.3 }}
-                                  className="flex items-start space-x-3 rounded-lg bg-gradient-to-r from-yellow-500/10 to-orange-500/10 p-3 backdrop-blur-sm"
+                                  className={cn(
+                                    "flex items-start space-x-3 rounded-lg p-3 backdrop-blur-sm",
+                                    isLight
+                                      ? "bg-yellow-50/80"
+                                      : "bg-gradient-to-r from-yellow-500/10 to-orange-500/10"
+                                  )}
                                 >
                                   <div className="mt-1 h-1.5 w-1.5 rounded-full bg-gradient-to-r from-yellow-400 to-orange-400" />
-                                  <TypographyP className="text-sm leading-relaxed text-zinc-300">
+                                  <TypographyP
+                                    className={cn(
+                                      "text-sm leading-relaxed",
+                                      isLight ? "text-[#5C5245]" : "text-zinc-300"
+                                    )}
+                                  >
                                     {con}
                                   </TypographyP>
                                 </motion.li>
@@ -727,11 +932,19 @@ export const TopCompetitionsList = ({
                 )}
 
                 {item.keyFactors && (
-                  <AccordionItem value="key-factors" className="border-zinc-700/50">
-                    <AccordionTrigger className="group text-white hover:no-underline">
+                  <AccordionItem
+                    value="key-factors"
+                    className={cn(isLight ? "border-stone-300/50" : "border-zinc-700/50")}
+                  >
+                    <AccordionTrigger
+                      className={cn(
+                        "group hover:no-underline",
+                        isLight ? "text-[#2F2A24]" : "text-white"
+                      )}
+                    >
                       <div className="flex items-center space-x-3">
                         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-orange-500 to-red-500 shadow-lg">
-                          <Target className="h-4 w-4" />
+                          <Target className="h-4 w-4 text-white" />
                         </div>
                         <span className="font-semibold">Faktor Kunci Keberhasilan</span>
                       </div>
@@ -744,10 +957,20 @@ export const TopCompetitionsList = ({
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: factorIndex * 0.1, duration: 0.3 }}
-                            className="flex items-start space-x-3 rounded-lg bg-gradient-to-r from-orange-500/10 to-red-500/10 p-3 backdrop-blur-sm"
+                            className={cn(
+                              "flex items-start space-x-3 rounded-lg p-3 backdrop-blur-sm",
+                              isLight
+                                ? "bg-orange-50/80"
+                                : "bg-gradient-to-r from-orange-500/10 to-red-500/10"
+                            )}
                           >
                             <div className="mt-1 h-1.5 w-1.5 rounded-full bg-gradient-to-r from-orange-400 to-red-400" />
-                            <TypographyP className="text-sm leading-relaxed text-zinc-300">
+                            <TypographyP
+                              className={cn(
+                                "text-sm leading-relaxed",
+                                isLight ? "text-[#5C5245]" : "text-zinc-300"
+                              )}
+                            >
                               {factor}
                             </TypographyP>
                           </motion.div>
@@ -758,11 +981,19 @@ export const TopCompetitionsList = ({
                 )}
 
                 {item.preparationTips && (
-                  <AccordionItem value="preparation" className="border-zinc-700/50">
-                    <AccordionTrigger className="group text-white hover:no-underline">
+                  <AccordionItem
+                    value="preparation"
+                    className={cn(isLight ? "border-stone-300/50" : "border-zinc-700/50")}
+                  >
+                    <AccordionTrigger
+                      className={cn(
+                        "group hover:no-underline",
+                        isLight ? "text-[#2F2A24]" : "text-white"
+                      )}
+                    >
                       <div className="flex items-center space-x-3">
                         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 shadow-lg">
-                          <BookOpen className="h-4 w-4" />
+                          <BookOpen className="h-4 w-4 text-white" />
                         </div>
                         <span className="font-semibold">Tips Persiapan</span>
                       </div>
@@ -775,10 +1006,25 @@ export const TopCompetitionsList = ({
                             initial={{ opacity: 0, x: -20 }}
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: tipIndex * 0.1, duration: 0.3 }}
-                            className="flex items-start space-x-3 rounded-lg bg-gradient-to-r from-indigo-500/10 to-purple-500/10 p-3 backdrop-blur-sm"
+                            className={cn(
+                              "flex items-start space-x-3 rounded-lg p-3 backdrop-blur-sm",
+                              isLight
+                                ? "bg-indigo-50/80"
+                                : "bg-gradient-to-r from-indigo-500/10 to-purple-500/10"
+                            )}
                           >
-                            <ArrowRight className="mt-1 h-4 w-4 text-indigo-400" />
-                            <TypographyP className="text-sm leading-relaxed text-zinc-300">
+                            <ArrowRight
+                              className={cn(
+                                "mt-1 h-4 w-4",
+                                isLight ? "text-indigo-600" : "text-indigo-400"
+                              )}
+                            />
+                            <TypographyP
+                              className={cn(
+                                "text-sm leading-relaxed",
+                                isLight ? "text-[#5C5245]" : "text-zinc-300"
+                              )}
+                            >
                               {tip}
                             </TypographyP>
                           </motion.div>

@@ -20,7 +20,7 @@ import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import Input from "@/components/ui/input";
 import Pagination from "@/components/ui/pagination";
 import { TypographyH2, TypographyP } from "@/components/ui/typography";
-import { formatDate } from "@/lib/utils";
+import { cn, formatDate } from "@/lib/utils";
 
 import { CompetitionAddModal } from "./components/competition-add-modal";
 import { CompetitionDeleteModal } from "./components/competition-delete-modal";
@@ -48,12 +48,23 @@ type CompetitionActionsProps = {
   onDelete: (item: Competition) => void;
 };
 
-const CompetitionActions = ({ item, onView, onEdit, onDelete }: CompetitionActionsProps) => (
+const CompetitionActions = ({
+  item,
+  onView,
+  onEdit,
+  onDelete,
+  isLight = false,
+}: CompetitionActionsProps & { isLight?: boolean }) => (
   <div className="flex items-center gap-2">
     <Button
       variant="outline"
       size="sm"
-      className="border-zinc-700 bg-zinc-900 p-2 text-white hover:bg-zinc-800"
+      className={cn(
+        "p-2 transition-colors",
+        isLight
+          ? "border-stone-300/70 bg-white/80 text-[#2F2A24] hover:bg-stone-100/80"
+          : "border-zinc-700 bg-zinc-900 text-white hover:bg-zinc-800"
+      )}
       onClick={() => onView(item)}
       aria-label="Detail"
     >
@@ -62,7 +73,12 @@ const CompetitionActions = ({ item, onView, onEdit, onDelete }: CompetitionActio
     <Button
       variant="outline"
       size="sm"
-      className="border-zinc-700 bg-zinc-900 p-2 text-white hover:bg-zinc-800"
+      className={cn(
+        "p-2 transition-colors",
+        isLight
+          ? "border-stone-300/70 bg-white/80 text-[#2F2A24] hover:bg-stone-100/80"
+          : "border-zinc-700 bg-zinc-900 text-white hover:bg-zinc-800"
+      )}
       onClick={() => onEdit(item)}
       aria-label="Edit"
     >
@@ -71,7 +87,12 @@ const CompetitionActions = ({ item, onView, onEdit, onDelete }: CompetitionActio
     <Button
       variant="outline"
       size="sm"
-      className="border-zinc-700 bg-zinc-900 p-2 text-red-400 hover:bg-zinc-800"
+      className={cn(
+        "p-2 transition-colors",
+        isLight
+          ? "border-stone-300/70 bg-white/80 text-red-600 hover:bg-red-50/80"
+          : "border-zinc-700 bg-zinc-900 text-red-400 hover:bg-zinc-800"
+      )}
       onClick={() => onDelete(item)}
       aria-label="Hapus"
     >
@@ -83,7 +104,8 @@ const CompetitionActions = ({ item, onView, onEdit, onDelete }: CompetitionActio
 const columnsDef = (
   handleView: (item: Competition) => void,
   handleEdit: (item: Competition) => void,
-  handleDelete: (item: Competition) => void
+  handleDelete: (item: Competition) => void,
+  isLight = false
 ): ColumnDef<Competition>[] => [
   { header: "Judul", accessorKey: "title" },
   {
@@ -105,12 +127,14 @@ const columnsDef = (
         onView={handleView}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        isLight={isLight}
       />
     ),
   },
 ];
 
 const CompetitionPage = () => {
+  const [isLight, setIsLight] = useState<boolean>(true);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [open, setOpen] = useState(false);
@@ -127,6 +151,22 @@ const CompetitionPage = () => {
   const tableRef = useRef<HTMLDivElement>(null);
   const queryClient = useQueryClient();
   const router = useRouter();
+
+  useEffect(() => {
+    const stored = typeof window !== "undefined" ? localStorage.getItem("scout-theme") : null;
+    if (stored) setIsLight(stored === "light");
+  }, []);
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const customEvent = e as CustomEvent<{ theme: string }>;
+      const theme = customEvent?.detail?.theme;
+      if (!theme) return;
+      setIsLight(theme === "light");
+    };
+    window.addEventListener("scout-theme-change", handler as EventListener);
+    return () => window.removeEventListener("scout-theme-change", handler as EventListener);
+  }, []);
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 400);
@@ -236,9 +276,9 @@ const CompetitionPage = () => {
 
   // Use columnsDef factory to avoid defining components during render
   const columns = useMemo(
-    () => columnsDef(handleView, handleEdit, handleDelete),
+    () => columnsDef(handleView, handleEdit, handleDelete, isLight),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [isLight]
   );
 
   const { mutateAsync: doDelete } = useMutation({
@@ -257,23 +297,50 @@ const CompetitionPage = () => {
     }
   };
 
+  const textPrimary = isLight ? "text-[#2F2A24]" : "text-white";
+  const textSecondary = isLight ? "text-[#5C5245]" : "text-zinc-400";
+  const borderColor = isLight ? "border-stone-300" : "border-gray-500";
+  const cardBorder = isLight ? "border-stone-300/70" : "border-zinc-700";
+  const cardBg = isLight ? "bg-white/90" : "bg-zinc-900";
+  const cardText = isLight ? "text-[#2F2A24]" : "text-zinc-100";
+  const headerBorder = isLight ? "border-stone-300/70" : "border-zinc-700";
+  const filterBg = isLight ? "bg-stone-50/80" : "bg-zinc-800";
+  const filterBorder = isLight ? "border-stone-300/70" : "border-zinc-700";
+  const filterLabel = isLight ? "text-[#5C5245]" : "text-zinc-300";
+  const filterInput = isLight
+    ? "border-stone-300/70 bg-white text-[#2F2A24]"
+    : "border-zinc-700 bg-zinc-900 text-zinc-100";
+
   return (
     <>
       <div className="flex h-full flex-col">
         <div className="mb-6 flex-shrink-0">
-          <TypographyH2 className="flex items-center gap-2 truncate text-zinc-900">
+          <TypographyH2 className={cn("flex items-center gap-2 truncate", textPrimary)}>
             <BookOpen className="h-10 w-10 font-extrabold" />
             Daftar Kompetisi
           </TypographyH2>
-          <TypographyP className="border-b border-gray-300 pb-4 text-zinc-900">
+          <TypographyP className={cn("border-b pb-4", borderColor, textSecondary)}>
             Temukan dan kelola berbagai kompetisi untuk mahasiswa secara mudah.
           </TypographyP>
-          <div className="mb-6 border-t border-gray-500" />
+          <div className={cn("mb-6 border-t", borderColor)} />
         </div>
 
         <div className="flex min-h-0 flex-1 flex-col">
-          <Card className="flex h-full flex-col border-2 border-zinc-700 bg-zinc-900 text-zinc-100 shadow-lg">
-            <CardHeader className="flex flex-shrink-0 flex-col gap-4 border-b border-zinc-700 bg-zinc-900 pb-4 md:flex-row md:items-center md:justify-between">
+          <Card
+            className={cn(
+              "flex h-full flex-col border-2 shadow-lg transition-colors",
+              cardBorder,
+              cardBg,
+              cardText
+            )}
+          >
+            <CardHeader
+              className={cn(
+                "flex flex-shrink-0 flex-col gap-4 border-b pb-4 md:flex-row md:items-center md:justify-between",
+                headerBorder,
+                cardBg
+              )}
+            >
               {/* Search and Filters */}
               <div className="flex gap-2">
                 <Input
@@ -285,7 +352,12 @@ const CompetitionPage = () => {
                 <Button
                   variant="outline"
                   onClick={() => setShowFilters(!showFilters)}
-                  className="border-zinc-700 bg-gradient-to-r from-zinc-800 to-zinc-900 text-white hover:bg-zinc-700 hover:ring-2 hover:ring-blue-400"
+                  className={cn(
+                    "transition-colors hover:ring-2 hover:ring-blue-400",
+                    isLight
+                      ? "border-stone-300/70 bg-white/80 text-[#2F2A24] hover:bg-stone-100/80"
+                      : "border-zinc-700 bg-gradient-to-r from-zinc-800 to-zinc-900 text-white hover:bg-zinc-700"
+                  )}
                 >
                   <Filter className="h-4 w-4" />
                 </Button>
@@ -294,7 +366,12 @@ const CompetitionPage = () => {
                 <DialogTrigger asChild>
                   <Button
                     variant="outline"
-                    className="border-gray-600 bg-gray-600 text-white hover:border-gray-700 hover:bg-gray-700 hover:text-white"
+                    className={cn(
+                      "transition-colors",
+                      isLight
+                        ? "border-stone-400/70 bg-gradient-to-r from-[#F6A964] to-[#E36C3A] text-white hover:from-[#F2A558] hover:to-[#D86330]"
+                        : "border-gray-600 bg-gray-600 text-white hover:border-gray-700 hover:bg-gray-700"
+                    )}
                   >
                     + Tambah Kompetisi
                   </Button>
@@ -305,12 +382,12 @@ const CompetitionPage = () => {
 
             {/* Filters Panel */}
             {showFilters && (
-              <div className="flex-shrink-0 border-b border-zinc-700 bg-zinc-800 p-4">
+              <div className={cn("flex-shrink-0 border-b p-4", filterBorder, filterBg)}>
                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
                     <label
                       htmlFor="competition-type"
-                      className="mb-2 block text-sm font-medium text-zinc-300"
+                      className={cn("mb-2 block text-sm font-medium", filterLabel)}
                     >
                       Tipe Kompetisi
                     </label>
@@ -318,7 +395,10 @@ const CompetitionPage = () => {
                       id="competition-type"
                       value={competitionType}
                       onChange={(e) => setCompetitionType(e.target.value)}
-                      className="w-full rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100"
+                      className={cn(
+                        "w-full rounded-md border px-3 py-2 transition-colors",
+                        filterInput
+                      )}
                     >
                       <option value="">Semua Tipe</option>
                       <option value="Programming">Programming</option>
@@ -332,7 +412,7 @@ const CompetitionPage = () => {
                   <div>
                     <label
                       htmlFor="field-filter"
-                      className="mb-2 block text-sm font-medium text-zinc-300"
+                      className={cn("mb-2 block text-sm font-medium", filterLabel)}
                     >
                       Bidang Kompetisi
                     </label>
@@ -341,7 +421,7 @@ const CompetitionPage = () => {
                       placeholder="Cari bidang..."
                       value={fieldFilter}
                       onChange={(e) => setFieldFilter(e.target.value)}
-                      className="border-zinc-700 bg-zinc-900 text-white"
+                      className={cn("transition-colors", filterInput)}
                     />
                   </div>
                   <div className="flex items-end">
@@ -351,7 +431,12 @@ const CompetitionPage = () => {
                         setCompetitionType("");
                         setFieldFilter("");
                       }}
-                      className="border-zinc-700 bg-zinc-900 text-white hover:bg-zinc-700"
+                      className={cn(
+                        "transition-colors",
+                        isLight
+                          ? "border-stone-300/70 bg-white/80 text-[#2F2A24] hover:bg-stone-100/80"
+                          : "border-zinc-700 bg-zinc-900 text-white hover:bg-zinc-700"
+                      )}
                     >
                       Reset Filter
                     </Button>
@@ -361,10 +446,10 @@ const CompetitionPage = () => {
             )}
             <CardContent
               ref={tableRef}
-              className="flex min-h-0 flex-1 flex-col bg-zinc-900 p-0 md:p-4"
+              className={cn("flex min-h-0 flex-1 flex-col p-0 transition-colors md:p-4", cardBg)}
             >
               <div className="flex-1 overflow-auto">
-                <DataTable columns={columns} data={tableData} />
+                <DataTable columns={columns} data={tableData} isLight={isLight} />
               </div>
               <div className="flex-shrink-0">
                 <Pagination

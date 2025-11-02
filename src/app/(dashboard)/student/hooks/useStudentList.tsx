@@ -8,6 +8,7 @@ import { useState, useMemo, useRef, useEffect } from "react";
 
 import { getStudents, type GetStudentsResponse } from "@/client/api/students";
 import Button from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 import { Student } from "../types";
 
@@ -18,6 +19,7 @@ type UseStudentListOptions = {
   onResetPassword?: (item: Student) => void;
   entryYear?: number;
   studyProgramId?: number;
+  isLight?: boolean;
 };
 
 export const useStudentList = (options?: UseStudentListOptions) => {
@@ -112,51 +114,74 @@ export const useStudentList = (options?: UseStudentListOptions) => {
       header: "Aksi",
       accessorKey: "actions",
       // eslint-disable-next-line no-empty-pattern
-      cell: ({ row }) => (
-        <div className="flex items-center gap-2">
-          <Link
-            href={`/student/${row.original.id}`}
-            className="inline-flex items-center rounded-md border border-zinc-700 bg-zinc-900 p-2 text-white hover:bg-zinc-800"
-            aria-label="Detail"
-          >
-            <Eye className="h-4 w-4" />
-          </Link>
-          <Button
-            variant="outline"
-            size="sm"
-            className="border-zinc-700 bg-zinc-900 p-2 text-white hover:bg-zinc-800"
-            onClick={() => {
-              options?.onEdit?.(row.original);
-            }}
-            aria-label="Edit"
-          >
-            <Pencil className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="border-zinc-700 bg-zinc-900 p-2 text-orange-400 hover:bg-zinc-800"
-            onClick={() => {
-              options?.onResetPassword?.(row.original);
-            }}
-            aria-label="Reset Password"
-          >
-            <Shield className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="border-zinc-700 bg-zinc-900 p-2 text-red-400 hover:bg-zinc-800"
-            onClick={() => {
-              const { id } = row.original;
-              if (typeof id === "number") options?.onDelete?.(id);
-            }}
-            aria-label="Hapus"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
-      ),
+      cell: ({ row }) => {
+        const isLight = options?.isLight ?? false;
+        const buttonBase = isLight
+          ? "border-stone-300/70 bg-white/80 text-[#2F2A24] hover:bg-stone-100/80"
+          : "border-zinc-700 bg-zinc-900 text-white hover:bg-zinc-800";
+        const linkBase = isLight
+          ? "border-stone-300/70 bg-white/80 text-[#2F2A24] hover:bg-stone-100/80"
+          : "border-zinc-700 bg-zinc-900 text-white hover:bg-zinc-800";
+
+        return (
+          <div className="flex items-center gap-2">
+            <Link
+              href={`/student/${row.original.id}`}
+              className={cn(
+                "inline-flex items-center rounded-md border p-2 transition-colors",
+                linkBase
+              )}
+              aria-label="Detail"
+            >
+              <Eye className="h-4 w-4" />
+            </Link>
+            <Button
+              variant="outline"
+              size="sm"
+              className={cn("p-2 transition-colors", buttonBase)}
+              onClick={() => {
+                options?.onEdit?.(row.original);
+              }}
+              aria-label="Edit"
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className={cn(
+                "p-2 transition-colors",
+                isLight
+                  ? "border-stone-300/70 bg-white/80 text-orange-600 hover:bg-orange-50/80"
+                  : "border-zinc-700 bg-zinc-900 text-orange-400 hover:bg-zinc-800"
+              )}
+              onClick={() => {
+                options?.onResetPassword?.(row.original);
+              }}
+              aria-label="Reset Password"
+            >
+              <Shield className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              className={cn(
+                "p-2 transition-colors",
+                isLight
+                  ? "border-stone-300/70 bg-white/80 text-red-600 hover:bg-red-50/80"
+                  : "border-zinc-700 bg-zinc-900 text-red-400 hover:bg-zinc-800"
+              )}
+              onClick={() => {
+                const { id } = row.original;
+                if (typeof id === "number") options?.onDelete?.(id);
+              }}
+              aria-label="Hapus"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        );
+      },
     },
   ];
 

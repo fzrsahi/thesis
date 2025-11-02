@@ -19,6 +19,7 @@ import { DataTable } from "@/components/ui/data-table";
 import Input from "@/components/ui/input";
 import Pagination from "@/components/ui/pagination";
 import { TypographyH2, TypographyP } from "@/components/ui/typography";
+import { cn } from "@/lib/utils";
 
 import { StudentAddModal } from "./components/StudentAddModal";
 import { StudentDeleteModal } from "./components/StudentDeleteModal";
@@ -29,6 +30,7 @@ import { useStudentList } from "./hooks/useStudentList";
 
 const StudentPage = () => {
   const { data: session } = useSession();
+  const [isLight, setIsLight] = useState<boolean>(true);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [resetPasswordOpen, setResetPasswordOpen] = useState(false);
@@ -36,6 +38,22 @@ const StudentPage = () => {
   const [studyProgramId, setStudyProgramId] = useState<string>("");
   const [showFilters, setShowFilters] = useState(false);
   const [editDefaults, setEditDefaults] = useState<Partial<StudentPayload> | null>(null);
+
+  useEffect(() => {
+    const stored = typeof window !== "undefined" ? localStorage.getItem("scout-theme") : null;
+    if (stored) setIsLight(stored === "light");
+  }, []);
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const customEvent = e as CustomEvent<{ theme: string }>;
+      const theme = customEvent?.detail?.theme;
+      if (!theme) return;
+      setIsLight(theme === "light");
+    };
+    window.addEventListener("scout-theme-change", handler as EventListener);
+    return () => window.removeEventListener("scout-theme-change", handler as EventListener);
+  }, []);
   const { search, setSearch, tableRef, tableData, columns, pagination, handlePageChange } =
     useStudentList({
       onDelete: (id: number) => {
@@ -60,6 +78,7 @@ const StudentPage = () => {
       },
       entryYear: entryYear ? Number(entryYear) : undefined,
       studyProgramId: studyProgramId ? Number(studyProgramId) : undefined,
+      isLight,
     });
 
   const queryClient = useQueryClient();
@@ -144,22 +163,49 @@ const StudentPage = () => {
     return true;
   };
 
+  const textPrimary = isLight ? "text-[#2F2A24]" : "text-white";
+  const textSecondary = isLight ? "text-[#5C5245]" : "text-zinc-400";
+  const borderColor = isLight ? "border-stone-300" : "border-gray-500";
+  const cardBorder = isLight ? "border-stone-300/70" : "border-zinc-700";
+  const cardBg = isLight ? "bg-white/90" : "bg-zinc-900";
+  const cardText = isLight ? "text-[#2F2A24]" : "text-zinc-100";
+  const headerBorder = isLight ? "border-stone-300/70" : "border-zinc-700";
+  const filterBg = isLight ? "bg-stone-50/80" : "bg-zinc-800";
+  const filterBorder = isLight ? "border-stone-300/70" : "border-zinc-700";
+  const filterLabel = isLight ? "text-[#5C5245]" : "text-zinc-300";
+  const filterInput = isLight
+    ? "border-stone-300/70 bg-white text-[#2F2A24]"
+    : "border-zinc-700 bg-zinc-900 text-zinc-100";
+
   return (
     <div className="flex h-full flex-col">
       <div className="mb-6 flex-shrink-0">
-        <TypographyH2 className="flex items-center gap-2 truncate text-zinc-900">
+        <TypographyH2 className={cn("flex items-center gap-2 truncate", textPrimary)}>
           <Users className="h-10 w-10 font-extrabold" />
           Daftar Mahasiswa
         </TypographyH2>
-        <TypographyP className="border-b border-gray-300 pb-4 text-zinc-900">
+        <TypographyP className={cn("border-b pb-4", borderColor, textSecondary)}>
           Kelola data mahasiswa dengan mudah dan efisien.
         </TypographyP>
-        <div className="mb-6 border-t border-gray-500" />
+        <div className={cn("mb-6 border-t", borderColor)} />
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col">
-        <Card className="flex h-full flex-col border-2 border-zinc-700 bg-zinc-900 text-zinc-100 shadow-lg">
-          <CardHeader className="flex flex-shrink-0 flex-col gap-4 border-b border-zinc-700 bg-zinc-900 pb-4 md:flex-row md:items-center md:justify-between">
+        <Card
+          className={cn(
+            "flex h-full flex-col border-2 shadow-lg transition-colors",
+            cardBorder,
+            cardBg,
+            cardText
+          )}
+        >
+          <CardHeader
+            className={cn(
+              "flex flex-shrink-0 flex-col gap-4 border-b pb-4 md:flex-row md:items-center md:justify-between",
+              headerBorder,
+              cardBg
+            )}
+          >
             {/* Search and Filters */}
             <div className="flex gap-2">
               <Input
@@ -171,14 +217,24 @@ const StudentPage = () => {
               <Button
                 variant="outline"
                 onClick={() => setShowFilters(!showFilters)}
-                className="border-zinc-700 bg-gradient-to-r from-zinc-800 to-zinc-900 text-white hover:bg-zinc-700 hover:ring-2 hover:ring-blue-400"
+                className={cn(
+                  "transition-colors hover:ring-2 hover:ring-blue-400",
+                  isLight
+                    ? "border-stone-300/70 bg-white/80 text-[#2F2A24] hover:bg-stone-100/80"
+                    : "border-zinc-700 bg-gradient-to-r from-zinc-800 to-zinc-900 text-white hover:bg-zinc-700"
+                )}
               >
                 <Filter className="h-4 w-4" />
               </Button>
             </div>
             <Button
               variant="outline"
-              className="border-gray-600 bg-gray-600 text-white hover:border-gray-700 hover:bg-gray-700 hover:text-white"
+              className={cn(
+                "transition-colors",
+                isLight
+                  ? "border-stone-400/70 bg-gradient-to-r from-[#F6A964] to-[#E36C3A] text-white hover:from-[#F2A558] hover:to-[#D86330]"
+                  : "border-gray-600 bg-gray-600 text-white hover:border-gray-700 hover:bg-gray-700"
+              )}
               onClick={() => setOpen(true)}
             >
               + Tambah Mahasiswa
@@ -187,12 +243,12 @@ const StudentPage = () => {
 
           {/* Filters Panel */}
           {showFilters && (
-            <div className="flex-shrink-0 border-b border-zinc-700 bg-zinc-800 p-4">
+            <div className={cn("flex-shrink-0 border-b p-4", filterBorder, filterBg)}>
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <div>
                   <label
                     htmlFor="entry-year"
-                    className="mb-2 block text-sm font-medium text-zinc-300"
+                    className={cn("mb-2 block text-sm font-medium", filterLabel)}
                   >
                     Tahun Masuk
                   </label>
@@ -202,14 +258,14 @@ const StudentPage = () => {
                     placeholder="2020"
                     value={entryYear}
                     onChange={(e) => setEntryYear(e.target.value)}
-                    className="border-zinc-700 bg-zinc-900 text-white"
+                    className={cn("transition-colors", filterInput)}
                   />
                 </div>
                 {canFilterStudyProgram && (
                   <div>
                     <label
                       htmlFor="study-program"
-                      className="mb-2 block text-sm font-medium text-zinc-300"
+                      className={cn("mb-2 block text-sm font-medium", filterLabel)}
                     >
                       Program Studi
                     </label>
@@ -217,7 +273,10 @@ const StudentPage = () => {
                       id="study-program"
                       value={studyProgramId}
                       onChange={(e) => setStudyProgramId(e.target.value)}
-                      className="w-full rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100"
+                      className={cn(
+                        "w-full rounded-md border px-3 py-2 transition-colors",
+                        filterInput
+                      )}
                     >
                       <option value="">Semua Program Studi</option>
                       {(studyPrograms ?? []).map((sp) => (
@@ -235,7 +294,12 @@ const StudentPage = () => {
                       setEntryYear("");
                       setStudyProgramId("");
                     }}
-                    className="border-zinc-700 bg-zinc-900 text-white hover:bg-zinc-700"
+                    className={cn(
+                      "transition-colors",
+                      isLight
+                        ? "border-stone-300/70 bg-white/80 text-[#2F2A24] hover:bg-stone-100/80"
+                        : "border-zinc-700 bg-zinc-900 text-white hover:bg-zinc-700"
+                    )}
                   >
                     Reset Filter
                   </Button>
@@ -245,10 +309,10 @@ const StudentPage = () => {
           )}
           <CardContent
             ref={tableRef}
-            className="flex min-h-0 flex-1 flex-col bg-zinc-900 p-0 md:p-4"
+            className={cn("flex min-h-0 flex-1 flex-col p-0 transition-colors md:p-4", cardBg)}
           >
             <div className="flex-1 overflow-auto">
-              <DataTable columns={columns} data={tableData} />
+              <DataTable columns={columns} data={tableData} isLight={isLight} />
             </div>
             <div className="flex-shrink-0">
               <Pagination pagination={pagination} onPageChange={handlePageChange} />
