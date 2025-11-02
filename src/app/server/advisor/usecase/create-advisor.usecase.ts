@@ -23,7 +23,8 @@ export const createAdvisorUsecase = async (body: AdvisorPayload) => {
   }
   const hashedPassword = await generateHash(body.email);
   const newUser = await createUser({
-    ...body,
+    email: body.email,
+    name: body.name,
     password: hashedPassword,
   });
 

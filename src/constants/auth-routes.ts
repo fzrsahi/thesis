@@ -19,7 +19,7 @@ export const routes: Route[] = [
   { name: "Profil", href: "/student/profile", roles: [ROLES.STUDENT], icon: User },
   { name: "Rekomendasi", href: "/my-recomendation", roles: [ROLES.STUDENT], icon: BookOpen },
   { name: "Obrolan", href: "/my-chat", roles: [ROLES.STUDENT], icon: MessageCircle },
-  { name: "Pengaturan", href: "/profile", roles: [ROLES.ADMIN], icon: Settings },
+  { name: "Pengaturan", href: "/settings", roles: [ROLES.ADMIN], icon: Settings },
 ];
 
 export const adminPaths = routes

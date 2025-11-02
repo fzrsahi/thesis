@@ -296,7 +296,7 @@ const getRelevantChunksBySimilarity = async (
   topK: number,
   competitionId: number
 ): Promise<Document[]> => {
-  const retriever = getDocumentChunksRetriever(competitionId, topK);
+  const retriever = await getDocumentChunksRetriever(competitionId, topK);
   return retriever.invoke(query);
 };
 

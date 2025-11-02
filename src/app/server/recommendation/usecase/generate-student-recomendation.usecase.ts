@@ -155,7 +155,7 @@ const getRelevantCompetitions = async (
   studentProfile: StudentWithRelations
 ): Promise<competitions[]> => {
   const profileText = generateStudentProfileText(studentProfile);
-  const retriever = getCompetitionRetriever(TOP_K_COMPETITIONS);
+  const retriever = await getCompetitionRetriever(TOP_K_COMPETITIONS);
   const relevantDocs = await retriever.invoke(profileText);
 
   const competitionIds = relevantDocs

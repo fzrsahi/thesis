@@ -12,16 +12,24 @@ import {
   Shield,
   Key,
   Copy,
-  RefreshCw,
+  Brain,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 
 import { type ProfileUpdatePayload } from "@/app/shared/validations/schema/profileSchema";
+import { type ModelSettingUpdatePayload } from "@/app/shared/validations/schema/modelSettingSchema";
 import Button from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Input from "@/components/ui/input";
 import Label from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { TypographyH2, TypographyP } from "@/components/ui/typography";
 import { cn } from "@/lib/utils";
 
@@ -49,7 +57,9 @@ const ProfilePage = () => {
   // Form states
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [apiKey, setApiKey] = useState<string | null>(null);
+  const [apiKey, setApiKey] = useState<string>("");
+  const [llmProvider, setLlmProvider] = useState<string>("azure-openai");
+  const [llmModel, setLlmModel] = useState<string>("gpt-4o");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -59,7 +69,6 @@ const ProfilePage = () => {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showApiKey, setShowApiKey] = useState(false);
-  const [generatingApiKey, setGeneratingApiKey] = useState(false);
 
   // Form errors
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -86,18 +95,34 @@ const ProfilePage = () => {
 
   const fetchProfileData = async () => {
     try {
-      const response = await fetch("/api/profile");
-      const result = await response.json();
+      const [profileResponse, modelSettingResponse] = await Promise.all([
+        fetch("/api/profile"),
+        fetch("/api/model-setting"),
+      ]);
 
-      if (result.success) {
-        setName(result.data.name);
-        setEmail(result.data.email);
-        setApiKey(result.data.apiKey);
+      const profileResult = await profileResponse.json();
+      const modelSettingResult = await modelSettingResponse.json();
+
+      if (profileResult.success) {
+        setName(profileResult.data.name || "");
+        setEmail(profileResult.data.email || "");
       } else {
-        toast.error(result.error || "Gagal memuat profil");
+        toast.error(profileResult.error || "Gagal memuat profil");
+        console.error("Profile fetch error:", profileResult);
+      }
+
+      if (modelSettingResult.success && modelSettingResult.data) {
+        setApiKey(modelSettingResult.data.apiKey || "");
+        setLlmProvider(modelSettingResult.data.provider || "azure-openai");
+        setLlmModel(modelSettingResult.data.model || "gpt-4o");
+      } else {
+        // Set default values if no model setting exists
+        setLlmProvider("azure-openai");
+        setLlmModel("gpt-4o");
       }
     } catch (error) {
-      toast.error("Gagal memuat profil");
+      console.error("Fetch error:", error);
+      toast.error("Gagal memuat data. Pastikan koneksi internet Anda stabil.");
     } finally {
       setLoading(false);
     }
@@ -155,73 +180,71 @@ const ProfilePage = () => {
     setSaving(true);
 
     try {
-      const updateData: ProfileUpdatePayload = {
+      // Update profile
+      const profileUpdateData: ProfileUpdatePayload = {
         name: name.trim(),
         email: email.trim(),
       };
 
       // Only include password fields if they're being changed
       if (currentPassword && newPassword) {
-        updateData.currentPassword = currentPassword;
-        updateData.newPassword = newPassword;
+        profileUpdateData.currentPassword = currentPassword;
+        profileUpdateData.newPassword = newPassword;
       }
 
-      const response = await fetch("/api/profile", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(updateData),
-      });
+      const [profileResponse, modelSettingResponse] = await Promise.all([
+        fetch("/api/profile", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(profileUpdateData),
+        }),
+        fetch("/api/model-setting", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            apiKey: apiKey.trim() || undefined,
+            provider: llmProvider,
+            model: llmModel.trim(),
+            isActive: true,
+          }),
+        }),
+      ]);
 
-      const result = await response.json();
+      const profileResult = await profileResponse.json();
+      const modelSettingResult = await modelSettingResponse.json();
 
-      if (result.success) {
+      if (profileResult.success) {
         toast.success("Berhasil memperbarui profil");
-        setName(result.data.name);
-        setEmail(result.data.email);
+        setName(profileResult.data.name);
+        setEmail(profileResult.data.email);
 
         // Clear password fields
         setCurrentPassword("");
         setNewPassword("");
         setConfirmPassword("");
-
-        // Update API key if returned
-        if (result.data.apiKey) {
-          setApiKey(result.data.apiKey);
-        }
       } else {
-        toast.error(result.error || "Gagal memperbarui profil");
+        toast.error(profileResult.error || "Gagal memperbarui profil");
+      }
+
+      if (modelSettingResult.success) {
+        if (modelSettingResult.data) {
+          setApiKey(modelSettingResult.data.apiKey || "");
+          setLlmProvider(modelSettingResult.data.provider || "azure-openai");
+          setLlmModel(modelSettingResult.data.model || "gpt-4o");
+        }
+        toast.success("Berhasil memperbarui konfigurasi LLM");
+      } else {
+        toast.error(modelSettingResult.error || "Gagal memperbarui konfigurasi LLM");
       }
     } catch (error) {
-      toast.error("Gagal memperbarui profil");
+      console.error("Save error:", error);
+      toast.error("Gagal memperbarui data");
     } finally {
       setSaving(false);
-    }
-  };
-
-  const handleGenerateApiKey = async () => {
-    setGeneratingApiKey(true);
-    try {
-      const response = await fetch("/api/profile", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        setApiKey(result.data.apiKey);
-        toast.success("API key berhasil digenerate");
-      } else {
-        toast.error(result.error || "Gagal generate API key");
-      }
-    } catch (error) {
-      toast.error("Gagal generate API key");
-    } finally {
-      setGeneratingApiKey(false);
     }
   };
 
@@ -229,6 +252,34 @@ const ProfilePage = () => {
     if (apiKey) {
       navigator.clipboard.writeText(apiKey);
       toast.success("API key berhasil disalin ke clipboard");
+    }
+  };
+
+  // Model options based on provider
+  const getModelOptions = () => getModelOptionsForProvider(llmProvider);
+
+  const getModelOptionsForProvider = (provider: string) => {
+    switch (provider) {
+      case "azure-openai":
+        return [
+          { value: "gpt-4o", label: "GPT-4o", disabled: false },
+          { value: "gpt-4", label: "GPT-4", disabled: true },
+          { value: "gpt-4-turbo", label: "GPT-4 Turbo", disabled: true },
+          { value: "gpt-3.5-turbo", label: "GPT-3.5 Turbo", disabled: true },
+        ];
+      case "openai":
+        return [
+          { value: "gpt-4o", label: "GPT-4o", disabled: true },
+          { value: "gpt-4", label: "GPT-4", disabled: true },
+          { value: "gpt-3.5-turbo", label: "GPT-3.5 Turbo", disabled: true },
+        ];
+      case "google-gemini":
+        return [
+          { value: "gemini-pro", label: "Gemini Pro", disabled: true },
+          { value: "gemini-pro-vision", label: "Gemini Pro Vision", disabled: true },
+        ];
+      default:
+        return [{ value: "gpt-4o", label: "GPT-4o", disabled: false }];
     }
   };
 
@@ -265,7 +316,7 @@ const ProfilePage = () => {
           Pengaturan
         </TypographyH2>
         <TypographyP className={cn("border-b pb-4", borderColor, textSecondary)}>
-          Kelola informasi profil, keamanan akun, dan API key Anda
+          Kelola informasi profil, keamanan akun, dan konfigurasi LLM (Large Language Model) Anda
         </TypographyP>
         <div className={cn("mb-6 border-t", borderColor)} />
       </div>
@@ -544,7 +595,7 @@ const ProfilePage = () => {
           </Card>
         </motion.div>
 
-        {/* API Key Card */}
+        {/* LLM Configuration Card */}
         <motion.div variants={staggerItem}>
           <Card
             className={cn(
@@ -555,17 +606,93 @@ const ProfilePage = () => {
           >
             <CardHeader>
               <CardTitle className={cn("flex items-center gap-2", cardText)}>
-                <Key className="h-5 w-5" />
-                API Key
+                <Brain className="h-5 w-5" />
+                Konfigurasi LLM
               </CardTitle>
               <CardDescription className={cardDesc}>
-                Generate dan kelola API key Anda untuk mengakses API
+                Konfigurasi model Large Language Model (LLM) yang digunakan untuk fitur AI dalam
+                aplikasi. Pilih provider dan model sesuai kebutuhan Anda.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
+              {/* Provider Selection */}
+              <div className="space-y-2">
+                <Label htmlFor="llmProvider" className={labelText}>
+                  Provider LLM
+                </Label>
+                <Select
+                  value={llmProvider}
+                  onValueChange={(value) => {
+                    setLlmProvider(value);
+                    // Reset model when provider changes - only use enabled models
+                    const modelOptions = getModelOptionsForProvider(value);
+                    const enabledModel = modelOptions.find((m) => !m.disabled);
+                    setLlmModel(enabledModel?.value || "gpt-4o");
+                  }}
+                >
+                  <SelectTrigger className={cn("w-full", inputBorder, inputBg, inputText)}>
+                    <SelectValue placeholder="Pilih provider" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="azure-openai">Azure OpenAI</SelectItem>
+                    <SelectItem value="openai" disabled>
+                      OpenAI <span className="ml-2 text-xs opacity-60">(Akan Datang)</span>
+                    </SelectItem>
+                    <SelectItem value="google-gemini" disabled>
+                      Google Gemini <span className="ml-2 text-xs opacity-60">(Akan Datang)</span>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className={cn("text-xs", isLight ? "text-zinc-500" : "text-zinc-400")}>
+                  {llmProvider === "azure-openai" &&
+                    "Menggunakan Azure OpenAI Services dengan deployment GPT"}
+                  {llmProvider === "openai" &&
+                    "Menggunakan OpenAI API langsung atau melalui OpenRouter"}
+                  {llmProvider === "google-gemini" && "Menggunakan Google Gemini API"}
+                </p>
+              </div>
+
+              {/* Model Selection */}
+              <div className="space-y-2">
+                <Label htmlFor="llmModel" className={labelText}>
+                  Model
+                </Label>
+                <Select value={llmModel} onValueChange={setLlmModel}>
+                  <SelectTrigger className={cn("w-full", inputBorder, inputBg, inputText)}>
+                    <SelectValue placeholder="Pilih model" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {getModelOptions().map((option) => (
+                      <SelectItem
+                        key={option.value}
+                        value={option.value}
+                        disabled={option.disabled}
+                      >
+                        {option.label}
+                        {option.disabled && (
+                          <span className="ml-2 text-xs opacity-60">(Akan Datang)</span>
+                        )}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className={cn("text-xs", isLight ? "text-zinc-500" : "text-zinc-400")}>
+                  Model saat ini:{" "}
+                  <span className="font-medium">
+                    {getModelOptions().find((m) => m.value === llmModel)?.label || llmModel}
+                  </span>
+                </p>
+              </div>
+
+              {/* API Key Input */}
               <div className="space-y-2">
                 <Label htmlFor="apiKey" className={labelText}>
-                  API Key Anda
+                  API Key{" "}
+                  {llmProvider === "azure-openai"
+                    ? "Azure OpenAI"
+                    : llmProvider === "openai"
+                      ? "OpenAI"
+                      : "Google Gemini"}
                 </Label>
                 <div className="relative">
                   <Key
@@ -577,27 +704,26 @@ const ProfilePage = () => {
                   <Input
                     id="apiKey"
                     type={showApiKey ? "text" : "password"}
-                    value={apiKey || ""}
-                    readOnly
+                    value={apiKey}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setApiKey(e.target.value)}
                     className={cn(
                       "pr-24 pl-10 transition-colors",
                       inputBorder,
                       inputBg,
                       inputText,
-                      inputPlaceholder
+                      inputPlaceholder,
+                      inputFocus
                     )}
-                    placeholder={apiKey ? "API key akan ditampilkan di sini" : "Belum ada API key"}
+                    placeholder={`Masukkan ${llmProvider === "azure-openai" ? "Azure OpenAI" : llmProvider === "openai" ? "OpenAI" : "Google Gemini"} API key`}
                   />
                   <div className="absolute top-1/2 right-3 flex -translate-y-1/2 transform items-center gap-2">
-                    {apiKey && (
-                      <button
-                        type="button"
-                        onClick={() => setShowApiKey(!showApiKey)}
-                        className={cn("transition-colors hover:opacity-70", iconText)}
-                      >
-                        {showApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      </button>
-                    )}
+                    <button
+                      type="button"
+                      onClick={() => setShowApiKey(!showApiKey)}
+                      className={cn("transition-colors hover:opacity-70", iconText)}
+                    >
+                      {showApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
                     {apiKey && (
                       <button
                         type="button"
@@ -613,42 +739,9 @@ const ProfilePage = () => {
                 {!apiKey && (
                   <p className="flex items-center gap-1 text-sm text-yellow-400">
                     <AlertCircle className="h-4 w-4" />
-                    Anda belum memiliki API key. Generate sekarang untuk menggunakan API.
+                    API key diperlukan untuk menggunakan fitur AI. Masukkan API key Anda di atas.
                   </p>
                 )}
-              </div>
-              <div className="flex gap-2">
-                <Button
-                  onClick={handleGenerateApiKey}
-                  disabled={generatingApiKey}
-                  className={cn(
-                    "rounded-lg px-6 py-2 font-medium text-white transition-all duration-200 disabled:cursor-not-allowed disabled:opacity-50",
-                    isLight
-                      ? "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600"
-                      : "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600"
-                  )}
-                >
-                  {generatingApiKey ? (
-                    <div className="flex items-center gap-2">
-                      <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-white" />
-                      Generating...
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      {apiKey ? (
-                        <>
-                          <RefreshCw className="h-4 w-4" />
-                          Regenerate API Key
-                        </>
-                      ) : (
-                        <>
-                          <Key className="h-4 w-4" />
-                          Generate API Key
-                        </>
-                      )}
-                    </div>
-                  )}
-                </Button>
               </div>
             </CardContent>
           </Card>

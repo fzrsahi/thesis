@@ -305,3 +305,19 @@ model StudyProgram {
 
   @@map("studyPrograms")
 }
+
+/// LLM Model Settings
+model ModelSetting {
+  id          Int      @id @default(autoincrement())
+  apiKey      String?  // API key untuk LLM provider
+  provider    String   @default("azure-openai") // azure-openai, openai, google-gemini
+  model       String   @default("gpt-4o") // gpt-4o, gpt-4, etc.
+  instanceName String? // Azure OpenAI instance name
+  gptEndpoint  String? // Azure OpenAI GPT endpoint
+  isActive     Boolean  @default(true) // Setting aktif atau tidak
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([provider, model]) // Satu kombinasi provider + model hanya bisa ada satu
+  @@map("modelSettings")
+}

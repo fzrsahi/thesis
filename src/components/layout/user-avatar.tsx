@@ -78,9 +78,9 @@ export const UserAvatar = ({ user, isLight = false, setIsLight }: UserAvatarProp
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => router.push("/profile")}>
+          <DropdownMenuItem onClick={() => router.push("/settings")}>
             <User className="mr-2 h-4 w-4" />
-            <span>Profile</span>
+            <span>Settings</span>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleThemeToggle}>

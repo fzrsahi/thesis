@@ -2,7 +2,11 @@ import { Prisma, User } from "@prisma/client";
 
 import { prisma } from "../prisma/prisma";
 
-type userCreate = Omit<User, "id" | "createdAt" | "updatedAt">;
+type userCreate = {
+  email: string;
+  password: string;
+  name: string;
+};
 
 export const findUserByEmail = (
   email: string,

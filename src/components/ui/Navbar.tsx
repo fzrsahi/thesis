@@ -65,7 +65,7 @@ const Navbar = () => {
     if (userRole === ROLES.STUDENT) {
       window.location.href = "/student/profile";
     } else if (userRole === ROLES.ADMIN) {
-      window.location.href = "/profile";
+      window.location.href = "/settings";
     } else {
       // For advisor or other roles, redirect to dashboard
       window.location.href = "/dashboard";
