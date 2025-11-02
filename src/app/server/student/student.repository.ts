@@ -195,3 +195,9 @@ export const deleteStudentByUserId = (userId: number) =>
   prisma.student.delete({
     where: { userId },
   });
+
+export const deleteStudentGPA = (studentId: number) =>
+  prisma.student.update({
+    where: { id: studentId },
+    data: { gpa: null },
+  });

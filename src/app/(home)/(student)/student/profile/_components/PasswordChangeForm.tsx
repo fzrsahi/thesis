@@ -23,7 +23,11 @@ import Input from "@/components/ui/input";
 
 import { useMutationUpdatePassword } from "../_api/useMutationUpdatePassword";
 
-const PasswordChangeForm = () => {
+interface PasswordChangeFormProps {
+  isLight?: boolean;
+}
+
+const PasswordChangeForm = ({ isLight = false }: PasswordChangeFormProps) => {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -68,6 +72,20 @@ const PasswordChangeForm = () => {
     }
   };
 
+  const labelClass = isLight ? "text-[#5C5245]" : "text-zinc-300";
+  const helperClass = isLight ? "text-[#7A6B5B]" : "text-zinc-400";
+  const iconColor = isLight ? "text-[#7A6B5B]" : "text-zinc-400";
+  const inputClass = isLight
+    ? "border-stone-300 bg-white text-[#2F2A24] focus:border-stone-400 focus:ring-stone-400/40"
+    : "border-zinc-700 bg-zinc-800 text-white focus:border-zinc-500 focus:ring-zinc-500";
+  const toggleClass = isLight
+    ? "text-[#7A6B5B] hover:text-[#5C5245]"
+    : "text-zinc-400 hover:text-zinc-300";
+  const buttonClass = isLight
+    ? "bg-gradient-to-r from-[#F6A964] to-[#E36C3A] text-white hover:brightness-105"
+    : "bg-white text-black hover:bg-zinc-200";
+  const spinnerBorder = isLight ? "border-white" : "border-black";
+
   return (
     <div className="space-y-4">
       <Form {...form}>
@@ -77,20 +95,22 @@ const PasswordChangeForm = () => {
             name="currentPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-zinc-300">Password Saat Ini</FormLabel>
+                <FormLabel className={labelClass}>Password Saat Ini</FormLabel>
                 <FormControl>
                   <div className="relative">
-                    <Lock className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-zinc-400" />
+                    <Lock
+                      className={`absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform ${iconColor}`}
+                    />
                     <Input
                       type={showCurrentPassword ? "text" : "password"}
                       placeholder="Masukkan password saat ini"
                       {...field}
-                      className="border-zinc-700 bg-zinc-800 pr-10 pl-10 text-white"
+                      className={`pr-10 pl-10 ${inputClass}`}
                     />
                     <button
                       type="button"
                       onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                      className="absolute top-1/2 right-3 -translate-y-1/2 transform text-zinc-400 hover:text-zinc-300"
+                      className={`absolute top-1/2 right-3 -translate-y-1/2 transform ${toggleClass}`}
                     >
                       {showCurrentPassword ? (
                         <EyeOff className="h-4 w-4" />
@@ -110,20 +130,22 @@ const PasswordChangeForm = () => {
             name="newPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-zinc-300">Password Baru</FormLabel>
+                <FormLabel className={labelClass}>Password Baru</FormLabel>
                 <FormControl>
                   <div className="relative">
-                    <Lock className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-zinc-400" />
+                    <Lock
+                      className={`absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform ${iconColor}`}
+                    />
                     <Input
                       type={showNewPassword ? "text" : "password"}
                       placeholder="Masukkan password baru"
                       {...field}
-                      className="border-zinc-700 bg-zinc-800 pr-10 pl-10 text-white"
+                      className={`pr-10 pl-10 ${inputClass}`}
                     />
                     <button
                       type="button"
                       onClick={() => setShowNewPassword(!showNewPassword)}
-                      className="absolute top-1/2 right-3 -translate-y-1/2 transform text-zinc-400 hover:text-zinc-300"
+                      className={`absolute top-1/2 right-3 -translate-y-1/2 transform ${toggleClass}`}
                     >
                       {showNewPassword ? (
                         <EyeOff className="h-4 w-4" />
@@ -134,7 +156,7 @@ const PasswordChangeForm = () => {
                   </div>
                 </FormControl>
                 <FormMessage />
-                <p className="text-xs text-zinc-400">
+                <p className={`text-xs ${helperClass}`}>
                   Password harus minimal 8 karakter dan mengandung huruf besar, huruf kecil, dan
                   angka
                 </p>
@@ -147,20 +169,22 @@ const PasswordChangeForm = () => {
             name="confirmPassword"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-zinc-300">Konfirmasi Password</FormLabel>
+                <FormLabel className={labelClass}>Konfirmasi Password</FormLabel>
                 <FormControl>
                   <div className="relative">
-                    <Lock className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform text-zinc-400" />
+                    <Lock
+                      className={`absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 transform ${iconColor}`}
+                    />
                     <Input
                       type={showConfirmPassword ? "text" : "password"}
                       placeholder="Konfirmasi password baru"
                       {...field}
-                      className="border-zinc-700 bg-zinc-800 pr-10 pl-10 text-white"
+                      className={`pr-10 pl-10 ${inputClass}`}
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute top-1/2 right-3 -translate-y-1/2 transform text-zinc-400 hover:text-zinc-300"
+                      className={`absolute top-1/2 right-3 -translate-y-1/2 transform ${toggleClass}`}
                     >
                       {showConfirmPassword ? (
                         <EyeOff className="h-4 w-4" />
@@ -178,11 +202,11 @@ const PasswordChangeForm = () => {
           <Button
             type="submit"
             disabled={isSubmitting}
-            className="bg-white text-black hover:bg-zinc-200 disabled:opacity-50"
+            className={`${buttonClass} disabled:opacity-50`}
           >
             {isSubmitting ? (
               <div className="flex items-center gap-2">
-                <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-black" />
+                <div className={`h-4 w-4 animate-spin rounded-full border-b-2 ${spinnerBorder}`} />
                 Mengubah...
               </div>
             ) : (

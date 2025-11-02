@@ -14,15 +14,18 @@ import {
 } from "@/components/ui/dialog";
 import { FormLabel } from "@/components/ui/form";
 import Skeleton from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
 import { useTranscript } from "../_hooks/useTranscript";
 
 interface TranscriptManagementProps {
   isLoading?: boolean;
+  isLight?: boolean;
 }
 
 const TranscriptManagement = ({
   isLoading: externalLoading = false,
+  isLight = false,
 }: TranscriptManagementProps) => {
   const {
     transcripts,
@@ -54,6 +57,19 @@ const TranscriptManagement = ({
 
   const isLoading = externalLoading || isLoadingTranscripts;
 
+  const textPrimary = isLight ? "text-[#2F2A24]" : "text-white";
+  const textSecondary = isLight ? "text-[#5C5245]" : "text-zinc-400";
+  const surface = isLight ? "border-stone-300 bg-white/90" : "border-zinc-700 bg-zinc-800";
+  const buttonCancel = isLight
+    ? "text-[#7A6B5B] hover:bg-stone-200"
+    : "text-zinc-400 hover:bg-zinc-700 hover:text-white";
+  const primaryButton = isLight
+    ? "bg-gradient-to-r from-[#F6A964] to-[#E36C3A] text-white hover:brightness-105"
+    : "bg-white text-black hover:bg-zinc-200";
+  const outlineButton = isLight
+    ? "border-stone-300 bg-white text-[#2F2A24] hover:bg-stone-200"
+    : "bg-zinc-700 text-white hover:bg-zinc-600";
+
   const handleUploadKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault();
@@ -64,38 +80,56 @@ const TranscriptManagement = ({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <FormLabel className="text-zinc-300">Transcripts</FormLabel>
+        <FormLabel className={textSecondary}>Transcripts</FormLabel>
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
             <Button
               type="button"
               variant="outline"
               size="sm"
-              className="flex items-center gap-1 bg-white text-black hover:bg-zinc-200"
+              className={cn("flex items-center gap-1 px-3 py-1 disabled:opacity-60", primaryButton)}
               disabled={transcripts.length > 0}
             >
               <Plus className="h-3 w-3" /> Add Transcript
             </Button>
           </DialogTrigger>
-          <DialogContent className="border-zinc-800 bg-zinc-900 text-white">
+          <DialogContent
+            className={cn(
+              isLight
+                ? "border-stone-300 bg-white text-[#2F2A24]"
+                : "border-zinc-800 bg-zinc-900 text-white"
+            )}
+          >
             <DialogHeader>
-              <DialogTitle>Upload New Transcript</DialogTitle>
-              <DialogDescription className="text-zinc-400">
-                Upload your semester transcript in PDF format.
+              <DialogTitle className={textPrimary}>Upload New Transcript</DialogTitle>
+              <DialogDescription className={textSecondary}>
+                Unggah transkrip semester Anda dalam format PDF.
               </DialogDescription>
             </DialogHeader>
 
             {/* Upload Error Message Display */}
             {uploadError && (
-              <div className="flex items-center gap-2 rounded-lg border border-red-700 bg-red-900/20 p-3">
-                <AlertCircle className="h-4 w-4 text-red-400" />
-                <p className="text-sm text-red-400">{uploadError}</p>
+              <div
+                className={cn(
+                  "flex items-center gap-2 rounded-lg border p-3",
+                  isLight
+                    ? "border-red-300 bg-red-100 text-red-700"
+                    : "border-red-700 bg-red-900/20 text-red-400"
+                )}
+              >
+                <AlertCircle className="h-4 w-4" />
+                <p className="text-sm">{uploadError}</p>
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
                   onClick={resetUploadError}
-                  className="ml-auto h-6 w-6 p-0 text-red-400 hover:bg-red-800 hover:text-red-300"
+                  className={cn(
+                    "ml-auto h-6 w-6 p-0",
+                    isLight
+                      ? "text-red-600 hover:bg-red-200"
+                      : "text-red-400 hover:bg-red-800 hover:text-red-300"
+                  )}
                 >
                   <X className="h-3 w-3" />
                 </Button>
@@ -105,11 +139,16 @@ const TranscriptManagement = ({
             <div className="space-y-4">
               {/* Semester Selection */}
               <div className="space-y-2">
-                <FormLabel className="text-zinc-300">Semester</FormLabel>
+                <FormLabel className={textSecondary}>Semester</FormLabel>
                 <select
                   value={newTranscriptSemester}
                   onChange={(e) => setNewTranscriptSemester(e.target.value)}
-                  className="w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-white focus:border-zinc-500 focus:outline-none"
+                  className={cn(
+                    "w-full rounded-md border px-3 py-2 focus:outline-none",
+                    isLight
+                      ? "border-stone-300 bg-white text-[#2F2A24] focus:border-stone-400"
+                      : "border-zinc-700 bg-zinc-800 text-white focus:border-zinc-500"
+                  )}
                 >
                   <option value="">Select semester</option>
                   {Array.from({ length: 12 }, (_, i) => i + 1).map((sem) => (
@@ -122,19 +161,26 @@ const TranscriptManagement = ({
 
               {/* File Upload */}
               <div className="space-y-2">
-                <FormLabel className="text-zinc-300">Transcript File</FormLabel>
+                <FormLabel className={textSecondary}>Transcript File</FormLabel>
                 <div
                   role="button"
                   tabIndex={0}
                   onClick={handleNewTranscriptUploadClick}
                   onKeyDown={handleUploadKeyDown}
-                  className="cursor-pointer rounded-lg border-2 border-dashed border-zinc-600 bg-zinc-700/50 p-6 text-center transition-colors hover:border-zinc-500 hover:bg-zinc-700 focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500 focus:outline-none"
+                  className={cn(
+                    "cursor-pointer rounded-lg border-2 border-dashed p-6 text-center transition-colors focus:outline-none",
+                    isLight
+                      ? "border-stone-300 bg-white/70 hover:border-stone-400 hover:bg-white focus:border-stone-400 focus:ring-1 focus:ring-stone-300"
+                      : "border-zinc-600 bg-zinc-700/50 hover:border-zinc-500 hover:bg-zinc-700 focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500"
+                  )}
                 >
-                  <Upload className="mx-auto h-6 w-6 text-zinc-400" />
-                  <p className="mt-2 text-sm text-white">
+                  <Upload
+                    className={cn("mx-auto h-6 w-6", isLight ? "text-[#7A6B5B]" : "text-zinc-400")}
+                  />
+                  <p className={cn("mt-2 text-sm", textPrimary)}>
                     {newTranscriptFile ? newTranscriptFile.name : "Click to upload transcript"}
                   </p>
-                  <p className="text-xs text-zinc-400">PDF only, max 2MB</p>
+                  <p className={cn("text-xs", textSecondary)}>PDF only, max 2MB</p>
                 </div>
                 <input
                   type="file"
@@ -152,7 +198,7 @@ const TranscriptManagement = ({
                 variant="ghost"
                 onClick={handleCancelCreateTranscript}
                 disabled={isUploading}
-                className="text-zinc-400 hover:bg-zinc-700 hover:text-white"
+                className={buttonCancel}
               >
                 Cancel
               </Button>
@@ -160,7 +206,7 @@ const TranscriptManagement = ({
                 type="button"
                 onClick={handleCreateTranscript}
                 disabled={isUploading}
-                className="bg-white text-black hover:bg-zinc-200 disabled:opacity-50"
+                className={cn("disabled:opacity-50", primaryButton)}
               >
                 {isUploading ? "Uploading..." : "Upload Transcript"}
               </Button>
@@ -171,25 +217,43 @@ const TranscriptManagement = ({
 
       {/* Delete Confirmation Dialog */}
       <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-        <DialogContent className="border-zinc-800 bg-zinc-900 text-white">
+        <DialogContent
+          className={cn(
+            isLight
+              ? "border-stone-300 bg-white text-[#2F2A24]"
+              : "border-zinc-800 bg-zinc-900 text-white"
+          )}
+        >
           <DialogHeader>
-            <DialogTitle>Delete Transcript</DialogTitle>
-            <DialogDescription className="text-zinc-400">
-              Are you sure you want to delete this transcript? This action cannot be undone.
+            <DialogTitle className={textPrimary}>Hapus Transkrip</DialogTitle>
+            <DialogDescription className={textSecondary}>
+              Apakah Anda yakin ingin menghapus transkrip ini? Aksi ini tidak dapat dibatalkan.
             </DialogDescription>
           </DialogHeader>
 
           {/* Delete Error Message Display */}
           {deleteError && (
-            <div className="flex items-center gap-2 rounded-lg border border-red-700 bg-red-900/20 p-3">
-              <AlertCircle className="h-4 w-4 text-red-400" />
-              <p className="text-sm text-red-400">{deleteError}</p>
+            <div
+              className={cn(
+                "flex items-center gap-2 rounded-lg border p-3",
+                isLight
+                  ? "border-red-300 bg-red-100 text-red-700"
+                  : "border-red-700 bg-red-900/20 text-red-400"
+              )}
+            >
+              <AlertCircle className="h-4 w-4" />
+              <p className="text-sm">{deleteError}</p>
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
                 onClick={resetDeleteError}
-                className="ml-auto h-6 w-6 p-0 text-red-400 hover:bg-red-800 hover:text-red-300"
+                className={cn(
+                  "ml-auto h-6 w-6 p-0",
+                  isLight
+                    ? "text-red-600 hover:bg-red-200"
+                    : "text-red-400 hover:bg-red-800 hover:text-red-300"
+                )}
               >
                 <X className="h-3 w-3" />
               </Button>
@@ -197,8 +261,8 @@ const TranscriptManagement = ({
           )}
 
           {transcriptToDelete && (
-            <div className="rounded-lg border border-zinc-700 bg-zinc-800 p-3">
-              <p className="text-sm font-medium text-white">
+            <div className={cn("rounded-lg border p-3", surface)}>
+              <p className={cn("text-sm font-medium", textPrimary)}>
                 Semester {transcriptToDelete.semester} Transcript
               </p>
             </div>
@@ -210,7 +274,7 @@ const TranscriptManagement = ({
               variant="ghost"
               onClick={handleCancelDelete}
               disabled={isDeleting}
-              className="text-zinc-400 hover:bg-zinc-700 hover:text-white"
+              className={buttonCancel}
             >
               Cancel
             </Button>
@@ -218,7 +282,12 @@ const TranscriptManagement = ({
               type="button"
               onClick={handleConfirmDelete}
               disabled={isDeleting}
-              className="bg-red-600 text-white hover:bg-red-700 disabled:opacity-50"
+              className={cn(
+                "disabled:opacity-50",
+                isLight
+                  ? "bg-red-500 text-white hover:bg-red-600"
+                  : "bg-red-600 text-white hover:bg-red-700"
+              )}
             >
               {isDeleting ? "Deleting..." : "Delete"}
             </Button>
@@ -228,10 +297,10 @@ const TranscriptManagement = ({
 
       {isLoading ? (
         <div className="space-y-4">
-          <div className="rounded-lg border border-zinc-700 p-4">
+          <div className={cn("rounded-lg border p-4", surface)}>
             <Skeleton className="h-20 w-full" />
           </div>
-          <div className="rounded-lg border border-zinc-700 p-4">
+          <div className={cn("rounded-lg border p-4", surface)}>
             <Skeleton className="h-20 w-full" />
           </div>
         </div>
@@ -239,14 +308,14 @@ const TranscriptManagement = ({
         <div className="space-y-4">
           {/* Transcript list */}
           {transcripts.map((transcript) => (
-            <div key={transcript.id} className="rounded-lg border border-zinc-700 bg-zinc-800 p-4">
+            <div key={transcript.id} className={cn("rounded-lg border p-4", surface)}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="rounded bg-black p-2">
+                  <div className={cn("rounded p-2", isLight ? "bg-[#F0E4D6]" : "bg-black")}>
                     <Upload className="h-4 w-4" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-white">
+                    <p className={cn("text-sm font-medium", textPrimary)}>
                       Semester {transcript.semester} Transcript
                     </p>
                   </div>
@@ -257,7 +326,7 @@ const TranscriptManagement = ({
                     variant="outline"
                     size="sm"
                     onClick={() => handleViewTranscript(transcript)}
-                    className="bg-zinc-700 text-white hover:bg-zinc-600"
+                    className={outlineButton}
                   >
                     View
                   </Button>
@@ -278,10 +347,17 @@ const TranscriptManagement = ({
 
           {/* Empty state */}
           {transcripts.length === 0 && (
-            <div className="rounded-lg border-2 border-dashed border-zinc-600 bg-zinc-800/50 p-8 text-center">
-              <Upload className="mx-auto h-8 w-8 text-zinc-400" />
-              <p className="mt-2 text-sm font-medium text-white">No transcripts uploaded</p>
-              <p className="mt-1 text-xs text-zinc-400">
+            <div
+              className={cn(
+                "rounded-lg border-2 border-dashed p-8 text-center",
+                isLight ? "border-stone-300 bg-white/70" : "border-zinc-600 bg-zinc-800/50"
+              )}
+            >
+              <Upload
+                className={cn("mx-auto h-8 w-8", isLight ? "text-[#7A6B5B]" : "text-zinc-400")}
+              />
+              <p className={cn("mt-2 text-sm font-medium", textPrimary)}>No transcripts uploaded</p>
+              <p className={cn("mt-1 text-xs", textSecondary)}>
                 Click &ldquo;Add Transcript&rdquo; to upload your semester transcripts
               </p>
             </div>

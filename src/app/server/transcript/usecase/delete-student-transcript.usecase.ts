@@ -1,6 +1,6 @@
 import { HttpStatusCode } from "axios";
 
-import { findStudentByUserId } from "../../student/student.repository";
+import { deleteStudentGPA, findStudentByUserId } from "../../student/student.repository";
 import { STUDENT_ERROR_RESPONSE } from "../../user/student.error";
 import { customError } from "../../utils/error/custom-error";
 import { TRANSCRIPT_ERROR_RESPONSE } from "../transcript.error";
@@ -34,5 +34,8 @@ export const deleteStudentTranscriptUsecase = async (userId: number, transcriptI
     );
   }
 
-  await deleteTranscriptByIdAndStudentId(transcript.id, student.id);
+  await Promise.all([
+    deleteTranscriptByIdAndStudentId(transcript.id, student.id),
+    deleteStudentGPA(student.id),
+  ]);
 };

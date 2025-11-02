@@ -62,6 +62,7 @@ import {
   TypographyP,
   TypographyEmphasis,
 } from "@/components/ui/typography";
+import { cn } from "@/lib/utils";
 
 import {
   useMyRecomendation,
@@ -95,32 +96,56 @@ const getRankGradientClass = (rank: number): string => {
 const EmptyState = ({
   onStartAnalysis,
   isCreating,
+  isLight,
 }: {
   onStartAnalysis: () => void;
   isCreating: boolean;
+  isLight: boolean;
 }) => (
-  <div className="relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-zinc-900 via-black to-zinc-900">
+  <div
+    className={cn(
+      "relative flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center overflow-hidden",
+      isLight
+        ? "bg-gradient-to-br from-zinc-200 via-stone-200 to-zinc-300 text-[#2F2A24]"
+        : "bg-gradient-to-br from-zinc-900 via-black to-zinc-900 text-white"
+    )}
+  >
     {/* Animated Background Elements */}
     <div className="absolute inset-0">
-      <div className="absolute top-1/4 left-1/4 h-64 w-64 animate-pulse rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 blur-3xl" />
-      <div className="absolute right-1/4 bottom-1/4 h-48 w-48 animate-pulse rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 blur-3xl delay-1000" />
-      <div className="absolute top-1/2 right-1/3 h-32 w-32 animate-pulse rounded-full bg-gradient-to-r from-cyan-500/20 to-blue-500/20 blur-2xl delay-500" />
+      {isLight ? (
+        <>
+          <div className="absolute top-1/4 left-1/4 h-64 w-64 animate-pulse rounded-full bg-gradient-to-r from-[#F7C8A2]/25 to-[#E9A779]/25 blur-3xl" />
+          <div className="absolute right-1/4 bottom-1/4 h-48 w-48 animate-pulse rounded-full bg-gradient-to-r from-[#F4B087]/25 to-[#E37B59]/25 blur-3xl delay-1000" />
+          <div className="absolute top-1/2 right-1/3 h-32 w-32 animate-pulse rounded-full bg-gradient-to-r from-[#F2C190]/25 to-[#F6A964]/25 blur-2xl delay-500" />
+        </>
+      ) : (
+        <>
+          <div className="absolute top-1/4 left-1/4 h-64 w-64 animate-pulse rounded-full bg-gradient-to-r from-blue-500/20 to-purple-500/20 blur-3xl" />
+          <div className="absolute right-1/4 bottom-1/4 h-48 w-48 animate-pulse rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 blur-3xl delay-1000" />
+          <div className="absolute top-1/2 right-1/3 h-32 w-32 animate-pulse rounded-full bg-gradient-to-r from-cyan-500/20 to-blue-500/20 blur-2xl delay-500" />
+        </>
+      )}
     </div>
 
     <motion.div
       initial={{ opacity: 0, y: 40 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
-      className="relative z-10 space-y-8 px-4 text-center"
+      className={cn("relative z-10 space-y-8 px-4 text-center", isLight && "text-[#2F2A24]")}
     >
       {/* Hero Icon */}
       <motion.div
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-        className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-600 shadow-2xl"
+        className={cn(
+          "mx-auto flex h-24 w-24 items-center justify-center rounded-full shadow-2xl",
+          isLight
+            ? "bg-gradient-to-r from-[#F6A964] to-[#E36C3A]"
+            : "bg-gradient-to-r from-blue-500 to-purple-600"
+        )}
       >
-        <Rocket className="h-12 w-12 text-white" />
+        <Rocket className={cn("h-12 w-12", isLight ? "text-white" : "text-white")} />
       </motion.div>
 
       {/* Main Content */}
@@ -138,7 +163,12 @@ const EmptyState = ({
             </span>{" "}
             Anda
           </TypographyH1>
-          <TypographyP className="mx-auto max-w-2xl text-lg text-zinc-300 md:text-xl">
+          <TypographyP
+            className={cn(
+              "mx-auto max-w-2xl text-lg md:text-xl",
+              isLight ? "text-[#5C5245]" : "text-zinc-300"
+            )}
+          >
             Dapatkan rekomendasi kompetisi yang disesuaikan dengan{" "}
             <span className="font-semibold text-blue-300">keterampilan</span>,{" "}
             <span className="font-semibold text-purple-300">minat</span>, dan{" "}
@@ -155,7 +185,12 @@ const EmptyState = ({
         >
           <Button
             size="lg"
-            className="group relative overflow-hidden bg-gradient-to-r from-blue-500 to-purple-600 px-8 py-4 text-lg font-bold text-white shadow-2xl transition-all hover:scale-105 hover:from-blue-600 hover:to-purple-700 hover:shadow-blue-500/25"
+            className={cn(
+              "group relative overflow-hidden px-8 py-4 text-lg font-bold text-white shadow-2xl transition-all hover:scale-105",
+              isLight
+                ? "bg-gradient-to-r from-[#F6A964] to-[#E36C3A] hover:from-[#F2A558] hover:to-[#D86330] hover:shadow-[#E4986E]/30"
+                : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 hover:shadow-blue-500/25"
+            )}
             onClick={onStartAnalysis}
             disabled={isCreating}
           >
@@ -183,10 +218,12 @@ const ComparisonSpiderChart = ({
   studentData,
   competitionData,
   showOnlyStudent = false,
+  isLight = false,
 }: {
   studentData: ReturnType<typeof useMyRecomendation>["studentSkillsData"];
   competitionData?: ReturnType<typeof useMyRecomendation>["competitionSkillsData"];
   showOnlyStudent?: boolean;
+  isLight?: boolean;
 }) => {
   // Persiapkan data untuk grafik radar
   const chartData = useMemo(() => {
@@ -216,24 +253,62 @@ const ComparisonSpiderChart = ({
       }));
   }, [studentData, competitionData]);
 
+  const borderClass = isLight ? "border-stone-300/70" : "border-zinc-800/50";
+  const surfaceClass = isLight
+    ? "bg-white/90 shadow-[0_25px_45px_rgba(214,188,160,0.25)]"
+    : "bg-gradient-to-br from-zinc-900/50 to-zinc-800/50";
+  const accentGlow = isLight
+    ? "from-[#F6A964]/15 via-transparent to-[#E36C3A]/15"
+    : "from-blue-500/20 via-transparent to-purple-500/20";
+  const gridStroke = isLight ? "rgba(94, 84, 73, 0.12)" : "rgba(255, 255, 255, 0.1)";
+  const axisStroke = isLight ? "rgba(94, 84, 73, 0.2)" : "rgba(255, 255, 255, 0.1)";
+  const tickColor = isLight ? "#5C5245" : "#e4e4e7";
+  const radiusTickColor = isLight ? "#7A6B5B" : "#a1a1aa";
+
   if (chartData.length === 0) {
     return (
-      <div className="flex h-[400px] items-center justify-center rounded-xl border border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50 backdrop-blur-sm">
+      <div
+        className={cn(
+          "flex h-[400px] items-center justify-center overflow-hidden rounded-xl border backdrop-blur-sm",
+          borderClass,
+          surfaceClass
+        )}
+      >
         <div className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-r from-zinc-700 to-zinc-800">
-            <RadarIcon className="h-8 w-8 text-zinc-400" />
+          <div
+            className={cn(
+              "mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full",
+              isLight
+                ? "bg-gradient-to-r from-[#F6A964] to-[#E36C3A]"
+                : "bg-gradient-to-r from-zinc-700 to-zinc-800"
+            )}
+          >
+            <RadarIcon className={cn("h-8 w-8", isLight ? "text-white" : "text-zinc-400")} />
           </div>
-          <TypographyP className="text-zinc-400">Tidak ada data tersedia</TypographyP>
+          <TypographyP className={cn("text-sm", isLight ? "text-[#7A6B5B]" : "text-zinc-400")}>
+            Tidak ada data tersedia
+          </TypographyP>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="relative h-[400px] w-full overflow-hidden rounded-xl border border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50 backdrop-blur-sm">
+    <div
+      className={cn(
+        "relative h-[400px] w-full overflow-hidden rounded-xl border backdrop-blur-sm",
+        borderClass,
+        surfaceClass
+      )}
+    >
       {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-500/20 via-transparent to-purple-500/20" />
+      <div className="absolute inset-0 opacity-40">
+        <div
+          className={cn(
+            "absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))]",
+            accentGlow
+          )}
+        />
       </div>
 
       <div className="relative h-full w-full p-6">
@@ -255,17 +330,17 @@ const ComparisonSpiderChart = ({
                 <stop offset="100%" stopColor="#ef4444" stopOpacity={0.3} />
               </linearGradient>
             </defs>
-            <PolarGrid stroke="rgba(255, 255, 255, 0.1)" strokeWidth={1} strokeDasharray="2 2" />
+            <PolarGrid stroke={gridStroke} strokeWidth={1} strokeDasharray="2 2" />
             <PolarAngleAxis
               dataKey="skill"
-              tick={{ fill: "#e4e4e7", fontSize: 11, fontWeight: 500 }}
-              stroke="rgba(255, 255, 255, 0.1)"
+              tick={{ fill: tickColor, fontSize: 11, fontWeight: 500 }}
+              stroke={axisStroke}
             />
             <PolarRadiusAxis
               angle={30}
               domain={[0, 10]}
-              tick={{ fill: "#a1a1aa", fontSize: 10 }}
-              stroke="rgba(255, 255, 255, 0.1)"
+              tick={{ fill: radiusTickColor, fontSize: 10 }}
+              stroke={axisStroke}
               tickCount={6}
             />
             <RadarChartComponent
@@ -288,13 +363,16 @@ const ComparisonSpiderChart = ({
             )}
             <Tooltip
               contentStyle={{
-                backgroundColor: "rgba(24, 24, 27, 0.95)",
-                border: "1px solid rgba(63, 63, 70, 0.5)",
+                backgroundColor: isLight ? "rgba(255, 255, 255, 0.95)" : "rgba(24, 24, 27, 0.95)",
+                border: isLight
+                  ? "1px solid rgba(214, 188, 160, 0.6)"
+                  : "1px solid rgba(63, 63, 70, 0.5)",
                 borderRadius: "0.75rem",
-                color: "#fff",
+                color: isLight ? "#2F2A24" : "#fff",
                 backdropFilter: "blur(10px)",
-                boxShadow:
-                  "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+                boxShadow: isLight
+                  ? "0 18px 32px rgba(214, 188, 160, 0.25)"
+                  : "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
               }}
               formatter={(value: number, name: string) => [
                 `${value.toFixed(1)}/10`,
@@ -317,18 +395,30 @@ interface TooltipProps {
     };
   }>;
   label?: string;
+  isLight?: boolean;
 }
 
-const CustomTooltip = ({ active, payload, label }: TooltipProps) => {
+const CustomTooltip = ({ active, payload, label, isLight = false }: TooltipProps) => {
   if (active && payload && payload.length) {
     return (
-      <div className="rounded-lg border border-zinc-700 bg-zinc-900 p-3 shadow-lg">
-        <p className="mb-1 font-medium text-white">{label}</p>
-        <p className="text-sm text-zinc-300">
-          <span className="font-medium text-blue-400">{payload[0].value.toFixed(1)}/10</span>{" "}
+      <div
+        className={cn(
+          "rounded-lg border p-3 shadow-lg",
+          isLight
+            ? "border-stone-300 bg-white text-[#2F2A24] shadow-[0_18px_32px_rgba(214,188,160,0.25)]"
+            : "border-zinc-700 bg-zinc-900 text-white"
+        )}
+      >
+        <p className="mb-1 font-medium">{label}</p>
+        <p className={cn("text-sm", isLight ? "text-[#5C5245]" : "text-zinc-300")}>
+          <span className={cn("font-medium", isLight ? "text-[#D97742]" : "text-blue-400")}>
+            {payload[0].value.toFixed(1)}/10
+          </span>{" "}
           tingkat kepentingan
         </p>
-        <p className="mt-2 text-xs text-zinc-400">{payload[0].payload.breakdown}</p>
+        <p className={cn("mt-2 text-xs", isLight ? "text-[#7A6B5B]" : "text-zinc-400")}>
+          {payload[0].payload.breakdown}
+        </p>
       </div>
     );
   }
@@ -344,8 +434,10 @@ const getSkillColor = (value: number): string => {
 
 const SkillRequirementsChart = ({
   requirements,
+  isLight,
 }: {
   requirements: Record<string, { weight: number; breakdown: string }>;
+  isLight: boolean;
 }) => {
   const chartData = useMemo(
     () =>
@@ -360,15 +452,31 @@ const SkillRequirementsChart = ({
     [requirements]
   );
 
+  const surfaceClass = isLight
+    ? "border-stone-300/70 bg-white/90 shadow-[0_24px_50px_rgba(214,188,160,0.25)]"
+    : "border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50";
+  const accentLine = isLight
+    ? "bg-gradient-to-b from-[#F6A964] via-[#E36C3A] to-[#C95A2D]"
+    : "bg-gradient-to-b from-blue-500 via-purple-500 to-pink-500";
+  const gridStroke = isLight ? "rgba(94, 84, 73, 0.12)" : "rgba(255, 255, 255, 0.08)";
+  const axisTickColor = isLight ? "#5C5245" : "#e4e4e7";
+
   return (
-    <div className="relative overflow-hidden rounded-xl border border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50 backdrop-blur-sm">
+    <div className={cn("relative overflow-hidden rounded-xl backdrop-blur-sm", surfaceClass)}>
       {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-purple-500/20 via-transparent to-blue-500/20" />
+      <div className="absolute inset-0 opacity-40">
+        <div
+          className={cn(
+            "absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))]",
+            isLight
+              ? "from-[#F6D8B6]/35 via-transparent to-[#F2A45E]/25"
+              : "from-purple-500/20 via-transparent to-blue-500/20"
+          )}
+        />
       </div>
 
       {/* Gradient Accent Line */}
-      <div className="absolute top-0 -left-2 h-full w-1 rounded-full bg-gradient-to-b from-blue-500 via-purple-500 to-pink-500 shadow-lg" />
+      <div className={cn("absolute top-0 -left-2 h-full w-1 rounded-full shadow-lg", accentLine)} />
 
       <div className="relative h-[400px] w-full pr-4 pl-6">
         <ResponsiveContainer width="100%" height="100%">
@@ -389,29 +497,25 @@ const SkillRequirementsChart = ({
                 <stop offset="100%" stopColor="rgba(255, 255, 255, 0.02)" />
               </linearGradient>
             </defs>
-            <CartesianGrid
-              strokeDasharray="2 2"
-              stroke="rgba(255, 255, 255, 0.08)"
-              horizontal={false}
-            />
+            <CartesianGrid strokeDasharray="2 2" stroke={gridStroke} horizontal={false} />
             <XAxis
               type="number"
               domain={[0, 10]}
-              tick={{ fill: "#e4e4e7", fontSize: 11, fontWeight: 500 }}
-              stroke="rgba(255, 255, 255, 0.1)"
-              tickLine={{ stroke: "rgba(255, 255, 255, 0.1)" }}
+              tick={{ fill: axisTickColor, fontSize: 11, fontWeight: 500 }}
+              stroke={gridStroke}
+              tickLine={{ stroke: gridStroke }}
               axisLine={false}
             />
             <YAxis
               type="category"
               dataKey="name"
-              tick={{ fill: "#e4e4e7", fontSize: 11, fontWeight: 500 }}
-              stroke="rgba(255, 255, 255, 0.1)"
+              tick={{ fill: axisTickColor, fontSize: 11, fontWeight: 500 }}
+              stroke={gridStroke}
               width={200}
               tickLine={false}
               axisLine={false}
             />
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<CustomTooltip isLight={isLight} />} />
             <Bar
               dataKey="value"
               radius={[0, 14, 14, 0]}
@@ -435,7 +539,13 @@ const SkillRequirementsChart = ({
   );
 };
 
-const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
+const RecommendationContent = ({
+  data,
+  isLight,
+}: {
+  data: RecommendationResponse;
+  isLight: boolean;
+}) => {
   const { selectedCompetition, setSelectedCompetition, studentSkillsData, competitionSkillsData } =
     useMyRecomendation();
   const recommendationsRef = useRef<HTMLDivElement>(null);
@@ -477,8 +587,32 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
     }));
   };
 
+  const textPrimary = isLight ? "text-[#2F2A24]" : "text-white";
+  const textSecondary = isLight ? "text-[#5C5245]" : "text-zinc-300";
+  const cardSurface = isLight
+    ? "border-stone-300/70 bg-white/90 shadow-[0_24px_50px_rgba(214,188,160,0.25)] hover:border-stone-400/80 hover:shadow-[0_28px_55px_rgba(214,188,160,0.32)]"
+    : "border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50 hover:border-zinc-700/50 hover:shadow-[0_24px_45px_rgba(37,99,235,0.18)]";
+  const chipLabelClass = isLight ? "text-xs text-[#7A6B5B]" : "text-xs text-zinc-400";
+  const chipValueClass = isLight
+    ? "text-sm font-semibold text-[#2F2A24]"
+    : "text-sm font-semibold text-white";
+  const recommendationCardBase = isLight
+    ? "border-stone-300/70 bg-white/95 hover:border-stone-400/80 hover:shadow-[0_26px_48px_rgba(214,188,160,0.3)]"
+    : "border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50 hover:border-zinc-700/50 hover:from-zinc-800/50 hover:to-zinc-700/50";
+  const recommendationCardSelected = isLight
+    ? "border-[#E36C3A]/60 bg-gradient-to-br from-[#F6E5D4]/90 to-[#F2C8A4]/90 ring-2 ring-[#F2A45E]/50 shadow-[0_30px_55px_rgba(226,145,84,0.25)]"
+    : "border-blue-500/50 bg-gradient-to-br from-blue-900/20 to-purple-900/20 ring-2 shadow-blue-500/25 ring-blue-500/50";
+  const mutedLabel = isLight ? "text-xs text-[#7A6B5B]" : "text-xs text-zinc-400";
+
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-zinc-900 via-black to-zinc-900">
+    <div
+      className={cn(
+        "relative min-h-screen",
+        isLight
+          ? "bg-gradient-to-br from-zinc-200 via-stone-200 to-zinc-300"
+          : "bg-gradient-to-br from-zinc-900 via-black to-zinc-900"
+      )}
+    >
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-1/4 left-1/4 h-96 w-96 animate-pulse rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 blur-3xl" />
@@ -486,7 +620,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
         <div className="absolute top-1/2 right-1/3 h-64 w-64 animate-pulse rounded-full bg-gradient-to-r from-cyan-500/10 to-blue-500/10 blur-2xl delay-500" />
       </div>
 
-      <div className="relative z-10 space-y-8 p-6">
+      <div className={cn("relative z-10 space-y-8 p-6", isLight ? "text-[#2F2A24]" : "text-white")}>
         {/* Header Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -502,11 +636,20 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                   Kompetisi
                 </span>
               </TypographyH1>
-              <TypographyP className="text-lg text-zinc-300">
+              <TypographyP className={cn("text-lg", textSecondary)}>
                 Rekomendasi yang disesuaikan dengan{" "}
-                <TypographyEmphasis className="text-blue-300">keterampilan</TypographyEmphasis>,{" "}
-                <TypographyEmphasis className="text-purple-300">minat</TypographyEmphasis>, dan{" "}
-                <TypographyEmphasis className="text-pink-300">tujuan</TypographyEmphasis> Anda
+                <TypographyEmphasis className={cn(isLight ? "text-[#D97742]" : "text-blue-300")}>
+                  keterampilan
+                </TypographyEmphasis>
+                ,{" "}
+                <TypographyEmphasis className={cn(isLight ? "text-[#C56834]" : "text-purple-300")}>
+                  minat
+                </TypographyEmphasis>
+                , dan{" "}
+                <TypographyEmphasis className={cn(isLight ? "text-[#B2542B]" : "text-pink-300")}>
+                  tujuan
+                </TypographyEmphasis>{" "}
+                Anda
               </TypographyP>
             </div>
             {/* <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
@@ -524,10 +667,24 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2, duration: 0.8 }}
           >
-            <Card className="group relative overflow-hidden border border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50 backdrop-blur-sm transition-all hover:border-zinc-700/50">
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
+            <Card
+              className={cn(
+                cardSurface,
+                isLight
+                  ? "border-stone-300/70 bg-white/90 shadow-[0_24px_50px_rgba(214,188,160,0.25)] hover:border-stone-400/80 hover:shadow-[0_28px_55px_rgba(214,188,160,0.32)]"
+                  : "border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50 hover:border-zinc-700/50 hover:shadow-[0_24px_45px_rgba(37,99,235,0.18)]"
+              )}
+            >
+              <div
+                className={cn(
+                  "absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100",
+                  isLight
+                    ? "bg-gradient-to-r from-[#F6A964]/15 to-[#E36C3A]/15"
+                    : "bg-gradient-to-r from-blue-500/5 to-purple-500/5"
+                )}
+              />
               <CardHeader>
-                <CardTitle className="flex items-center space-x-3 text-white">
+                <CardTitle className={cn("flex items-center space-x-3", textPrimary)}>
                   <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg">
                     <Users className="h-5 w-5" />
                   </div>
@@ -542,15 +699,20 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.3, duration: 0.3 }}
-                      className="group/item relative overflow-hidden rounded-xl bg-gradient-to-br from-blue-500/10 to-cyan-500/10 p-4 backdrop-blur-sm transition-all hover:from-blue-500/20 hover:to-cyan-500/20"
+                      className={cn(
+                        "group/item relative overflow-hidden rounded-xl p-4 backdrop-blur-sm transition-all",
+                        isLight
+                          ? "border border-stone-300/70 bg-white hover:border-stone-400/80 hover:shadow-[0_16px_28px_rgba(214,188,160,0.25)]"
+                          : "bg-gradient-to-br from-blue-500/10 to-cyan-500/10 hover:from-blue-500/20 hover:to-cyan-500/20"
+                      )}
                     >
                       <div className="flex items-center space-x-3">
                         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 shadow-lg">
                           <Users className="h-4 w-4 text-white" />
                         </div>
                         <div>
-                          <span className="text-xs text-zinc-400">Nama</span>
-                          <p className="text-sm font-semibold text-white">
+                          <span className={chipLabelClass}>Nama</span>
+                          <p className={chipValueClass}>
                             {data.result.studentProfile?.name || "Tidak tersedia"}
                           </p>
                         </div>
@@ -561,15 +723,20 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.4, duration: 0.3 }}
-                      className="group/item relative overflow-hidden rounded-xl bg-gradient-to-br from-purple-500/10 to-pink-500/10 p-4 backdrop-blur-sm transition-all hover:from-purple-500/20 hover:to-pink-500/20"
+                      className={cn(
+                        "group/item relative overflow-hidden rounded-xl p-4 backdrop-blur-sm transition-all",
+                        isLight
+                          ? "border border-stone-300/70 bg-white hover:border-stone-400/80 hover:shadow-[0_16px_28px_rgba(214,188,160,0.25)]"
+                          : "bg-gradient-to-br from-purple-500/10 to-pink-500/10 hover:from-purple-500/20 hover:to-pink-500/20"
+                      )}
                     >
                       <div className="flex items-center space-x-3">
                         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg">
                           <BookOpen className="h-4 w-4 text-white" />
                         </div>
                         <div>
-                          <span className="text-xs text-zinc-400">NIM</span>
-                          <p className="text-sm font-semibold text-white">
+                          <span className={chipLabelClass}>NIM</span>
+                          <p className={chipValueClass}>
                             {data.result.studentProfile?.studentId || "Tidak tersedia"}
                           </p>
                         </div>
@@ -580,15 +747,20 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.5, duration: 0.3 }}
-                      className="group/item relative overflow-hidden rounded-xl bg-gradient-to-br from-green-500/10 to-emerald-500/10 p-4 backdrop-blur-sm transition-all hover:from-green-500/20 hover:to-emerald-500/20"
+                      className={cn(
+                        "group/item relative overflow-hidden rounded-xl p-4 backdrop-blur-sm transition-all",
+                        isLight
+                          ? "border border-stone-300/70 bg-white hover:border-stone-400/80 hover:shadow-[0_16px_28px_rgba(214,188,160,0.25)]"
+                          : "bg-gradient-to-br from-green-500/10 to-emerald-500/10 hover:from-green-500/20 hover:to-emerald-500/20"
+                      )}
                     >
                       <div className="flex items-center space-x-3">
                         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-emerald-500 shadow-lg">
                           <Trophy className="h-4 w-4 text-white" />
                         </div>
                         <div>
-                          <span className="text-xs text-zinc-400">IPK</span>
-                          <p className="text-sm font-semibold text-white">
+                          <span className={chipLabelClass}>IPK</span>
+                          <p className={chipValueClass}>
                             {data.result.studentProfile?.gpa || "Tidak tersedia"}
                           </p>
                         </div>
@@ -599,15 +771,20 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.6, duration: 0.3 }}
-                      className="group/item relative overflow-hidden rounded-xl bg-gradient-to-br from-orange-500/10 to-red-500/10 p-4 backdrop-blur-sm transition-all hover:from-orange-500/20 hover:to-red-500/20"
+                      className={cn(
+                        "group/item relative overflow-hidden rounded-xl p-4 backdrop-blur-sm transition-all",
+                        isLight
+                          ? "border border-stone-300/70 bg-white hover:border-stone-400/80 hover:shadow-[0_16px_28px_rgba(214,188,160,0.25)]"
+                          : "bg-gradient-to-br from-orange-500/10 to-red-500/10 hover:from-orange-500/20 hover:to-red-500/20"
+                      )}
                     >
                       <div className="flex items-center space-x-3">
                         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-orange-500 to-red-500 shadow-lg">
                           <Calendar className="h-4 w-4 text-white" />
                         </div>
                         <div>
-                          <span className="text-xs text-zinc-400">Angkatan</span>
-                          <p className="text-sm font-semibold text-white">
+                          <span className={chipLabelClass}>Angkatan</span>
+                          <p className={chipValueClass}>
                             {data.result.studentProfile?.entryYear || "Tidak tersedia"}
                           </p>
                         </div>
@@ -621,15 +798,20 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.7, duration: 0.3 }}
-                      className="group/item relative overflow-hidden rounded-xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10 p-4 backdrop-blur-sm transition-all hover:from-indigo-500/20 hover:to-purple-500/20"
+                      className={cn(
+                        "group/item relative overflow-hidden rounded-xl p-4 backdrop-blur-sm transition-all",
+                        isLight
+                          ? "border border-stone-300/70 bg-white hover:border-stone-400/80 hover:shadow-[0_16px_28px_rgba(214,188,160,0.25)]"
+                          : "bg-gradient-to-br from-indigo-500/10 to-purple-500/10 hover:from-indigo-500/20 hover:to-purple-500/20"
+                      )}
                     >
                       <div className="flex items-center space-x-3">
                         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 shadow-lg">
                           <Code2 className="h-4 w-4 text-white" />
                         </div>
                         <div>
-                          <span className="text-xs text-zinc-400">Program Studi</span>
-                          <p className="text-sm font-semibold text-white">
+                          <span className={chipLabelClass}>Program Studi</span>
+                          <p className={chipValueClass}>
                             {data.result.studentProfile?.studyProgram || "Tidak tersedia"}
                           </p>
                         </div>
@@ -640,15 +822,20 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.8, duration: 0.3 }}
-                      className="group/item relative overflow-hidden rounded-xl bg-gradient-to-br from-cyan-500/10 to-blue-500/10 p-4 backdrop-blur-sm transition-all hover:from-cyan-500/20 hover:to-blue-500/20"
+                      className={cn(
+                        "group/item relative overflow-hidden rounded-xl p-4 backdrop-blur-sm transition-all",
+                        isLight
+                          ? "border border-stone-300/70 bg-white hover:border-stone-400/80 hover:shadow-[0_16px_28px_rgba(214,188,160,0.25)]"
+                          : "bg-gradient-to-br from-cyan-500/10 to-blue-500/10 hover:from-cyan-500/20 hover:to-blue-500/20"
+                      )}
                     >
                       <div className="flex items-center space-x-3">
                         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 shadow-lg">
                           <ExternalLink className="h-4 w-4 text-white" />
                         </div>
                         <div>
-                          <span className="text-xs text-zinc-400">Email</span>
-                          <p className="text-sm font-semibold text-white">
+                          <span className={chipLabelClass}>Email</span>
+                          <p className={chipValueClass}>
                             {data.result.studentProfile?.email || "Tidak tersedia"}
                           </p>
                         </div>
@@ -661,15 +848,22 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.9, duration: 0.3 }}
-                    className="rounded-xl bg-gradient-to-r from-zinc-800/30 to-zinc-900/30 p-4 backdrop-blur-sm"
+                    className={cn(
+                      "rounded-xl p-4 backdrop-blur-sm",
+                      isLight
+                        ? "border border-stone-300/60 bg-white/90 shadow-[0_18px_35px_rgba(214,188,160,0.22)]"
+                        : "bg-gradient-to-r from-zinc-800/30 to-zinc-900/30"
+                    )}
                   >
                     <div className="mb-3 flex items-center space-x-3">
                       <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-500 shadow-lg">
                         <Brain className="h-3 w-3 text-white" />
                       </div>
-                      <span className="text-sm font-semibold text-white">Ringkasan Profil</span>
+                      <span className={cn("text-sm font-semibold", textPrimary)}>
+                        Ringkasan Profil
+                      </span>
                     </div>
-                    <TypographyP className="leading-relaxed text-zinc-300">
+                    <TypographyP className={cn("leading-relaxed", textSecondary)}>
                       {data.result.studentSummary}
                     </TypographyP>
                   </motion.div>
@@ -689,21 +883,38 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.8 }}
           >
-            <Card className="group relative overflow-hidden border border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50 backdrop-blur-sm transition-all hover:border-zinc-700/50">
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-pink-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
+            <Card
+              className={cn(
+                "group relative overflow-hidden border backdrop-blur-sm transition-all",
+                cardSurface
+              )}
+            >
+              <div
+                className={cn(
+                  "absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100",
+                  isLight
+                    ? "bg-gradient-to-r from-[#EFD3BC]/40 to-[#F2A45E]/40"
+                    : "bg-gradient-to-r from-purple-500/5 to-pink-500/5"
+                )}
+              />
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-pink-600 shadow-lg">
-                      <Brain className="h-5 w-5 text-white" />
+                      <Brain className="h-5 w-5" />
                     </div>
-                    <span className="text-xl text-white">Profil Keterampilan</span>
+                    <span className={cn("text-xl", textPrimary)}>Profil Keterampilan</span>
                     <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => toggleSection("skillsProfile")}
-                        className="bg-zinc-800/50 text-white backdrop-blur-sm hover:bg-zinc-700/50"
+                        className={cn(
+                          "backdrop-blur-sm",
+                          isLight
+                            ? "border border-stone-300/60 bg-white/80 text-[#2F2A24] hover:bg-white"
+                            : "bg-zinc-800/50 text-white hover:bg-zinc-700/50"
+                        )}
                       >
                         {collapsedSections.skillsProfile ? (
                           <ChevronDown className="h-4 w-4" />
@@ -714,19 +925,19 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                     </motion.div>
                   </div>
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className={textSecondary}>
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
                     <div className="flex items-center space-x-2">
                       <div className="h-2 w-2 rounded-full bg-gradient-to-r from-green-400 to-green-500 shadow-sm" />
-                      <span className="text-xs text-zinc-400">Tinggi</span>
+                      <span className={chipLabelClass}>Tinggi</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <div className="h-2 w-2 rounded-full bg-gradient-to-r from-blue-400 to-blue-500 shadow-sm" />
-                      <span className="text-xs text-zinc-400">Sedang</span>
+                      <span className={chipLabelClass}>Sedang</span>
                     </div>
                     <div className="flex items-center space-x-2">
                       <div className="h-2 w-2 rounded-full bg-gradient-to-r from-orange-400 to-orange-500 shadow-sm" />
-                      <span className="text-xs text-zinc-400">Rendah</span>
+                      <span className={chipLabelClass}>Rendah</span>
                     </div>
                   </div>
                 </CardDescription>
@@ -748,12 +959,26 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                               initial={{ opacity: 0, scale: 0.8 }}
                               animate={{ opacity: 1, scale: 1 }}
                               transition={{ delay: index * 0.1, duration: 0.3 }}
-                              className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-zinc-800/50 to-zinc-900/50 p-4 backdrop-blur-sm transition-all hover:from-zinc-700/50 hover:to-zinc-800/50 hover:shadow-lg hover:shadow-purple-500/10"
+                              className={cn(
+                                "group relative overflow-hidden rounded-xl p-4 backdrop-blur-sm transition-all hover:shadow-lg",
+                                isLight
+                                  ? "border border-stone-300/70 bg-white hover:border-stone-400/80 hover:shadow-[0_18px_32px_rgba(214,188,160,0.25)]"
+                                  : "bg-gradient-to-br from-zinc-800/50 to-zinc-900/50 hover:from-zinc-700/50 hover:to-zinc-800/50 hover:shadow-purple-500/10"
+                              )}
                             >
-                              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-pink-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
+                              <div
+                                className={cn(
+                                  "absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100",
+                                  isLight
+                                    ? "bg-gradient-to-r from-[#EFD3BC]/30 to-[#F2A45E]/30"
+                                    : "bg-gradient-to-r from-purple-500/5 to-pink-500/5"
+                                )}
+                              />
                               <div className="relative">
                                 <div className="mb-3 flex items-center justify-between">
-                                  <span className="truncate text-sm font-semibold text-white">
+                                  <span
+                                    className={cn("truncate text-sm font-semibold", textPrimary)}
+                                  >
                                     {skillNameMapping[skill] || skill}
                                   </span>
                                   <span className="ml-2 text-sm font-bold text-purple-400">
@@ -766,7 +991,9 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                                     style={{ width: `${score * 100}%` }}
                                   />
                                 </div>
-                                <TypographyP className="text-sm leading-relaxed text-zinc-400">
+                                <TypographyP
+                                  className={cn("text-sm leading-relaxed", textSecondary)}
+                                >
                                   {breakdown}
                                 </TypographyP>
                               </div>
@@ -789,11 +1016,23 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8, duration: 0.8 }}
             >
-              <Card className="group relative overflow-hidden border border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50 backdrop-blur-sm transition-all hover:border-zinc-700/50">
-                <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-emerald-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
+              <Card
+                className={cn(
+                  "group relative overflow-hidden border backdrop-blur-sm transition-all",
+                  cardSurface
+                )}
+              >
+                <div
+                  className={cn(
+                    "absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100",
+                    isLight
+                      ? "bg-gradient-to-r from-[#CFF3D6]/40 via-transparent to-[#A9EFC2]/30"
+                      : "bg-gradient-to-r from-green-500/5 to-emerald-500/5"
+                  )}
+                />
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3 text-white">
+                    <div className={cn("flex items-center space-x-3", textPrimary)}>
                       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-emerald-600 shadow-lg">
                         <Target className="h-5 w-5" />
                       </div>
@@ -803,7 +1042,12 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                           variant="ghost"
                           size="sm"
                           onClick={() => toggleSection("strengths")}
-                          className="bg-zinc-800/50 text-white backdrop-blur-sm hover:bg-zinc-700/50"
+                          className={cn(
+                            "backdrop-blur-sm",
+                            isLight
+                              ? "border border-stone-300/60 bg-white/80 text-[#2F2A24] hover:bg-white"
+                              : "bg-zinc-800/50 text-white hover:bg-zinc-700/50"
+                          )}
                         >
                           {collapsedSections.strengths ? (
                             <ChevronDown className="h-4 w-4" />
@@ -831,7 +1075,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-emerald-500 shadow-lg">
                                   <Star className="h-4 w-4 text-white" />
                                 </div>
-                                <TypographyH3 className="text-lg text-white">
+                                <TypographyH3 className={cn("text-lg", textPrimary)}>
                                   Kelebihan
                                 </TypographyH3>
                               </div>
@@ -842,10 +1086,17 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                                     initial={{ opacity: 0, x: -20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: index * 0.1, duration: 0.3 }}
-                                    className="group flex items-start space-x-3 rounded-lg bg-gradient-to-r from-green-500/10 to-emerald-500/10 p-3 backdrop-blur-sm transition-all hover:from-green-500/20 hover:to-emerald-500/20"
+                                    className={cn(
+                                      "group flex items-start space-x-3 rounded-lg p-3 backdrop-blur-sm transition-all",
+                                      isLight
+                                        ? "border border-stone-300/60 bg-white/85 hover:border-stone-400/80 hover:shadow-[0_14px_26px_rgba(190,230,205,0.4)]"
+                                        : "bg-gradient-to-r from-green-500/10 to-emerald-500/10 hover:from-green-500/20 hover:to-emerald-500/20"
+                                    )}
                                   >
                                     <div className="mt-1 h-2 w-2 rounded-full bg-gradient-to-r from-green-400 to-emerald-400 shadow-sm" />
-                                    <TypographyP className="text-sm leading-relaxed text-zinc-300">
+                                    <TypographyP
+                                      className={cn("text-sm leading-relaxed", textSecondary)}
+                                    >
                                       {strength}
                                     </TypographyP>
                                   </motion.div>
@@ -860,7 +1111,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-yellow-500 to-orange-500 shadow-lg">
                                   <TrendingUp className="h-4 w-4 text-white" />
                                 </div>
-                                <TypographyH3 className="text-lg text-white">
+                                <TypographyH3 className={cn("text-lg", textPrimary)}>
                                   Area Pengembangan
                                 </TypographyH3>
                               </div>
@@ -871,10 +1122,17 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                                     initial={{ opacity: 0, x: -20 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     transition={{ delay: index * 0.1, duration: 0.3 }}
-                                    className="group flex items-start space-x-3 rounded-lg bg-gradient-to-r from-yellow-500/10 to-orange-500/10 p-3 backdrop-blur-sm transition-all hover:from-yellow-500/20 hover:to-orange-500/20"
+                                    className={cn(
+                                      "group flex items-start space-x-3 rounded-lg p-3 backdrop-blur-sm transition-all",
+                                      isLight
+                                        ? "border border-stone-300/60 bg-white/85 hover:border-stone-400/80 hover:shadow-[0_14px_26px_rgba(242,195,142,0.35)]"
+                                        : "bg-gradient-to-r from-yellow-500/10 to-orange-500/10 hover:from-yellow-500/20 hover:to-orange-500/20"
+                                    )}
                                   >
                                     <div className="mt-1 h-2 w-2 rounded-full bg-gradient-to-r from-yellow-400 to-orange-400 shadow-sm" />
-                                    <TypographyP className="text-sm leading-relaxed text-zinc-300">
+                                    <TypographyP
+                                      className={cn("text-sm leading-relaxed", textSecondary)}
+                                    >
                                       {weakness}
                                     </TypographyP>
                                   </motion.div>
@@ -898,11 +1156,23 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.0, duration: 0.8 }}
             >
-              <Card className="group relative overflow-hidden border border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50 backdrop-blur-sm transition-all hover:border-zinc-700/50">
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-blue-500/5 opacity-0 transition-opacity group-hover:opacity-100" />
+              <Card
+                className={cn(
+                  "group relative overflow-hidden border backdrop-blur-sm transition-all",
+                  cardSurface
+                )}
+              >
+                <div
+                  className={cn(
+                    "absolute inset-0 opacity-0 transition-opacity group-hover:opacity-100",
+                    isLight
+                      ? "bg-gradient-to-r from-[#D4ECF7]/40 via-transparent to-[#A8D9F4]/30"
+                      : "bg-gradient-to-r from-cyan-500/5 to-blue-500/5"
+                  )}
+                />
                 <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3 text-white">
+                  <CardTitle className={cn("flex items-center justify-between", textPrimary)}>
+                    <div className={cn("flex items-center space-x-3", textPrimary)}>
                       <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 shadow-lg">
                         <Lightbulb className="h-5 w-5" />
                       </div>
@@ -912,7 +1182,12 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                           variant="ghost"
                           size="sm"
                           onClick={() => toggleSection("developmentSources")}
-                          className="bg-zinc-800/50 text-white backdrop-blur-sm hover:bg-zinc-700/50"
+                          className={cn(
+                            "backdrop-blur-sm",
+                            isLight
+                              ? "border border-stone-300/60 bg-white/80 text-[#2F2A24] hover:bg-white"
+                              : "bg-zinc-800/50 text-white hover:bg-zinc-700/50"
+                          )}
                         >
                           {collapsedSections.developmentSources ? (
                             <ChevronDown className="h-4 w-4" />
@@ -961,7 +1236,12 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                                 initial={{ opacity: 0, scale: 0.8 }}
                                 animate={{ opacity: 1, scale: 1 }}
                                 transition={{ delay: index * 0.1, duration: 0.3 }}
-                                className="group relative overflow-hidden rounded-xl bg-gradient-to-br from-zinc-800/50 to-zinc-900/50 p-6 backdrop-blur-sm transition-all hover:from-zinc-700/50 hover:to-zinc-800/50 hover:shadow-lg hover:shadow-cyan-500/10"
+                                className={cn(
+                                  "group relative overflow-hidden rounded-xl p-6 backdrop-blur-sm transition-all",
+                                  isLight
+                                    ? "border border-stone-300/60 bg-white/90 hover:border-stone-400/80 hover:shadow-[0_16px_32px_rgba(168,217,244,0.35)]"
+                                    : "bg-gradient-to-br from-zinc-800/50 to-zinc-900/50 hover:from-zinc-700/50 hover:to-zinc-800/50 hover:shadow-cyan-500/10"
+                                )}
                               >
                                 <div
                                   className={`absolute inset-0 bg-gradient-to-r ${gradientClass} opacity-0 transition-opacity group-hover:opacity-5`}
@@ -973,11 +1253,15 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                                     >
                                       {icon}
                                     </div>
-                                    <TypographyH3 className="text-sm font-semibold text-white">
+                                    <TypographyH3
+                                      className={cn("text-sm font-semibold", textPrimary)}
+                                    >
                                       {suggestion.title}
                                     </TypographyH3>
                                   </div>
-                                  <TypographyP className="mb-4 text-sm leading-relaxed text-zinc-400">
+                                  <TypographyP
+                                    className={cn("mb-4 text-sm leading-relaxed", textSecondary)}
+                                  >
                                     {suggestion.reason}
                                   </TypographyP>
                                   <motion.a
@@ -1016,7 +1300,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                 <TypographyH3 className="bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-2xl font-bold text-transparent md:text-3xl">
                   Rekomendasi Terbaik untuk Anda
                 </TypographyH3>
-                <TypographyP className="text-zinc-400">
+                <TypographyP className={textSecondary}>
                   Kompetisi yang paling sesuai dengan profil dan tujuan Anda
                 </TypographyP>
               </div>
@@ -1029,19 +1313,25 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                     transition={{ delay: 1.4 + index * 0.1, duration: 0.5 }}
                   >
                     <Card
-                      className={`group relative cursor-pointer overflow-hidden border transition-all hover:shadow-2xl ${
+                      className={cn(
+                        "group relative cursor-pointer overflow-hidden border backdrop-blur-sm transition-all",
                         selectedCompetition?.id === rec.id
-                          ? "border-blue-500/50 bg-gradient-to-br from-blue-900/20 to-purple-900/20 ring-2 shadow-blue-500/25 ring-blue-500/50"
-                          : "border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50 hover:border-zinc-700/50 hover:from-zinc-800/50 hover:to-zinc-700/50"
-                      } backdrop-blur-sm`}
+                          ? recommendationCardSelected
+                          : recommendationCardBase
+                      )}
                       onClick={() => setSelectedCompetition(rec)}
                     >
                       <div
-                        className={`absolute inset-0 bg-gradient-to-r opacity-0 transition-opacity group-hover:opacity-5 ${
+                        className={cn(
+                          "absolute inset-0 bg-gradient-to-r opacity-0 transition-opacity group-hover:opacity-10",
                           selectedCompetition?.id === rec.id
-                            ? "from-blue-500 to-purple-500"
-                            : "from-zinc-500 to-zinc-600"
-                        }`}
+                            ? isLight
+                              ? "from-[#F6A964] via-[#E36C3A] to-[#C75627]"
+                              : "from-blue-500 to-purple-500"
+                            : isLight
+                              ? "from-[#E9D8C8] to-[#DCC5B0]"
+                              : "from-zinc-500 to-zinc-600"
+                        )}
                       />
 
                       <CardHeader className="relative">
@@ -1060,7 +1350,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                                 </div>
                               </div>
                               <div>
-                                <CardTitle className="text-xl text-white">
+                                <CardTitle className={cn("text-xl", textPrimary)}>
                                   {rec.competitionName}
                                 </CardTitle>
                                 <div className="mt-1 flex items-center space-x-2">
@@ -1073,7 +1363,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                                 </div>
                               </div>
                             </div>
-                            <CardDescription className="leading-relaxed text-zinc-300">
+                            <CardDescription className={cn("leading-relaxed", textSecondary)}>
                               {rec.matchScore.reason}
                             </CardDescription>
                           </div>
@@ -1087,7 +1377,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                                 selectedCompetition?.id === rec.id ? "bg-blue-500" : "bg-zinc-500"
                               }`}
                             />
-                            <span className="text-xs text-zinc-400">
+                            <span className={mutedLabel}>
                               {selectedCompetition?.id === rec.id ? "Dipilih" : "Klik untuk detail"}
                             </span>
                           </motion.div>
@@ -1095,8 +1385,13 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                       </CardHeader>
                       <CardContent className="relative">
                         <Accordion type="single" collapsible className="space-y-4">
-                          <AccordionItem value="match-explanation" className="border-zinc-700/50">
-                            <AccordionTrigger className="group text-white hover:no-underline">
+                          <AccordionItem
+                            value="match-explanation"
+                            className={cn(isLight ? "border-stone-300/60" : "border-zinc-700/50")}
+                          >
+                            <AccordionTrigger
+                              className={cn("group hover:no-underline", textPrimary)}
+                            >
                               <div className="flex items-center space-x-3">
                                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-500 shadow-lg">
                                   <BarChart3 className="h-4 w-4" />
@@ -1106,12 +1401,19 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                             </AccordionTrigger>
                             <AccordionContent>
                               <div className="space-y-6 pl-11">
-                                <TypographyP className="text-sm leading-relaxed text-zinc-300">
+                                <TypographyP
+                                  className={cn("text-sm leading-relaxed", textSecondary)}
+                                >
                                   {rec.matchScore.reason}
                                 </TypographyP>
                                 <div className="space-y-6">
                                   <div>
-                                    <TypographyH3 className="mb-3 flex items-center space-x-2 text-sm text-white">
+                                    <TypographyH3
+                                      className={cn(
+                                        "mb-3 flex items-center space-x-2 text-sm",
+                                        textPrimary
+                                      )}
+                                    >
                                       <div className="h-2 w-2 rounded-full bg-gradient-to-r from-green-400 to-emerald-400" />
                                       <span>Kelebihan</span>
                                     </TypographyH3>
@@ -1122,10 +1424,17 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                                           initial={{ opacity: 0, x: -20 }}
                                           animate={{ opacity: 1, x: 0 }}
                                           transition={{ delay: proIndex * 0.1, duration: 0.3 }}
-                                          className="flex items-start space-x-3 rounded-lg bg-gradient-to-r from-green-500/10 to-emerald-500/10 p-3 backdrop-blur-sm"
+                                          className={cn(
+                                            "flex items-start space-x-3 rounded-lg p-3 backdrop-blur-sm",
+                                            isLight
+                                              ? "border border-stone-300/60 bg-white/85"
+                                              : "bg-gradient-to-r from-green-500/10 to-emerald-500/10"
+                                          )}
                                         >
                                           <div className="mt-1 h-1.5 w-1.5 rounded-full bg-gradient-to-r from-green-400 to-emerald-400" />
-                                          <TypographyP className="text-sm leading-relaxed text-zinc-300">
+                                          <TypographyP
+                                            className={cn("text-sm leading-relaxed", textSecondary)}
+                                          >
                                             {pro}
                                           </TypographyP>
                                         </motion.li>
@@ -1133,7 +1442,12 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                                     </ul>
                                   </div>
                                   <div>
-                                    <TypographyH3 className="mb-3 flex items-center space-x-2 text-sm text-white">
+                                    <TypographyH3
+                                      className={cn(
+                                        "mb-3 flex items-center space-x-2 text-sm",
+                                        textPrimary
+                                      )}
+                                    >
                                       <div className="h-2 w-2 rounded-full bg-gradient-to-r from-yellow-400 to-orange-400" />
                                       <span>Kekurangan</span>
                                     </TypographyH3>
@@ -1144,10 +1458,17 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                                           initial={{ opacity: 0, x: -20 }}
                                           animate={{ opacity: 1, x: 0 }}
                                           transition={{ delay: conIndex * 0.1, duration: 0.3 }}
-                                          className="flex items-start space-x-3 rounded-lg bg-gradient-to-r from-yellow-500/10 to-orange-500/10 p-3 backdrop-blur-sm"
+                                          className={cn(
+                                            "flex items-start space-x-3 rounded-lg p-3 backdrop-blur-sm",
+                                            isLight
+                                              ? "border border-stone-300/60 bg-white/85"
+                                              : "bg-gradient-to-r from-yellow-500/10 to-orange-500/10"
+                                          )}
                                         >
                                           <div className="mt-1 h-1.5 w-1.5 rounded-full bg-gradient-to-r from-yellow-400 to-orange-400" />
-                                          <TypographyP className="text-sm leading-relaxed text-zinc-300">
+                                          <TypographyP
+                                            className={cn("text-sm leading-relaxed", textSecondary)}
+                                          >
                                             {con}
                                           </TypographyP>
                                         </motion.li>
@@ -1159,8 +1480,13 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                             </AccordionContent>
                           </AccordionItem>
 
-                          <AccordionItem value="skill-breakdown" className="border-zinc-700/50">
-                            <AccordionTrigger className="group text-white hover:no-underline">
+                          <AccordionItem
+                            value="skill-breakdown"
+                            className={cn(isLight ? "border-stone-300/60" : "border-zinc-700/50")}
+                          >
+                            <AccordionTrigger
+                              className={cn("group hover:no-underline", textPrimary)}
+                            >
                               <div className="flex items-center space-x-3">
                                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg">
                                   <RadarIcon className="h-4 w-4" />
@@ -1170,43 +1496,54 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                             </AccordionTrigger>
                             <AccordionContent>
                               <div className="space-y-6 pl-11">
-                                <div className="overflow-hidden rounded-xl border border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50 p-6 backdrop-blur-sm">
+                                <div
+                                  className={cn(
+                                    "overflow-hidden rounded-xl p-6 backdrop-blur-sm",
+                                    isLight
+                                      ? "border-stone-300/60 bg-white/95 shadow-[0_24px_50px_rgba(214,188,160,0.3)]"
+                                      : "border border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50"
+                                  )}
+                                >
                                   <div className="mb-6 flex items-center justify-between">
                                     <div>
-                                      <TypographyH3 className="text-lg text-white">
+                                      <TypographyH3 className={cn("text-lg", textPrimary)}>
                                         Tingkat Kepentingan Keterampilan
                                       </TypographyH3>
-                                      <TypographyP className="mt-1 text-sm text-zinc-400">
+                                      <TypographyP className={cn("mt-1 text-sm", textSecondary)}>
                                         Visualisasi kebutuhan keterampilan untuk kompetisi ini
                                       </TypographyP>
                                     </div>
                                     <div className="flex items-center space-x-4">
                                       <div className="flex items-center space-x-2">
                                         <div className="h-3 w-3 rounded-full bg-gradient-to-r from-green-400 to-green-500" />
-                                        <span className="text-xs text-zinc-400">Tinggi (8-10)</span>
+                                        <span className={mutedLabel}>Tinggi (8-10)</span>
                                       </div>
                                       <div className="flex items-center space-x-2">
                                         <div className="h-3 w-3 rounded-full bg-gradient-to-r from-blue-400 to-blue-500" />
-                                        <span className="text-xs text-zinc-400">
-                                          Sedang (6-7.9)
-                                        </span>
+                                        <span className={mutedLabel}>Sedang (6-7.9)</span>
                                       </div>
                                       <div className="flex items-center space-x-2">
                                         <div className="h-3 w-3 rounded-full bg-gradient-to-r from-orange-400 to-orange-500" />
-                                        <span className="text-xs text-zinc-400">
-                                          Rendah (0-5.9)
-                                        </span>
+                                        <span className={mutedLabel}>Rendah (0-5.9)</span>
                                       </div>
                                     </div>
                                   </div>
-                                  <SkillRequirementsChart requirements={rec.skillRequirements} />
+                                  <SkillRequirementsChart
+                                    requirements={rec.skillRequirements}
+                                    isLight={isLight}
+                                  />
                                 </div>
                               </div>
                             </AccordionContent>
                           </AccordionItem>
 
-                          <AccordionItem value="competition-details" className="border-zinc-700/50">
-                            <AccordionTrigger className="group text-white hover:no-underline">
+                          <AccordionItem
+                            value="competition-details"
+                            className={cn(isLight ? "border-stone-300/60" : "border-zinc-700/50")}
+                          >
+                            <AccordionTrigger
+                              className={cn("group hover:no-underline", textPrimary)}
+                            >
                               <div className="flex items-center space-x-3">
                                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 shadow-lg">
                                   <Calendar className="h-4 w-4" />
@@ -1217,48 +1554,78 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                             <AccordionContent>
                               <div className="space-y-6 pl-11">
                                 <div className="space-y-6">
-                                  <TypographyP className="text-sm leading-relaxed text-zinc-300">
+                                  <TypographyP
+                                    className={cn("text-sm leading-relaxed", textSecondary)}
+                                  >
                                     {rec.competition?.description ||
                                       "Deskripsi kompetisi tidak tersedia"}
                                   </TypographyP>
 
                                   <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                                    <div className="flex items-center space-x-3 rounded-lg bg-gradient-to-r from-emerald-500/10 to-teal-500/10 p-3 backdrop-blur-sm">
+                                    <div
+                                      className={cn(
+                                        "flex items-center space-x-3 rounded-lg p-3 backdrop-blur-sm",
+                                        isLight
+                                          ? "border border-stone-300/60 bg-white/85"
+                                          : "bg-gradient-to-r from-emerald-500/10 to-teal-500/10"
+                                      )}
+                                    >
                                       <Calendar className="h-4 w-4 text-emerald-400" />
                                       <div>
-                                        <span className="text-xs text-zinc-400">Mulai</span>
-                                        <p className="text-sm font-medium text-zinc-300">
+                                        <span className={mutedLabel}>Mulai</span>
+                                        <p className={cn("text-sm font-medium", textSecondary)}>
                                           {rec.competition?.startDate
                                             ? formatDate(rec.competition.startDate)
                                             : "Tidak tersedia"}
                                         </p>
                                       </div>
                                     </div>
-                                    <div className="flex items-center space-x-3 rounded-lg bg-gradient-to-r from-emerald-500/10 to-teal-500/10 p-3 backdrop-blur-sm">
+                                    <div
+                                      className={cn(
+                                        "flex items-center space-x-3 rounded-lg p-3 backdrop-blur-sm",
+                                        isLight
+                                          ? "border border-stone-300/60 bg-white/85"
+                                          : "bg-gradient-to-r from-emerald-500/10 to-teal-500/10"
+                                      )}
+                                    >
                                       <Calendar className="h-4 w-4 text-emerald-400" />
                                       <div>
-                                        <span className="text-xs text-zinc-400">Selesai</span>
-                                        <p className="text-sm font-medium text-zinc-300">
+                                        <span className={mutedLabel}>Selesai</span>
+                                        <p className={cn("text-sm font-medium", textSecondary)}>
                                           {rec.competition?.endDate
                                             ? formatDate(rec.competition.endDate)
                                             : "Tidak tersedia"}
                                         </p>
                                       </div>
                                     </div>
-                                    <div className="flex items-center space-x-3 rounded-lg bg-gradient-to-r from-emerald-500/10 to-teal-500/10 p-3 backdrop-blur-sm">
+                                    <div
+                                      className={cn(
+                                        "flex items-center space-x-3 rounded-lg p-3 backdrop-blur-sm",
+                                        isLight
+                                          ? "border border-stone-300/60 bg-white/85"
+                                          : "bg-gradient-to-r from-emerald-500/10 to-teal-500/10"
+                                      )}
+                                    >
                                       <MapPin className="h-4 w-4 text-emerald-400" />
                                       <div>
-                                        <span className="text-xs text-zinc-400">Lokasi</span>
-                                        <p className="text-sm font-medium text-zinc-300">
+                                        <span className={mutedLabel}>Lokasi</span>
+                                        <p className={cn("text-sm font-medium", textSecondary)}>
                                           {rec.competition?.location || "Daring"}
                                         </p>
                                       </div>
                                     </div>
-                                    <div className="flex items-center space-x-3 rounded-lg bg-gradient-to-r from-emerald-500/10 to-teal-500/10 p-3 backdrop-blur-sm">
+                                    <div
+                                      className={cn(
+                                        "flex items-center space-x-3 rounded-lg p-3 backdrop-blur-sm",
+                                        isLight
+                                          ? "border border-stone-300/60 bg-white/85"
+                                          : "bg-gradient-to-r from-emerald-500/10 to-teal-500/10"
+                                      )}
+                                    >
                                       <Users className="h-4 w-4 text-emerald-400" />
                                       <div>
-                                        <span className="text-xs text-zinc-400">Organizer</span>
-                                        <p className="text-sm font-medium text-zinc-300">
+                                        <span className={mutedLabel}>Organizer</span>
+                                        <p className={cn("text-sm font-medium", textSecondary)}>
                                           {rec.competition?.organizer || "Tidak tersedia"}
                                         </p>
                                       </div>
@@ -1274,7 +1641,12 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                                         href={rec.competition?.sourceUrl || "#"}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="group/link inline-flex items-center space-x-2 rounded-lg bg-gradient-to-r from-blue-500/10 to-purple-500/10 p-3 text-blue-400 transition-all hover:from-blue-500/20 hover:to-purple-500/20 hover:text-blue-300"
+                                        className={cn(
+                                          "group/link inline-flex items-center space-x-2 rounded-lg p-3 transition-all",
+                                          isLight
+                                            ? "border border-stone-300/60 bg-white/85 text-[#2F2A24] hover:border-stone-400/80 hover:bg-white"
+                                            : "bg-gradient-to-r from-blue-500/10 to-purple-500/10 text-blue-400 hover:from-blue-500/20 hover:to-purple-500/20 hover:text-blue-300"
+                                        )}
                                       >
                                         <ExternalLink className="h-4 w-4" />
                                         <span className="font-medium">Kunjungi Website</span>
@@ -1287,8 +1659,13 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                           </AccordionItem>
 
                           {rec.keyFactors && rec.keyFactors.length > 0 && (
-                            <AccordionItem value="key-factors" className="border-zinc-700/50">
-                              <AccordionTrigger className="group text-white hover:no-underline">
+                            <AccordionItem
+                              value="key-factors"
+                              className={cn(isLight ? "border-stone-300/60" : "border-zinc-700/50")}
+                            >
+                              <AccordionTrigger
+                                className={cn("group hover:no-underline", textPrimary)}
+                              >
                                 <div className="flex items-center space-x-3">
                                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-orange-500 to-red-500 shadow-lg">
                                     <Target className="h-4 w-4" />
@@ -1304,10 +1681,17 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                                       initial={{ opacity: 0, x: -20 }}
                                       animate={{ opacity: 1, x: 0 }}
                                       transition={{ delay: factorIndex * 0.1, duration: 0.3 }}
-                                      className="flex items-start space-x-3 rounded-lg bg-gradient-to-r from-orange-500/10 to-red-500/10 p-3 backdrop-blur-sm"
+                                      className={cn(
+                                        "flex items-start space-x-3 rounded-lg p-3 backdrop-blur-sm",
+                                        isLight
+                                          ? "border border-stone-300/60 bg-white/85"
+                                          : "bg-gradient-to-r from-orange-500/10 to-red-500/10"
+                                      )}
                                     >
                                       <div className="mt-1 h-1.5 w-1.5 rounded-full bg-gradient-to-r from-orange-400 to-red-400" />
-                                      <TypographyP className="text-sm leading-relaxed text-zinc-300">
+                                      <TypographyP
+                                        className={cn("text-sm leading-relaxed", textSecondary)}
+                                      >
                                         {factor}
                                       </TypographyP>
                                     </motion.div>
@@ -1318,8 +1702,13 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                           )}
 
                           {rec.preparationTips && rec.preparationTips.length > 0 && (
-                            <AccordionItem value="preparation" className="border-zinc-700/50">
-                              <AccordionTrigger className="group text-white hover:no-underline">
+                            <AccordionItem
+                              value="preparation"
+                              className={cn(isLight ? "border-stone-300/60" : "border-zinc-700/50")}
+                            >
+                              <AccordionTrigger
+                                className={cn("group hover:no-underline", textPrimary)}
+                              >
                                 <div className="flex items-center space-x-3">
                                   <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 shadow-lg">
                                     <BookOpen className="h-4 w-4" />
@@ -1335,10 +1724,17 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                                       initial={{ opacity: 0, x: -20 }}
                                       animate={{ opacity: 1, x: 0 }}
                                       transition={{ delay: tipIndex * 0.1, duration: 0.3 }}
-                                      className="flex items-start space-x-3 rounded-lg bg-gradient-to-r from-indigo-500/10 to-purple-500/10 p-3 backdrop-blur-sm"
+                                      className={cn(
+                                        "flex items-start space-x-3 rounded-lg p-3 backdrop-blur-sm",
+                                        isLight
+                                          ? "border border-stone-300/60 bg-white/85"
+                                          : "bg-gradient-to-r from-indigo-500/10 to-purple-500/10"
+                                      )}
                                     >
                                       <ArrowRight className="mt-1 h-4 w-4 text-indigo-400" />
-                                      <TypographyP className="text-sm leading-relaxed text-zinc-300">
+                                      <TypographyP
+                                        className={cn("text-sm leading-relaxed", textSecondary)}
+                                      >
                                         {tip}
                                       </TypographyP>
                                     </motion.div>
@@ -1367,7 +1763,12 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                 isSidebarOpen ? "Tutup perbandingan keterampilan" : "Buka perbandingan keterampilan"
               }
               onClick={() => setIsSidebarOpen((prev) => !prev)}
-              className="fixed top-1/2 right-4 z-[100] -translate-y-1/2 rounded-full border border-zinc-700/50 bg-zinc-900/80 p-2 text-white shadow-xl backdrop-blur-md hover:bg-zinc-800/80"
+              className={cn(
+                "fixed top-1/2 right-4 z-[100] -translate-y-1/2 rounded-full border p-2 shadow-xl backdrop-blur-md",
+                isLight
+                  ? "border-stone-300/60 bg-white/90 text-[#2F2A24] hover:bg-white"
+                  : "border-zinc-700/50 bg-zinc-900/80 text-white hover:bg-zinc-800/80"
+              )}
               whileHover={{ scale: 1.08 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -1386,24 +1787,37 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                   animate={{ x: 0, opacity: 1 }}
                   exit={{ x: 420, opacity: 0 }}
                   transition={{ type: "spring", stiffness: 260, damping: 26 }}
-                  className="fixed top-1/2 right-4 z-[90] w-[420px] -translate-y-1/2 overflow-hidden rounded-2xl border border-zinc-800/60 bg-gradient-to-b from-zinc-900/95 to-black/95 shadow-2xl backdrop-blur-xl"
+                  className={cn(
+                    "fixed top-1/2 right-4 z-[90] w-[420px] -translate-y-1/2 overflow-hidden rounded-2xl border shadow-2xl backdrop-blur-xl",
+                    isLight
+                      ? "border-stone-300/60 bg-white/95"
+                      : "border-zinc-800/60 bg-gradient-to-b from-zinc-900/95 to-black/95"
+                  )}
                 >
                   <div className="flex max-h-[85vh] flex-col">
-                    <div className="flex items-center justify-between border-b border-zinc-800/60 p-4">
-                      <div className="flex items-center space-x-3">
+                    <div
+                      className={cn(
+                        "flex items-center justify-between border-b p-4",
+                        isLight ? "border-stone-300/60" : "border-zinc-800/60"
+                      )}
+                    >
+                      <div className={cn("flex items-center space-x-3", textPrimary)}>
                         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg">
                           <RadarIcon className="h-4 w-4 text-white" />
                         </div>
-                        <span className="text-sm font-semibold text-white">
-                          Perbandingan Keterampilan
-                        </span>
+                        <span className="text-sm font-semibold">Perbandingan Keterampilan</span>
                       </div>
                       {selectedCompetition && (
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => setSelectedCompetition(null)}
-                          className="bg-gradient-to-r from-zinc-800/50 to-zinc-900/50 text-xs text-white backdrop-blur-sm hover:from-zinc-700/50 hover:to-zinc-800/50"
+                          className={cn(
+                            "text-xs backdrop-blur-sm",
+                            isLight
+                              ? "border border-stone-300/60 bg-white/80 text-[#2F2A24] hover:bg-white"
+                              : "bg-gradient-to-r from-zinc-800/50 to-zinc-900/50 text-white hover:from-zinc-700/50 hover:to-zinc-800/50"
+                          )}
                         >
                           <Zap className="mr-1 h-3 w-3" />
                           Reset
@@ -1411,10 +1825,24 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                       )}
                     </div>
                     <div className="flex-1 overflow-auto p-4">
-                      <Card className="relative overflow-hidden border border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50">
-                        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-purple-500/5" />
+                      <Card
+                        className={cn(
+                          "relative overflow-hidden border backdrop-blur-sm",
+                          isLight
+                            ? "border-stone-300/70 bg-white/95 shadow-[0_22px_44px_rgba(214,188,160,0.28)]"
+                            : "border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50"
+                        )}
+                      >
+                        <div
+                          className={cn(
+                            "absolute inset-0",
+                            isLight
+                              ? "bg-gradient-to-r from-[#E9D8C8]/40 to-[#DCC5B0]/30"
+                              : "bg-gradient-to-r from-blue-500/5 to-purple-500/5"
+                          )}
+                        />
                         <CardHeader>
-                          <CardDescription className="text-zinc-400">
+                          <CardDescription className={textSecondary}>
                             {selectedCompetition
                               ? `Perbandingan dengan ${selectedCompetition.competitionName}`
                               : "Pilih kompetisi untuk melihat perbandingan keterampilan"}
@@ -1428,6 +1856,7 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
                                 selectedCompetition ? competitionSkillsData : undefined
                               }
                               showOnlyStudent={!selectedCompetition}
+                              isLight={isLight}
                             />
                           </div>
                         </CardContent>
@@ -1447,6 +1876,23 @@ const RecommendationContent = ({ data }: { data: RecommendationResponse }) => {
 const MyRecommendationPage = () => {
   const { data, isLoading, error } = useMyRecomendation();
   const { createMyRecomendation, isCreating } = usePostMyRecomendation();
+  const [isLight, setIsLight] = useState<boolean>(true);
+
+  useEffect(() => {
+    const stored = typeof window !== "undefined" ? localStorage.getItem("scout-theme") : null;
+    if (stored) setIsLight(stored === "light");
+  }, []);
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const customEvent = e as CustomEvent<{ theme: string }>;
+      const theme = customEvent?.detail?.theme;
+      if (!theme) return;
+      setIsLight(theme === "light");
+    };
+    window.addEventListener("scout-theme-change", handler as EventListener);
+    return () => window.removeEventListener("scout-theme-change", handler as EventListener);
+  }, []);
 
   const handleStartAnalysis = () => {
     createMyRecomendation();
@@ -1454,25 +1900,54 @@ const MyRecommendationPage = () => {
 
   if (isLoading) {
     return (
-      <div className="relative flex min-h-[calc(100vh-4rem)] items-center justify-center overflow-hidden bg-gradient-to-br from-zinc-900 via-black to-zinc-900">
+      <div
+        className={cn(
+          "relative flex min-h-[calc(100vh-4rem)] items-center justify-center overflow-hidden",
+          isLight
+            ? "bg-gradient-to-br from-zinc-200 via-stone-200 to-zinc-300"
+            : "bg-gradient-to-br from-zinc-900 via-black to-zinc-900"
+        )}
+      >
         {/* Background Elements */}
         <div className="absolute inset-0">
-          <div className="absolute top-1/4 left-1/4 h-64 w-64 animate-pulse rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 blur-3xl" />
-          <div className="absolute right-1/4 bottom-1/4 h-48 w-48 animate-pulse rounded-full bg-gradient-to-r from-purple-500/10 to-pink-500/10 blur-3xl delay-1000" />
+          {isLight ? (
+            <>
+              <div className="absolute top-1/4 left-1/4 h-64 w-64 animate-pulse rounded-full bg-gradient-to-r from-[#F7C8A2]/25 to-[#E9A779]/25 blur-3xl" />
+              <div className="absolute right-1/4 bottom-1/4 h-48 w-48 animate-pulse rounded-full bg-gradient-to-r from-[#F4B087]/25 to-[#E37B59]/25 blur-3xl delay-1000" />
+              <div className="absolute top-1/2 right-1/3 h-32 w-32 animate-pulse rounded-full bg-gradient-to-r from-[#F2C190]/25 to-[#F6A964]/25 blur-2xl delay-500" />
+            </>
+          ) : (
+            <>
+              <div className="absolute top-1/4 left-1/4 h-64 w-64 animate-pulse rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 blur-3xl" />
+              <div className="absolute right-1/4 bottom-1/4 h-48 w-48 animate-pulse rounded-full bg-gradient-to-r from-purple-500/10 to-pink-500/10 blur-3xl delay-1000" />
+            </>
+          )}
         </div>
 
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
-          className="relative z-10 space-y-6 text-center"
+          className={cn(
+            "relative z-10 space-y-6 text-center",
+            isLight ? "text-[#2F2A24]" : "text-white"
+          )}
         >
-          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-600 shadow-2xl">
+          <div
+            className={cn(
+              "mx-auto flex h-20 w-20 items-center justify-center rounded-full shadow-2xl",
+              isLight
+                ? "bg-gradient-to-r from-[#F6A964] to-[#E36C3A]"
+                : "bg-gradient-to-r from-blue-500 to-purple-600"
+            )}
+          >
             <Loader2 className="h-10 w-10 animate-spin text-white" />
           </div>
           <div className="space-y-2">
-            <TypographyH3 className="text-xl text-white">Memuat Rekomendasi Anda</TypographyH3>
-            <TypographyP className="text-zinc-400">
+            <TypographyH3 className={cn("text-xl", isLight ? "text-[#2F2A24]" : "text-white")}>
+              Memuat Rekomendasi Anda
+            </TypographyH3>
+            <TypographyP className={isLight ? "text-[#5C5245]" : "text-zinc-400"}>
               Menganalisis profil dan mencari kompetisi terbaik...
             </TypographyP>
           </div>
@@ -1493,33 +1968,77 @@ const MyRecommendationPage = () => {
         "Terjadi kesalahan yang tidak terduga";
 
       if (errCode === "REC_002") {
-        return <EmptyState onStartAnalysis={handleStartAnalysis} isCreating={isCreating} />;
+        return (
+          <EmptyState
+            onStartAnalysis={handleStartAnalysis}
+            isCreating={isCreating}
+            isLight={isLight}
+          />
+        );
       }
 
       return (
-        <div className="relative flex min-h-[calc(100vh-4rem)] items-center justify-center overflow-hidden bg-gradient-to-br from-zinc-900 via-black to-zinc-900">
+        <div
+          className={cn(
+            "relative flex min-h-[calc(100vh-4rem)] items-center justify-center overflow-hidden",
+            isLight
+              ? "bg-gradient-to-br from-zinc-200 via-stone-200 to-zinc-300"
+              : "bg-gradient-to-br from-zinc-900 via-black to-zinc-900"
+          )}
+        >
           {/* Background Elements */}
           <div className="absolute inset-0">
-            <div className="absolute top-1/4 left-1/4 h-64 w-64 animate-pulse rounded-full bg-gradient-to-r from-red-500/10 to-orange-500/10 blur-3xl" />
-            <div className="absolute right-1/4 bottom-1/4 h-48 w-48 animate-pulse rounded-full bg-gradient-to-r from-orange-500/10 to-yellow-500/10 blur-3xl delay-1000" />
+            {isLight ? (
+              <>
+                <div className="absolute top-1/4 left-1/4 h-64 w-64 animate-pulse rounded-full bg-gradient-to-r from-[#F4A582]/25 to-[#E37B59]/25 blur-3xl" />
+                <div className="absolute right-1/4 bottom-1/4 h-48 w-48 animate-pulse rounded-full bg-gradient-to-r from-[#E37B59]/25 to-[#D97742]/25 blur-3xl delay-1000" />
+                <div className="absolute top-1/2 right-1/3 h-32 w-32 animate-pulse rounded-full bg-gradient-to-r from-[#E4986E]/25 to-[#F2A558]/25 blur-2xl delay-500" />
+              </>
+            ) : (
+              <>
+                <div className="absolute top-1/4 left-1/4 h-64 w-64 animate-pulse rounded-full bg-gradient-to-r from-red-500/10 to-orange-500/10 blur-3xl" />
+                <div className="absolute right-1/4 bottom-1/4 h-48 w-48 animate-pulse rounded-full bg-gradient-to-r from-orange-500/10 to-yellow-500/10 blur-3xl delay-1000" />
+              </>
+            )}
           </div>
 
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
-            className="relative z-10 space-y-6 text-center"
+            className={cn(
+              "relative z-10 space-y-6 text-center",
+              isLight ? "text-[#2F2A24]" : "text-white"
+            )}
           >
-            <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-r from-red-500 to-orange-600 shadow-2xl">
+            <div
+              className={cn(
+                "mx-auto flex h-20 w-20 items-center justify-center rounded-full shadow-2xl",
+                isLight
+                  ? "bg-gradient-to-r from-[#E36C3A] to-[#D97742]"
+                  : "bg-gradient-to-r from-red-500 to-orange-600"
+              )}
+            >
               <AlertCircle className="h-10 w-10 text-white" />
             </div>
             <div className="space-y-4">
-              <TypographyH3 className="text-xl text-white">Gagal Memuat Rekomendasi</TypographyH3>
-              <TypographyP className="mx-auto max-w-md text-zinc-400">{errMessage}</TypographyP>
+              <TypographyH3 className={cn("text-xl", isLight ? "text-[#2F2A24]" : "text-white")}>
+                Gagal Memuat Rekomendasi
+              </TypographyH3>
+              <TypographyP
+                className={cn("mx-auto max-w-md", isLight ? "text-[#5C5245]" : "text-zinc-400")}
+              >
+                {errMessage}
+              </TypographyP>
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button
                   variant="outline"
-                  className="border-zinc-700 bg-zinc-800/50 text-white backdrop-blur-sm hover:bg-zinc-700/50"
+                  className={cn(
+                    "backdrop-blur-sm",
+                    isLight
+                      ? "border-stone-300/60 bg-white/90 text-[#2F2A24] hover:border-stone-400/80 hover:bg-white"
+                      : "border-zinc-700 bg-zinc-800/50 text-white hover:bg-zinc-700/50"
+                  )}
                   onClick={() => window.location.reload()}
                 >
                   <Zap className="mr-2 h-4 w-4" />
@@ -1531,10 +2050,12 @@ const MyRecommendationPage = () => {
         </div>
       );
     }
-    return <EmptyState onStartAnalysis={handleStartAnalysis} isCreating={isCreating} />;
+    return (
+      <EmptyState onStartAnalysis={handleStartAnalysis} isCreating={isCreating} isLight={isLight} />
+    );
   }
 
-  return <RecommendationContent data={data} />;
+  return <RecommendationContent data={data} isLight={isLight} />;
 };
 
 export default MyRecommendationPage;

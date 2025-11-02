@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import { useIsMobile } from "@/client/hooks/useMobile";
 import Navbar from "@/components/ui/Navbar";
@@ -10,6 +10,32 @@ import { cn } from "@/lib/utils";
 const LayoutContent = ({ children }: { children: React.ReactNode }) => {
   const isMobile = useIsMobile();
   const { collapsed } = useSidebar();
+  const [isLight, setIsLight] = useState<boolean>(true);
+
+  useEffect(() => {
+    const stored = typeof window !== "undefined" ? localStorage.getItem("scout-theme") : null;
+    if (stored) setIsLight(stored === "light");
+  }, []);
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const customEvent = e as CustomEvent<{ theme: string }>;
+      const theme = customEvent?.detail?.theme;
+      if (!theme) return;
+      setIsLight(theme === "light");
+    };
+    window.addEventListener("scout-theme-change", handler as EventListener);
+    return () => window.removeEventListener("scout-theme-change", handler as EventListener);
+  }, []);
+
+  const colors = {
+    background: isLight
+      ? "bg-gradient-to-br from-zinc-200 via-stone-200 to-zinc-300 text-[#2F2A24]"
+      : "bg-black text-white",
+    card: isLight
+      ? "border border-stone-300/70 bg-white/80 text-[#2F2A24]"
+      : "border border-zinc-800/50 bg-zinc-900/30 text-white",
+  } as const;
 
   const getMainClassName = () => {
     if (isMobile) {
@@ -24,10 +50,17 @@ const LayoutContent = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
       <Navbar />
-      <div className="relative min-h-screen bg-black text-white">
+      <div
+        className={cn("relative min-h-screen transition-colors duration-300", colors.background)}
+      >
         <UserSidebar />
         <main className={cn("flex-1 transition-all duration-300", getMainClassName())}>
-          <div className="mt-32 mb-24 rounded-xl border border-zinc-800/50 bg-zinc-900/30 p-6 backdrop-blur-sm">
+          <div
+            className={cn(
+              "mt-32 mb-24 rounded-xl p-6 backdrop-blur-sm transition-colors duration-300",
+              colors.card
+            )}
+          >
             {children}
           </div>
         </main>
