@@ -425,8 +425,8 @@ const CustomTooltip = ({ active, payload, label, isLight = false }: TooltipProps
 
 // Helper function untuk menentukan warna berdasarkan nilai
 const getSkillColor = (value: number): string => {
-  if (value >= 0.8) return "#22c55e";
-  if (value >= 0.6) return "#3b82f6";
+  if (value >= 0.7) return "#22c55e";
+  if (value >= 0.4) return "#3b82f6";
   return "#f59e0b";
 };
 
@@ -971,7 +971,7 @@ const RecommendationContent = ({
                                   isLight ? "text-green-700" : "text-green-300"
                                 )}
                               >
-                                Tinggi (0.80-0.90)
+                                Mahir (0.70-1.00)
                               </span>
                             </div>
                             <p
@@ -1027,7 +1027,7 @@ const RecommendationContent = ({
                                   isLight ? "text-blue-700" : "text-blue-300"
                                 )}
                               >
-                                Sedang (0.60-0.79)
+                                Menengah (0.40-0.69)
                               </span>
                             </div>
                             <p
@@ -1082,7 +1082,7 @@ const RecommendationContent = ({
                                   isLight ? "text-orange-700" : "text-orange-300"
                                 )}
                               >
-                                Rendah (0.10-0.59)
+                                Dasar (0.10-0.39)
                               </span>
                             </div>
                             <p
@@ -1140,9 +1140,9 @@ const RecommendationContent = ({
                                   <span
                                     className={cn(
                                       "ml-2 text-sm font-bold",
-                                      score >= 0.8
+                                      score >= 0.7
                                         ? "text-green-400"
-                                        : score >= 0.6
+                                        : score >= 0.4
                                           ? "text-blue-400"
                                           : "text-orange-400"
                                     )}
@@ -1162,31 +1162,31 @@ const RecommendationContent = ({
                                       >
                                         {/* Background dengan zona warna */}
                                         <div className="absolute inset-0 flex">
-                                          {/* Zona Rendah (0-0.59) */}
+                                          {/* Zona Dasar (0-0.39 approx) */}
                                           <div
                                             className="h-full"
                                             style={{
-                                              width: "60%",
+                                              width: "40%",
                                               backgroundColor: isLight
                                                 ? "rgba(239, 68, 68, 0.2)"
                                                 : "rgba(239, 68, 68, 0.3)",
                                             }}
                                           />
-                                          {/* Zona Sedang (0.6-0.79) */}
+                                          {/* Zona Menengah (0.4-0.69) */}
                                           <div
                                             className="h-full"
                                             style={{
-                                              width: "20%",
+                                              width: "30%",
                                               backgroundColor: isLight
                                                 ? "rgba(59, 130, 246, 0.2)"
                                                 : "rgba(59, 130, 246, 0.3)",
                                             }}
                                           />
-                                          {/* Zona Tinggi (0.8-1.0) */}
+                                          {/* Zona Mahir (0.7-1.0) */}
                                           <div
                                             className="h-full"
                                             style={{
-                                              width: "20%",
+                                              width: "30%",
                                               backgroundColor: isLight
                                                 ? "rgba(34, 197, 94, 0.2)"
                                                 : "rgba(34, 197, 94, 0.3)",
@@ -1198,9 +1198,9 @@ const RecommendationContent = ({
                                         <div
                                           className={cn(
                                             "absolute top-0 left-0 z-10 h-full rounded-full shadow-sm transition-all",
-                                            score >= 0.8
+                                            score >= 0.7
                                               ? "bg-gradient-to-r from-green-400 to-green-500"
-                                              : score >= 0.6
+                                              : score >= 0.4
                                                 ? "bg-gradient-to-r from-blue-400 to-blue-500"
                                                 : "bg-gradient-to-r from-orange-400 to-orange-500"
                                           )}
@@ -1216,17 +1216,17 @@ const RecommendationContent = ({
                                               isLight ? "bg-[#7A6B5B]/40" : "bg-zinc-500/50"
                                             )}
                                           />
-                                          {/* Marker di 60% (batas Rendah-Sedang) */}
+                                          {/* Marker di 40% (batas Dasar-Menengah) */}
                                           <div
                                             className={cn(
-                                              "absolute top-0 left-[60%] h-full w-[1px]",
+                                              "absolute top-0 left-[40%] h-full w-[1px]",
                                               isLight ? "bg-[#7A6B5B]/40" : "bg-zinc-500/50"
                                             )}
                                           />
-                                          {/* Marker di 80% (batas Sedang-Tinggi) */}
+                                          {/* Marker di 70% (batas Menengah-Mahir) */}
                                           <div
                                             className={cn(
-                                              "absolute top-0 left-[80%] h-full w-[1px]",
+                                              "absolute top-0 left-[70%] h-full w-[1px]",
                                               isLight ? "bg-[#7A6B5B]/40" : "bg-zinc-500/50"
                                             )}
                                           />
@@ -1256,11 +1256,11 @@ const RecommendationContent = ({
                                             isLight ? "text-[#2F2A24]" : "text-white"
                                           )}
                                         >
-                                          {score >= 0.8
-                                            ? "Tinggi (0.80-0.90)"
-                                            : score >= 0.6
-                                              ? "Sedang (0.60-0.79)"
-                                              : "Rendah (0.10-0.59)"}
+                                          {score >= 0.7
+                                            ? "Mahir (0.70-1.00)"
+                                            : score >= 0.4
+                                              ? "Menengah (0.40-0.69)"
+                                              : "Dasar (0.10-0.39)"}
                                         </p>
                                         <p
                                           className={cn(
@@ -1268,9 +1268,9 @@ const RecommendationContent = ({
                                             isLight ? "text-[#5C5245]" : "text-zinc-300"
                                           )}
                                         >
-                                          {score >= 0.8
+                                          {score >= 0.7
                                             ? "Kemampuan sangat baik dengan bukti prestasi dan pengalaman yang menonjol."
-                                            : score >= 0.6
+                                            : score >= 0.4
                                               ? "Kemampuan baik dengan beberapa pengalaman dan prestasi yang relevan."
                                               : "Kemampuan dasar dengan pengalaman dari tugas kuliah atau proyek sederhana."}
                                         </p>
@@ -1288,12 +1288,12 @@ const RecommendationContent = ({
                                     <span
                                       className={cn(isLight ? "text-[#7A6B5B]" : "text-zinc-500")}
                                     >
-                                      0.6
+                                      0.4
                                     </span>
                                     <span
                                       className={cn(isLight ? "text-[#7A6B5B]" : "text-zinc-500")}
                                     >
-                                      0.8
+                                      0.7
                                     </span>
                                     <span
                                       className={cn(isLight ? "text-[#7A6B5B]" : "text-zinc-500")}
@@ -1819,15 +1819,15 @@ const RecommendationContent = ({
                                     <div className="flex items-center space-x-4">
                                       <div className="flex items-center space-x-2">
                                         <div className="h-3 w-3 rounded-full bg-gradient-to-r from-green-400 to-green-500" />
-                                        <span className={mutedLabel}>Tinggi (8-10)</span>
+                                        <span className={mutedLabel}>Mahir (7-10)</span>
                                       </div>
                                       <div className="flex items-center space-x-2">
                                         <div className="h-3 w-3 rounded-full bg-gradient-to-r from-blue-400 to-blue-500" />
-                                        <span className={mutedLabel}>Sedang (6-7.9)</span>
+                                        <span className={mutedLabel}>Menengah (4-6.9)</span>
                                       </div>
                                       <div className="flex items-center space-x-2">
                                         <div className="h-3 w-3 rounded-full bg-gradient-to-r from-orange-400 to-orange-500" />
-                                        <span className={mutedLabel}>Rendah (0-5.9)</span>
+                                        <span className={mutedLabel}>Dasar (1-3.9)</span>
                                       </div>
                                     </div>
                                   </div>
