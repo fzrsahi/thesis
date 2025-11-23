@@ -100,6 +100,8 @@ const UserProfilePage = () => {
     handleRemoveSkill,
     setAchievementFileAt,
     setExperienceFileAt,
+    achievementFiles,
+    experienceFiles,
   } = useAcademicDataForm(academicData);
 
   const onSubmitPersonal = (data: PersonalDataPayload) => {
@@ -731,37 +733,112 @@ const UserProfilePage = () => {
                             />
                             {!academicForm.getValues(`achievements.${index}.fileUrl`) && (
                               <div className="mt-2">
-                                <label
-                                  htmlFor={`achievement-file-${index}`}
-                                  className={cn(
-                                    "block cursor-pointer rounded-lg border-2 border-dashed p-4 text-center transition-colors",
-                                    isLight
-                                      ? "border-stone-300 bg-white/70 hover:border-stone-400 hover:bg-white"
-                                      : "border-zinc-600 bg-zinc-800/60 hover:border-zinc-500 hover:bg-zinc-800"
-                                  )}
-                                >
-                                  <Upload
+                                {achievementFiles[index] ? (
+                                  <div
                                     className={cn(
-                                      "mx-auto h-5 w-5",
-                                      isLight ? "text-[#7A6B5B]" : "text-zinc-400"
+                                      "flex items-center justify-between rounded-md border p-2",
+                                      isLight
+                                        ? "border-stone-300 bg-white/80"
+                                        : "border-zinc-700 bg-zinc-800"
                                     )}
-                                  />
-                                  <p className={cn("mt-2 text-sm", textPrimary)}>
-                                    Klik untuk unggah bukti
-                                  </p>
-                                  <p className={cn("text-xs", textSecondary)}>
-                                    PDF atau Gambar (maks 2MB)
-                                  </p>
-                                </label>
-                                <input
-                                  id={`achievement-file-${index}`}
-                                  type="file"
-                                  accept=".pdf,image/*"
-                                  onChange={(e) =>
-                                    setAchievementFileAt(index, e.target.files?.[0] || null)
-                                  }
-                                  className="hidden"
-                                />
+                                  >
+                                    <div className="flex items-center gap-3">
+                                      <div
+                                        className={cn(
+                                          "flex h-10 w-10 items-center justify-center overflow-hidden rounded",
+                                          isLight ? "bg-[#F0E4D6]" : "bg-black"
+                                        )}
+                                      >
+                                        {achievementFiles[index]?.type.startsWith("image/") ? (
+                                          <img
+                                            src={URL.createObjectURL(achievementFiles[index]!)}
+                                            alt="preview"
+                                            className="h-10 w-10 object-cover"
+                                          />
+                                        ) : (
+                                          <span className={cn("text-xs", textSecondary)}>PDF</span>
+                                        )}
+                                      </div>
+                                      <div className="flex flex-col">
+                                        <span className={cn("text-xs font-medium", textPrimary)}>
+                                          {achievementFiles[index]?.name}
+                                        </span>
+                                        <span className={cn("text-xs", textSecondary)}>
+                                          {(achievementFiles[index]!.size / 1024 / 1024).toFixed(2)}{" "}
+                                          MB
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <label
+                                        htmlFor={`achievement-file-${index}`}
+                                        className={cn(
+                                          "cursor-pointer rounded-md px-3 py-1 text-xs transition-colors",
+                                          isLight
+                                            ? "bg-[#EED4BC] text-[#2F2A24] hover:bg-[#E3C7A5]"
+                                            : "bg-zinc-700 text-white hover:bg-zinc-600"
+                                        )}
+                                      >
+                                        Ganti
+                                      </label>
+                                      <button
+                                        type="button"
+                                        onClick={() => setAchievementFileAt(index, null)}
+                                        className={cn(
+                                          "rounded-md px-3 py-1 text-xs transition-colors",
+                                          isLight
+                                            ? "text-[#7A6B5B] hover:bg-stone-200"
+                                            : "text-zinc-400 hover:bg-zinc-700 hover:text-white"
+                                        )}
+                                      >
+                                        Hapus
+                                      </button>
+                                    </div>
+                                    <input
+                                      id={`achievement-file-${index}`}
+                                      type="file"
+                                      accept=".pdf,image/*"
+                                      onChange={(e) =>
+                                        setAchievementFileAt(index, e.target.files?.[0] || null)
+                                      }
+                                      className="hidden"
+                                    />
+                                  </div>
+                                ) : (
+                                  <>
+                                    <label
+                                      htmlFor={`achievement-file-${index}`}
+                                      className={cn(
+                                        "block cursor-pointer rounded-lg border-2 border-dashed p-4 text-center transition-colors",
+                                        isLight
+                                          ? "border-stone-300 bg-white/70 hover:border-stone-400 hover:bg-white"
+                                          : "border-zinc-600 bg-zinc-800/60 hover:border-zinc-500 hover:bg-zinc-800"
+                                      )}
+                                    >
+                                      <Upload
+                                        className={cn(
+                                          "mx-auto h-5 w-5",
+                                          isLight ? "text-[#7A6B5B]" : "text-zinc-400"
+                                        )}
+                                      />
+                                      <p className={cn("mt-2 text-sm", textPrimary)}>
+                                        Klik untuk unggah bukti
+                                      </p>
+                                      <p className={cn("text-xs", textSecondary)}>
+                                        PDF atau Gambar (maks 2MB)
+                                      </p>
+                                    </label>
+                                    <input
+                                      id={`achievement-file-${index}`}
+                                      type="file"
+                                      accept=".pdf,image/*"
+                                      onChange={(e) =>
+                                        setAchievementFileAt(index, e.target.files?.[0] || null)
+                                      }
+                                      className="hidden"
+                                    />
+                                  </>
+                                )}
                               </div>
                             )}
                             {academicForm.getValues(`achievements.${index}.fileUrl`) && (
@@ -986,37 +1063,112 @@ const UserProfilePage = () => {
 
                             {!academicForm.getValues(`experiences.${index}.fileUrl`) && (
                               <div className="mt-2">
-                                <label
-                                  htmlFor={`experience-file-${index}`}
-                                  className={cn(
-                                    "block cursor-pointer rounded-lg border-2 border-dashed p-4 text-center transition-colors",
-                                    isLight
-                                      ? "border-stone-300 bg-white/70 hover:border-stone-400 hover:bg-white"
-                                      : "border-zinc-600 bg-zinc-800/60 hover:border-zinc-500 hover:bg-zinc-800"
-                                  )}
-                                >
-                                  <Upload
+                                {experienceFiles[index] ? (
+                                  <div
                                     className={cn(
-                                      "mx-auto h-5 w-5",
-                                      isLight ? "text-[#7A6B5B]" : "text-zinc-400"
+                                      "flex items-center justify-between rounded-md border p-2",
+                                      isLight
+                                        ? "border-stone-300 bg-white/80"
+                                        : "border-zinc-700 bg-zinc-800"
                                     )}
-                                  />
-                                  <p className={cn("mt-2 text-sm", textPrimary)}>
-                                    Klik untuk unggah bukti
-                                  </p>
-                                  <p className={cn("text-xs", textSecondary)}>
-                                    PDF atau Gambar (maks 2MB)
-                                  </p>
-                                </label>
-                                <input
-                                  id={`experience-file-${index}`}
-                                  type="file"
-                                  accept=".pdf,image/*"
-                                  onChange={(e) =>
-                                    setExperienceFileAt(index, e.target.files?.[0] || null)
-                                  }
-                                  className="hidden"
-                                />
+                                  >
+                                    <div className="flex items-center gap-3">
+                                      <div
+                                        className={cn(
+                                          "flex h-10 w-10 items-center justify-center overflow-hidden rounded",
+                                          isLight ? "bg-[#F0E4D6]" : "bg-black"
+                                        )}
+                                      >
+                                        {experienceFiles[index]?.type.startsWith("image/") ? (
+                                          <img
+                                            src={URL.createObjectURL(experienceFiles[index]!)}
+                                            alt="preview"
+                                            className="h-10 w-10 object-cover"
+                                          />
+                                        ) : (
+                                          <span className={cn("text-xs", textSecondary)}>PDF</span>
+                                        )}
+                                      </div>
+                                      <div className="flex flex-col">
+                                        <span className={cn("text-xs font-medium", textPrimary)}>
+                                          {experienceFiles[index]?.name}
+                                        </span>
+                                        <span className={cn("text-xs", textSecondary)}>
+                                          {(experienceFiles[index]!.size / 1024 / 1024).toFixed(2)}{" "}
+                                          MB
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <label
+                                        htmlFor={`experience-file-${index}`}
+                                        className={cn(
+                                          "cursor-pointer rounded-md px-3 py-1 text-xs transition-colors",
+                                          isLight
+                                            ? "bg-[#EED4BC] text-[#2F2A24] hover:bg-[#E3C7A5]"
+                                            : "bg-zinc-700 text-white hover:bg-zinc-600"
+                                        )}
+                                      >
+                                        Ganti
+                                      </label>
+                                      <button
+                                        type="button"
+                                        onClick={() => setExperienceFileAt(index, null)}
+                                        className={cn(
+                                          "rounded-md px-3 py-1 text-xs transition-colors",
+                                          isLight
+                                            ? "text-[#7A6B5B] hover:bg-stone-200"
+                                            : "text-zinc-400 hover:bg-zinc-700 hover:text-white"
+                                        )}
+                                      >
+                                        Hapus
+                                      </button>
+                                    </div>
+                                    <input
+                                      id={`experience-file-${index}`}
+                                      type="file"
+                                      accept=".pdf,image/*"
+                                      onChange={(e) =>
+                                        setExperienceFileAt(index, e.target.files?.[0] || null)
+                                      }
+                                      className="hidden"
+                                    />
+                                  </div>
+                                ) : (
+                                  <>
+                                    <label
+                                      htmlFor={`experience-file-${index}`}
+                                      className={cn(
+                                        "block cursor-pointer rounded-lg border-2 border-dashed p-4 text-center transition-colors",
+                                        isLight
+                                          ? "border-stone-300 bg-white/70 hover:border-stone-400 hover:bg-white"
+                                          : "border-zinc-600 bg-zinc-800/60 hover:border-zinc-500 hover:bg-zinc-800"
+                                      )}
+                                    >
+                                      <Upload
+                                        className={cn(
+                                          "mx-auto h-5 w-5",
+                                          isLight ? "text-[#7A6B5B]" : "text-zinc-400"
+                                        )}
+                                      />
+                                      <p className={cn("mt-2 text-sm", textPrimary)}>
+                                        Klik untuk unggah bukti
+                                      </p>
+                                      <p className={cn("text-xs", textSecondary)}>
+                                        PDF atau Gambar (maks 2MB)
+                                      </p>
+                                    </label>
+                                    <input
+                                      id={`experience-file-${index}`}
+                                      type="file"
+                                      accept=".pdf,image/*"
+                                      onChange={(e) =>
+                                        setExperienceFileAt(index, e.target.files?.[0] || null)
+                                      }
+                                      className="hidden"
+                                    />
+                                  </>
+                                )}
                               </div>
                             )}
 

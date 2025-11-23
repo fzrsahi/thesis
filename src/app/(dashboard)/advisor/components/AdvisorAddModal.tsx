@@ -200,7 +200,7 @@ export const AdvisorAddModal = ({
                       onChange={(e) => field.onChange(e.target.value)}
                       className="rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-zinc-100"
                     >
-                      <option value={ADVISOR_TYPES.HEAD_OF_DEPARTMENT}>Kepala Jurusan</option>
+                      <option value={ADVISOR_TYPES.HEAD_OF_DEPARTMENT}>Ketua Jurusan</option>
                       <option value={ADVISOR_TYPES.HEAD_OF_STUDY_PROGRAM}>
                         Kepala Program Studi
                       </option>

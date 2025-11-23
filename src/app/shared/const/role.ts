@@ -22,6 +22,6 @@ export type StudyProgram = (typeof STUDY_PROGRAMS)[keyof typeof STUDY_PROGRAMS];
 
 // Indonesian display labels for advisor types
 export const ADVISOR_TYPES_ID_LABEL = {
-  [ADVISOR_TYPES.HEAD_OF_DEPARTMENT]: "Kepala Jurusan",
+  [ADVISOR_TYPES.HEAD_OF_DEPARTMENT]: "Ketua Jurusan",
   [ADVISOR_TYPES.HEAD_OF_STUDY_PROGRAM]: "Kepala Program Studi",
 } as const;

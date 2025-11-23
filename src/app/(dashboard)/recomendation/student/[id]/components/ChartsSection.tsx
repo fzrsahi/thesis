@@ -1,14 +1,13 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Star, Target, Zap } from "lucide-react";
+import { Star } from "lucide-react";
 import { useState } from "react";
 
-import Button from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 
-import { SkillComparisonChart, TopCompetitionsList } from "./Charts";
+import { TopCompetitionsList } from "./Charts";
 
 interface StatisticsData {
   overview?: {
@@ -116,7 +115,7 @@ export const ChartsSection = ({
       className="space-y-8"
     >
       {/* Skill Comparison */}
-      <Card
+      {/* <Card
         className={cn(
           "border transition-colors",
           isLight
@@ -164,7 +163,7 @@ export const ChartsSection = ({
             isLight={isLight}
           />
         </CardContent>
-      </Card>
+      </Card> */}
 
       {/* Top Competitions */}
       <Card

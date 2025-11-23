@@ -21,7 +21,7 @@ export const STUDENT_ERROR_RESPONSE = {
   },
   STUDENT_ID_ALREADY_EXISTS: {
     code: "STUDENT_006",
-    message: "ID mahasiswa sudah ada",
+    message: "NIM mahasiswa sudah ada",
   },
 };
 

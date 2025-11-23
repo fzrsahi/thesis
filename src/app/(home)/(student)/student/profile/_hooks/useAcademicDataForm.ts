@@ -145,6 +145,12 @@ const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
   const handleConfirmDeleteAchievement = () => {
     if (achievementToDelete) {
       removeAchievement(achievementToDelete.index);
+      // Remove file from array at the same index
+      setAchievementFiles((prev) => {
+        const next = [...prev];
+        next.splice(achievementToDelete.index, 1);
+        return next;
+      });
       toast.success("Prestasi berhasil dihapus");
       setIsDeleteAchievementDialogOpen(false);
       setAchievementToDelete(null);
@@ -167,6 +173,12 @@ const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
   const handleConfirmDeleteExperience = () => {
     if (experienceToDelete) {
       removeExperience(experienceToDelete.index);
+      // Remove file from array at the same index
+      setExperienceFiles((prev) => {
+        const next = [...prev];
+        next.splice(experienceToDelete.index, 1);
+        return next;
+      });
       toast.success("Pengalaman berhasil dihapus");
       setIsDeleteExperienceDialogOpen(false);
       setExperienceToDelete(null);
@@ -178,6 +190,10 @@ const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
     setExperienceToDelete(null);
   };
 
+  // Local state to hold optional files per item index
+  const [achievementFiles, setAchievementFiles] = useState<(File | null)[]>([]);
+  const [experienceFiles, setExperienceFiles] = useState<(File | null)[]>([]);
+
   // Wrapper functions with toast notifications
   const handleAddAchievement = () => {
     appendAchievement({
@@ -185,6 +201,8 @@ const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
       description: "",
       date: "",
     });
+    // Initialize file array to match new field count
+    setAchievementFiles((prev) => [...prev, null]);
     toast.success("Prestasi baru ditambahkan");
   };
 
@@ -196,23 +214,30 @@ const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
       startDate: "",
       endDate: "",
     });
+    // Initialize file array to match new field count
+    setExperienceFiles((prev) => [...prev, null]);
     toast.success("Pengalaman baru ditambahkan");
   };
-
-  // Local state to hold optional files per item index
-  const [achievementFiles, setAchievementFiles] = useState<(File | null)[]>([]);
-  const [experienceFiles, setExperienceFiles] = useState<(File | null)[]>([]);
 
   const setAchievementFileAt = (index: number, file: File | null) => {
     setAchievementFiles((prev) => {
       const next = [...prev];
+      // Ensure array is long enough
+      while (next.length <= index) {
+        next.push(null);
+      }
       next[index] = file;
       return next;
     });
   };
+
   const setExperienceFileAt = (index: number, file: File | null) => {
     setExperienceFiles((prev) => {
       const next = [...prev];
+      // Ensure array is long enough
+      while (next.length <= index) {
+        next.push(null);
+      }
       next[index] = file;
       return next;
     });
@@ -224,11 +249,20 @@ const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
       skills,
       interests,
     };
+
+    // Ensure file arrays match the form data length and filter out nulls
+    const achievementFilesToSend = (formData.achievements || []).map(
+      (_, idx) => achievementFiles[idx] || null
+    );
+    const experienceFilesToSend = (formData.experiences || []).map(
+      (_, idx) => experienceFiles[idx] || null
+    );
+
     putAcademicData({
       data: dataWithArrays,
       files: {
-        achievementFiles,
-        experienceFiles,
+        achievementFiles: achievementFilesToSend,
+        experienceFiles: experienceFilesToSend,
       },
     });
   };
@@ -298,8 +332,9 @@ const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
       // Set interests state
       setSkills(data.skills || []);
       setInterests(data.interests || []);
-      setAchievementFiles([]);
-      setExperienceFiles([]);
+      // Initialize file arrays to match the loaded data length
+      setAchievementFiles(new Array(formatAchievements.length).fill(null));
+      setExperienceFiles(new Array(formatExperiences.length).fill(null));
     }
   }, [data, form]);
 
@@ -356,6 +391,8 @@ const useAcademicDataForm = (data?: AcademicDataResponse | undefined) => {
     // Files
     setAchievementFileAt,
     setExperienceFileAt,
+    achievementFiles,
+    experienceFiles,
   };
 };
 

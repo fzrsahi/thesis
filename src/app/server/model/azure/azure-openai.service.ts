@@ -3,11 +3,11 @@ import { AzureOpenAIEmbeddings, AzureChatOpenAI } from "@langchain/openai";
 const AZURE_CONFIG = {
   apiKey: process.env.AZURE_OPENAI_API_KEY!,
   apiVersion: "2024-08-01-preview",
-  chatDeployment: process.env.AZURE_OPENAI_CHAT_DEPLOYMENT || "gpt-4o",
+  chatDeployment: process.env.AZURE_OPENAI_CHAT_DEPLOYMENT || "gpt-4.1",
   embeddingsDeployment: "text-embedding-3-small",
   instanceName: process.env.AZURE_OPENAI_INSTANCE_NAME,
   gptEndpoint: process.env.AZURE_OPENAI_GPT_ENDPOINT,
-  embeddingsApiVersion: "2024-04-01-preview",
+  embeddingsApiVersion: "2024-12-01-preview",
 };
 
 export const createOpenAIClient = () =>

@@ -121,7 +121,7 @@ const createAdvisors = async () => {
       data: {
         email: "dosen.pti.depthead@gmail.com",
         password: hashedPassword,
-        name: "Kepala Jurusan",
+        name: "Ketua Jurusan",
       },
     });
     await prisma.advisor.create({

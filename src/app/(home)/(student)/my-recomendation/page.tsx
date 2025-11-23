@@ -3,7 +3,6 @@
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Trophy,
-  Radar as RadarIcon,
   Users,
   Calendar,
   Target,
@@ -20,31 +19,13 @@ import {
   AlertCircle,
   ChevronDown,
   ChevronUp,
-  ChevronLeft,
-  ChevronRight,
   Sparkles,
   Zap,
   Star,
   TrendingUp,
   Rocket,
 } from "lucide-react";
-import { useEffect, useRef, useMemo, useState } from "react";
-import { createPortal } from "react-dom";
-import {
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  ResponsiveContainer,
-  Tooltip as RechartsTooltip,
-  Radar as RadarChartComponent,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Cell,
-} from "recharts";
+import { useEffect, useState } from "react";
 
 import {
   Accordion,
@@ -212,331 +193,6 @@ const EmptyState = ({
   </div>
 );
 
-const ComparisonSpiderChart = ({
-  studentData,
-  competitionData,
-  showOnlyStudent = false,
-  isLight = false,
-}: {
-  studentData: ReturnType<typeof useMyRecomendation>["studentSkillsData"];
-  competitionData?: ReturnType<typeof useMyRecomendation>["competitionSkillsData"];
-  showOnlyStudent?: boolean;
-  isLight?: boolean;
-}) => {
-  // Persiapkan data untuk grafik radar
-  const chartData = useMemo(() => {
-    if (!studentData.length) return [];
-
-    // Ambil semua keterampilan unik dari kedua dataset
-    const allSkills = new Set([
-      ...studentData.map((item) => item.label),
-      ...(competitionData?.map((item) => item.label) || []),
-    ]);
-
-    // Buat peta keterampilan mahasiswa untuk pencarian cepat
-    const studentSkillMap = new Map(studentData.map((item) => [item.label, item.value]));
-
-    // Buat peta keterampilan kompetisi untuk pencarian cepat
-    const competitionSkillMap = new Map(
-      competitionData?.map((item) => [item.label, item.value]) || []
-    );
-
-    // Buat data grafik dengan semua keterampilan
-    return Array.from(allSkills)
-      .sort()
-      .map((skill) => ({
-        skill: skillNameMapping[skill] || skill,
-        student: studentSkillMap.get(skill) || 0,
-        competition: competitionSkillMap.get(skill) || 0,
-      }));
-  }, [studentData, competitionData]);
-
-  const borderClass = isLight ? "border-stone-300/70" : "border-zinc-800/50";
-  const surfaceClass = isLight
-    ? "bg-white/90 shadow-[0_25px_45px_rgba(214,188,160,0.25)]"
-    : "bg-gradient-to-br from-zinc-900/50 to-zinc-800/50";
-  const accentGlow = isLight
-    ? "from-[#F6A964]/15 via-transparent to-[#E36C3A]/15"
-    : "from-blue-500/20 via-transparent to-purple-500/20";
-  const gridStroke = isLight ? "rgba(94, 84, 73, 0.12)" : "rgba(255, 255, 255, 0.1)";
-  const axisStroke = isLight ? "rgba(94, 84, 73, 0.2)" : "rgba(255, 255, 255, 0.1)";
-  const tickColor = isLight ? "#5C5245" : "#e4e4e7";
-  const radiusTickColor = isLight ? "#7A6B5B" : "#a1a1aa";
-
-  if (chartData.length === 0) {
-    return (
-      <div
-        className={cn(
-          "flex h-[400px] items-center justify-center overflow-hidden rounded-xl border backdrop-blur-sm",
-          borderClass,
-          surfaceClass
-        )}
-      >
-        <div className="text-center">
-          <div
-            className={cn(
-              "mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full",
-              isLight
-                ? "bg-gradient-to-r from-[#F6A964] to-[#E36C3A]"
-                : "bg-gradient-to-r from-zinc-700 to-zinc-800"
-            )}
-          >
-            <RadarIcon className={cn("h-8 w-8", isLight ? "text-white" : "text-zinc-400")} />
-          </div>
-          <TypographyP className={cn("text-sm", isLight ? "text-[#7A6B5B]" : "text-zinc-400")}>
-            Tidak ada data tersedia
-          </TypographyP>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div
-      className={cn(
-        "relative h-[400px] w-full overflow-hidden rounded-xl border backdrop-blur-sm",
-        borderClass,
-        surfaceClass
-      )}
-    >
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-40">
-        <div
-          className={cn(
-            "absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))]",
-            accentGlow
-          )}
-        />
-      </div>
-
-      <div className="relative h-full w-full p-6">
-        <ResponsiveContainer width="100%" height="100%">
-          <RadarChart
-            cx="50%"
-            cy="50%"
-            outerRadius="85%"
-            data={chartData}
-            margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
-          >
-            <defs>
-              <linearGradient id="studentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.8} />
-                <stop offset="100%" stopColor="#8b5cf6" stopOpacity={0.3} />
-              </linearGradient>
-              <linearGradient id="competitionGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#f59e0b" stopOpacity={0.8} />
-                <stop offset="100%" stopColor="#ef4444" stopOpacity={0.3} />
-              </linearGradient>
-            </defs>
-            <PolarGrid stroke={gridStroke} strokeWidth={1} strokeDasharray="2 2" />
-            <PolarAngleAxis
-              dataKey="skill"
-              tick={{ fill: tickColor, fontSize: 11, fontWeight: 500 }}
-              stroke={axisStroke}
-            />
-            <PolarRadiusAxis
-              angle={30}
-              domain={[0, 10]}
-              tick={{ fill: radiusTickColor, fontSize: 10 }}
-              stroke={axisStroke}
-              tickCount={6}
-            />
-            <RadarChartComponent
-              name="Keterampilan Anda"
-              dataKey="student"
-              stroke="#3b82f6"
-              fill="url(#studentGradient)"
-              fillOpacity={0.4}
-              strokeWidth={2}
-            />
-            {!showOnlyStudent && competitionData && competitionData.length > 0 && (
-              <RadarChartComponent
-                name="Keterampilan yang Dibutuhkan"
-                dataKey="competition"
-                stroke="#f59e0b"
-                fill="url(#competitionGradient)"
-                fillOpacity={0.4}
-                strokeWidth={2}
-              />
-            )}
-            <RechartsTooltip
-              contentStyle={{
-                backgroundColor: isLight ? "rgba(255, 255, 255, 0.95)" : "rgba(24, 24, 27, 0.95)",
-                border: isLight
-                  ? "1px solid rgba(214, 188, 160, 0.6)"
-                  : "1px solid rgba(63, 63, 70, 0.5)",
-                borderRadius: "0.75rem",
-                color: isLight ? "#2F2A24" : "#fff",
-                backdropFilter: "blur(10px)",
-                boxShadow: isLight
-                  ? "0 18px 32px rgba(214, 188, 160, 0.25)"
-                  : "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-              }}
-              formatter={(value: number, name: string) =>
-                // name sudah berisi "Keterampilan Anda" atau "Keterampilan yang Dibutuhkan" dari Radar component
-                [`${value.toFixed(1)}/10`, name]
-              }
-            />
-          </RadarChart>
-        </ResponsiveContainer>
-      </div>
-    </div>
-  );
-};
-
-interface TooltipProps {
-  active?: boolean;
-  payload?: Array<{
-    value: number;
-    payload: {
-      breakdown: string;
-    };
-  }>;
-  label?: string;
-  isLight?: boolean;
-}
-
-const CustomTooltip = ({ active, payload, label, isLight = false }: TooltipProps) => {
-  if (active && payload && payload.length) {
-    return (
-      <div
-        className={cn(
-          "rounded-lg border p-3 shadow-lg",
-          isLight
-            ? "border-stone-300 bg-white text-[#2F2A24] shadow-[0_18px_32px_rgba(214,188,160,0.25)]"
-            : "border-zinc-700 bg-zinc-900 text-white"
-        )}
-      >
-        <p className="mb-1 font-medium">{label}</p>
-        <p className={cn("text-sm", isLight ? "text-[#5C5245]" : "text-zinc-300")}>
-          <span className={cn("font-medium", isLight ? "text-[#D97742]" : "text-blue-400")}>
-            {payload[0].value.toFixed(1)}/10
-          </span>{" "}
-          tingkat kepentingan
-        </p>
-        <p className={cn("mt-2 text-xs", isLight ? "text-[#7A6B5B]" : "text-zinc-400")}>
-          {payload[0].payload.breakdown}
-        </p>
-      </div>
-    );
-  }
-  return null;
-};
-
-// Helper function untuk menentukan warna berdasarkan nilai
-const getSkillColor = (value: number): string => {
-  if (value >= 0.7) return "#22c55e";
-  if (value >= 0.4) return "#3b82f6";
-  return "#f59e0b";
-};
-
-const SkillRequirementsChart = ({
-  requirements,
-  isLight,
-}: {
-  requirements: Record<string, { weight: number; breakdown: string }>;
-  isLight: boolean;
-}) => {
-  const chartData = useMemo(
-    () =>
-      Object.entries(requirements)
-        .map(([skill, { weight }]) => ({
-          name: skillNameMapping[skill] || skill,
-          value: weight * 10,
-          breakdown: requirements[skill].breakdown,
-          color: getSkillColor(weight),
-        }))
-        .sort((a, b) => b.value - a.value),
-    [requirements]
-  );
-
-  const surfaceClass = isLight
-    ? "border-stone-300/70 bg-white/90 shadow-[0_24px_50px_rgba(214,188,160,0.25)]"
-    : "border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50";
-  const accentLine = isLight
-    ? "bg-gradient-to-b from-[#F6A964] via-[#E36C3A] to-[#C95A2D]"
-    : "bg-gradient-to-b from-blue-500 via-purple-500 to-pink-500";
-  const gridStroke = isLight ? "rgba(94, 84, 73, 0.12)" : "rgba(255, 255, 255, 0.08)";
-  const axisTickColor = isLight ? "#5C5245" : "#e4e4e7";
-
-  return (
-    <div className={cn("relative overflow-hidden rounded-xl backdrop-blur-sm", surfaceClass)}>
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-40">
-        <div
-          className={cn(
-            "absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))]",
-            isLight
-              ? "from-[#F6D8B6]/35 via-transparent to-[#F2A45E]/25"
-              : "from-purple-500/20 via-transparent to-blue-500/20"
-          )}
-        />
-      </div>
-
-      {/* Gradient Accent Line */}
-      <div className={cn("absolute top-0 -left-2 h-full w-1 rounded-full shadow-lg", accentLine)} />
-
-      <div className="relative h-[400px] w-full pr-4 pl-6">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={chartData}
-            layout="vertical"
-            margin={{ top: 10, right: 40, left: 20, bottom: 10 }}
-            barSize={28}
-          >
-            <defs>
-              <linearGradient id="barGradient" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.9} />
-                <stop offset="50%" stopColor="#8b5cf6" stopOpacity={0.9} />
-                <stop offset="100%" stopColor="#ec4899" stopOpacity={0.9} />
-              </linearGradient>
-              <linearGradient id="backgroundGradient" x1="0" y1="0" x2="1" y2="0">
-                <stop offset="0%" stopColor="rgba(255, 255, 255, 0.05)" />
-                <stop offset="100%" stopColor="rgba(255, 255, 255, 0.02)" />
-              </linearGradient>
-            </defs>
-            <CartesianGrid strokeDasharray="2 2" stroke={gridStroke} horizontal={false} />
-            <XAxis
-              type="number"
-              domain={[0, 10]}
-              tick={{ fill: axisTickColor, fontSize: 11, fontWeight: 500 }}
-              stroke={gridStroke}
-              tickLine={{ stroke: gridStroke }}
-              axisLine={false}
-            />
-            <YAxis
-              type="category"
-              dataKey="name"
-              tick={{ fill: axisTickColor, fontSize: 11, fontWeight: 500 }}
-              stroke={gridStroke}
-              width={200}
-              tickLine={false}
-              axisLine={false}
-            />
-            <RechartsTooltip content={<CustomTooltip isLight={isLight} />} />
-            <Bar
-              dataKey="value"
-              radius={[0, 14, 14, 0]}
-              background={{ fill: "url(#backgroundGradient)", radius: 14 }}
-            >
-              {chartData.map((entry, _index) => (
-                <Cell
-                  key={`cell-${entry.name}`}
-                  fill={entry.color}
-                  className="transition-all duration-300 hover:scale-105 hover:opacity-80"
-                  style={{
-                    filter: `drop-shadow(0 4px 8px ${entry.color}20)`,
-                  }}
-                />
-              ))}
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-    </div>
-  );
-};
-
 const RecommendationContent = ({
   data,
   isLight,
@@ -544,10 +200,6 @@ const RecommendationContent = ({
   data: RecommendationResponse;
   isLight: boolean;
 }) => {
-  const { selectedCompetition, setSelectedCompetition, studentSkillsData, competitionSkillsData } =
-    useMyRecomendation();
-  const recommendationsRef = useRef<HTMLDivElement>(null);
-
   // State untuk collapse/expand sections
   const [collapsedSections, setCollapsedSections] = useState({
     skillsComparison: false,
@@ -555,28 +207,6 @@ const RecommendationContent = ({
     strengths: false,
     developmentSources: false,
   });
-
-  // Sidebar perbandingan keterampilan
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  // Portal mounting guard
-  const [isMounted, setIsMounted] = useState(false);
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        recommendationsRef.current &&
-        !recommendationsRef.current.contains(event.target as Node)
-      ) {
-        setSelectedCompetition(null);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [setSelectedCompetition]);
 
   const toggleSection = (section: keyof typeof collapsedSections) => {
     setCollapsedSections((prev) => ({
@@ -597,9 +227,6 @@ const RecommendationContent = ({
   const recommendationCardBase = isLight
     ? "border-stone-300/70 bg-white/95 hover:border-stone-400/80 hover:shadow-[0_26px_48px_rgba(214,188,160,0.3)]"
     : "border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50 hover:border-zinc-700/50 hover:from-zinc-800/50 hover:to-zinc-700/50";
-  const recommendationCardSelected = isLight
-    ? "border-[#E36C3A]/60 bg-gradient-to-br from-[#F6E5D4]/90 to-[#F2C8A4]/90 ring-2 ring-[#F2A45E]/50 shadow-[0_30px_55px_rgba(226,145,84,0.25)]"
-    : "border-blue-500/50 bg-gradient-to-br from-blue-900/20 to-purple-900/20 ring-2 shadow-blue-500/25 ring-blue-500/50";
   const mutedLabel = isLight ? "text-xs text-[#7A6B5B]" : "text-xs text-zinc-400";
 
   return (
@@ -628,7 +255,7 @@ const RecommendationContent = ({
         >
           <div className="flex items-center justify-between">
             <div className="space-y-2">
-              <TypographyH1 className="bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-3xl font-bold text-transparent md:text-5xl">
+              <TypographyH1 className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                 Rekomendasi{" "}
                 <span className="bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                   Kompetisi
@@ -1602,7 +1229,6 @@ const RecommendationContent = ({
           {/* Daftar Rekomendasi */}
           {data.result.recommendations?.length > 0 && (
             <motion.div
-              ref={recommendationsRef}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.2, duration: 0.8 }}
@@ -1625,23 +1251,14 @@ const RecommendationContent = ({
                   >
                     <Card
                       className={cn(
-                        "group relative cursor-pointer overflow-hidden border backdrop-blur-sm transition-all",
-                        selectedCompetition?.id === rec.id
-                          ? recommendationCardSelected
-                          : recommendationCardBase
+                        "group relative overflow-hidden border backdrop-blur-sm transition-all",
+                        recommendationCardBase
                       )}
-                      onClick={() => setSelectedCompetition(rec)}
                     >
                       <div
                         className={cn(
                           "absolute inset-0 bg-gradient-to-r opacity-0 transition-opacity group-hover:opacity-10",
-                          selectedCompetition?.id === rec.id
-                            ? isLight
-                              ? "from-[#F6A964] via-[#E36C3A] to-[#C75627]"
-                              : "from-blue-500 to-purple-500"
-                            : isLight
-                              ? "from-[#E9D8C8] to-[#DCC5B0]"
-                              : "from-zinc-500 to-zinc-600"
+                          isLight ? "from-[#E9D8C8] to-[#DCC5B0]" : "from-zinc-500 to-zinc-600"
                         )}
                       />
 
@@ -1670,20 +1287,6 @@ const RecommendationContent = ({
                               {rec.matchScore.reason}
                             </CardDescription>
                           </div>
-                          <motion.div
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            className="flex items-center space-x-2"
-                          >
-                            <div
-                              className={`h-3 w-3 rounded-full transition-colors ${
-                                selectedCompetition?.id === rec.id ? "bg-blue-500" : "bg-zinc-500"
-                              }`}
-                            />
-                            <span className={mutedLabel}>
-                              {selectedCompetition?.id === rec.id ? "Dipilih" : "Klik untuk detail"}
-                            </span>
-                          </motion.div>
                         </div>
                       </CardHeader>
                       <CardContent className="relative">
@@ -1778,63 +1381,6 @@ const RecommendationContent = ({
                                       ))}
                                     </ul>
                                   </div>
-                                </div>
-                              </div>
-                            </AccordionContent>
-                          </AccordionItem>
-
-                          <AccordionItem
-                            value="skill-breakdown"
-                            className={cn(isLight ? "border-stone-300/60" : "border-zinc-700/50")}
-                          >
-                            <AccordionTrigger
-                              className={cn("group hover:no-underline", textPrimary)}
-                            >
-                              <div className="flex items-center space-x-3">
-                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg">
-                                  <RadarIcon className="h-4 w-4" />
-                                </div>
-                                <span className="font-semibold">Kebutuhan Keterampilan</span>
-                              </div>
-                            </AccordionTrigger>
-                            <AccordionContent>
-                              <div className="space-y-6 pl-11">
-                                <div
-                                  className={cn(
-                                    "overflow-hidden rounded-xl p-6 backdrop-blur-sm",
-                                    isLight
-                                      ? "border-stone-300/60 bg-white/95 shadow-[0_24px_50px_rgba(214,188,160,0.3)]"
-                                      : "border border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50"
-                                  )}
-                                >
-                                  <div className="mb-6 flex items-center justify-between">
-                                    <div>
-                                      <TypographyH3 className={cn("text-lg", textPrimary)}>
-                                        Tingkat Kepentingan Keterampilan
-                                      </TypographyH3>
-                                      <TypographyP className={cn("mt-1 text-sm", textSecondary)}>
-                                        Visualisasi kebutuhan keterampilan untuk kompetisi ini
-                                      </TypographyP>
-                                    </div>
-                                    <div className="flex items-center space-x-4">
-                                      <div className="flex items-center space-x-2">
-                                        <div className="h-3 w-3 rounded-full bg-gradient-to-r from-green-400 to-green-500" />
-                                        <span className={mutedLabel}>Mahir (7-10)</span>
-                                      </div>
-                                      <div className="flex items-center space-x-2">
-                                        <div className="h-3 w-3 rounded-full bg-gradient-to-r from-blue-400 to-blue-500" />
-                                        <span className={mutedLabel}>Menengah (4-6.9)</span>
-                                      </div>
-                                      <div className="flex items-center space-x-2">
-                                        <div className="h-3 w-3 rounded-full bg-gradient-to-r from-orange-400 to-orange-500" />
-                                        <span className={mutedLabel}>Dasar (1-3.9)</span>
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <SkillRequirementsChart
-                                    requirements={rec.skillRequirements}
-                                    isLight={isLight}
-                                  />
                                 </div>
                               </div>
                             </AccordionContent>
@@ -2056,122 +1602,6 @@ const RecommendationContent = ({
           )}
         </div>
       </div>
-
-      {isMounted &&
-        createPortal(
-          <>
-            {/* Toggle Button untuk Sidebar */}
-            <motion.button
-              aria-label={
-                isSidebarOpen ? "Tutup perbandingan keterampilan" : "Buka perbandingan keterampilan"
-              }
-              onClick={() => setIsSidebarOpen((prev) => !prev)}
-              className={cn(
-                "fixed top-1/2 right-4 z-[100] -translate-y-1/2 rounded-full border p-2 shadow-xl backdrop-blur-md",
-                isLight
-                  ? "border-stone-300/60 bg-white/90 text-[#2F2A24] hover:bg-white"
-                  : "border-zinc-700/50 bg-zinc-900/80 text-white hover:bg-zinc-800/80"
-              )}
-              whileHover={{ scale: 1.08 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              {isSidebarOpen ? (
-                <ChevronRight className="h-5 w-5" />
-              ) : (
-                <ChevronLeft className="h-5 w-5" />
-              )}
-            </motion.button>
-
-            {/* Sidebar Kanan: Perbandingan Keterampilan */}
-            <AnimatePresence>
-              {isSidebarOpen && (
-                <motion.div
-                  initial={{ x: 420, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  exit={{ x: 420, opacity: 0 }}
-                  transition={{ type: "spring", stiffness: 260, damping: 26 }}
-                  className={cn(
-                    "fixed top-1/2 right-4 z-[90] w-[420px] -translate-y-1/2 overflow-hidden rounded-2xl border shadow-2xl backdrop-blur-xl",
-                    isLight
-                      ? "border-stone-300/60 bg-white/95"
-                      : "border-zinc-800/60 bg-gradient-to-b from-zinc-900/95 to-black/95"
-                  )}
-                >
-                  <div className="flex max-h-[85vh] flex-col">
-                    <div
-                      className={cn(
-                        "flex items-center justify-between border-b p-4",
-                        isLight ? "border-stone-300/60" : "border-zinc-800/60"
-                      )}
-                    >
-                      <div className={cn("flex items-center space-x-3", textPrimary)}>
-                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-600 shadow-lg">
-                          <RadarIcon className="h-4 w-4 text-white" />
-                        </div>
-                        <span className="text-sm font-semibold">Perbandingan Keterampilan</span>
-                      </div>
-                      {selectedCompetition && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setSelectedCompetition(null)}
-                          className={cn(
-                            "text-xs backdrop-blur-sm",
-                            isLight
-                              ? "border border-stone-300/60 bg-white/80 text-[#2F2A24] hover:bg-white"
-                              : "bg-gradient-to-r from-zinc-800/50 to-zinc-900/50 text-white hover:from-zinc-700/50 hover:to-zinc-800/50"
-                          )}
-                        >
-                          <Zap className="mr-1 h-3 w-3" />
-                          Reset
-                        </Button>
-                      )}
-                    </div>
-                    <div className="flex-1 overflow-auto p-4">
-                      <Card
-                        className={cn(
-                          "relative overflow-hidden border backdrop-blur-sm",
-                          isLight
-                            ? "border-stone-300/70 bg-white/95 shadow-[0_22px_44px_rgba(214,188,160,0.28)]"
-                            : "border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-zinc-800/50"
-                        )}
-                      >
-                        <div
-                          className={cn(
-                            "absolute inset-0",
-                            isLight
-                              ? "bg-gradient-to-r from-[#E9D8C8]/40 to-[#DCC5B0]/30"
-                              : "bg-gradient-to-r from-blue-500/5 to-purple-500/5"
-                          )}
-                        />
-                        <CardHeader>
-                          <CardDescription className={textSecondary}>
-                            {selectedCompetition
-                              ? `Perbandingan dengan ${selectedCompetition.competitionName}`
-                              : "Pilih kompetisi untuk melihat perbandingan keterampilan"}
-                          </CardDescription>
-                        </CardHeader>
-                        <CardContent className="p-0">
-                          <div className="p-4">
-                            <ComparisonSpiderChart
-                              studentData={studentSkillsData}
-                              competitionData={
-                                selectedCompetition ? competitionSkillsData : undefined
-                              }
-                              showOnlyStudent={!selectedCompetition}
-                              isLight={isLight}
-                            />
-                          </div>
-                        </CardContent>
-                      </Card>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </>,
-          document.body
-        )}
     </div>
   );
 };
