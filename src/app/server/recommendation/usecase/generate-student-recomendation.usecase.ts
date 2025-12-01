@@ -41,8 +41,24 @@ const RECOMMENDATION_PROMPT_TEMPLATE = `
         - Nilai kemampuan mahasiswa secara kuantitatif berdasarkan *RUBRIK PENILAIAN* di bawah ini.
         - Gunakan pendekatan continuous scoring normalization (0.10–1.00) sebagaimana diadopsi dari penelitian Wu dkk. (2023) dan Bao dkk. (2023).
         - Pastikan setiap skor didukung oleh bukti eksplisit dari profil mahasiswa (riwayat, nilai, pengalaman, atau prestasi).
+        - Bukti harus jelas dan spesifik. Gunakan data nyata seperti nilai MK, IPK, pengalaman organisasi, detail proyek, atau prestasi kompetisi.
 
       ---
+
+      ### PENGUATAN KEBIJAKAN BUKTI
+
+      Untuk setiap indikator penilaian, Anda wajib:
+      - Menjelaskan alasan pemberian skor menggunakan bukti konkret yang muncul secara eksplisit pada profil mahasiswa.
+      - Gunakan data seperti nilai mata kuliah tertentu, pengalaman proyek, riwayat organisasi, prestasi lomba, atau rekam akademik lain.
+      - Jelaskan fondasi faktual skor. Contoh:
+        - Jika memberikan skor tinggi pada *Technical Expertise*, sebutkan dasar seperti nilai A/B pada Struktur Data, Pemrograman, atau proyek nyata yang relevan.
+        - Jika memberikan skor menengah pada *Problem Solving*, sebutkan dasar seperti nilai B pada Algoritma atau pengalaman menyelesaikan studi kasus.
+        - Jika memberikan skor rendah, jelaskan bukti seperti minim pengalaman, belum ada prestasi, atau nilai mata kuliah yang tidak kuat.
+
+      Penjelasan yang tidak didukung bukti nyata tidak diperbolehkan.
+
+      ---
+
 
       ### RUBRIK PENILAIAN
 
@@ -114,11 +130,11 @@ const RECOMMENDATION_PROMPT_TEMPLATE = `
       ### ATURAN OUTPUT
 
       1. Output JSON Ketat: Semua output harus dalam satu blok JSON valid tanpa teks tambahan.  
-      2. Berbasis Data & Kontekstual: Setiap nilai dan reasoning harus berdasarkan bukti nyata dalam profil mahasiswa UNG.  
-      3. Penalaran Strategis: Jelaskan alasan pemilihan kompetisi secara argumentatif, bukan hanya kecocokan tema.  
-      4. Bahasa Profesional: Gunakan Bahasa Indonesia akademik yang suportif dan memberdayakan.  
-      5. Jumlah Rekomendasi: Tepat 3 rekomendasi kompetisi (rank 1, 2, 3). Tidak boleh lebih atau kurang.  
-      6. Skor Unik per Mahasiswa: Setiap mahasiswa wajib memiliki skor unik sesuai profil individual.
+      2. Setiap indikator skor wajib memiliki kolom "reason" yang berisi bukti nyata dari profil mahasiswa (contoh: “nilai B pada Struktur Data”, “pernah menjadi divisi IT HMJ”, “mengikuti magang 3 bulan pada bidang web development”).  
+      3. Penjelasan rekomendasi kompetisi harus menyertakan bukti yang sama jelasnya.  
+      4. Bahasa Profesional.  
+      5. Rekomendasi tepat 3 kompetisi.  
+      6. Skor setiap mahasiswa harus unik dan didasarkan data.
       ---
       PROFIL_MAHASISWA:
       {studentProfile}

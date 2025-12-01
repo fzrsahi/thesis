@@ -297,6 +297,7 @@ const CompetitionPage = () => {
     }
   };
 
+  const modalVariant = isLight ? "light" : "dark";
   const textPrimary = isLight ? "text-[#2F2A24]" : "text-white";
   const textSecondary = isLight ? "text-[#5C5245]" : "text-zinc-400";
   const borderColor = isLight ? "border-stone-300" : "border-gray-500";
@@ -376,7 +377,12 @@ const CompetitionPage = () => {
                     + Tambah Kompetisi
                   </Button>
                 </DialogTrigger>
-                <CompetitionAddModal open={open} onOpenChange={setOpen} onSubmit={onGenerate} />
+                <CompetitionAddModal
+                  open={open}
+                  onOpenChange={setOpen}
+                  onSubmit={onGenerate}
+                  variant={modalVariant}
+                />
               </Dialog>
             </CardHeader>
 
@@ -479,6 +485,7 @@ const CompetitionPage = () => {
           return true;
         }}
         data={selectedItem}
+        variant={modalVariant}
       />
       <CompetitionEditModal
         open={editOpen}
@@ -490,6 +497,7 @@ const CompetitionPage = () => {
         defaultValues={editDefaults ?? undefined}
         title="Edit Kompetisi"
         submitText="Simpan"
+        variant={modalVariant}
       />
     </>
   );

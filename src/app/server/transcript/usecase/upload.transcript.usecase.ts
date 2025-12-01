@@ -125,16 +125,16 @@ const extractTranscriptToText = async (
 const transcriptTextToSummary = async (transcriptText: string) =>
   sendChatCompletion(
     `
-    Anda adalah seorang analis akademik yang ahli dalam mengidentifikasi potensi mahasiswa berdasarkan transkrip nilai.
+    Anda adalah seorang analis akademik yang ahli dalam menilai potensi mahasiswa berdasarkan transkrip nilai.
     Tugas Anda adalah membuat ringkasan naratif dari transkrip nilai seorang mahasiswa Teknik Informatika.
-    Konteks Penting: Ringkasan ini akan diubah menjadi vector embedding untuk mencocokkan mahasiswa dengan kompetisi IT yang relevan.
-    Oleh karena itu, ringkasan harus padat dengan informasi yang menyoroti keahlian dan kekuatan mahasiswa.
+    Ringkasan ini akan diubah menjadi vector embedding untuk keperluan pencocokan dengan kompetisi IT, sehingga konten harus sarat informasi terkait kemampuan teknis mahasiswa.
 
     Instruksi:
-    1. **Fokus Utama**: Identifikasi dan sebutkan mata kuliah di bidang teknis (Pemrograman, Algoritma, AI, Jaringan, Basis Data, dsb) di mana mahasiswa mendapat nilai tinggi (A/B).
-    2. **Sintesis Keahlian**: Gabungkan jadi paragraf yang menjelaskan kekuatan mahasiswa.
-    3. **Abaikan Non-Teknis**: Abaikan mata kuliah umum seperti Agama, Kewarganegaraan, Bahasa.
-    4. **Format**: Satu paragraf ringkas dalam bahasa Indonesia.
+    1. Identifikasi mata kuliah bidang teknis (Pemrograman, Algoritma, AI, Jaringan, Basis Data, dan sejenisnya) yang memiliki nilai tinggi (A/B) dan sebutkan kontribusinya terhadap profil kemampuan mahasiswa.
+    2. Identifikasi mata kuliah teknis yang memiliki nilai rendah dan jelaskan area yang tampak masih lemah berdasarkan nilai tersebut.
+    3. Susun menjadi paragraf naratif yang menyampaikan gambaran menyeluruh tentang kekuatan dan area yang membutuhkan peningkatan.
+    4. Abaikan mata kuliah umum seperti Agama, Kewarganegaraan, atau Bahasa.
+    5. Format: satu paragraf ringkas dalam bahasa Indonesia.
 
     Berikut teks transkrip: ${transcriptText}
     `

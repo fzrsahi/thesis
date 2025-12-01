@@ -3,7 +3,7 @@ import { PromptTemplate } from "@langchain/core/prompts";
 import { appendMessageToSession, findOrCreateLatestSessionForUser } from "./chat.repository";
 import { findAdminByUserId } from "../admin/admin.repository";
 import { findAdvisorByUserId } from "../advisor/advisor.repository";
-import { sendChatCompletion, createOpenAIClient } from "../model/azure/azure-openai.service";
+import { createOpenAIClient } from "../model/azure/azure-openai.service";
 import { findStudentByUserId } from "../student/student.repository";
 import { getLogger } from "../utils/helpers/pino.helper";
 import {
@@ -39,9 +39,9 @@ export const chatUseCase = async (message: string, userId: number) => {
     if (user.student) {
       data = await handleStudentChat(message, userId);
     } else if (user.advisor) {
-      data = await handleAdvisorChat(message, userId);
+      data = await handleStudentChat(message, userId);
     } else if (user.admin) {
-      data = await handleAdminChat(message, userId);
+      data = await handleStudentChat(message, userId);
     }
 
     await appendMessageToSession(session.id, "assistant", data);
@@ -319,14 +319,4 @@ JAWAB:`;
       .join("");
   }
   return String(content ?? "");
-};
-
-const handleAdvisorChat = async (message: string, _userId: number) => {
-  const data = await sendChatCompletion(message);
-  return data;
-};
-
-const handleAdminChat = async (message: string, _userId: number) => {
-  const data = await sendChatCompletion(message);
-  return data;
 };

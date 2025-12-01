@@ -163,6 +163,7 @@ const StudentPage = () => {
     return true;
   };
 
+  const modalVariant = isLight ? "light" : "dark";
   const textPrimary = isLight ? "text-[#2F2A24]" : "text-white";
   const textSecondary = isLight ? "text-[#5C5245]" : "text-zinc-400";
   const borderColor = isLight ? "border-stone-300" : "border-gray-500";
@@ -325,6 +326,7 @@ const StudentPage = () => {
         onOpenChange={setOpen}
         onSubmit={handleCreate}
         submitText={isPending ? "Menyimpan..." : "Tambah"}
+        variant={modalVariant}
       />
       <StudentDetailModal
         open={detailOpen}
@@ -345,6 +347,7 @@ const StudentPage = () => {
         defaultValues={editDefaults ?? undefined}
         title="Edit Mahasiswa"
         submitText="Simpan"
+        variant={modalVariant}
       />
       <StudentDeleteModal
         open={deleteOpen}
@@ -354,6 +357,7 @@ const StudentPage = () => {
         }}
         onConfirm={handleConfirmDelete}
         confirmText={isDeleting ? "Menghapus..." : "Hapus"}
+        variant={modalVariant}
       />
       <StudentResetPasswordModal
         open={resetPasswordOpen}

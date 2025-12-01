@@ -65,6 +65,7 @@ const Home = () => {
     ? "bg-gradient-to-r from-[#F6A964] to-[#E36C3A]"
     : "bg-gradient-to-r from-blue-500 to-purple-600";
   const ctaHoverShadowClass = isLight ? "hover:shadow-[#E4986E]/30" : "hover:shadow-blue-500/25";
+  const videoFilterClass = isLight ? "filter invert" : "";
 
   return (
     <main className={`relative min-h-screen overflow-hidden ${colors.mainBg}`}>
@@ -259,7 +260,16 @@ const Home = () => {
             >
               {/* Video Element */}
               <div className="relative aspect-video overflow-hidden">
-                <video className="h-full w-full object-cover" autoPlay loop muted playsInline>
+                <video
+                  className={cn(
+                    "h-full w-full object-cover transition duration-300",
+                    videoFilterClass
+                  )}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                >
                   <source src="/video/output.webm" type="video/webm" />
                   Your browser does not support the video tag.
                 </video>

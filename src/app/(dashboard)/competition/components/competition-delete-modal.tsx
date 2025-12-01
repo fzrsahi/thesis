@@ -4,14 +4,7 @@ import { AlertTriangle, X } from "lucide-react";
 import { useState } from "react";
 
 import Button from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-  DialogClose,
-} from "@/components/ui/dialog";
+import { DarkModal, type DarkModalVariant } from "@/components/ui/dark-modal";
 
 type CompetitionLike = {
   id: number;
@@ -26,6 +19,7 @@ interface CompetitionDeleteModalProps {
   title?: string;
   description?: string;
   confirmText?: string;
+  variant?: DarkModalVariant;
 }
 
 export const CompetitionDeleteModal = ({
@@ -36,6 +30,7 @@ export const CompetitionDeleteModal = ({
   title = "Hapus Kompetisi",
   description,
   confirmText = "Hapus",
+  variant = "dark",
 }: CompetitionDeleteModalProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -61,65 +56,82 @@ export const CompetitionDeleteModal = ({
     }
   };
 
+  const isLight = variant === "light";
+  const errorContainerClass = isLight ? "border-red-300 bg-red-50" : "border-red-700 bg-red-900/20";
+  const errorTextClass = isLight ? "text-red-700" : "text-red-400";
+  const errorCloseButtonClass = isLight
+    ? "text-red-600 hover:bg-red-100 hover:text-red-800"
+    : "text-red-400 hover:bg-red-800 hover:text-red-300";
+  const warningBoxClass = isLight ? "text-zinc-800" : "text-zinc-100";
+  const warningWrapperClass = isLight
+    ? "flex items-start gap-3 rounded-md border border-zinc-200 bg-zinc-50 p-4"
+    : "flex items-start gap-3 rounded-md border border-zinc-700 bg-zinc-800 p-4";
+  const warningIconClass = isLight ? "text-yellow-500" : "text-yellow-400";
+  const warningHighlightClass = isLight ? "text-red-600" : "text-red-400";
+  const confirmButtonClass = "bg-red-600 text-white hover:bg-red-700";
+  const cancelButtonClass = isLight
+    ? "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
+    : "bg-zinc-800 text-zinc-100 hover:bg-zinc-700";
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="border-2 border-zinc-700 bg-zinc-900 text-zinc-100">
-        <DialogHeader>
-          <DialogTitle className="text-zinc-100">{title}</DialogTitle>
-        </DialogHeader>
+    <DarkModal.Root open={open} onOpenChange={onOpenChange} variant={variant}>
+      <DarkModal.Content className="border-2">
+        <DarkModal.Header>
+          <DarkModal.Title>{title}</DarkModal.Title>
+        </DarkModal.Header>
         <div className="space-y-4">
           {error && (
-            <div className="flex items-center gap-2 rounded-lg border border-red-700 bg-red-900/20 p-3">
-              <AlertTriangle className="h-4 w-4 text-red-400" />
-              <p className="text-sm text-red-400">{error}</p>
+            <div className={`flex items-center gap-2 rounded-lg border p-3 ${errorContainerClass}`}>
+              <AlertTriangle className={`h-4 w-4 ${errorTextClass}`} />
+              <p className={`text-sm ${errorTextClass}`}>{error}</p>
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
                 onClick={() => setError(null)}
-                className="ml-auto h-6 w-6 p-0 text-red-400 hover:bg-red-800 hover:text-red-300"
+                className={`ml-auto h-6 w-6 p-0 ${errorCloseButtonClass}`}
               >
                 <X className="h-3 w-3" />
               </Button>
             </div>
           )}
-          <div className="py-4 text-center text-zinc-100">
-            <div className="flex items-start gap-3 rounded-md border border-zinc-700 bg-zinc-800 p-4 text-zinc-100">
-              <AlertTriangle className="mt-0.5 h-5 w-5 text-yellow-400" />
-              <p className="text-sm leading-6">
+          <div className="py-4 text-center">
+            <div className={warningWrapperClass}>
+              <AlertTriangle className={`mt-0.5 h-5 w-5 ${warningIconClass}`} />
+              <p className={`text-sm leading-6 ${warningBoxClass}`}>
                 {description ?? (
                   <>
                     Tindakan ini tidak dapat dibatalkan. Kompetisi{" "}
-                    <span className="font-bold text-red-400">{data?.title}</span> akan dihapus
-                    permanen.
+                    <span className={`font-bold ${warningHighlightClass}`}>{data?.title}</span> akan
+                    dihapus permanen.
                   </>
                 )}
               </p>
             </div>
           </div>
         </div>
-        <DialogFooter className="pt-4">
+        <DarkModal.Footer className="pt-4">
           <Button
             type="button"
             onClick={handleConfirm}
             disabled={isSubmitting}
-            className="bg-red-600 text-white hover:bg-red-700 disabled:opacity-60"
+            className={`${confirmButtonClass} disabled:opacity-60`}
           >
             {confirmText}
           </Button>
-          <DialogClose asChild>
+          <DarkModal.Close asChild>
             <Button
               type="button"
               variant="ghost"
               disabled={isSubmitting}
-              className="bg-zinc-800 text-zinc-100 hover:bg-zinc-700"
+              className={`${cancelButtonClass} disabled:opacity-60`}
             >
               Batal
             </Button>
-          </DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          </DarkModal.Close>
+        </DarkModal.Footer>
+      </DarkModal.Content>
+    </DarkModal.Root>
   );
 };
 

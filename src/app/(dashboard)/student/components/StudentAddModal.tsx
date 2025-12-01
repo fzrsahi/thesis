@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 
 import { StudentSchema, type StudentPayload } from "@/app/shared/schema/student/StudentSchema";
 import Button from "@/components/ui/button";
-import { DarkModal } from "@/components/ui/dark-modal";
+import { DarkModal, type DarkModalVariant } from "@/components/ui/dark-modal";
 import {
   Form,
   FormControl,
@@ -56,6 +56,7 @@ type StudentAddModalProps = {
   defaultValues?: Partial<StudentPayload>;
   title?: string;
   submitText?: string;
+  variant?: DarkModalVariant;
 };
 
 export const StudentAddModal = ({
@@ -65,6 +66,7 @@ export const StudentAddModal = ({
   defaultValues,
   title = "Tambah Mahasiswa",
   submitText = "Tambah",
+  variant = "dark",
 }: StudentAddModalProps) => {
   const resolver = useMemo(() => zodResolver(StudentSchema), []);
 
@@ -103,8 +105,25 @@ export const StudentAddModal = ({
     }
   };
 
+  const isLight = variant === "light";
+  const formLabelClass = isLight ? "text-zinc-900" : "text-zinc-200";
+  const inputClass = isLight
+    ? "border-zinc-300 bg-white text-zinc-900 placeholder:text-zinc-500"
+    : "border-zinc-700 bg-zinc-900 text-zinc-100 placeholder:text-zinc-400";
+  const errorContainerClass = isLight ? "border-red-300 bg-red-50" : "border-red-700 bg-red-900/20";
+  const errorTextClass = isLight ? "text-red-700" : "text-red-400";
+  const errorCloseButtonClass = isLight
+    ? "text-red-600 hover:bg-red-100 hover:text-red-800"
+    : "text-red-400 hover:bg-red-800 hover:text-red-300";
+  const primaryButtonClass = isLight
+    ? "bg-zinc-900 text-white hover:bg-zinc-800"
+    : "bg-white text-black hover:bg-zinc-200";
+  const cancelButtonClass = isLight
+    ? "bg-zinc-100 text-zinc-700 hover:bg-zinc-200"
+    : "bg-red-600 text-white hover:bg-red-700";
+
   return (
-    <DarkModal.Root open={open} onOpenChange={onOpenChange}>
+    <DarkModal.Root open={open} onOpenChange={onOpenChange} variant={variant}>
       <DarkModal.Content className="max-h-[85vh] overflow-y-auto border-2">
         <DarkModal.Header>
           <DarkModal.Title>{title}</DarkModal.Title>
@@ -112,15 +131,17 @@ export const StudentAddModal = ({
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
             {backendError && (
-              <div className="flex items-center gap-2 rounded-lg border border-red-700 bg-red-900/20 p-3">
-                <AlertCircle className="h-4 w-4 text-red-400" />
-                <p className="text-sm text-red-400">{backendError}</p>
+              <div
+                className={`flex items-center gap-2 rounded-lg border p-3 ${errorContainerClass}`}
+              >
+                <AlertCircle className={`h-4 w-4 ${errorTextClass}`} />
+                <p className={`text-sm ${errorTextClass}`}>{backendError}</p>
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
                   onClick={() => setBackendError(null)}
-                  className="ml-auto h-6 w-6 p-0 text-red-400 hover:bg-red-800 hover:text-red-300"
+                  className={`ml-auto h-6 w-6 p-0 ${errorCloseButtonClass}`}
                 >
                   <X className="h-3 w-3" />
                 </Button>
@@ -131,13 +152,9 @@ export const StudentAddModal = ({
               name="studentId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-zinc-200">NIM</FormLabel>
+                  <FormLabel className={formLabelClass}>NIM</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Masukkan NIM"
-                      className="border-zinc-700 bg-zinc-900 text-zinc-100 placeholder:text-zinc-400"
-                      {...field}
-                    />
+                    <Input placeholder="Masukkan NIM" className={inputClass} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -148,13 +165,9 @@ export const StudentAddModal = ({
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-zinc-200">Nama</FormLabel>
+                  <FormLabel className={formLabelClass}>Nama</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Nama lengkap"
-                      className="border-zinc-700 bg-zinc-900 text-zinc-100 placeholder:text-zinc-400"
-                      {...field}
-                    />
+                    <Input placeholder="Nama lengkap" className={inputClass} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -165,13 +178,9 @@ export const StudentAddModal = ({
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-zinc-200">Email</FormLabel>
+                  <FormLabel className={formLabelClass}>Email</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="email@contoh.com"
-                      className="border-zinc-700 bg-zinc-900 text-zinc-100 placeholder:text-zinc-400"
-                      {...field}
-                    />
+                    <Input placeholder="email@contoh.com" className={inputClass} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -182,7 +191,7 @@ export const StudentAddModal = ({
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-white text-black hover:bg-zinc-200 disabled:opacity-60"
+                className={`${primaryButtonClass} disabled:opacity-60`}
               >
                 {submitText}
               </Button>
@@ -191,7 +200,7 @@ export const StudentAddModal = ({
                   type="button"
                   variant="ghost"
                   disabled={isSubmitting}
-                  className="bg-red-600 text-white hover:bg-red-700 disabled:opacity-60"
+                  className={`${cancelButtonClass} disabled:opacity-60`}
                 >
                   Batal
                 </Button>

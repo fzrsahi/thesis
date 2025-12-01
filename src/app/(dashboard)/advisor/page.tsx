@@ -116,6 +116,7 @@ const AdvisorPage = () => {
   // keep original columns; edit handled via hook's action button
   const columnsWithEdit = displayColumns;
 
+  const modalVariant = isLight ? "light" : "dark";
   const textPrimary = isLight ? "text-[#2F2A24]" : "text-white";
   const textSecondary = isLight ? "text-[#5C5245]" : "text-zinc-400";
   const borderColor = isLight ? "border-stone-300" : "border-gray-500";
@@ -253,6 +254,7 @@ const AdvisorPage = () => {
         onOpenChange={setOpen}
         onSubmit={handleCreate}
         submitText={isPending ? "Menyimpan..." : "Tambah"}
+        variant={modalVariant}
       />
       <AdvisorDeleteModal
         open={deleteOpen}
@@ -262,6 +264,7 @@ const AdvisorPage = () => {
         }}
         onConfirm={handleConfirmDelete}
         confirmText="Hapus"
+        variant={modalVariant}
       />
       <AdvisorEditModal
         open={editOpen}
@@ -273,6 +276,7 @@ const AdvisorPage = () => {
         defaultValues={editDefaults ?? undefined}
         title="Edit Dosen"
         submitText="Simpan"
+        variant={modalVariant}
       />
     </div>
   );
