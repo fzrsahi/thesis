@@ -15,10 +15,11 @@ import {
 import { STUDENT_ERROR_RESPONSE } from "../../student/student.error";
 import { findStudentByUserId } from "../../student/student.repository";
 import { customError } from "../../utils/error/custom-error";
+import { getLogger } from "../../utils/helpers/pino.helper";
 import { getCompetitionRetriever } from "../../vector/pgvector.service";
 import { createRecommendation } from "../recomendation.repository";
 
-const TOP_K_COMPETITIONS = 5;
+const TOP_K_COMPETITIONS = 15;
 const RECOMMENDATION_PROMPT_TEMPLATE = `
       Anda adalah Konselor Akademik dan Kompetisi berbasis AI, sebuah aplikasi Large Language Model (LLM) yang dikembangkan berdasarkan penelitian "Penerapan Large Language Model (LLM) dalam Seleksi Peserta Kompetisi Mahasiswa Teknik Informatika Universitas Negeri Gorontalo".
 
@@ -45,76 +46,98 @@ const RECOMMENDATION_PROMPT_TEMPLATE = `
 
       ---
 
-      ### PENGUATAN KEBIJAKAN BUKTI
+        ### KEBIJAKAN PEMBUKTIAN
 
-      Untuk setiap indikator penilaian, Anda wajib:
-      - Menjelaskan alasan pemberian skor menggunakan bukti konkret yang muncul secara eksplisit pada profil mahasiswa.
-      - Gunakan data seperti nilai mata kuliah tertentu, pengalaman proyek, riwayat organisasi, prestasi lomba, atau rekam akademik lain.
-      - Jelaskan fondasi faktual skor. Contoh:
-        - Jika memberikan skor tinggi pada *Technical Expertise*, sebutkan dasar seperti nilai A/B pada Struktur Data, Pemrograman, atau proyek nyata yang relevan.
-        - Jika memberikan skor menengah pada *Problem Solving*, sebutkan dasar seperti nilai B pada Algoritma atau pengalaman menyelesaikan studi kasus.
-        - Jika memberikan skor rendah, jelaskan bukti seperti minim pengalaman, belum ada prestasi, atau nilai mata kuliah yang tidak kuat.
+        Untuk setiap indikator penilaian:
+        - Jelaskan alasan pemberian skor menggunakan bukti konkret yang muncul secara eksplisit
+          pada profil mahasiswa.
+        - Gunakan data faktual seperti nilai mata kuliah, pengalaman proyek, riwayat organisasi,
+          atau prestasi lomba.
+        - Penentuan level Dasar, Menengah, dan Mahir harus mengikuti skala dampak dan kekuatan bukti,
+          bukan sekadar jenis aktivitas.
 
-      Penjelasan yang tidak didukung bukti nyata tidak diperbolehkan.
+        Contoh dasar penilaian:
+        - Skor Mahir pada Technical Expertise harus didukung prestasi atau pengalaman menonjol
+          seperti juara kompetisi, magang industri, atau kontribusi signifikan pada proyek besar.
+        - Skor Menengah pada Problem Solving harus didukung pengalaman relevan seperti studi kasus
+          atau proyek tim yang kompleks.
+        - Skor Dasar harus dijelaskan melalui keterbatasan pengalaman, tugas kuliah standar,
+          atau pemahaman konsep dasar.
 
-      ---
+        Penjelasan tanpa bukti nyata tidak diperbolehkan.
 
+        ---
 
-      ### RUBRIK PENILAIAN
+        ### RUBRIK PENILAIAN
 
-      Rubrik ini mengadopsi teori *Likert-based rubric* dari Hadiyanto (2021) dan Marini dkk. (2014), yang disesuaikan dengan pendekatan normalisasi kontinu berbasis LLM (Wu dkk., 2023; Bao dkk., 2023).  
-      Rentang nilai 0.10–1.00 digunakan untuk menjaga konsistensi, dengan tiga kategori:
+        Rubrik ini mengacu pada teori Likert-based rubric dari Hadiyanto (2021) dan Marini dkk. (2014),
+        yang disesuaikan dengan pendekatan normalisasi kontinu berbasis LLM.
 
-      - 0.10–0.39 → Dasar (Basic)  
-        Mahasiswa menunjukkan kemampuan awal atau pengalaman terbatas.
-      - 0.40–0.69 → Menengah (Intermediate)  
-        Mahasiswa menunjukkan penguasaan baik dan mampu menerapkan keterampilan di konteks akademik/proyek.
-      - 0.70–1.00 → Mahir (Advanced)  
-        Mahasiswa menunjukkan penguasaan tinggi dan prestasi signifikan.
+        Kategori penilaian:
+        - 0.10–0.39 (Dasar)
+          Kemampuan dasar dengan pengalaman dari tugas kuliah atau proyek sederhana.
 
-      Contoh penerapan tiap indikator:
+        - 0.40–0.69 (Menengah)
+          Kemampuan baik dengan beberapa pengalaman dan prestasi yang relevan.
 
-      - Technical Expertise (0.70–1.00): Juara nasional (mis. GEMASTIK), kontributor open-source, magang di perusahaan teknologi ternama.  
-        (0.40–0.69): Finalis lomba teknis, portofolio proyek kompleks, peran teknis aktif di organisasi (KSL).  
-        (0.10–0.39): Pengalaman praktis dari proyek kuliah sederhana.  
+        - 0.70–1.00 (Mahir)
+          Kemampuan sangat baik dengan bukti prestasi dan pengalaman yang menonjol.
 
-      - Scientific Writing (0.70–1.00): Pemenang/Finalis PIMNAS, publikasi ilmiah.  
-        (0.40–0.69): Menyusun proposal PKM/LIDM yang lolos seleksi.  
-        (0.10–0.39): Mampu menulis laporan akademik dengan baik.  
+        Indikator dan contoh evidensi:
 
-      - Problem Solving (0.70–1.00): Memecahkan masalah non-standar (mis. algoritmik GEMASTIK).  
-        (0.40–0.69): Aktif dalam studi kasus/proyek kompleks.  
-        (0.10–0.39): Menerapkan solusi standar kuliah.  
+        - Technical Expertise
+          0.70–1.00: Juara kompetisi nasional, magang di perusahaan teknologi, kontribusi signifikan
+                    pada proyek besar atau open-source.
+          0.40–0.69: Finalis lomba teknis, portofolio proyek cukup kompleks, peran teknis aktif
+                    dalam organisasi.
+          0.10–0.39: Proyek kuliah sederhana dan pemahaman konsep dasar.
 
-      - Creativity & Innovation (0.70–1.00): Juara LIDM; ide orisinal berdampak sosial/pasar.  
-        (0.40–0.69): Ide unik dalam proposal atau proyek tim.  
-        (0.10–0.39): Kreativitas dalam tugas rutin.  
+        - Scientific Writing
+          0.70–1.00: Finalis atau pemenang PIMNAS, publikasi ilmiah.
+          0.40–0.69: Proposal PKM atau LIDM yang lolos seleksi.
+          0.10–0.39: Laporan akademik standar.
 
-      - Communication (0.70–1.00): Juara debat/presentasi; pembicara konferensi.  
-        (0.40–0.69): Presenter aktif dalam kegiatan akademik.  
-        (0.10–0.39): Komunikasi jelas di kelas.  
+        - Problem Solving
+          0.70–1.00: Penyelesaian masalah non-standar pada kompetisi atau proyek kompleks.
+          0.40–0.69: Studi kasus atau proyek tim dengan kompleksitas menengah.
+          0.10–0.39: Penyelesaian masalah standar perkuliahan.
 
-      - Teamwork & Collaboration (0.70–1.00): Pemimpin proyek besar; pengurus inti organisasi.  
-        (0.40–0.69): Anggota aktif tim dengan kontribusi positif.  
-        (0.10–0.39): Kerja sama dalam tugas kelompok.  
+        - Creativity and Innovation
+          0.70–1.00: Ide orisinal dengan dampak nyata atau prestasi kompetisi.
+          0.40–0.69: Ide unik dalam proposal atau proyek tim.
+          0.10–0.39: Kreativitas dalam tugas rutin.
 
-      - Project Management (0.70–1.00): Mengelola proyek dengan metodologi Agile/Scrum.  
-        (0.40–0.69): Ketua panitia/koordinator acara.  
-        (0.10–0.39): Mengatur timeline tugas kelompok kecil.  
+        - Communication
+          0.70–1.00: Prestasi presentasi tingkat tinggi atau pembicara acara akademik.
+          0.40–0.69: Presenter aktif dalam kegiatan akademik.
+          0.10–0.39: Komunikasi lisan dan tulisan yang jelas.
 
-      - Business Acumen (0.70–1.00): Pemenang *business plan*; mendirikan startup.  
-        (0.40–0.69): Menyusun model bisnis dalam PKM-K.  
-        (0.10–0.39): Pemahaman dasar kewirausahaan.  
+        - Teamwork and Collaboration
+          0.70–1.00: Pemimpin proyek besar atau pengurus inti organisasi.
+          0.40–0.69: Anggota tim aktif dengan kontribusi nyata.
+          0.10–0.39: Kerja sama dasar dalam tugas kelompok.
 
-      - Design Thinking (0.70–1.00): Juara UI/UX; portofolio *human-centered design*.  
-        (0.40–0.69): Menerapkan tahapan *design thinking*.  
-        (0.10–0.39): Memahami prinsip UI/UX dasar.  
+        - Project Management
+          0.70–1.00: Pengelolaan proyek skala besar dengan metodologi terstruktur.
+          0.40–0.69: Koordinator atau ketua kegiatan.
+          0.10–0.39: Pengelolaan timeline tugas kecil.
 
-      - Self-Learning (0.70–1.00): Menguasai teknologi baru secara mandiri; implementasi dalam proyek.  
-        (0.40–0.69): Mengikuti pelatihan daring dan adaptif.  
-        (0.10–0.39): Kemauan belajar hal baru bila diminta.  
+        - Business Acumen
+          0.70–1.00: Pemenang kompetisi business plan atau pendiri usaha rintisan.
+          0.40–0.69: Penyusunan model bisnis dalam kegiatan akademik.
+          0.10–0.39: Pemahaman dasar kewirausahaan.
 
-      ---
+        - Design Thinking
+          0.70–1.00: Portofolio desain berorientasi pengguna dengan pengakuan kompetitif.
+          0.40–0.69: Penerapan tahapan design thinking dalam proyek.
+          0.10–0.39: Pemahaman prinsip dasar UI atau UX.
+
+        - Self Learning
+          0.70–1.00: Penguasaan teknologi baru secara mandiri dengan implementasi nyata.
+          0.40–0.69: Mengikuti pelatihan dan menerapkan hasil pembelajaran.
+          0.10–0.39: Belajar keterampilan baru melalui arahan.
+
+        ---
 
       ### CATATAN PENILAIAN & MATCH SCORE
 
@@ -216,15 +239,37 @@ const validateCompetition = async () => {
 const getRelevantCompetitions = async (
   studentProfile: StudentWithRelations
 ): Promise<competitions[]> => {
+  const logger = getLogger({ module: "usecase/get-relevant-competitions" });
+
   const profileText = generateStudentProfileText(studentProfile);
   const retriever = await getCompetitionRetriever(TOP_K_COMPETITIONS);
   const relevantDocs = await retriever.invoke(profileText);
+
+  logger.info(
+    { retrievedCount: relevantDocs.length, expectedCount: TOP_K_COMPETITIONS },
+    "Retrieved relevant competition documents"
+  );
 
   const competitionIds = relevantDocs
     .map((doc) => (doc.metadata as { id: number }).id)
     .filter((id): id is number => id !== undefined);
 
-  return findManyCompetitionsByIds(competitionIds);
+  logger.info(
+    { competitionIds, idsCount: competitionIds.length },
+    "Extracted competition IDs from retrieved documents"
+  );
+
+  const finalCompetitions = await findManyCompetitionsByIds(competitionIds);
+
+  logger.info(
+    {
+      finalCount: finalCompetitions.length,
+      competitions: finalCompetitions.map(comp => ({ id: comp.id, title: comp.title }))
+    },
+    "Final competitions obtained for recommendation"
+  );
+
+  return finalCompetitions;
 };
 
 const generateStudentProfileText = (studentProfile: StudentWithRelations): string => `
